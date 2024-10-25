@@ -349,6 +349,7 @@ const makeGetStatusIds = () => createSelector([
 export {
   type RemoteInstance,
   selectAccount,
+  selectAccounts,
   selectOwnAccount,
   makeGetAccount,
   getFilters,

@@ -32,7 +32,7 @@ const useAccount = (accountId?: string, opts: UseAccountOpts = {}) => {
     { enabled: !!accountId, transform: normalizeAccount },
   );
 
-  const meta = useAppSelector((state) => accountId && state.accounts_meta[accountId] || {});
+  const meta = useAppSelector((state) => accountId && state.accounts_meta[accountId]);
 
   const {
     relationship,
