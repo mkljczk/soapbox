@@ -15,7 +15,7 @@ import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 import ComposeForm from '../compose/components/compose-form';
-import { getDescendantsIds } from '../status/components/thread';
+import { makeGetDescendantsIds } from '../status/components/thread';
 import ThreadStatus from '../status/components/thread-status';
 
 import type { MediaAttachment } from 'pl-api';
@@ -33,6 +33,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statu
   const dispatch = useAppDispatch();
 
   const getStatus = useCallback(makeGetStatus(), []);
+  const getDescendantsIds = useCallback(makeGetDescendantsIds(), []);
   const status = useAppSelector(state => getStatus(state, { id: statusId }));
 
   const me = useAppSelector((state) => state.me);
