@@ -4,7 +4,7 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import Accordion from 'pl-fe/components/ui/accordion';
 import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import SiteWallet from './components/site-wallet';
 

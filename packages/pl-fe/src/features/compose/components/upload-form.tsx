@@ -3,8 +3,8 @@ import React, { useCallback, useRef } from 'react';
 
 import { changeMediaOrder } from 'pl-fe/actions/compose';
 import HStack from 'pl-fe/components/ui/hstack';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useCompose } from 'pl-fe/hooks/useCompose';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 
 import Upload from './upload';
 import UploadProgress from './upload-progress';

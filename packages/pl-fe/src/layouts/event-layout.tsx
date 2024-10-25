@@ -14,8 +14,8 @@ import {
   TrendsPanel,
   WhoToFollowPanel,
 } from 'pl-fe/features/ui/util/async-components';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 const getStatus = makeGetStatus();

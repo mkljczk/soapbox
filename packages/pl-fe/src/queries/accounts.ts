@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 
 import { patchMeSuccess } from 'pl-fe/actions/me';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useClient } from 'pl-fe/hooks/useClient';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useClient } from 'pl-fe/hooks/use-client';
 import toast from 'pl-fe/toast';
 
 type UpdateCredentialsData = {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useRules } from 'pl-fe/api/hooks/admin/useRules';
+import { useRules } from 'pl-fe/api/hooks/admin/use-rules';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Button from 'pl-fe/components/ui/button';
 import Column from 'pl-fe/components/ui/column';

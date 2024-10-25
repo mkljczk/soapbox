@@ -4,8 +4,8 @@ import { defineMessages, useIntl } from 'react-intl';
 import { vote } from 'pl-fe/actions/polls';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import PollFooter from './poll-footer';

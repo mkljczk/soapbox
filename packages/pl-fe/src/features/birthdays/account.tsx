@@ -1,7 +1,7 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { useAccount } from 'pl-fe/api/hooks/accounts/useAccount';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import AccountComponent from 'pl-fe/components/account';
 import Icon from 'pl-fe/components/icon';
 import HStack from 'pl-fe/components/ui/hstack';

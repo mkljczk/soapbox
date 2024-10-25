@@ -6,8 +6,8 @@ import Button from 'pl-fe/components/ui/button';
 import { CardBody, CardHeader, CardTitle } from 'pl-fe/components/ui/card';
 import Column from 'pl-fe/components/ui/column';
 import HStack from 'pl-fe/components/ui/hstack';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import EventCarousel from './components/event-carousel';

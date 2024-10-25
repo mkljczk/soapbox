@@ -1,10 +1,10 @@
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
 
-import { useLocale } from 'pl-fe/hooks/useLocale';
-import { usePlFeConfig } from 'pl-fe/hooks/usePlFeConfig';
-import { useSettings } from 'pl-fe/hooks/useSettings';
-import { useTheme } from 'pl-fe/hooks/useTheme';
+import { useLocale } from 'pl-fe/hooks/use-locale';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 import { normalizePlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import { startSentry } from 'pl-fe/sentry';
 import { useModalsStore } from 'pl-fe/stores/modals';

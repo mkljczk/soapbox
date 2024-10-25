@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import { BigCard } from 'pl-fe/components/big-card';
 import RegistrationForm from 'pl-fe/features/auth-login/components/registration-form';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 interface RegisterInviteParams {
   token: string;

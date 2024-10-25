@@ -4,15 +4,15 @@ import { Link } from 'react-router-dom';
 
 import { changeSetting } from 'pl-fe/actions/settings';
 import { fetchPublicTimeline } from 'pl-fe/actions/timelines';
-import { usePublicStream } from 'pl-fe/api/hooks/streaming/usePublicStream';
+import { usePublicStream } from 'pl-fe/api/hooks/streaming/use-public-stream';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import Accordion from 'pl-fe/components/ui/accordion';
 import Column from 'pl-fe/components/ui/column';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useInstance } from 'pl-fe/hooks/useInstance';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
-import { useSettings } from 'pl-fe/hooks/useSettings';
-import { useTheme } from 'pl-fe/hooks/useTheme';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 
 import PinnedHostsPicker from '../remote-timeline/components/pinned-hosts-picker';
 import Timeline from '../ui/components/timeline';

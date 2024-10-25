@@ -2,8 +2,8 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { addPoll, removePoll } from 'pl-fe/actions/compose';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useCompose } from 'pl-fe/hooks/useCompose';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 
 import ComposeFormButton from './compose-form-button';
 

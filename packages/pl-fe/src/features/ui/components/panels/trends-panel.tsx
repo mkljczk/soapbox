@@ -7,7 +7,7 @@ import Hashtag from 'pl-fe/components/hashtag';
 import Text from 'pl-fe/components/ui/text';
 import Widget from 'pl-fe/components/ui/widget';
 import PlaceholderSidebarTrends from 'pl-fe/features/placeholder/components/placeholder-sidebar-trends';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import useTrends from 'pl-fe/queries/trends';
 
 interface ITrendsPanel {

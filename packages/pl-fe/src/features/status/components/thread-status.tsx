@@ -4,7 +4,7 @@ import React from 'react';
 
 import StatusContainer from 'pl-fe/containers/status-container';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 interface IThreadStatus {
   id: string;

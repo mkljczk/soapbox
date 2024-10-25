@@ -7,8 +7,8 @@ import Modal from 'pl-fe/components/ui/modal';
 import AccountContainer from 'pl-fe/containers/account-container';
 import { getOrderedLists } from 'pl-fe/features/lists';
 import NewListForm from 'pl-fe/features/lists/components/new-list-form';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import List from './components/list';
 

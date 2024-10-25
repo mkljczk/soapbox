@@ -7,7 +7,7 @@ import FormActions from 'pl-fe/components/ui/form-actions';
 import FormGroup from 'pl-fe/components/ui/form-group';
 import Text from 'pl-fe/components/ui/text';
 import Textarea from 'pl-fe/components/ui/textarea';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { captureSentryFeedback } from 'pl-fe/sentry';
 
 interface ISentryFeedbackForm {

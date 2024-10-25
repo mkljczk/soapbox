@@ -16,8 +16,8 @@ import Audio from 'pl-fe/features/audio';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import Thread from 'pl-fe/features/status/components/thread';
 import Video from 'pl-fe/features/video';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { userTouching } from 'pl-fe/is-mobile';
 import { makeGetStatus } from 'pl-fe/selectors';
 

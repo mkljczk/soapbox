@@ -4,10 +4,10 @@ import { createSelector } from 'reselect';
 
 import { chooseEmoji } from 'pl-fe/actions/emojis';
 import { changeSetting } from 'pl-fe/actions/settings';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useSettings } from 'pl-fe/hooks/useSettings';
-import { useTheme } from 'pl-fe/hooks/useTheme';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 import { RootState } from 'pl-fe/store';
 
 import { buildCustomEmojis } from '../../emoji';

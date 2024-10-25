@@ -8,9 +8,9 @@ import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useLoggedIn } from 'pl-fe/hooks/useLoggedIn';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 import Thread from './components/thread';

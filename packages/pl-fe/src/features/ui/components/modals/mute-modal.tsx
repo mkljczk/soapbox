@@ -3,16 +3,16 @@ import { FormattedMessage } from 'react-intl';
 
 import { muteAccount } from 'pl-fe/actions/accounts';
 import { toggleHideNotifications, changeMuteDuration } from 'pl-fe/actions/mutes';
-import { useAccount } from 'pl-fe/api/hooks/accounts/useAccount';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import HStack from 'pl-fe/components/ui/hstack';
 import Modal from 'pl-fe/components/ui/modal';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Toggle from 'pl-fe/components/ui/toggle';
 import DurationSelector from 'pl-fe/features/compose/components/polls/duration-selector';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 
 import type { BaseModalProps } from '../modal-root';
 

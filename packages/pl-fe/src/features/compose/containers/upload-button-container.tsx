@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { uploadCompose } from 'pl-fe/actions/compose';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useCompose } from 'pl-fe/hooks/useCompose';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 
 import UploadButton from '../components/upload-button';
 

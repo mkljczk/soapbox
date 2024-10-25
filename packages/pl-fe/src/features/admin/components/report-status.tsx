@@ -7,7 +7,7 @@ import StatusContent from 'pl-fe/components/status-content';
 import StatusMedia from 'pl-fe/components/status-media';
 import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
 import type { SelectedStatus } from 'pl-fe/selectors';
 

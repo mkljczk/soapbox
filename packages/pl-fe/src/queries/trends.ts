@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { fetchTrendsSuccess } from 'pl-fe/actions/trends';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useClient } from 'pl-fe/hooks/useClient';
-import { useLoggedIn } from 'pl-fe/hooks/useLoggedIn';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useClient } from 'pl-fe/hooks/use-client';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 
 import type { Tag } from 'pl-api';
 

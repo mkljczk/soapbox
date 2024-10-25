@@ -10,12 +10,12 @@ import {
   rejectFollowRequest,
   biteAccount,
 } from 'pl-fe/actions/accounts';
-import { useFollow } from 'pl-fe/api/hooks/accounts/useFollow';
+import { useFollow } from 'pl-fe/api/hooks/accounts/use-follow';
 import Button from 'pl-fe/components/ui/button';
 import HStack from 'pl-fe/components/ui/hstack';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useLoggedIn } from 'pl-fe/hooks/useLoggedIn';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 

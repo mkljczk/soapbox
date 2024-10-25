@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
-import { usePlFeConfig } from 'pl-fe/hooks/usePlFeConfig';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import sourceCode from 'pl-fe/utils/code';
 
 const LinkFooter: React.FC = (): JSX.Element => {

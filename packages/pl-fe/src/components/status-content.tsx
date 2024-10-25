@@ -8,8 +8,8 @@ import Button from 'pl-fe/components/ui/button';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { onlyEmoji as isOnlyEmoji } from 'pl-fe/utils/rich-content';
 
 import { getTextDirection } from '../utils/rtl';

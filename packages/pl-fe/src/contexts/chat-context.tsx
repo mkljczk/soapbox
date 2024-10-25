@@ -2,8 +2,8 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { useHistory, useParams } from 'react-router-dom';
 
 import { toggleMainWindow } from 'pl-fe/actions/chats';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChat } from 'pl-fe/queries/chats';
 
 import type { Chat } from 'pl-api';

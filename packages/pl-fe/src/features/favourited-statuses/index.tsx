@@ -5,13 +5,13 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchAccount, fetchAccountByUsername } from 'pl-fe/actions/accounts';
 import { fetchFavouritedStatuses, expandFavouritedStatuses, fetchAccountFavouritedStatuses, expandAccountFavouritedStatuses } from 'pl-fe/actions/favourites';
-import { useAccountLookup } from 'pl-fe/api/hooks/accounts/useAccountLookup';
+import { useAccountLookup } from 'pl-fe/api/hooks/accounts/use-account-lookup';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import StatusList from 'pl-fe/components/status-list';
 import Column from 'pl-fe/components/ui/column';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 
 const messages = defineMessages({
   heading: { id: 'column.favourited_statuses', defaultMessage: 'Liked posts' },

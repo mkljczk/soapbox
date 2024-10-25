@@ -2,8 +2,8 @@ import React, { useCallback } from 'react';
 
 import { cancelQuoteCompose } from 'pl-fe/actions/compose';
 import QuotedStatus from 'pl-fe/components/quoted-status';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 interface IQuotedStatusContainer {

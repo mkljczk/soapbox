@@ -5,9 +5,9 @@ import { importFetchedStatuses } from 'pl-fe/actions/importer';
 import { expandTimelineSuccess } from 'pl-fe/actions/timelines';
 import Column from 'pl-fe/components/ui/column';
 import Timeline from 'pl-fe/features/ui/components/timeline';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
-import { useTheme } from 'pl-fe/hooks/useTheme';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 
 const messages = defineMessages({
   title: { id: 'column.test', defaultMessage: 'Test timeline' },

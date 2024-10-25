@@ -13,7 +13,7 @@ import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import ActionButton from 'pl-fe/features/ui/components/action-button';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { getAcct } from 'pl-fe/utils/accounts';
 import { displayFqn } from 'pl-fe/utils/state';
 

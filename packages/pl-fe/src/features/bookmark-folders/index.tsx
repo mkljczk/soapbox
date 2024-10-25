@@ -2,7 +2,7 @@ import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { Redirect } from 'react-router-dom';
 
-import { useBookmarkFolders } from 'pl-fe/api/hooks/statuses/useBookmarkFolders';
+import { useBookmarkFolders } from 'pl-fe/api/hooks/statuses/use-bookmark-folders';
 import List, { ListItem } from 'pl-fe/components/list';
 import Column from 'pl-fe/components/ui/column';
 import Emoji from 'pl-fe/components/ui/emoji';
@@ -10,7 +10,7 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 
 import NewFolderForm from './components/new-folder-form';
 

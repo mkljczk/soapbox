@@ -3,7 +3,7 @@ import debounce from 'lodash/debounce';
 import React, { useRef } from 'react';
 
 import { fetchAccount } from 'pl-fe/actions/accounts';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { isMobile } from 'pl-fe/is-mobile';
 import { useAccountHoverCardStore } from 'pl-fe/stores/account-hover-card';
 

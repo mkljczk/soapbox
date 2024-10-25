@@ -4,13 +4,13 @@ import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { fetchAccountTimeline } from 'pl-fe/actions/timelines';
-import { useAccountLookup } from 'pl-fe/api/hooks/accounts/useAccountLookup';
+import { useAccountLookup } from 'pl-fe/api/hooks/accounts/use-account-lookup';
 import LoadMore from 'pl-fe/components/load-more';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import Column from 'pl-fe/components/ui/column';
 import Spinner from 'pl-fe/components/ui/spinner';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { type AccountGalleryAttachment, getAccountGallery } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 

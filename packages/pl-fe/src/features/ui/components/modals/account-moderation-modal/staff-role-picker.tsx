@@ -3,7 +3,7 @@ import { defineMessages, MessageDescriptor, useIntl } from 'react-intl';
 
 import { setRole } from 'pl-fe/actions/admin';
 import { SelectDropdown } from 'pl-fe/features/forms';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import toast from 'pl-fe/toast';
 
 import type { Account as AccountEntity } from 'pl-fe/normalizers/account';

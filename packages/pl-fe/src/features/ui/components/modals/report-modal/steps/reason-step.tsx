@@ -6,7 +6,7 @@ import FormGroup from 'pl-fe/components/ui/form-group';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Textarea from 'pl-fe/components/ui/textarea';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import type { Account } from 'pl-fe/normalizers/account';
 

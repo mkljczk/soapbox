@@ -28,8 +28,8 @@ import Toggle from 'pl-fe/components/ui/toggle';
 import AccountContainer from 'pl-fe/containers/account-container';
 import { isCurrentOrFutureDate } from 'pl-fe/features/compose/components/schedule-form';
 import { ComposeEditor, DatePicker } from 'pl-fe/features/ui/util/async-components';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import UploadButton from './upload-button';

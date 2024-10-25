@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React, { Suspense } from 'react';
 import StickyBox from 'react-sticky-box';
 
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 
 interface ISidebar {
   children: React.ReactNode;

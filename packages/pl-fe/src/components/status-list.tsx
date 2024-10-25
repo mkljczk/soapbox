@@ -12,7 +12,7 @@ import StatusContainer from 'pl-fe/containers/status-container';
 import FeedSuggestions from 'pl-fe/features/feed-suggestions/feed-suggestions';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import PendingStatus from 'pl-fe/features/ui/components/pending-status';
-import { usePlFeConfig } from 'pl-fe/hooks/usePlFeConfig';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
 interface IStatusList extends Omit<IScrollableListWithContainer, 'onLoadMore' | 'children'> {
   /** Unique key to preserve the scroll position when navigating back. */

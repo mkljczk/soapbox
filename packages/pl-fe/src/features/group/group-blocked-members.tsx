@@ -2,16 +2,16 @@ import React, { useEffect } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
 import { fetchGroupBlocks, groupUnblock } from 'pl-fe/actions/groups';
-import { useAccount } from 'pl-fe/api/hooks/accounts/useAccount';
-import { useGroup } from 'pl-fe/api/hooks/groups/useGroup';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import Account from 'pl-fe/components/account';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Button from 'pl-fe/components/ui/button';
 import Column from 'pl-fe/components/ui/column';
 import HStack from 'pl-fe/components/ui/hstack';
 import Spinner from 'pl-fe/components/ui/spinner';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import toast from 'pl-fe/toast';
 
 import ColumnForbidden from '../ui/components/column-forbidden';

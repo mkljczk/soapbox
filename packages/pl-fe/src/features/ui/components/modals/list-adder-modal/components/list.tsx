@@ -4,8 +4,8 @@ import { defineMessages, useIntl } from 'react-intl';
 import { removeFromListAdder, addToListAdder } from 'pl-fe/actions/lists';
 import Icon from 'pl-fe/components/icon';
 import IconButton from 'pl-fe/components/icon-button';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 const messages = defineMessages({
   remove: { id: 'lists.account.remove', defaultMessage: 'Remove from list' },

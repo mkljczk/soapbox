@@ -17,12 +17,12 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import EmojiPickerDropdown from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
 import { ComposeEditor } from 'pl-fe/features/ui/util/async-components';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useCompose } from 'pl-fe/hooks/useCompose';
-import { useDraggedFiles } from 'pl-fe/hooks/useDraggedFiles';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import QuotedStatusContainer from '../containers/quoted-status-container';
 import ReplyIndicatorContainer from '../containers/reply-indicator-container';

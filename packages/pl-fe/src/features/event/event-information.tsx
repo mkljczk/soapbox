@@ -11,9 +11,9 @@ import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { usePlFeConfig } from 'pl-fe/hooks/usePlFeConfig';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { makeGetStatus } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 

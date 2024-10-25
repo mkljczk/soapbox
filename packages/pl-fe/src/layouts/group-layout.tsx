@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
-import { useGroup } from 'pl-fe/api/hooks/groups/useGroup';
-import { useGroupMembershipRequests } from 'pl-fe/api/hooks/groups/useGroupMembershipRequests';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
+import { useGroupMembershipRequests } from 'pl-fe/api/hooks/groups/use-group-membership-requests';
 import Column from 'pl-fe/components/ui/column';
 import Icon from 'pl-fe/components/ui/icon';
 import Layout from 'pl-fe/components/ui/layout';
@@ -16,7 +16,7 @@ import {
   GroupMediaPanel,
   SignUpPanel,
 } from 'pl-fe/features/ui/util/async-components';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 
 const messages = defineMessages({
   all: { id: 'group.tabs.all', defaultMessage: 'All' },

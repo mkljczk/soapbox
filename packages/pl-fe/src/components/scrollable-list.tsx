@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import LoadMore from 'pl-fe/components/load-more';
 import Card from 'pl-fe/components/ui/card';
 import Spinner from 'pl-fe/components/ui/spinner';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 interface IScrollableListBase {
   /** Pagination callback when the end of the list is reached. */

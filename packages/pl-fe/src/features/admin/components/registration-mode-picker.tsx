@@ -4,8 +4,8 @@ import { useIntl, defineMessages, FormattedMessage } from 'react-intl';
 
 import { updateConfig } from 'pl-fe/actions/admin';
 import { RadioGroup, RadioItem } from 'pl-fe/components/radio';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import toast from 'pl-fe/toast';
 
 type RegistrationMode = 'open' | 'approval' | 'closed';

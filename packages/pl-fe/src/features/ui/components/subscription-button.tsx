@@ -1,9 +1,9 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { useFollow } from 'pl-fe/api/hooks/accounts/useFollow';
+import { useFollow } from 'pl-fe/api/hooks/accounts/use-follow';
 import IconButton from 'pl-fe/components/ui/icon-button';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import toast from 'pl-fe/toast';
 
 import type { Account as AccountEntity } from 'pl-fe/normalizers/account';

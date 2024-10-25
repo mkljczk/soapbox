@@ -3,17 +3,17 @@ import { FormattedMessage } from 'react-intl';
 
 import { fetchHashtag, followHashtag, unfollowHashtag } from 'pl-fe/actions/tags';
 import { fetchHashtagTimeline, clearTimeline } from 'pl-fe/actions/timelines';
-import { useHashtagStream } from 'pl-fe/api/hooks/streaming/useHashtagStream';
+import { useHashtagStream } from 'pl-fe/api/hooks/streaming/use-hashtag-stream';
 import List, { ListItem } from 'pl-fe/components/list';
 import Column from 'pl-fe/components/ui/column';
 import Toggle from 'pl-fe/components/ui/toggle';
 import Timeline from 'pl-fe/features/ui/components/timeline';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
-import { useLoggedIn } from 'pl-fe/hooks/useLoggedIn';
-import { useTheme } from 'pl-fe/hooks/useTheme';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 
 interface IHashtagTimeline {
   params?: {

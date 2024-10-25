@@ -1,7 +1,7 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useBlocks } from 'pl-fe/api/hooks/accounts/useAccountList';
+import { useBlocks } from 'pl-fe/api/hooks/accounts/use-account-list';
 import Account from 'pl-fe/components/account';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Column from 'pl-fe/components/ui/column';

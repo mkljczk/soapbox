@@ -10,7 +10,7 @@ import Stack from 'pl-fe/components/ui/stack';
 import PlaceholderCard from 'pl-fe/features/placeholder/components/placeholder-card';
 import PlaceholderMediaGallery from 'pl-fe/features/placeholder/components/placeholder-media-gallery';
 import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import { buildStatus } from '../util/pending-status-builder';
 

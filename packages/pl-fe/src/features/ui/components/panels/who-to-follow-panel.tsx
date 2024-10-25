@@ -6,7 +6,7 @@ import Text from 'pl-fe/components/ui/text';
 import Widget from 'pl-fe/components/ui/widget';
 import AccountContainer from 'pl-fe/containers/account-container';
 import PlaceholderSidebarSuggestions from 'pl-fe/features/placeholder/components/placeholder-sidebar-suggestions';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useDismissSuggestion, useSuggestions } from 'pl-fe/queries/suggestions';
 
 import type { Account as AccountEntity } from 'pl-fe/normalizers/account';

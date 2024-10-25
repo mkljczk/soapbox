@@ -9,8 +9,8 @@ import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Toggle from 'pl-fe/components/ui/toggle';
 import StatusCheckBox from 'pl-fe/features/ui/components/modals/report-modal/components/status-check-box';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { getDomain } from 'pl-fe/utils/accounts';
 
 import type { Account } from 'pl-fe/normalizers/account';

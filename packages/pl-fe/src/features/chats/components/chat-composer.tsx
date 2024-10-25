@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { defineMessages, IntlShape, useIntl } from 'react-intl';
 
 import { unblockAccount } from 'pl-fe/actions/accounts';
-import { useRelationship } from 'pl-fe/api/hooks/accounts/useRelationship';
+import { useRelationship } from 'pl-fe/api/hooks/accounts/use-relationship';
 import Button from 'pl-fe/components/ui/button';
 import Combobox, { ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from 'pl-fe/components/ui/combobox';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -12,8 +12,8 @@ import Text from 'pl-fe/components/ui/text';
 import { useChatContext } from 'pl-fe/contexts/chat-context';
 import UploadButton from 'pl-fe/features/compose/components/upload-button';
 import emojiSearch from 'pl-fe/features/emoji/search';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { textAtCursorMatchesToken } from 'pl-fe/utils/suggestions';
 

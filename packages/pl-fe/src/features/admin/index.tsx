@@ -3,7 +3,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { Switch, Route } from 'react-router-dom';
 
 import Column from 'pl-fe/components/ui/column';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 
 import AdminTabs from './components/admin-tabs';
 import Waitlist from './tabs/awaiting-approval';

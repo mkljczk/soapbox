@@ -4,8 +4,8 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { fetchDraftStatuses } from 'pl-fe/actions/draft-statuses';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Column from 'pl-fe/components/ui/column';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import DraftStatus from './components/draft-status';
 

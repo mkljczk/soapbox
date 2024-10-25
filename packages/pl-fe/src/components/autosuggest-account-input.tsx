@@ -4,7 +4,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 
 import { accountSearch } from 'pl-fe/actions/accounts';
 import AutosuggestInput, { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
 import type { Menu } from 'pl-fe/components/dropdown-menu';
 import type { InputThemes } from 'pl-fe/components/ui/input';

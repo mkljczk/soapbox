@@ -5,7 +5,7 @@ import Icon from 'pl-fe/components/icon';
 import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import type { RemoteInstance } from 'pl-fe/selectors';
 

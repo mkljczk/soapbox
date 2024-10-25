@@ -1,4 +1,4 @@
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import type { EntitiesPath } from './hooks/types';
 import type { Entity, EntityListState } from './types';

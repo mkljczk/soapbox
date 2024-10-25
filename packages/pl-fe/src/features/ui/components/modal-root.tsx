@@ -3,7 +3,7 @@ import React, { Suspense, lazy } from 'react';
 import { cancelReplyCompose } from 'pl-fe/actions/compose';
 import { cancelEventCompose } from 'pl-fe/actions/events';
 import Base from 'pl-fe/components/modal-root';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import ModalLoading from './modal-loading';

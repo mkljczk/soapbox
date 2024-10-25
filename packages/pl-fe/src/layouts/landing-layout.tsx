@@ -6,8 +6,8 @@ import {
   TrendsPanel,
   SignUpPanel,
 } from 'pl-fe/features/ui/util/async-components';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 
 interface ILandingLayout {
   children: React.ReactNode;

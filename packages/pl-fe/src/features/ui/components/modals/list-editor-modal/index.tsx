@@ -4,8 +4,8 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { setupListEditor, resetListEditor } from 'pl-fe/actions/lists';
 import { CardHeader, CardTitle } from 'pl-fe/components/ui/card';
 import Modal from 'pl-fe/components/ui/modal';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import Account from './components/account';
 import EditListForm from './components/edit-list-form';

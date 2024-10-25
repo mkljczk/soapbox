@@ -5,7 +5,7 @@ import ReactSwipeableViews from 'react-swipeable-views';
 import EventPreview from 'pl-fe/components/event-preview';
 import Card from 'pl-fe/components/ui/card';
 import Icon from 'pl-fe/components/ui/icon';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 import PlaceholderEventPreview from '../../placeholder/components/placeholder-event-preview';

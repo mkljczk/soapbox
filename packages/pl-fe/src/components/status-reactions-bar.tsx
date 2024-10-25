@@ -10,10 +10,10 @@ import Icon from 'pl-fe/components/ui/icon';
 import Text from 'pl-fe/components/ui/text';
 import EmojiPickerDropdown from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
 import unicodeMapping from 'pl-fe/features/emoji/mapping';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useLoggedIn } from 'pl-fe/hooks/useLoggedIn';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import AnimatedNumber from './animated-number';

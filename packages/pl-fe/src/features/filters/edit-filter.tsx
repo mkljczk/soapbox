@@ -16,8 +16,8 @@ import Stack from 'pl-fe/components/ui/stack';
 import Streamfield from 'pl-fe/components/ui/streamfield';
 import Text from 'pl-fe/components/ui/text';
 import Toggle from 'pl-fe/components/ui/toggle';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import toast from 'pl-fe/toast';
 
 import { SelectDropdown } from '../forms';

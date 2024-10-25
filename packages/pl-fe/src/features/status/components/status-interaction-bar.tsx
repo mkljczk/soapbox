@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import AnimatedNumber from 'pl-fe/components/animated-number';
 import HStack from 'pl-fe/components/ui/hstack';
 import Text from 'pl-fe/components/ui/text';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import type { Status } from 'pl-fe/normalizers/status';

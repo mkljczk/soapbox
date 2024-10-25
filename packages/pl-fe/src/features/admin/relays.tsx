@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useRelays } from 'pl-fe/api/hooks/admin/useRelays';
+import { useRelays } from 'pl-fe/api/hooks/admin/use-relays';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Button from 'pl-fe/components/ui/button';
 import Column from 'pl-fe/components/ui/column';
@@ -10,7 +10,7 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Input from 'pl-fe/components/ui/input';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useTextField } from 'pl-fe/hooks/forms/useTextField';
+import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
 import toast from 'pl-fe/toast';
 
 import type { AdminRelay as RelayEntity } from 'pl-api';

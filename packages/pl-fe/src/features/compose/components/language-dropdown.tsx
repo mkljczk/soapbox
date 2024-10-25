@@ -9,10 +9,10 @@ import Button from 'pl-fe/components/ui/button';
 import Icon from 'pl-fe/components/ui/icon';
 import Input from 'pl-fe/components/ui/input';
 import { type Language, languages as languagesObject } from 'pl-fe/features/preferences';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useCompose } from 'pl-fe/hooks/useCompose';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 const getFrequentlyUsedLanguages = (languageCounters: Record<string, number>) => (
   Object.keys(languageCounters)

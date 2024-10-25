@@ -9,11 +9,11 @@ import Input from 'pl-fe/components/ui/input';
 import Modal from 'pl-fe/components/ui/modal';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useInstance } from 'pl-fe/hooks/useInstance';
-import { useRegistrationStatus } from 'pl-fe/hooks/useRegistrationStatus';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
 import { selectAccount } from 'pl-fe/selectors';
 import toast from 'pl-fe/toast';
 
