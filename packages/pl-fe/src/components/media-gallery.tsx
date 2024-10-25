@@ -289,6 +289,7 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
     height,
     visible,
   } = props;
+
   const [width, setWidth] = useState<number>(defaultWidth);
 
   const node = useRef<HTMLDivElement>(null);
