@@ -86,6 +86,12 @@ const AKKOMA = 'akkoma';
 const GLITCH = 'glitch';
 
 /**
+ * glitch-soc, fork of Mastodon that provides local posting and a wider range of content types.
+ * @see {@link https://github.com/hometown-fork/hometown}
+ */
+const HOMETOWN = 'hometown';
+
+/**
  * Pl, fork of Pleroma developed by pl-api author.
  * @see {@link https://github.com/mkljczk/pl}
  */
@@ -113,7 +119,7 @@ const getFeatures = (instance: Instance) => {
      * @see PATCH /api/v1/accounts/update_credentials
      */
     accountAvatarDescription: any([
-      v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === PLEROMA && v.build === PL,
     ]),
 
@@ -304,7 +310,7 @@ const getFeatures = (instance: Instance) => {
     conversations: any([
       v.software === FIREFISH,
       v.software === FRIENDICA,
-      v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === ICESHRIMP,
       v.software === MASTODON,
       v.software === PIXELFED,
@@ -533,7 +539,7 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/tags/:name/unfollow
      */
     followHashtags: any([
-      v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === MASTODON && gte(v.compatVersion, '4.0.0'),
       v.software === PLEROMA && v.build === AKKOMA,
       v.software === PLEROMA && v.build === PL,
@@ -558,7 +564,7 @@ const getFeatures = (instance: Instance) => {
      * @see GET /api/v1/followed_tags
      */
     followedHashtagsList: any([
-      v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === MASTODON && gte(v.compatVersion, '4.1.0'),
       v.software === PLEROMA && v.build === AKKOMA,
       v.software === PLEROMA && v.build === PL,
@@ -617,7 +623,7 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/import
      */
     importBlocks: any([
-      v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === PLEROMA,
     ]),
 
@@ -628,7 +634,7 @@ const getFeatures = (instance: Instance) => {
 
      */
     importFollows: any([
-      v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === PLEROMA,
     ]),
 
@@ -642,7 +648,7 @@ const getFeatures = (instance: Instance) => {
      * Allow to specify mode of data import to either `merge` or `overwrite`.
      * @see POST /api/v1/import
      */
-    importOverwrite: v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+    importOverwrite: v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
 
     /**
      * View posts from specific instance.
@@ -663,7 +669,7 @@ const getFeatures = (instance: Instance) => {
       v.software === PLEROMA && gte(v.version, '2.7.0'),
     ]),
 
-    interactionRequests: v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+    interactionRequests: v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
 
     /**
      * Server-side status language detection.
@@ -694,7 +700,10 @@ const getFeatures = (instance: Instance) => {
      * Ability to post statuses that don't federate.
      * @see POST /api/v1/statuses
      */
-    localOnlyStatuses: federation && v.software === GOTOSOCIAL,
+    localOnlyStatuses: federation && any([
+      v.software === GOTOSOCIAL,
+      v.software === MASTODON && v.build === HOMETOWN,
+    ]),
 
     /**
      * Can sign in using username instead of e-mail address.
@@ -1217,7 +1226,7 @@ const parseVersion = (version: string): Backend => {
   const compat = match ? semverParse(match[1]) || semverCoerce(match[1]) : null;
   if (match && semver && compat) {
     return {
-      build: semver.build[0],
+      build: semver.build[0]?.split('-')[0],
       compatVersion: compat.version,
       software: match[2] || MASTODON,
       version: semver.version.split('-')[0],
