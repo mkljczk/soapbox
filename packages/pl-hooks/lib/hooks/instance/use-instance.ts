@@ -11,12 +11,12 @@ const useInstance = () => {
   const { client } = usePlHooksApiClient();
   const queryClient = usePlHooksQueryClient();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['instance'],
     queryFn: client.instance.getInstance,
-    initialData,
-    initialDataUpdatedAt: -1,
   }, queryClient);
+
+  return { ...query, data: query.data || initialData };
 };
 
 export { useInstance };
