@@ -230,7 +230,7 @@ const Status: React.FC<IStatus> = (props) => {
         <Link key={account.acct} to={`/@${account.acct}`} className='hover:underline'>
           <bdi className='truncate'>
             <strong className='text-gray-800 dark:text-gray-200'>
-              <Emojify text={status.account.display_name} emojis={status.account.emojis} />
+              <Emojify text={account.display_name} emojis={account.emojis} />
             </strong>
           </bdi>
         </Link>
