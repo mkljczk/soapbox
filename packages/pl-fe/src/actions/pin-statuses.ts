@@ -2,7 +2,7 @@ import { isLoggedIn } from 'pl-fe/utils/auth';
 
 import { getClient } from '../api';
 
-import { importFetchedStatuses } from './importer';
+import { importEntities } from './importer';
 
 import type { Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -19,7 +19,7 @@ const fetchPinnedStatuses = () =>
     dispatch(fetchPinnedStatusesRequest());
 
     return getClient(getState()).accounts.getAccountStatuses(me as string, { pinned: true }).then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       dispatch(fetchPinnedStatusesSuccess(response.items, null));
     }).catch(error => {
       dispatch(fetchPinnedStatusesFail(error));

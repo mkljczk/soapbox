@@ -14,12 +14,7 @@ import { EXCLUDE_TYPES, NOTIFICATION_TYPES } from 'pl-fe/utils/notification';
 import { joinPublicPath } from 'pl-fe/utils/static';
 
 import { fetchRelationships } from './accounts';
-import {
-  importFetchedAccount,
-  importFetchedAccounts,
-  importFetchedStatus,
-  importFetchedStatuses,
-} from './importer';
+import { importEntities } from './importer';
 import { saveMarker } from './markers';
 import { saveSettings } from './settings';
 
@@ -76,20 +71,10 @@ const updateNotifications = (notification: BaseNotification) =>
     const selectedFilter = useSettingsStore.getState().settings.notifications.quickFilter.active;
     const showInColumn = selectedFilter === 'all' ? true : (FILTER_TYPES[selectedFilter as FilterType] || [notification.type]).includes(notification.type);
 
-    if (notification.account) {
-      dispatch(importFetchedAccount(notification.account));
-    }
-
-    // Used by Move notification
-    if (notification.type === 'move' && notification.target) {
-      dispatch(importFetchedAccount(notification.target));
-    }
-
-    const status = getNotificationStatus(notification);
-
-    if (status) {
-      dispatch(importFetchedStatus(status));
-    }
+    dispatch(importEntities({
+      accounts: [notification.account, notification.type === 'move' ? notification.target : undefined],
+      statuses: [getNotificationStatus(notification)],
+    }));
 
     if (showInColumn) {
       dispatch({
@@ -256,8 +241,10 @@ const expandNotifications = ({ maxId }: Record<string, any> = {}, done: () => an
         return acc;
       }, { accounts: {}, statuses: {} } as { accounts: Record<string, Account>; statuses: Record<string, Status> });
 
-      dispatch(importFetchedAccounts(Object.values(entries.accounts)));
-      dispatch(importFetchedStatuses(Object.values(entries.statuses)));
+      dispatch(importEntities({
+        accounts: Object.values(entries.accounts),
+        statuses: Object.values(entries.statuses),
+      }));
 
       const deduplicatedNotifications = normalizeNotifications(response.items, state.notifications.items);
 

@@ -3,7 +3,7 @@ import { AppDispatch, RootState } from 'pl-fe/store';
 import { getClient } from '../api';
 
 import { fetchRelationships } from './accounts';
-import { importFetchedAccounts } from './importer';
+import { importEntities } from './importer';
 
 const FAMILIAR_FOLLOWERS_FETCH_REQUEST = 'FAMILIAR_FOLLOWERS_FETCH_REQUEST' as const;
 const FAMILIAR_FOLLOWERS_FETCH_SUCCESS = 'FAMILIAR_FOLLOWERS_FETCH_SUCCESS' as const;
@@ -19,7 +19,7 @@ const fetchAccountFamiliarFollowers = (accountId: string) => (dispatch: AppDispa
     .then((data) => {
       const accounts = data.find(({ id }: { id: string }) => id === accountId)!.accounts;
 
-      dispatch(importFetchedAccounts(accounts));
+      dispatch(importEntities({ accounts }));
       dispatch(fetchRelationships(accounts.map((item) => item.id)));
       dispatch({
         type: FAMILIAR_FOLLOWERS_FETCH_SUCCESS,

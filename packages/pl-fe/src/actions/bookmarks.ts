@@ -1,6 +1,6 @@
 import { getClient } from '../api';
 
-import { importFetchedStatuses } from './importer';
+import { importEntities } from './importer';
 
 import type { PaginatedResponse, Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -24,7 +24,7 @@ const fetchBookmarkedStatuses = (folderId?: string) =>
     dispatch(fetchBookmarkedStatusesRequest(folderId));
 
     return getClient(getState()).myAccount.getBookmarks({ folder_id: folderId }).then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       return dispatch(fetchBookmarkedStatusesSuccess(response.items, response.next, folderId));
     }).catch(error => {
       dispatch(fetchBookmarkedStatusesFail(error, folderId));
@@ -61,7 +61,7 @@ const expandBookmarkedStatuses = (folderId?: string) =>
     dispatch(expandBookmarkedStatusesRequest(folderId));
 
     return next().then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       return dispatch(expandBookmarkedStatusesSuccess(response.items, response.next, folderId));
     }).catch(error => {
       dispatch(expandBookmarkedStatusesFail(error, folderId));

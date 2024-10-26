@@ -5,7 +5,7 @@ import { isLoggedIn } from 'pl-fe/utils/auth';
 
 import { getClient } from '../api';
 
-import { importFetchedAccounts } from './importer';
+import { importEntities } from './importer';
 
 import type { Account as BaseAccount } from 'pl-api';
 import type { Account } from 'pl-fe/normalizers/account';
@@ -63,7 +63,7 @@ const fetchAliasesSuggestions = (q: string) =>
 
     return getClient(getState()).accounts.searchAccounts(q, { resolve: true, limit: 4 })
       .then((data) => {
-        dispatch(importFetchedAccounts(data));
+        dispatch(importEntities({ accounts: data }));
         dispatch(fetchAliasesSuggestionsReady(q, data));
       }).catch(error => toast.showAlertForError(error));
   };

@@ -3,7 +3,7 @@ import sumBy from 'lodash/sumBy';
 import { type Chat, type ChatMessage as BaseChatMessage, type PaginatedResponse, chatMessageSchema, type Relationship } from 'pl-api';
 import * as v from 'valibot';
 
-import { importFetchedAccount, importFetchedAccounts } from 'pl-fe/actions/importer';
+import { importEntities } from 'pl-fe/actions/importer';
 import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
 import { useStatContext } from 'pl-fe/contexts/stat-context';
 import { Entities } from 'pl-fe/entity-store/entities';
@@ -72,7 +72,7 @@ const useChats = () => {
 
     // Set the relationships to these users in the redux store.
     fetchRelationships.mutate({ accountIds: items.map((item) => item.account.id) });
-    dispatch(importFetchedAccounts(items.map((item) => item.account)));
+    dispatch(importEntities({ accounts: items.map((item) => item.account) }));
 
     return response;
   };
@@ -109,7 +109,7 @@ const useChat = (chatId?: string) => {
       const data = await client.chats.getChat(chatId);
 
       fetchRelationships.mutate({ accountIds: [data.account.id] });
-      dispatch(importFetchedAccount(data.account));
+      dispatch(importEntities({ accounts: [data.account] }));
 
       return data;
     }

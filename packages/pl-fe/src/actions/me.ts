@@ -7,7 +7,7 @@ import { getAuthUserId, getAuthUserUrl } from 'pl-fe/utils/auth';
 import { getClient } from '../api';
 
 import { loadCredentials } from './auth';
-import { importFetchedAccount } from './importer';
+import { importEntities } from './importer';
 import { FE_NAME } from './settings';
 
 import type { CredentialAccount, UpdateCredentialsParams } from 'pl-api';
@@ -127,7 +127,7 @@ const patchMeSuccess = (me: CredentialAccount) =>
       me,
     };
 
-    dispatch(importFetchedAccount(me));
+    dispatch(importEntities({ accounts: [me] }));
     dispatch(action);
   };
 

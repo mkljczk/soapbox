@@ -2,7 +2,7 @@ import { isLoggedIn } from 'pl-fe/utils/auth';
 
 import { getClient } from '../api';
 
-import { importFetchedStatus } from './importer';
+import { importEntities } from './importer';
 
 import type { Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -24,7 +24,7 @@ const emojiReact = (status: Pick<Status, 'id'>, emoji: string, custom?: string) 
     dispatch(emojiReactRequest(status.id, emoji, custom));
 
     return getClient(getState).statuses.createStatusReaction(status.id, emoji).then((response) => {
-      dispatch(importFetchedStatus(response));
+      dispatch(importEntities({ statuses: [response] }));
       dispatch(emojiReactSuccess(response, emoji));
     }).catch((error) => {
       dispatch(emojiReactFail(status.id, emoji, error));
@@ -38,7 +38,7 @@ const unEmojiReact = (status: Pick<Status, 'id'>, emoji: string) =>
     dispatch(unEmojiReactRequest(status.id, emoji));
 
     return getClient(getState).statuses.deleteStatusReaction(status.id, emoji).then(response => {
-      dispatch(importFetchedStatus(response));
+      dispatch(importEntities({ statuses: [response] }));
       dispatch(unEmojiReactSuccess(response, emoji));
     }).catch(error => {
       dispatch(unEmojiReactFail(status.id, emoji, error));

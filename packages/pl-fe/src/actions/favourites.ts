@@ -2,7 +2,7 @@ import { isLoggedIn } from 'pl-fe/utils/auth';
 
 import { getClient } from '../api';
 
-import { importFetchedStatuses } from './importer';
+import { importEntities } from './importer';
 
 import type { PaginatedResponse, Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -34,7 +34,7 @@ const fetchFavouritedStatuses = () =>
     dispatch(fetchFavouritedStatusesRequest());
 
     return getClient(getState()).myAccount.getFavourites().then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       dispatch(fetchFavouritedStatusesSuccess(response.items, response.next));
     }).catch(error => {
       dispatch(fetchFavouritedStatusesFail(error));
@@ -69,7 +69,7 @@ const expandFavouritedStatuses = () =>
     dispatch(expandFavouritedStatusesRequest());
 
     return next().then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       dispatch(expandFavouritedStatusesSuccess(response.items, response.next));
     }).catch(error => {
       dispatch(expandFavouritedStatusesFail(error));
@@ -102,7 +102,7 @@ const fetchAccountFavouritedStatuses = (accountId: string) =>
     dispatch(fetchAccountFavouritedStatusesRequest(accountId));
 
     return getClient(getState).accounts.getAccountFavourites(accountId).then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       dispatch(fetchAccountFavouritedStatusesSuccess(accountId, response.items, response.next));
     }).catch(error => {
       dispatch(fetchAccountFavouritedStatusesFail(accountId, error));
@@ -140,7 +140,7 @@ const expandAccountFavouritedStatuses = (accountId: string) =>
     dispatch(expandAccountFavouritedStatusesRequest(accountId));
 
     return next().then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       dispatch(expandAccountFavouritedStatusesSuccess(accountId, response.items, response.next));
     }).catch(error => {
       dispatch(expandAccountFavouritedStatusesFail(accountId, error));

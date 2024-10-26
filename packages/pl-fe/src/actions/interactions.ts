@@ -7,7 +7,7 @@ import { isLoggedIn } from 'pl-fe/utils/auth';
 import { getClient } from '../api';
 
 import { fetchRelationships } from './accounts';
-import { importFetchedAccounts, importFetchedStatus } from './importer';
+import { importEntities } from './importer';
 
 import type { Account, EmojiReaction, PaginatedResponse, Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -97,7 +97,7 @@ const reblog = (status: Pick<Status, 'id'>) =>
     return getClient(getState()).statuses.reblogStatus(status.id).then((response) => {
       // The reblog API method returns a new status wrapped around the original. In this case we are only
       // interested in how the original is modified, hence passing it skipping the wrapper
-      if (response.reblog) dispatch(importFetchedStatus(response.reblog as Status));
+      if (response.reblog) dispatch(importEntities({ statuses: [response.reblog] }));
       dispatch(reblogSuccess(response));
     }).catch(error => {
       dispatch(reblogFail(status.id, error));
@@ -307,7 +307,7 @@ const bookmark = (status: Pick<Status, 'id'>, folderId?: string) =>
     dispatch(bookmarkRequest(status.id));
 
     return getClient(getState()).statuses.bookmarkStatus(status.id, folderId).then((response) => {
-      dispatch(importFetchedStatus(response));
+      dispatch(importEntities({ statuses: [response] }));
       dispatch(bookmarkSuccess(response));
 
       let opts: IToastOptions = {
@@ -335,7 +335,7 @@ const unbookmark = (status: Pick<Status, 'id'>) =>
     dispatch(unbookmarkRequest(status.id));
 
     return getClient(getState()).statuses.unbookmarkStatus(status.id).then(response => {
-      dispatch(importFetchedStatus(response));
+      dispatch(importEntities({ statuses: [response] }));
       dispatch(unbookmarkSuccess(response));
       toast.success(messages.bookmarkRemoved);
     }).catch(error => {
@@ -391,7 +391,7 @@ const fetchReblogs = (statusId: string) =>
     dispatch(fetchReblogsRequest(statusId));
 
     return getClient(getState()).statuses.getRebloggedBy(statusId).then(response => {
-      dispatch(importFetchedAccounts(response.items));
+      dispatch(importEntities({ accounts: response.items }));
       dispatch(fetchRelationships(response.items.map((item) => item.id)));
       dispatch(fetchReblogsSuccess(statusId, response.items, response.next));
     }).catch(error => {
@@ -420,7 +420,7 @@ const fetchReblogsFail = (statusId: string, error: unknown) => ({
 const expandReblogs = (statusId: string, next: AccountListLink) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     next().then(response => {
-      dispatch(importFetchedAccounts(response.items));
+      dispatch(importEntities({ accounts: response.items }));
       dispatch(fetchRelationships(response.items.map((item) => item.id)));
       dispatch(expandReblogsSuccess(statusId, response.items, response.next));
     }).catch(error => {
@@ -446,7 +446,7 @@ const fetchFavourites = (statusId: string) =>
     dispatch(fetchFavouritesRequest(statusId));
 
     return getClient(getState()).statuses.getFavouritedBy(statusId).then(response => {
-      dispatch(importFetchedAccounts(response.items));
+      dispatch(importEntities({ accounts: response.items }));
       dispatch(fetchRelationships(response.items.map((item) => item.id)));
       dispatch(fetchFavouritesSuccess(statusId, response.items, response.next));
     }).catch(error => {
@@ -475,7 +475,7 @@ const fetchFavouritesFail = (statusId: string, error: unknown) => ({
 const expandFavourites = (statusId: string, next: AccountListLink) =>
   (dispatch: AppDispatch) => {
     next().then(response => {
-      dispatch(importFetchedAccounts(response.items));
+      dispatch(importEntities({ accounts: response.items }));
       dispatch(fetchRelationships(response.items.map((item) => item.id)));
       dispatch(expandFavouritesSuccess(statusId, response.items, response.next));
     }).catch(error => {
@@ -501,7 +501,7 @@ const fetchDislikes = (statusId: string) =>
     dispatch(fetchDislikesRequest(statusId));
 
     return getClient(getState).statuses.getDislikedBy(statusId).then(response => {
-      dispatch(importFetchedAccounts(response));
+      dispatch(importEntities({ accounts: response }));
       dispatch(fetchRelationships(response.map((item) => item.id)));
       dispatch(fetchDislikesSuccess(statusId, response));
     }).catch(error => {
@@ -531,7 +531,7 @@ const fetchReactions = (statusId: string) =>
     dispatch(fetchReactionsRequest(statusId));
 
     return getClient(getState).statuses.getStatusReactions(statusId).then(response => {
-      dispatch(importFetchedAccounts((response).map(({ accounts }) => accounts).flat()));
+      dispatch(importEntities({ accounts: (response).map(({ accounts }) => accounts).flat() }));
       dispatch(fetchReactionsSuccess(statusId, response));
     }).catch(error => {
       dispatch(fetchReactionsFail(statusId, error));
@@ -562,7 +562,7 @@ const pin = (status: Pick<Status, 'id'>, accountId: string) =>
     dispatch(pinRequest(status.id, accountId));
 
     return getClient(getState()).statuses.pinStatus(status.id).then(response => {
-      dispatch(importFetchedStatus(response));
+      dispatch(importEntities({ statuses: [response] }));
       dispatch(pinSuccess(response, accountId));
     }).catch(error => {
       dispatch(pinFail(status.id, error, accountId));
@@ -596,7 +596,7 @@ const unpin = (status: Pick<Status, 'id'>, accountId: string) =>
     dispatch(unpinRequest(status.id, accountId));
 
     return getClient(getState()).statuses.unpinStatus(status.id).then(response => {
-      dispatch(importFetchedStatus(response));
+      dispatch(importEntities({ statuses: [response] }));
       dispatch(unpinSuccess(response, accountId));
     }).catch(error => {
       dispatch(unpinFail(status.id, error, accountId));

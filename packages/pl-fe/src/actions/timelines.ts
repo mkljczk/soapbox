@@ -6,7 +6,7 @@ import { shouldFilter } from 'pl-fe/utils/timelines';
 
 import { getClient } from '../api';
 
-import { importFetchedStatus, importFetchedStatuses } from './importer';
+import { importEntities } from './importer';
 
 import type { PaginatedResponse, Status as BaseStatus, PublicTimelineParams, HomeTimelineParams, ListTimelineParams, HashtagTimelineParams, GetAccountStatusesParams, GroupTimelineParams } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -46,7 +46,7 @@ const processTimelineUpdate = (timeline: string, status: BaseStatus) =>
       return;
     }
 
-    dispatch(importFetchedStatus(status));
+    dispatch(importEntities({ statuses: [status] }));
 
     if (shouldSkipQueue) {
       dispatch(updateTimeline(timeline, status.id));
@@ -159,10 +159,10 @@ const handleTimelineExpand = (timelineId: string, fn: Promise<PaginatedResponse<
     dispatch(expandTimelineRequest(timelineId));
 
     return fn.then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
 
       const statuses = deduplicateStatuses(response.items);
-      dispatch(importFetchedStatuses(statuses.filter(status => status.accounts)));
+      dispatch(importEntities({ statuses: statuses.filter(status => status.accounts) }));
 
       dispatch(expandTimelineSuccess(
         timelineId,

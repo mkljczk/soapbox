@@ -30,7 +30,7 @@ import { isStandalone } from 'pl-fe/utils/state';
 
 import { type PlfeResponse, getClient } from '../api';
 
-import { importFetchedAccount } from './importer';
+import { importEntities } from './importer';
 
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
@@ -150,7 +150,7 @@ const verifyCredentials = (token: string, accountUrl?: string) =>
     const client = new PlApiClient(baseURL, token);
 
     return client.settings.verifyCredentials().then((account) => {
-      dispatch(importFetchedAccount(account));
+      dispatch(importEntities({ accounts: [account] }));
       dispatch({ type: VERIFY_CREDENTIALS_SUCCESS, token, account });
       if (account.id === getState().me) dispatch(fetchMeSuccess(account));
       return account;
@@ -159,7 +159,7 @@ const verifyCredentials = (token: string, accountUrl?: string) =>
         // The user is waitlisted
         const account = error.response.json;
         const parsedAccount = v.parse(credentialAccountSchema, error.response.json);
-        dispatch(importFetchedAccount(parsedAccount));
+        dispatch(importEntities({ accounts: [parsedAccount] }));
         dispatch({ type: VERIFY_CREDENTIALS_SUCCESS, token, account: parsedAccount });
         if (account.id === getState().me) dispatch(fetchMeSuccess(parsedAccount));
         return parsedAccount;
@@ -175,7 +175,7 @@ const rememberAuthAccount = (accountUrl: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: AUTH_ACCOUNT_REMEMBER_REQUEST, accountUrl });
     return KVStore.getItemOrError(`authAccount:${accountUrl}`).then(account => {
-      dispatch(importFetchedAccount(account));
+      dispatch(importEntities({ accounts: [account] }));
       dispatch({ type: AUTH_ACCOUNT_REMEMBER_SUCCESS, account, accountUrl });
       if (account.id === getState().me) dispatch(fetchMeSuccess(account));
       return account;
