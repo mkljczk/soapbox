@@ -1,7 +1,6 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { HelmetProvider } from 'react-helmet-async';
-import { Toaster } from 'react-hot-toast';
 import { Provider } from 'react-redux';
 
 import { StatProvider } from 'pl-fe/contexts/stat-context';
@@ -40,12 +39,6 @@ const PlFe: React.FC = () => (
         </StatProvider>
       </QueryClientProvider>
     </Provider>
-    <div id='toaster'>
-      <Toaster
-        position='top-right'
-        containerClassName='top-4'
-      />
-    </div>
   </>
 );
 
