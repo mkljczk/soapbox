@@ -164,14 +164,10 @@ const fetchContext = (statusId: string, intl?: IntlShape) =>
     } : undefined;
 
     return getClient(getState()).statuses.getContext(statusId, params).then(context => {
-      if (typeof context === 'object') {
-        const { ancestors, descendants } = context;
-        const statuses = ancestors.concat(descendants);
-        dispatch(importFetchedStatuses(statuses));
-        dispatch({ type: CONTEXT_FETCH_SUCCESS, statusId, ancestors, descendants });
-      } else {
-        throw context;
-      }
+      const { ancestors, descendants } = context;
+      const statuses = ancestors.concat(descendants);
+      dispatch(importFetchedStatuses(statuses));
+      dispatch({ type: CONTEXT_FETCH_SUCCESS, statusId, ancestors, descendants });
       return context;
     }).catch(error => {
       if (error.response?.status === 404) {
