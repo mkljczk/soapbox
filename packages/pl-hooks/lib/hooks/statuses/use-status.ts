@@ -1,10 +1,10 @@
-import { useQueries, useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { useQueries, useQuery, UseQueryOptions, type UseQueryResult } from '@tanstack/react-query';
 
 import { usePlHooksApiClient } from 'pl-hooks/contexts/api-client';
 import { queryClient, usePlHooksQueryClient } from 'pl-hooks/contexts/query-client';
 import { importEntities } from 'pl-hooks/importer';
 import { usePoll } from 'pl-hooks/main';
-import { normalizeAccount, type NormalizedAccount } from 'pl-hooks/normalizers/account';
+import { type NormalizedAccount } from 'pl-hooks/normalizers/account';
 import { type NormalizedStatus, normalizeStatus } from 'pl-hooks/normalizers/status';
 
 import type { Poll } from 'pl-api';
@@ -123,12 +123,9 @@ const useStatus = (statusId?: string, opts: UseStatusOpts = { withReblog: true }
     reblogQuery = useStatus(status?.reblog_id || undefined, { ...opts, withReblog: false });
   }
 
-  const accountsQuery = useQueries({
+  const accountsQuery = useQueries<UseQueryOptions<NormalizedAccount>[]>({
     queries: status?.account_ids.map(accountId => ({
       queryKey: ['accounts', 'entities', accountId],
-      queryFn: () => client.accounts.getAccount(accountId!)
-        .then(account => (importEntities({ accounts: [account] }, { withParents: false }), account))
-        .then(normalizeAccount),
     })) || [],
   }, queryClient);
 

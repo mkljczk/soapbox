@@ -17,3 +17,4 @@ export * from './hooks/statuses/use-status-translation';
 export * from './importer';
 
 export type { NormalizedAccount } from './normalizers/account';
+export type { NormalizedStatus } from './normalizers/status';
