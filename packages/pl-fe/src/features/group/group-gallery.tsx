@@ -34,7 +34,7 @@ const GroupGallery: React.FC<IGroupGallery> = (props) => {
   } = useGroupMedia(groupId);
 
   const attachments = statuses.reduce<AccountGalleryAttachment[]>((result, status) => {
-    result.push(...status.media_attachments.map((a) => ({ ...a, status: status as any, account: status.account })));
+    result.push(...status.media_attachments.map((a) => ({ ...a, status, account: status.account })));
     return result;
   }, []);
 
