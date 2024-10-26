@@ -343,11 +343,12 @@ const validateSchedule = (state: RootState, composeId: string) => {
 interface SubmitComposeOpts {
   history?: History;
   force?: boolean;
+  onSuccess?: () => void;
 }
 
 const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
-    const { history, force = false } = opts;
+    const { history, force = false, onSuccess } = opts;
 
     if (!isLoggedIn(getState)) return;
     const state = getState();
@@ -372,7 +373,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
       useModalsStore.getState().openModal('MISSING_DESCRIPTION', {
         onContinue: () => {
           useModalsStore.getState().closeModal('MISSING_DESCRIPTION');
-          dispatch(submitCompose(composeId, { history, force: true }));
+          dispatch(submitCompose(composeId, { history, force: true, onSuccess }));
         },
       });
       return;
@@ -444,6 +445,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
         history.push('/conversations');
       }
       handleComposeSubmit(dispatch, getState, composeId, data, status, !!statusId);
+      onSuccess?.();
     }).catch((error) => {
       dispatch(submitComposeFail(composeId, error));
     });

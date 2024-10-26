@@ -142,9 +142,9 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
     if (!canSubmit) return;
     e?.preventDefault();
 
-    dispatch(submitCompose(id, { history })).then(() => {
+    dispatch(submitCompose(id, { history, onSuccess: () => {
       editorRef.current?.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
-    }).catch(() => {});
+    } }));
   };
 
   const onSuggestionsClearRequested = () => {
