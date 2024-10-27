@@ -82,7 +82,7 @@ const makeGetThread = () => {
   const getDescendantsIds = makeGetDescendantsIds();
 
   return createSelector([
-    (state: RootState, statusId: string) => getAncestorsIds(state, state.contexts.inReplyTos.get(statusId)),
+    (state: RootState, statusId: string) => getAncestorsIds(state, statusId),
     (state: RootState, statusId: string) => getDescendantsIds(state, statusId),
     (_, statusId: string) => statusId,
   ],
