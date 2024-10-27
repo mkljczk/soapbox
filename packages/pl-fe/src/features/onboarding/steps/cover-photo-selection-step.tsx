@@ -63,7 +63,7 @@ const CoverPhotoSelectionStep = ({ onNext }: { onNext: () => void }) => {
         setSelectedFile(null);
 
         if (error.response?.status === 422) {
-          toast.error((error.response.json as any).error.replace('Validation failed: ', ''));
+          toast.error(error.response.json.error.replace('Validation failed: ', ''));
         } else {
           toast.error(messages.error);
         }

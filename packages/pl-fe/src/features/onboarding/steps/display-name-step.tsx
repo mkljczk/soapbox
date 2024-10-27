@@ -51,7 +51,7 @@ const DisplayNameStep = ({ onNext }: { onNext: () => void }) => {
         setSubmitting(false);
 
         if (error.response?.status === 422) {
-          setErrors([(error.response.json as any).error.replace('Validation failed: ', '')]);
+          setErrors([error.response.json.error.replace('Validation failed: ', '')]);
         } else {
           toast.error(messages.error);
         }

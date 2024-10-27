@@ -90,7 +90,7 @@ const loginWithCode = (code: string) =>
 
     return dispatch(obtainOAuthToken(params, baseURL))
       .then((token) => dispatch(authLoggedIn(token)))
-      .then(({ access_token }) => dispatch(verifyCredentials(access_token as string, baseURL)))
+      .then(({ access_token }) => dispatch(verifyCredentials(access_token, baseURL)))
       .then((account) => dispatch(switchAccount(account.id)))
       .then(() => window.location.href = '/');
   };
