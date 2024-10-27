@@ -1,4 +1,5 @@
 import type { PaginationParams } from './common';
+import { UpdateInteractionPoliciesParams } from './settings';
 
 interface CreateStatusWithContent {
   /** The text content of the status. If `media_ids` is provided, this becomes optional. Attaching a `poll` is optional while `status` is provided. */
@@ -83,6 +84,9 @@ interface CreateStatusOptionalParams {
 
   status_map?: Record<string, string>;
   spoiler_text_map?: Record<string, string>;
+
+  /** The 'interaction_policy' field can be used to set an interaction policy for this status. */
+  interaction_policy?: UpdateInteractionPoliciesParams['public'];
 }
 
 type CreateStatusParams = (CreateStatusWithContent | CreateStatusWithMedia) & CreateStatusOptionalParams;
