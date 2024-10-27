@@ -6,6 +6,7 @@ import {
   SUGGESTIONS_FETCH_REQUEST,
   SUGGESTIONS_FETCH_SUCCESS,
   SUGGESTIONS_FETCH_FAIL,
+  type SuggestionsAction,
 } from 'pl-fe/actions/suggestions';
 
 import type { Suggestion as SuggestionEntity } from 'pl-api';
@@ -37,7 +38,7 @@ const dismissAccount = (state: State, accountId: string) =>
 const dismissAccounts = (state: State, accountIds: string[]) =>
   state.update('items', items => items.filter(item => !accountIds.includes(item.account_id)));
 
-const suggestionsReducer = (state: State = ReducerRecord(), action: AnyAction | DomainBlocksAction) => {
+const suggestionsReducer = (state: State = ReducerRecord(), action: AnyAction | DomainBlocksAction | SuggestionsAction) => {
   switch (action.type) {
     case SUGGESTIONS_FETCH_REQUEST:
       return state.set('isLoading', true);

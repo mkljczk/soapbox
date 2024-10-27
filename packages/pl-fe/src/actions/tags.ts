@@ -156,6 +156,23 @@ const expandFollowedHashtagsFail = (error: unknown) => ({
   error,
 });
 
+type TagsAction =
+  | ReturnType<typeof fetchHashtagRequest>
+  | ReturnType<typeof fetchHashtagSuccess>
+  | ReturnType<typeof fetchHashtagFail>
+  | ReturnType<typeof followHashtagRequest>
+  | ReturnType<typeof followHashtagSuccess>
+  | ReturnType<typeof followHashtagFail>
+  | ReturnType<typeof unfollowHashtagRequest>
+  | ReturnType<typeof unfollowHashtagSuccess>
+  | ReturnType<typeof unfollowHashtagFail>
+  | ReturnType<typeof fetchFollowedHashtagsRequest>
+  | ReturnType<typeof fetchFollowedHashtagsSuccess>
+  | ReturnType<typeof fetchFollowedHashtagsFail>
+  | ReturnType<typeof expandFollowedHashtagsRequest>
+  | ReturnType<typeof expandFollowedHashtagsSuccess>
+  | ReturnType<typeof expandFollowedHashtagsFail>;
+
 export {
   HASHTAG_FETCH_REQUEST,
   HASHTAG_FETCH_SUCCESS,
@@ -192,4 +209,5 @@ export {
   expandFollowedHashtagsRequest,
   expandFollowedHashtagsSuccess,
   expandFollowedHashtagsFail,
+  type TagsAction,
 };

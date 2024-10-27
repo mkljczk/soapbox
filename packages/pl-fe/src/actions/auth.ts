@@ -57,69 +57,6 @@ const AUTH_ACCOUNT_REMEMBER_REQUEST = 'AUTH_ACCOUNT_REMEMBER_REQUEST' as const;
 const AUTH_ACCOUNT_REMEMBER_SUCCESS = 'AUTH_ACCOUNT_REMEMBER_SUCCESS' as const;
 const AUTH_ACCOUNT_REMEMBER_FAIL = 'AUTH_ACCOUNT_REMEMBER_FAIL' as const;
 
-interface SwitchAccountAction {
-  type: typeof SWITCH_ACCOUNT;
-  account?: Account;
-  background: boolean;
-}
-
-interface AuthAppCreatedAction {
-  type: typeof AUTH_APP_CREATED;
-  app: Application;
-}
-
-interface AuthAppAuthorizedAction {
-  type: typeof AUTH_APP_AUTHORIZED;
-  app: Application;
-  token: Token;
-}
-
-interface AuthLoggedInAction {
-  type: typeof AUTH_LOGGED_IN;
-  token: Token;
-}
-
-interface AuthLoggedOutAction {
-  type: typeof AUTH_LOGGED_OUT;
-  account: Account;
-  standalone: boolean;
-}
-
-interface VerifyCredentialsRequestAction {
-  type: typeof VERIFY_CREDENTIALS_REQUEST;
-  token: string;
-}
-
-interface VerifyCredentialsSuccessAction {
-  type: typeof VERIFY_CREDENTIALS_SUCCESS;
-  token: string;
-  account: CredentialAccount;
-}
-
-interface VerifyCredentialsFailAction {
-  type: typeof VERIFY_CREDENTIALS_FAIL;
-  token: string;
-  error: any;
-}
-
-interface AuthAccountRememberRequestAction {
-  type: typeof AUTH_ACCOUNT_REMEMBER_REQUEST;
-  accountUrl: string;
-}
-
-interface AuthAccountRememberSuccessAction {
-  type: typeof AUTH_ACCOUNT_REMEMBER_SUCCESS;
-  accountUrl: string;
-  account: CredentialAccount;
-}
-
-interface AuthAccountRememberFailAction {
-  type: typeof AUTH_ACCOUNT_REMEMBER_FAIL;
-  error: any;
-  accountUrl: string;
-  skipAlert: boolean;
-}
-
 const customApp = custom('app');
 
 const messages = defineMessages({
@@ -135,6 +72,11 @@ const createAppAndToken = () =>
     dispatch(getAuthApp()).then(() =>
       dispatch(createAppToken()),
     );
+
+interface AuthAppCreatedAction {
+  type: typeof AUTH_APP_CREATED;
+  app: Application;
+}
 
 /** Create an auth app, or use it from build config */
 const getAuthApp = () =>
@@ -159,6 +101,12 @@ const createAuthApp = () =>
       dispatch<AuthAppCreatedAction>({ type: AUTH_APP_CREATED, app }),
     );
   };
+
+interface AuthAppAuthorizedAction {
+  type: typeof AUTH_APP_AUTHORIZED;
+  app: Application;
+  token: Token;
+}
 
 const createAppToken = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
@@ -212,6 +160,23 @@ const otpVerify = (code: string, mfa_token: string) =>
     }).then((token) => dispatch(authLoggedIn(token)));
   };
 
+interface VerifyCredentialsRequestAction {
+  type: typeof VERIFY_CREDENTIALS_REQUEST;
+  token: string;
+}
+
+interface VerifyCredentialsSuccessAction {
+  type: typeof VERIFY_CREDENTIALS_SUCCESS;
+  token: string;
+  account: CredentialAccount;
+}
+
+interface VerifyCredentialsFailAction {
+  type: typeof VERIFY_CREDENTIALS_FAIL;
+  token: string;
+  error: any;
+}
+
 const verifyCredentials = (token: string, accountUrl?: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const baseURL = parseBaseURL(accountUrl) || BuildConfig.BACKEND_URL;
@@ -241,6 +206,24 @@ const verifyCredentials = (token: string, accountUrl?: string) =>
       }
     });
   };
+
+interface AuthAccountRememberRequestAction {
+  type: typeof AUTH_ACCOUNT_REMEMBER_REQUEST;
+  accountUrl: string;
+}
+
+interface AuthAccountRememberSuccessAction {
+  type: typeof AUTH_ACCOUNT_REMEMBER_SUCCESS;
+  accountUrl: string;
+  account: CredentialAccount;
+}
+
+interface AuthAccountRememberFailAction {
+  type: typeof AUTH_ACCOUNT_REMEMBER_FAIL;
+  error: any;
+  accountUrl: string;
+  skipAlert: boolean;
+}
 
 const rememberAuthAccount = (accountUrl: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
@@ -275,6 +258,12 @@ const logIn = (username: string, password: string) =>
     throw error;
   });
 
+interface AuthLoggedOutAction {
+  type: typeof AUTH_LOGGED_OUT;
+  account: Account;
+  standalone: boolean;
+}
+
 const logOut = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
@@ -303,6 +292,12 @@ const logOut = () =>
         toast.success(messages.loggedOut);
       });
   };
+
+interface SwitchAccountAction {
+  type: typeof SWITCH_ACCOUNT;
+  account?: Account;
+  background: boolean;
+}
 
 const switchAccount = (accountId: string, background = false) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
@@ -340,6 +335,11 @@ const register = (params: CreateAccountParams) =>
 
 const fetchCaptcha = () =>
   (_dispatch: AppDispatch, getState: () => RootState) => getClient(getState).oauth.getCaptcha();
+
+interface AuthLoggedInAction {
+  type: typeof AUTH_LOGGED_IN;
+  token: Token;
+}
 
 const authLoggedIn = (token: Token) =>
   (dispatch: AppDispatch) => {

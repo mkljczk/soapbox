@@ -64,7 +64,7 @@ import {
 import { EVENT_COMPOSE_CANCEL, EVENT_FORM_SET, type EventsAction } from '../actions/events';
 import { ME_FETCH_SUCCESS, ME_PATCH_SUCCESS, MeAction } from '../actions/me';
 import { FE_NAME } from '../actions/settings';
-import { TIMELINE_DELETE, TimelineAction } from '../actions/timelines';
+import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 import { unescapeHTML } from '../utils/html';
 
 import type { Emoji } from 'pl-fe/features/emoji';
