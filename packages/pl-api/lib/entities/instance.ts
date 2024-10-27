@@ -166,7 +166,6 @@ const pleromaSchema = coerceObject({
     birthday_min_age: v.fallback(v.number(), 0),
     birthday_required: v.fallback(v.boolean(), false),
     description_limit: v.fallback(v.number(), 1500),
-    features: v.fallback(v.array(v.string()), []),
     federation: coerceObject({
       enabled: v.fallback(v.boolean(), true), // Assume true unless explicitly false
       mrf_policies: v.fallback(v.optional(v.array(v.string())), undefined),
@@ -315,7 +314,6 @@ const instanceSchema = v.pipe(
     description: v.fallback(v.string(), ''),
     domain: v.fallback(v.string(), ''),
     feature_quote: v.fallback(v.boolean(), false),
-    fedibird_capabilities: v.fallback(v.array(v.string()), []),
     languages: v.fallback(v.array(v.string()), []),
     pleroma: pleromaSchema,
     registrations: registrations,
