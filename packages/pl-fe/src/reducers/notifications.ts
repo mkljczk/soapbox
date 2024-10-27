@@ -25,7 +25,7 @@ import {
   NOTIFICATIONS_MARK_READ_REQUEST,
   MAX_QUEUED_NOTIFICATIONS,
 } from '../actions/notifications';
-import { TIMELINE_DELETE } from '../actions/timelines';
+import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
 import type { AccountWarning, Notification as BaseNotification, Markers, PaginatedResponse, Relationship, RelationshipSeveranceEvent, Report } from 'pl-api';
 import type { Notification } from 'pl-fe/normalizers/notification';
@@ -215,7 +215,7 @@ const importMarker = (state: State, marker: Markers) => {
   });
 };
 
-const notifications = (state: State = ReducerRecord(), action: AnyAction) => {
+const notifications = (state: State = ReducerRecord(), action: AnyAction | TimelineAction) => {
   switch (action.type) {
     case NOTIFICATIONS_EXPAND_REQUEST:
       return state.set('isLoading', true);

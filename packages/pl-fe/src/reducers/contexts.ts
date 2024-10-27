@@ -4,7 +4,7 @@ import {
   OrderedSet as ImmutableOrderedSet,
 } from 'immutable';
 
-import { STATUS_IMPORT, STATUSES_IMPORT } from 'pl-fe/actions/importer';
+import { STATUS_IMPORT, STATUSES_IMPORT, type ImporterAction } from 'pl-fe/actions/importer';
 
 import { ACCOUNT_BLOCK_SUCCESS, ACCOUNT_MUTE_SUCCESS } from '../actions/accounts';
 import {
@@ -186,7 +186,7 @@ const deletePendingStatus = (state: State, params: Pick<Status, 'id' | 'in_reply
 };
 
 /** Contexts reducer. Used for building a nested tree structure for threads. */
-const replies = (state = ReducerRecord(), action: AnyAction | StatusesAction | TimelineAction) => {
+const replies = (state = ReducerRecord(), action: AnyAction | ImporterAction | StatusesAction | TimelineAction) => {
   switch (action.type) {
     case ACCOUNT_BLOCK_SUCCESS:
     case ACCOUNT_MUTE_SUCCESS:

@@ -3,7 +3,7 @@ import trim from 'lodash/trim';
 import { applicationSchema, PlApiClient, tokenSchema, type Application, type CredentialAccount, type Token } from 'pl-api';
 import * as v from 'valibot';
 
-import { MASTODON_PRELOAD_IMPORT } from 'pl-fe/actions/preload';
+import { MASTODON_PRELOAD_IMPORT, type PreloadAction } from 'pl-fe/actions/preload';
 import * as BuildConfig from 'pl-fe/build-config';
 import KVStore from 'pl-fe/storage/kv-store';
 import { validId, isURL, parseBaseURL } from 'pl-fe/utils/auth';
@@ -16,8 +16,9 @@ import {
   SWITCH_ACCOUNT,
   VERIFY_CREDENTIALS_SUCCESS,
   VERIFY_CREDENTIALS_FAIL,
+  type AuthAction,
 } from '../actions/auth';
-import { ME_FETCH_SKIP } from '../actions/me';
+import { ME_FETCH_SKIP, type MeAction } from '../actions/me';
 
 import type { PlfeResponse } from 'pl-fe/api';
 import type { Account as AccountEntity } from 'pl-fe/normalizers/account';
@@ -278,7 +279,7 @@ const deleteForbiddenToken = (state: State, error: { response: PlfeResponse }, t
   }
 };
 
-const reducer = (state: State, action: AnyAction) => {
+const reducer = (state: State, action: AnyAction | AuthAction | MeAction | PreloadAction) => {
   switch (action.type) {
     case AUTH_APP_CREATED:
       return state.set('app', action.app);

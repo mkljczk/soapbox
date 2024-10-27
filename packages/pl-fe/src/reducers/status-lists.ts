@@ -31,6 +31,7 @@ import {
   JOINED_EVENTS_FETCH_REQUEST,
   JOINED_EVENTS_FETCH_SUCCESS,
   JOINED_EVENTS_FETCH_FAIL,
+  type EventsAction,
 } from '../actions/events';
 import {
   FAVOURITED_STATUSES_FETCH_REQUEST,
@@ -152,7 +153,7 @@ const removeBookmarkFromLists = (state: State, status: Pick<Status, 'id' | 'book
   return state;
 };
 
-const statusLists = (state = initialState, action: AnyAction | BookmarksAction | FavouritesAction | InteractionsAction | PinStatusesAction | StatusQuotesAction) => {
+const statusLists = (state = initialState, action: AnyAction | BookmarksAction | EventsAction | FavouritesAction | InteractionsAction | PinStatusesAction | StatusQuotesAction) => {
   switch (action.type) {
     case FAVOURITED_STATUSES_FETCH_REQUEST:
     case FAVOURITED_STATUSES_EXPAND_REQUEST:

@@ -39,6 +39,10 @@ const getMeToken = (state: RootState) => {
   return state.auth.users.get(accountUrl!)?.access_token;
 };
 
+interface MeFetchSkipAction {
+  type: typeof ME_FETCH_SKIP;
+}
+
 const fetchMe = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
@@ -46,7 +50,7 @@ const fetchMe = () =>
     const accountUrl = getMeUrl(state);
 
     if (!token) {
-      dispatch({ type: ME_FETCH_SKIP });
+      dispatch<MeFetchSkipAction>({ type: ME_FETCH_SKIP });
       return noOp();
     }
 
@@ -122,13 +126,11 @@ interface MePatchSuccessAction {
 
 const patchMeSuccess = (me: CredentialAccount) =>
   (dispatch: AppDispatch) => {
-    const action: MePatchSuccessAction = {
+    dispatch(importEntities({ accounts: [me] }));
+    dispatch<MePatchSuccessAction>({
       type: ME_PATCH_SUCCESS,
       me,
-    };
-
-    dispatch(importEntities({ accounts: [me] }));
-    dispatch(action);
+    });
   };
 
 const patchMeFail = (error: unknown) => ({
@@ -141,6 +143,7 @@ type MeAction =
   | ReturnType<typeof fetchMeRequest>
   | ReturnType<typeof fetchMeSuccess>
   | ReturnType<typeof fetchMeFail>
+  | MeFetchSkipAction
   | ReturnType<typeof patchMeRequest>
   | MePatchSuccessAction
   | ReturnType<typeof patchMeFail>;

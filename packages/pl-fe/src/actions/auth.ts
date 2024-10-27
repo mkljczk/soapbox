@@ -6,7 +6,14 @@
  * @see module:pl-fe/actions/oauth
  * @see module:pl-fe/actions/security
 */
-import { credentialAccountSchema, PlApiClient, type CreateAccountParams, type Token } from 'pl-api';
+import {
+  credentialAccountSchema,
+  PlApiClient,
+  type Application,
+  type CreateAccountParams,
+  type CredentialAccount,
+  type Token,
+} from 'pl-api';
 import { defineMessages } from 'react-intl';
 import * as v from 'valibot';
 
@@ -32,6 +39,7 @@ import { type PlfeResponse, getClient } from '../api';
 
 import { importEntities } from './importer';
 
+import type { Account } from 'pl-fe/normalizers/account';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const SWITCH_ACCOUNT = 'SWITCH_ACCOUNT' as const;
@@ -48,6 +56,69 @@ const VERIFY_CREDENTIALS_FAIL = 'VERIFY_CREDENTIALS_FAIL' as const;
 const AUTH_ACCOUNT_REMEMBER_REQUEST = 'AUTH_ACCOUNT_REMEMBER_REQUEST' as const;
 const AUTH_ACCOUNT_REMEMBER_SUCCESS = 'AUTH_ACCOUNT_REMEMBER_SUCCESS' as const;
 const AUTH_ACCOUNT_REMEMBER_FAIL = 'AUTH_ACCOUNT_REMEMBER_FAIL' as const;
+
+interface SwitchAccountAction {
+  type: typeof SWITCH_ACCOUNT;
+  account?: Account;
+  background: boolean;
+}
+
+interface AuthAppCreatedAction {
+  type: typeof AUTH_APP_CREATED;
+  app: Application;
+}
+
+interface AuthAppAuthorizedAction {
+  type: typeof AUTH_APP_AUTHORIZED;
+  app: Application;
+  token: Token;
+}
+
+interface AuthLoggedInAction {
+  type: typeof AUTH_LOGGED_IN;
+  token: Token;
+}
+
+interface AuthLoggedOutAction {
+  type: typeof AUTH_LOGGED_OUT;
+  account: Account;
+  standalone: boolean;
+}
+
+interface VerifyCredentialsRequestAction {
+  type: typeof VERIFY_CREDENTIALS_REQUEST;
+  token: string;
+}
+
+interface VerifyCredentialsSuccessAction {
+  type: typeof VERIFY_CREDENTIALS_SUCCESS;
+  token: string;
+  account: CredentialAccount;
+}
+
+interface VerifyCredentialsFailAction {
+  type: typeof VERIFY_CREDENTIALS_FAIL;
+  token: string;
+  error: any;
+}
+
+interface AuthAccountRememberRequestAction {
+  type: typeof AUTH_ACCOUNT_REMEMBER_REQUEST;
+  accountUrl: string;
+}
+
+interface AuthAccountRememberSuccessAction {
+  type: typeof AUTH_ACCOUNT_REMEMBER_SUCCESS;
+  accountUrl: string;
+  account: CredentialAccount;
+}
+
+interface AuthAccountRememberFailAction {
+  type: typeof AUTH_ACCOUNT_REMEMBER_FAIL;
+  error: any;
+  accountUrl: string;
+  skipAlert: boolean;
+}
 
 const customApp = custom('app');
 
@@ -69,7 +140,7 @@ const createAppAndToken = () =>
 const getAuthApp = () =>
   (dispatch: AppDispatch) => {
     if (customApp?.client_secret) {
-      return noOp().then(() => dispatch({ type: AUTH_APP_CREATED, app: customApp }));
+      return noOp().then(() => dispatch<AuthAppCreatedAction>({ type: AUTH_APP_CREATED, app: customApp }));
     } else {
       return dispatch(createAuthApp());
     }
@@ -84,25 +155,25 @@ const createAuthApp = () =>
       website: sourceCode.homepage,
     };
 
-    return dispatch(createApp(params)).then((app: Record<string, string>) =>
-      dispatch({ type: AUTH_APP_CREATED, app }),
+    return dispatch(createApp(params)).then((app) =>
+      dispatch<AuthAppCreatedAction>({ type: AUTH_APP_CREATED, app }),
     );
   };
 
 const createAppToken = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const app = getState().auth.app;
+    const app = getState().auth.app!;
 
     const params = {
-      client_id:     app?.client_id!,
-      client_secret: app?.client_secret!,
+      client_id:     app.client_id!,
+      client_secret: app.client_secret!,
       redirect_uri:  'urn:ietf:wg:oauth:2.0:oob',
       grant_type:    'client_credentials',
       scope:         getScopes(getState()),
     };
 
-    return dispatch(obtainOAuthToken(params)).then((token: Record<string, string | number>) =>
-      dispatch({ type: AUTH_APP_AUTHORIZED, app, token }),
+    return dispatch(obtainOAuthToken(params)).then((token) =>
+      dispatch<AuthAppAuthorizedAction>({ type: AUTH_APP_AUTHORIZED, app, token }),
     );
   };
 
@@ -145,13 +216,13 @@ const verifyCredentials = (token: string, accountUrl?: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const baseURL = parseBaseURL(accountUrl) || BuildConfig.BACKEND_URL;
 
-    dispatch({ type: VERIFY_CREDENTIALS_REQUEST, token });
+    dispatch<VerifyCredentialsRequestAction>({ type: VERIFY_CREDENTIALS_REQUEST, token });
 
     const client = new PlApiClient(baseURL, token);
 
     return client.settings.verifyCredentials().then((account) => {
       dispatch(importEntities({ accounts: [account] }));
-      dispatch({ type: VERIFY_CREDENTIALS_SUCCESS, token, account });
+      dispatch<VerifyCredentialsSuccessAction>({ type: VERIFY_CREDENTIALS_SUCCESS, token, account });
       if (account.id === getState().me) dispatch(fetchMeSuccess(account));
       return account;
     }).catch(error => {
@@ -160,12 +231,12 @@ const verifyCredentials = (token: string, accountUrl?: string) =>
         const account = error.response.json;
         const parsedAccount = v.parse(credentialAccountSchema, error.response.json);
         dispatch(importEntities({ accounts: [parsedAccount] }));
-        dispatch({ type: VERIFY_CREDENTIALS_SUCCESS, token, account: parsedAccount });
+        dispatch<VerifyCredentialsSuccessAction>({ type: VERIFY_CREDENTIALS_SUCCESS, token, account: parsedAccount });
         if (account.id === getState().me) dispatch(fetchMeSuccess(parsedAccount));
         return parsedAccount;
       } else {
         if (getState().me === null) dispatch(fetchMeFail(error));
-        dispatch({ type: VERIFY_CREDENTIALS_FAIL, token, error });
+        dispatch<VerifyCredentialsFailAction>({ type: VERIFY_CREDENTIALS_FAIL, token, error });
         throw error;
       }
     });
@@ -173,14 +244,14 @@ const verifyCredentials = (token: string, accountUrl?: string) =>
 
 const rememberAuthAccount = (accountUrl: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: AUTH_ACCOUNT_REMEMBER_REQUEST, accountUrl });
+    dispatch<AuthAccountRememberRequestAction>({ type: AUTH_ACCOUNT_REMEMBER_REQUEST, accountUrl });
     return KVStore.getItemOrError(`authAccount:${accountUrl}`).then(account => {
       dispatch(importEntities({ accounts: [account] }));
-      dispatch({ type: AUTH_ACCOUNT_REMEMBER_SUCCESS, account, accountUrl });
+      dispatch<AuthAccountRememberSuccessAction>({ type: AUTH_ACCOUNT_REMEMBER_SUCCESS, account, accountUrl });
       if (account.id === getState().me) dispatch(fetchMeSuccess(account));
       return account;
     }).catch(error => {
-      dispatch({ type: AUTH_ACCOUNT_REMEMBER_FAIL, error, accountUrl, skipAlert: true });
+      dispatch<AuthAccountRememberFailAction>({ type: AUTH_ACCOUNT_REMEMBER_FAIL, error, accountUrl, skipAlert: true });
     });
   };
 
@@ -227,7 +298,7 @@ const logOut = () =>
         // Clear the account from Sentry.
         unsetSentryAccount();
 
-        dispatch({ type: AUTH_LOGGED_OUT, account, standalone });
+        dispatch<AuthLoggedOutAction>({ type: AUTH_LOGGED_OUT, account, standalone });
 
         toast.success(messages.loggedOut);
       });
@@ -240,7 +311,7 @@ const switchAccount = (accountId: string, background = false) =>
     queryClient.invalidateQueries();
     queryClient.clear();
 
-    return dispatch({ type: SWITCH_ACCOUNT, account, background });
+    return dispatch<SwitchAccountAction>({ type: SWITCH_ACCOUNT, account, background });
   };
 
 const fetchOwnAccounts = () =>
@@ -272,9 +343,22 @@ const fetchCaptcha = () =>
 
 const authLoggedIn = (token: Token) =>
   (dispatch: AppDispatch) => {
-    dispatch({ type: AUTH_LOGGED_IN, token });
+    dispatch<AuthLoggedInAction>({ type: AUTH_LOGGED_IN, token });
     return token;
   };
+
+type AuthAction =
+  | SwitchAccountAction
+  | AuthAppCreatedAction
+  | AuthAppAuthorizedAction
+  | AuthLoggedInAction
+  | AuthLoggedOutAction
+  | VerifyCredentialsRequestAction
+  | VerifyCredentialsSuccessAction
+  | VerifyCredentialsFailAction
+  | AuthAccountRememberRequestAction
+  | AuthAccountRememberSuccessAction
+  | AuthAccountRememberFailAction;
 
 export {
   SWITCH_ACCOUNT,
@@ -300,4 +384,5 @@ export {
   register,
   fetchCaptcha,
   authLoggedIn,
+  type AuthAction,
 };

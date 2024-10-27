@@ -24,7 +24,7 @@ const createApp = (params: CreateApplicationParams, baseURL?: string) =>
 
     return client.apps.createApplication(params).then((app) => {
       dispatch({ type: APP_CREATE_SUCCESS, params, app });
-      return app as Record<string, string>;
+      return app;
     }).catch(error => {
       dispatch({ type: APP_CREATE_FAIL, params, error });
       throw error;
