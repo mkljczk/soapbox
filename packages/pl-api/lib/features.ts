@@ -834,6 +834,11 @@ const getFeatures = (instance: Instance) => {
     notificationsExcludeVisibilities: v.software === PLEROMA,
 
     /**
+     * @see GET /api/v1/notifications/unread_count
+     */
+    notificationsGetUnreadCount: instance.api_versions.mastodon >= 1,
+
+    /**
      * Allows specifying notification types to include, rather than to exclude.
      * @see GET /api/v1/notifications
      */
@@ -845,6 +850,12 @@ const getFeatures = (instance: Instance) => {
       v.software === TAKAHE && gte(v.version, '0.6.2'),
       v.software === GOTOSOCIAL,
     ]),
+
+    /**
+     * @see GET /api/v2/notifications/policy
+     * @see PATCH /api/v2/notifications/policy
+     */
+    notificationsPolicy: instance.api_versions.mastodon >= 1,
 
     pleromaAdminAccounts: v.software === PLEROMA,
 

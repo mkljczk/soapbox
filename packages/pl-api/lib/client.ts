@@ -169,6 +169,7 @@ import type {
   GetTrendingLinks,
   GetTrendingStatuses,
   GetTrendingTags,
+  GetUnreadNotificationCountParams,
   GroupTimelineParams,
   HashtagTimelineParams,
   HomeTimelineParams,
@@ -2525,12 +2526,29 @@ class PlApiClient {
     },
 
     /**
+     * Get the number of unread notification
+     * Get the (capped) number of unread notifications for the current user.
+     *
+     * Requires features{@link Features['notificationsGetUnreadCount']}.
+     * @see {@link https://docs.joinmastodon.org/methods/notifications/#unread-count}
+     */
+    getUnreadNotificationCount: async (params?: GetUnreadNotificationCountParams) => {
+      const response = await this.request('/api/v1/notifications/unread_count', { params });
+
+      return v.parse(v.object({
+        count: v.number(),
+      }), response.json);
+    },
+
+    /**
      * Get the filtering policy for notifications
      * Notifications filtering policy for the user.
+     *
+     * Requires features{@link Features['notificationsPolicy']}.
      * @see {@link https://docs.joinmastodon.org/methods/notifications/#get-policy}
      */
     getNotificationPolicy: async () => {
-      const response = await this.request('/api/v1/notifications/policy');
+      const response = await this.request('/api/v2/notifications/policy');
 
       return v.parse(notificationPolicySchema, response.json);
     },
@@ -2538,10 +2556,12 @@ class PlApiClient {
     /**
      * Update the filtering policy for notifications
      * Update the user’s notifications filtering policy.
+     *
+     * Requires features{@link Features['notificationsPolicy']}.
      * @see {@link https://docs.joinmastodon.org/methods/notifications/#update-the-filtering-policy-for-notifications}
      */
     updateNotificationPolicy: async (params: UpdateNotificationPolicyRequest) => {
-      const response = await this.request('/api/v1/notifications/policy', { method: 'POST', body: params });
+      const response = await this.request('/api/v2/notifications/policy', { method: 'PATCH', body: params });
 
       return v.parse(notificationPolicySchema, response.json);
     },

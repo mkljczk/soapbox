@@ -1,11 +1,11 @@
 import type { PaginationParams } from './common';
 
 interface GetNotificationParams extends PaginationParams {
-  /** Array of String. Types to include in the result. */
+  /** Types to include in the result. */
   types?: string[];
-  /** Array of String. Types to exclude from the results. */
+  /** Types to exclude from the results. */
   exclude_types?: string[];
-  /** String. Return only notifications received from the specified account. */
+  /** Return only notifications received from the specified account. */
   account_id?: string;
   /**
    * will exclude the notifications for activities with the given visibilities. The parameter accepts an array of visibility types (`public`, `unlisted`, `private`, `direct`).
@@ -14,21 +14,35 @@ interface GetNotificationParams extends PaginationParams {
   exclude_visibilities?: string[];
 }
 
+interface GetUnreadNotificationCountParams {
+  /** Maximum number of results to return. Defaults to 100 notifications. Max 1000 notifications. */
+  limit?: number;
+  /** Types of notifications that should count towards unread notifications. */
+  types?: string[];
+  /** Types of notifications that should not count towards unread notifications */
+  exclude_types?: string[];
+  /** Only count unread notifications received from the specified account. */
+  account_id?: string;
+}
+
 interface UpdateNotificationPolicyRequest {
-  /** Boolean. Whether to filter notifications from accounts the user is not following. */
-  filter_not_following?: boolean;
-  /** Boolean. Whether to filter notifications from accounts that are not following the user. */
-  filter_not_followers?: boolean;
-  /** Boolean. Whether to filter notifications from accounts created in the past 30 days. */
-  filter_new_accounts?: boolean;
-  /** Boolean. Whether to filter notifications from private mentions. Replies to private mentions initiated by the user, as well as accounts the user follows, are never filtered. */
-  filter_private_mentions?: boolean;
+  /** Whether to `accept`, `filter` or `drop` notifications from accounts the user is not following. */
+  for_not_following?: boolean;
+  /** Whether to `accept`, `filter` or `drop` notifications from accounts that are not following the user. */
+  for_not_followers?: boolean;
+  /** Whether to `accept`, `filter` or `drop` notifications from accounts created in the past 30 days. */
+  for_new_accounts?: boolean;
+  /** Whether to `accept`, `filter` or `drop` notifications from private mentions. drop will prevent creation of the notification object altogether (without preventing the underlying activity), */
+  for_private_mentions?: boolean;
+  /** Whether to `accept`, `filter` or `drop` notifications from accounts that were limited by a moderator. */
+  for_limited_accounts?: boolean;
 }
 
 type GetNotificationRequestsParams = PaginationParams;
 
 export type {
   GetNotificationParams,
+  GetUnreadNotificationCountParams,
   UpdateNotificationPolicyRequest,
   GetNotificationRequestsParams,
 };
