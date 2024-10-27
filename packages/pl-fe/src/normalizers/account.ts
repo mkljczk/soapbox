@@ -26,7 +26,6 @@ const normalizeAccount = (account: BaseAccount) => {
 
   const fqn = account.fqn || guessFqn(account);
   const domain = fqn.split('@')[1] || '';
-  const note = account.note === '<p></p>' ? '' : account.note;
 
   return {
     mute_expires_at: null,
@@ -37,7 +36,6 @@ const normalizeAccount = (account: BaseAccount) => {
     header_static: account.header_static || account.header || missingHeader,
     fqn,
     domain,
-    note,
   };
 };
 
