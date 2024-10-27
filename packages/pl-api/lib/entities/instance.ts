@@ -270,7 +270,6 @@ const instanceV1Schema = coerceObject({
   description_limit: v.fallback(v.number(), 1500),
   email: v.fallback(v.pipe(v.string(), v.email()), ''),
   feature_quote: v.fallback(v.boolean(), false),
-  fedibird_capabilities: v.fallback(v.array(v.string()), []),
   languages: v.fallback(v.array(v.string()), []),
   max_media_attachments: v.fallback(v.optional(v.number()), undefined),
   max_toot_chars: v.fallback(v.optional(v.number()), undefined),
@@ -314,6 +313,10 @@ const instanceSchema = v.pipe(
     description: v.fallback(v.string(), ''),
     domain: v.fallback(v.string(), ''),
     feature_quote: v.fallback(v.boolean(), false),
+    icons: filteredArray(v.object({
+      size: v.pipe(v.string(), v.regex(/^[0-9]+x[0-9]+$/)),
+      src: v.string(),
+    })),
     languages: v.fallback(v.array(v.string()), []),
     pleroma: pleromaSchema,
     registrations: registrations,
