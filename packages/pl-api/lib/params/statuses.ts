@@ -1,5 +1,6 @@
-import type { PaginationParams } from './common';
 import { UpdateInteractionPoliciesParams } from './settings';
+
+import type { PaginationParams } from './common';
 
 interface CreateStatusWithContent {
   /** The text content of the status. If `media_ids` is provided, this becomes optional. Attaching a `poll` is optional while `status` is provided. */

@@ -37,7 +37,6 @@ type IMenuItem = {
   action?: (event: React.MouseEvent) => void;
 }
 
-
 const getOtherAccounts = createSelector([
   (state: RootState) => state.auth.users,
   (state: RootState) => state.entities[Entities.ACCOUNTS]?.store,
