@@ -1,6 +1,8 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { importEntities, usePlHooksApiClient, usePlHooksQueryClient } from 'pl-hooks/main';
+import { usePlHooksApiClient } from 'pl-hooks/contexts/api-client';
+import { usePlHooksQueryClient } from 'pl-hooks/contexts/query-client';
+import { importEntities } from 'pl-hooks/importer';
 
 import type { SearchParams, Tag } from 'pl-api';
 import type { PaginationParams } from 'pl-api/dist/params/common';

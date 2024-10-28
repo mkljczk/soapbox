@@ -2,8 +2,8 @@ import { useQueries, useQuery, UseQueryOptions, type UseQueryResult } from '@tan
 
 import { usePlHooksApiClient } from 'pl-hooks/contexts/api-client';
 import { queryClient, usePlHooksQueryClient } from 'pl-hooks/contexts/query-client';
+import { usePoll } from 'pl-hooks/hooks/polls/use-poll';
 import { importEntities } from 'pl-hooks/importer';
-import { usePoll } from 'pl-hooks/main';
 import { type NormalizedAccount } from 'pl-hooks/normalizers/account';
 import { type NormalizedStatus, normalizeStatus } from 'pl-hooks/normalizers/status';
 
