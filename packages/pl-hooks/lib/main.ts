@@ -12,7 +12,9 @@ export * from './hooks/notifications/use-notification';
 export * from './hooks/notifications/use-notification-list';
 export * from './hooks/polls/use-poll';
 export * from './hooks/statuses/use-status';
+export * from './hooks/statuses/use-status-history';
 export * from './hooks/statuses/use-status-translation';
+export * from './hooks/statuses/use-status-quotes';
 
 export * from './importer';
 
