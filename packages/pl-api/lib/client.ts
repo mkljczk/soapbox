@@ -72,6 +72,119 @@ import {
 } from './entities';
 import { filteredArray } from './entities/utils';
 import { AKKOMA, type Features, getFeatures, GOTOSOCIAL, MITRA } from './features';
+import {
+  CreateScrobbleParams,
+  FollowAccountParams,
+  GetAccountEndorsementsParams,
+  GetAccountFavouritesParams,
+  GetAccountFollowersParams,
+  GetAccountFollowingParams,
+  GetAccountParams,
+  GetAccountStatusesParams,
+  GetRelationshipsParams,
+  GetScrobblesParams,
+  ReportAccountParams,
+  SearchAccountParams,
+} from './params/accounts';
+import { CreateApplicationParams } from './params/apps';
+import {
+  CreateChatMessageParams,
+  GetChatMessagesParams,
+  GetChatsParams,
+} from './params/chats';
+import {
+  CreateEventParams,
+  EditEventParams,
+  GetEventParticipationRequestsParams,
+  GetEventParticipationsParams,
+  GetJoinedEventsParams,
+} from './params/events';
+import {
+  CreateFilterParams,
+  GetBlocksParams,
+  GetDomainBlocksParams,
+  GetMutesParams,
+  MuteAccountParams,
+  UpdateFilterParams,
+} from './params/filtering';
+import {
+  CreateGroupParams,
+  GetGroupBlocksParams,
+  GetGroupMembershipRequestsParams,
+  GetGroupMembershipsParams,
+  UpdateGroupParams,
+} from './params/groups';
+import { ProfileDirectoryParams } from './params/instance';
+import {
+  GetInteractionRequestsParams,
+} from './params/interaction-requests';
+import {
+  CreateListParams,
+  GetListAccountsParams,
+  UpdateListParams,
+} from './params/lists';
+import {
+  UpdateMediaParams,
+  UploadMediaParams,
+} from './params/media';
+import {
+  CreateBookmarkFolderParams,
+  GetBookmarksParams,
+  GetEndorsementsParams,
+  GetFavouritesParams,
+  GetFollowedTagsParams,
+  GetFollowRequestsParams,
+  UpdateBookmarkFolderParams,
+} from './params/my-account';
+import {
+  GetNotificationParams,
+  GetNotificationRequestsParams,
+  GetUnreadNotificationCountParams,
+  UpdateNotificationPolicyRequest,
+} from './params/notifications';
+import {
+  GetTokenParams,
+  MfaChallengeParams,
+  OauthAuthorizeParams,
+  RevokeTokenParams,
+} from './params/oauth';
+import {
+  CreatePushNotificationsSubscriptionParams,
+  UpdatePushNotificationsSubscriptionParams,
+} from './params/push-notifications';
+import { GetScheduledStatusesParams } from './params/scheduled-statuses';
+import { SearchParams } from './params/search';
+import {
+  CreateAccountParams,
+  UpdateCredentialsParams,
+  UpdateInteractionPoliciesParams,
+  UpdateNotificationSettingsParams,
+} from './params/settings';
+import {
+  CreateStatusParams,
+  EditStatusParams,
+  GetFavouritedByParams,
+  GetRebloggedByParams,
+  GetStatusContextParams,
+  GetStatusesParams,
+  GetStatusParams,
+  GetStatusQuotesParams,
+} from './params/statuses';
+import {
+  BubbleTimelineParams,
+  GetConversationsParams,
+  GroupTimelineParams,
+  HashtagTimelineParams,
+  HomeTimelineParams,
+  ListTimelineParams,
+  PublicTimelineParams,
+  SaveMarkersParams,
+} from './params/timelines';
+import {
+  GetTrendingLinks,
+  GetTrendingStatuses,
+  GetTrendingTags,
+} from './params/trends';
 import request, { getNextLink, getPrevLink, type RequestBody, RequestMeta } from './request';
 import { buildFullPath } from './utils/url';
 
@@ -114,88 +227,7 @@ import type {
   AdminUpdateReportParams,
   AdminUpdateRuleParams,
   AdminUpdateStatusParams,
-  BubbleTimelineParams,
-  CreateAccountParams,
-  CreateApplicationParams,
-  CreateBookmarkFolderParams,
-  CreateChatMessageParams,
-  CreateEventParams,
-  CreateFilterParams,
-  CreateGroupParams,
-  CreateListParams,
-  CreatePushNotificationsSubscriptionParams,
-  CreateScrobbleParams,
-  CreateStatusParams,
-  EditEventParams,
-  EditStatusParams,
-  FollowAccountParams,
-  GetAccountEndorsementsParams,
-  GetAccountFavouritesParams,
-  GetAccountFollowersParams,
-  GetAccountFollowingParams,
-  GetAccountParams,
-  GetAccountStatusesParams,
-  GetBlocksParams,
-  GetBookmarksParams,
-  GetChatMessagesParams,
-  GetChatsParams,
-  GetConversationsParams,
-  GetDomainBlocksParams,
-  GetEndorsementsParams,
-  GetEventParticipationRequestsParams,
-  GetEventParticipationsParams,
-  GetFavouritedByParams,
-  GetFavouritesParams,
-  GetFollowedTagsParams,
-  GetFollowRequestsParams,
-  GetGroupBlocksParams,
-  GetGroupMembershipRequestsParams,
-  GetGroupMembershipsParams,
-  GetInteractionRequestsParams,
-  GetJoinedEventsParams,
-  GetListAccountsParams,
-  GetMutesParams,
-  GetNotificationParams,
-  GetNotificationRequestsParams,
-  GetRebloggedByParams,
-  GetRelationshipsParams,
-  GetScheduledStatusesParams,
-  GetScrobblesParams,
-  GetStatusContextParams,
-  GetStatusesParams,
-  GetStatusParams,
-  GetStatusQuotesParams,
-  GetTokenParams,
-  GetTrendingLinks,
-  GetTrendingStatuses,
-  GetTrendingTags,
-  GetUnreadNotificationCountParams,
-  GroupTimelineParams,
-  HashtagTimelineParams,
-  HomeTimelineParams,
-  ListTimelineParams,
-  MfaChallengeParams,
-  MuteAccountParams,
-  OauthAuthorizeParams,
-  ProfileDirectoryParams,
-  PublicTimelineParams,
-  ReportAccountParams,
-  RevokeTokenParams,
-  SaveMarkersParams,
-  SearchAccountParams,
-  SearchParams,
-  UpdateBookmarkFolderParams,
-  UpdateCredentialsParams,
-  UpdateFilterParams,
-  UpdateGroupParams,
-  UpdateInteractionPoliciesParams,
-  UpdateListParams,
-  UpdateMediaParams,
-  UpdateNotificationPolicyRequest,
-  UpdateNotificationSettingsParams,
-  UpdatePushNotificationsSubscriptionParams,
-  UploadMediaParams,
-} from './params';
+} from './params/admin';
 import type { PaginatedResponse } from './responses';
 
 class PlApiClient {
