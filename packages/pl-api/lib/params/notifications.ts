@@ -1,5 +1,8 @@
 import type { PaginationParams } from './common';
 
+/**
+ * @category Request params
+ */
 interface GetNotificationParams extends PaginationParams {
   /** Types to include in the result. */
   types?: string[];
@@ -14,6 +17,9 @@ interface GetNotificationParams extends PaginationParams {
   exclude_visibilities?: string[];
 }
 
+/**
+ * @category Request params
+ */
 interface GetUnreadNotificationCountParams {
   /** Maximum number of results to return. Defaults to 100 notifications. Max 1000 notifications. */
   limit?: number;
@@ -25,6 +31,9 @@ interface GetUnreadNotificationCountParams {
   account_id?: string;
 }
 
+/**
+ * @category Request params
+ */
 interface UpdateNotificationPolicyRequest {
   /** Whether to `accept`, `filter` or `drop` notifications from accounts the user is not following. */
   for_not_following?: boolean;
@@ -38,6 +47,9 @@ interface UpdateNotificationPolicyRequest {
   for_limited_accounts?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 type GetNotificationRequestsParams = PaginationParams;
 
 export type {

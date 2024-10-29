@@ -4,7 +4,10 @@ import { accountSchema } from './account';
 import { statusSchema } from './status';
 import { datetimeSchema } from './utils';
 
-/** @see {@link https://docs.gotosocial.org/en/latest/api/swagger.yaml#/definitions/interactionRequest} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.gotosocial.org/en/latest/api/swagger.yaml#/definitions/interactionRequest}
+ */
 const interactionRequestSchema = v.object({
   accepted_at: v.fallback(v.nullable(datetimeSchema), null),
   account: accountSchema,

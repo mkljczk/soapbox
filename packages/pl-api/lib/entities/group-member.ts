@@ -10,6 +10,9 @@ enum GroupRoles {
 
 type GroupRole =`${GroupRoles}`;
 
+/**
+ * @category Schemas
+ */
 const groupMemberSchema = v.object({
   id: v.string(),
   account: accountSchema,

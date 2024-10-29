@@ -3,7 +3,10 @@ import * as v from 'valibot';
 import { blurhashSchema } from './media-attachment';
 import { historySchema } from './tag';
 
-/** @see {@link https://docs.joinmastodon.org/entities/PreviewCard/#trends-link} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/PreviewCard/#trends-link}
+ */
 const trendsLinkSchema = v.pipe(
   v.any(),
   v.transform((link: any) => ({ ...link, id: link.url })),

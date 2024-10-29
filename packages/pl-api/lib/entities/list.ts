@@ -1,6 +1,9 @@
 import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/List/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/List/}
+ */
 const listSchema = v.object({
   id: v.pipe(v.unknown(), v.transform(String)),
   title: v.string(),

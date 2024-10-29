@@ -3,7 +3,10 @@ import * as v from 'valibot';
 import { accountSchema } from './account';
 import { filteredArray } from './utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/FamiliarFollowers/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/FamiliarFollowers/}
+ */
 const familiarFollowersSchema = v.object({
   id: v.string(),
   accounts: filteredArray(accountSchema),

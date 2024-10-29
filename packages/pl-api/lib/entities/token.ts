@@ -1,6 +1,9 @@
 import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Token/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Token/}
+ */
 const tokenSchema = v.object({
   access_token: v.string(),
   token_type: v.string(),

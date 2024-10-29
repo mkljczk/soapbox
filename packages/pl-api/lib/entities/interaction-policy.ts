@@ -11,7 +11,10 @@ const interactionPolicyRuleSchema = coerceObject({
   with_approval: v.fallback(v.array(interactionPolicyEntrySchema), []),
 });
 
-/** @see {@link https://docs.gotosocial.org/en/latest/api/swagger/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.gotosocial.org/en/latest/api/swagger/}
+ */
 const interactionPolicySchema = coerceObject({
   can_favourite: interactionPolicyRuleSchema,
   can_reblog: interactionPolicyRuleSchema,
@@ -20,6 +23,9 @@ const interactionPolicySchema = coerceObject({
 
 type InteractionPolicy = v.InferOutput<typeof interactionPolicySchema>;
 
+/**
+ * @category Schemas
+ */
 const interactionPoliciesSchema = coerceObject({
   public: interactionPolicySchema,
   unlisted: interactionPolicySchema,

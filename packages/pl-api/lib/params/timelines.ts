@@ -1,5 +1,8 @@
 import type { LanguageParam, OnlyEventsParam, OnlyMediaParam, PaginationParams, WithMutedParam } from './common';
 
+/**
+ * @category Request params
+ */
 interface PublicTimelineParams extends PaginationParams, WithMutedParam, OnlyEventsParam, OnlyMediaParam, LanguageParam {
   /** Boolean. Show only local statuses? Defaults to false. */
   local?: boolean;
@@ -13,6 +16,9 @@ interface PublicTimelineParams extends PaginationParams, WithMutedParam, OnlyEve
   instance?: string;
 }
 
+/**
+ * @category Request params
+ */
 interface HashtagTimelineParams extends PaginationParams, WithMutedParam, OnlyEventsParam, OnlyMediaParam, LanguageParam {
   /** Array of String. Return statuses that contain any of these additional tags. */
   any?: string[];
@@ -26,10 +32,24 @@ interface HashtagTimelineParams extends PaginationParams, WithMutedParam, OnlyEv
   remote?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 type HomeTimelineParams = PaginationParams & WithMutedParam & OnlyEventsParam & LanguageParam;
+
+/**
+ * @category Request params
+ */
 type LinkTimelineParams = PaginationParams & WithMutedParam & LanguageParam;
+
+/**
+ * @category Request params
+ */
 type ListTimelineParams = PaginationParams & WithMutedParam & OnlyEventsParam & LanguageParam;
 
+/**
+ * @category Request params
+ */
 interface GetConversationsParams extends PaginationParams, LanguageParam {
   /**
    * Only return conversations with the given recipients (a list of user ids).
@@ -38,6 +58,9 @@ interface GetConversationsParams extends PaginationParams, LanguageParam {
   recipients?: string[];
 }
 
+/**
+ * @category Request params
+ */
 interface SaveMarkersParams {
   home?: {
     /** String. ID of the last status read in the home timeline. */
@@ -49,7 +72,14 @@ interface SaveMarkersParams {
   };
 }
 
+/**
+ * @category Request params
+ */
 type GroupTimelineParams = PaginationParams & WithMutedParam & OnlyMediaParam & LanguageParam;
+
+/**
+ * @category Request params
+ */
 type BubbleTimelineParams = PaginationParams & WithMutedParam & OnlyEventsParam & OnlyMediaParam & LanguageParam;
 
 export type {

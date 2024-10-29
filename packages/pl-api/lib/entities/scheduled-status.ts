@@ -3,7 +3,10 @@ import * as v from 'valibot';
 import { mediaAttachmentSchema } from './media-attachment';
 import { datetimeSchema, filteredArray } from './utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/ScheduledStatus/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/ScheduledStatus/}
+ */
 const scheduledStatusSchema = v.object({
   id: v.string(),
   scheduled_at: datetimeSchema,

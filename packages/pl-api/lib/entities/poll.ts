@@ -10,7 +10,10 @@ const pollOptionSchema = v.object({
   title_map: v.fallback(v.nullable(v.record(v.string(), v.string())), null),
 });
 
-/** @see {@link https://docs.joinmastodon.org/entities/Poll/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Poll/}
+ */
 const pollSchema = v.object({
   emojis: filteredArray(customEmojiSchema),
   expired: v.fallback(v.boolean(), false),

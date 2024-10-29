@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 const notificationPolicyRuleSchema = v.picklist(['accept', 'filter', 'drop']);
 
-/** @see {@link https://docs.joinmastodon.org/entities/NotificationPolicy} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/NotificationPolicy}
+ */
 const notificationPolicySchema = v.object({
   for_not_following: notificationPolicyRuleSchema,
   for_not_followers: notificationPolicyRuleSchema,

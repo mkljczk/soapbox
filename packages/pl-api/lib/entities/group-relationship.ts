@@ -2,6 +2,9 @@ import * as v from 'valibot';
 
 import { GroupRoles } from './group-member';
 
+/**
+ * @category Schemas
+ */
 const groupRelationshipSchema = v.object({
   id: v.string(),
   member: v.fallback(v.boolean(), false),

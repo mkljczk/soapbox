@@ -1,6 +1,9 @@
 import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Relationship/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Relationship/}
+ */
 const relationshipSchema = v.object({
   blocked_by: v.fallback(v.boolean(), false),
   blocking: v.fallback(v.boolean(), false),

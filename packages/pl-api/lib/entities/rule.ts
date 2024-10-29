@@ -6,7 +6,10 @@ const baseRuleSchema = v.object({
   hint: v.fallback(v.string(), ''),
 });
 
-/** @see {@link https://docs.joinmastodon.org/entities/Rule/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Rule/}
+ */
 const ruleSchema = v.pipe(
   v.any(),
   v.transform((data: any) => ({

@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 import { datetimeSchema } from './utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/ExtendedDescription} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/ExtendedDescription}
+ */
 const extendedDescriptionSchema = v.object({
   updated_at: datetimeSchema,
   content: v.string(),

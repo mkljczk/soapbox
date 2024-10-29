@@ -6,7 +6,10 @@ import { statusSchema } from './status';
 import { tagSchema } from './tag';
 import { filteredArray } from './utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Search} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Search}
+ */
 const searchSchema = v.object({
   accounts: filteredArray(accountSchema),
   statuses: filteredArray(statusSchema),

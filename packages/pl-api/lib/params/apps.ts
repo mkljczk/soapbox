@@ -1,3 +1,6 @@
+/**
+ * @category Request params
+ */
 interface CreateApplicationParams {
   /** String. A name for your application */
   client_name: string;

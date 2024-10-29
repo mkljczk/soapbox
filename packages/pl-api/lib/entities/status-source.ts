@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 import { locationSchema } from './location';
 
-/** @see {@link https://docs.joinmastodon.org/entities/StatusSource/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/StatusSource/}
+ */
 const statusSourceSchema = v.object({
   id: v.string(),
   text: v.fallback(v.string(), ''),

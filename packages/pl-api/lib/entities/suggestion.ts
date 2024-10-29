@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 import { accountSchema } from './account';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Suggestion} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Suggestion}
+ */
 const suggestionSchema = v.pipe(
   v.any(),
   v.transform((suggestion: any) => {

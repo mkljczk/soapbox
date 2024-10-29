@@ -4,7 +4,10 @@ import { accountSchema } from './account';
 import { statusSchema } from './status';
 import { datetimeSchema } from './utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/NotificationRequest} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/NotificationRequest}
+ */
 const notificationRequestSchema = v.object({
   id: v.string(),
   created_at: datetimeSchema,

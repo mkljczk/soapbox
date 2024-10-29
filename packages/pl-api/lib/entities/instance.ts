@@ -290,7 +290,10 @@ const instanceV1Schema = coerceObject({
   version: v.fallback(v.string(), '0.0.0'),
 });
 
-/** @see {@link https://docs.joinmastodon.org/entities/Instance/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Instance/}
+ */
 const instanceSchema = v.pipe(
   v.any(),
   v.transform((data: any) => {

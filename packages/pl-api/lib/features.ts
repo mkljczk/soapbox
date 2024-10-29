@@ -142,7 +142,10 @@ const REBASED = 'soapbox';
  */
 const UNRELEASED = 'unreleased';
 
-/** Parse features for the given instance */
+/**
+ * Parse features for the given instance
+ * @category Utils
+ */
 const getFeatures = (instance: Instance) => {
   const v = parseVersion(instance.version || '');
   const federation = !!instance.pleroma.metadata.federation.enabled;

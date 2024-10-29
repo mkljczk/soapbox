@@ -1,6 +1,9 @@
 import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Status/#Mention} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Status/#Mention}
+ */
 const mentionSchema = v.pipe(
   v.object({
     id: v.string(),

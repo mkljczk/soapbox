@@ -3,6 +3,9 @@ import * as v from 'valibot';
 import { accountSchema } from './account';
 import { datetimeSchema } from './utils';
 
+/**
+ * @category Schemas
+ */
 const scrobbleSchema = v.pipe(
   v.any(),
   v.transform((scrobble: any) => scrobble ? {

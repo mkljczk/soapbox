@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 import { datetimeSchema } from './utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/RelationshipSeveranceEvent/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/RelationshipSeveranceEvent/}
+ */
 const relationshipSeveranceEventSchema = v.object({
   id: v.string(),
   type: v.picklist(['domain_block', 'user_domain_block', 'account_suspension']),

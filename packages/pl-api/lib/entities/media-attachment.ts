@@ -3,6 +3,9 @@ import * as v from 'valibot';
 
 import { mimeSchema } from './utils';
 
+/**
+ * @category Schemas
+ */
 const blurhashSchema = v.pipe(v.string(), v.check(
   (value) => isBlurhashValid(value).result,
   'invalid blurhash', // .errorReason
@@ -87,7 +90,10 @@ const unknownAttachmentSchema = v.object({
   type: v.literal('unknown'),
 });
 
-/** @see {@link https://docs.joinmastodon.org/entities/MediaAttachment} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/MediaAttachment}
+ */
 const mediaAttachmentSchema = v.pipe(
   v.any(),
   v.transform((data: any) => {
