@@ -69,7 +69,7 @@ jobs:
 
     - name: Copy pl-api documentation
       working-directory: ./packages/pl-api
-      run: cp docs ../pl-fe/pl-api-docs -r
+      run: cp docs ../pl-fe/dist/pl-api-docs -r
 
     - name: Upload Github Pages artifact
       uses: actions/upload-pages-artifact@v3
