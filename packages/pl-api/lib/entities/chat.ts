@@ -4,7 +4,10 @@ import { accountSchema } from './account';
 import { chatMessageSchema } from './chat-message';
 import { datetimeSchema } from './utils';
 
-/** @see {@link https://docs.pleroma.social/backend/development/API/chats/#getting-a-list-of-chats} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.pleroma.social/backend/development/API/chats/#getting-a-list-of-chats}
+ */
 const chatSchema = v.object({
   id: v.string(),
   account: accountSchema,

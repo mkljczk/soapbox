@@ -4,7 +4,10 @@ import { accountSchema } from './account';
 import { statusSchema } from './status';
 import { filteredArray } from './utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Conversation} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Conversation}
+ */
 const conversationSchema = v.object({
   id: v.string(),
   unread: v.fallback(v.boolean(), false),

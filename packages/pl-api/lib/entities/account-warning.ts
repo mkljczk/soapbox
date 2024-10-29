@@ -9,7 +9,10 @@ const appealSchema = v.object({
   state: v.picklist(['approved', 'rejected', 'pending']),
 });
 
-/** @see {@link https://docs.joinmastodon.org/entities/AccountWarning/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/AccountWarning/}
+*/
 const accountWarningSchema = v.object({
   id: v.string(),
   action: v.picklist(['none', 'disable', 'mark_statuses_as_sensitive', 'delete_statuses', 'sensitive', 'silence', 'suspend']),

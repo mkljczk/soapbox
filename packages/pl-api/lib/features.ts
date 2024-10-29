@@ -9,101 +9,137 @@ const any = (arr: Array<any>): boolean => arr.some(Boolean);
 
 /**
  * Ditto, a Nostr server with Mastodon API.
+ *
+ * @category Software
  * @see {@link https://gitlab.com/soapbox-pub/ditto}
  */
 const DITTO = 'Ditto';
 
 /**
  * Firefish, a fork of Misskey. Formerly known as Calckey.
+ *
+ * @category Software
  * @see {@link https://joinfirefish.org/}
  */
 const FIREFISH = 'Firefish';
 
 /**
  * Friendica, decentralized social platform implementing multiple federation protocols.
+ *
+ * @category Software
  * @see {@link https://friendi.ca/}
  */
 const FRIENDICA = 'Friendica';
 
 /**
  * GoToSocial, an ActivityPub server written in Golang.
+ *
+ * @category Software
  * @see {@link https://gotosocial.org/}
  */
 const GOTOSOCIAL = 'GoToSocial';
 
 /**
  * Iceshrimp, yet another Misskey fork.
+ *
+ * @category Software
  * @see {@link https://iceshrimp.dev/}
  */
 const ICESHRIMP = 'Iceshrimp';
 
 /**
  * Mastodon, the software upon which this is all based.
+ *
+ * @category Software
  * @see {@link https://joinmastodon.org/}
  */
 const MASTODON = 'Mastodon';
 
 /**
  * Mitra, a Rust backend with cryptocurrency integrations.
+ *
+ * @category Software
  * @see {@link https://codeberg.org/silverpill/mitra}
  */
 const MITRA = 'Mitra';
 
 /**
  * Pixelfed, a federated image sharing platform.
+ *
+ * @category Software
  * @see {@link https://pixelfed.org/}
  */
 const PIXELFED = 'Pixelfed';
 
 /**
  * Pleroma, a feature-rich alternative written in Elixir.
+ *
+ * @category Software
  * @see {@link https://pleroma.social/}
  */
 const PLEROMA = 'Pleroma';
 
 /**
  * Takahē, backend with support for serving multiple domains.
+ *
+ * @category Software
  * @see {@link https://jointakahe.org/}
  */
 const TAKAHE = 'Takahe';
 
 /**
  * Toki, a C# Fediverse server.
+ *
+ * @category Software
  * @see {@link https://github.com/purifetchi/Toki}
  */
 const TOKI = 'Toki';
 
 /**
  * Akkoma, a Pleroma fork.
+ *
+ * @category Software
  * @see {@link https://akkoma.dev/AkkomaGang/akkoma}
  */
 const AKKOMA = 'akkoma';
 
 /**
  * glitch-soc, fork of Mastodon with a number of experimental features.
+ *
+ * @category Software
  * @see {@link https://glitch-soc.github.io/docs/}
  */
 const GLITCH = 'glitch';
 
 /**
  * glitch-soc, fork of Mastodon that provides local posting and a wider range of content types.
+ *
+ * @category Software
  * @see {@link https://github.com/hometown-fork/hometown}
  */
 const HOMETOWN = 'hometown';
 
 /**
  * Pl, fork of Pleroma developed by pl-api author.
+ *
+ * @category Software
  * @see {@link https://github.com/mkljczk/pl}
  */
 const PL = 'pl';
 
 /**
  * Rebased, fork of Pleroma developed by Soapbox author.
+ *
+ * @category Software
  * @see {@link https://gitlab.com/soapbox-pub/rebased}
  */
 const REBASED = 'soapbox';
 
-/** Backend name reserved only for tests. */
+/**
+ * Backend name reserved only for tests.
+ *
+ * @category Software
+ */
 const UNRELEASED = 'unreleased';
 
 /** Parse features for the given instance */

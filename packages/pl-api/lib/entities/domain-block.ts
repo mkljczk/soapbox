@@ -1,6 +1,9 @@
 import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/DomainBlock} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/DomainBlock}
+ */
 const domainBlockSchema = v.object({
   domain: v.string(),
   digest: v.string(),

@@ -230,6 +230,9 @@ import type {
 } from './params/admin';
 import type { PaginatedResponse } from './responses';
 
+/**
+ * @category Clients
+ */
 class PlApiClient {
 
   baseURL: string;

@@ -2,6 +2,8 @@ import * as v from 'valibot';
 
 /**
  * Represents a custom emoji.
+ *
+ * @category Schemas
  * @see {@link https://docs.joinmastodon.org/entities/CustomEmoji/}
  */
 const customEmojiSchema = v.object({

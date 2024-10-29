@@ -6,7 +6,10 @@ import { mentionSchema } from './mention';
 import { tagSchema } from './tag';
 import { datetimeSchema, filteredArray } from './utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/announcement/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/announcement/}
+ */
 const announcementSchema = v.object({
   id: v.string(),
   content: v.fallback(v.string(), ''),

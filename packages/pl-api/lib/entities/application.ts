@@ -1,6 +1,9 @@
 import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Application/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Application/}
+ */
 const applicationSchema = v.object({
   name: v.fallback(v.string(), ''),
   website: v.fallback(v.optional(v.string()), undefined),

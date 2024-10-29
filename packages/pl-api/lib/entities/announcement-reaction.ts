@@ -1,6 +1,9 @@
 import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/announcement/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/announcement/}
+ */
 const announcementReactionSchema = v.object({
   name: v.fallback(v.string(), ''),
   count: v.fallback(v.pipe(v.number(), v.integer(), v.minValue(0)), 0),
