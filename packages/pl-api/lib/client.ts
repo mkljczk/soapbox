@@ -943,7 +943,7 @@ class PlApiClient {
      * Register an account
      * Creates a user and account records. Returns an account access token for the app that initiated the request. The app should save this token for later, and should wait for the user to confirm their account by clicking a link in their email inbox.
      *
-     * Requires features{@link Features['accountCreation`
+     * Requires features{@link Features['accountCreation']}
      * @see {@link https://docs.joinmastodon.org/methods/accounts/#create}
      */
     createAccount: async (params: CreateAccountParams) => {
@@ -1249,7 +1249,7 @@ class PlApiClient {
 
     mfa: {
       /**
-       * Requires features{@link Features['manageMfa`.
+       * Requires features{@link Features['manageMfa']}.
        */
       getMfaSettings: async () => {
         const response = await this.request('/api/pleroma/accounts/mfa');
@@ -1263,7 +1263,7 @@ class PlApiClient {
       },
 
       /**
-       * Requires features{@link Features['manageMfa`.
+       * Requires features{@link Features['manageMfa']}.
        */
       getMfaBackupCodes: async () => {
         const response = await this.request('/api/pleroma/accounts/mfa/backup_codes');
@@ -1274,7 +1274,7 @@ class PlApiClient {
       },
 
       /**
-       * Requires features{@link Features['manageMfa`.
+       * Requires features{@link Features['manageMfa']}.
        */
       getMfaSetup: async (method: 'totp') => {
         const response = await this.request(`/api/pleroma/accounts/mfa/setup/${method}`);
@@ -1286,7 +1286,7 @@ class PlApiClient {
       },
 
       /**
-       * Requires features{@link Features['manageMfa`.
+       * Requires features{@link Features['manageMfa']}.
        */
       confirmMfaSetup: async (method: 'totp', code: string, password: string) => {
         const response = await this.request(`/api/pleroma/accounts/mfa/confirm/${method}`, {
@@ -1300,7 +1300,7 @@ class PlApiClient {
       },
 
       /**
-       * Requires features{@link Features['manageMfa`.
+       * Requires features{@link Features['manageMfa']}.
        */
       disableMfa: async (method: 'totp', password: string) => {
         const response = await this.request(`/api/pleroma/accounts/mfa/${method}`, {
@@ -4103,7 +4103,7 @@ class PlApiClient {
   public readonly events = {
     /**
      * Creates an event
-     * @see {@link }
+     * @see {@link https://github.com/mkljczk/pl/blob/fork/docs/development/API/pleroma_api.md#apiv1pleromaevents}
      */
     createEvent: async (params: CreateEventParams) => {
       const response = await this.request('/api/v1/pleroma/events', { method: 'POST', body: params });
@@ -4113,7 +4113,7 @@ class PlApiClient {
 
     /**
      * Edits an event
-     * @see {@link }
+     * @see {@link https://github.com/mkljczk/pl/blob/fork/docs/development/API/pleroma_api.md#apiv1pleromaeventsid}
      */
     editEvent: async (statusId: string, params: EditEventParams) => {
       const response = await this.request(`/api/v1/pleroma/events/${statusId}`, { method: 'PUT', body: params });
@@ -4123,7 +4123,7 @@ class PlApiClient {
 
     /**
      * Gets user's joined events
-     * @see {@link }
+     * @see {@link https://github.com/mkljczk/pl/blob/fork/docs/development/API/pleroma_api.md#apiv1pleromaeventsjoined_events}
      */
     getJoinedEvents: async (state?: 'pending' | 'reject' | 'accept', params?: GetJoinedEventsParams) =>
       this.#paginatedGet('/api/v1/pleroma/events/joined_events', { params: { ...params, state } }, statusSchema),

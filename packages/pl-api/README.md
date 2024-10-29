@@ -1,6 +1,8 @@
 # `pl-api`
 
-A library for interacting with Mastodon API-compatible servers, focused on support for projects extending the official Mastodon API.
+A JavaScript library for interacting with Mastodon API-compatible servers, focused on support for projects extending the official Mastodon API.
+
+`pl-api` attempts to abstract out the implementation details when supporting different backends, implementing the same features in different ways. It uses [Valibot](https://valibot.dev/) to ensure type safety and normalize API responses.
 
 > This project should be considered unstable before the 1.0.0 release. I will not provide any changelog or information on breaking changes until then.
 
