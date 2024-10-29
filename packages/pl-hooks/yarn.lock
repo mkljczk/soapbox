@@ -2148,10 +2148,10 @@ pkg-types@^1.0.3, pkg-types@^1.1.1:
     mlly "^1.7.1"
     pathe "^1.1.2"
 
-pl-api@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-0.1.1.tgz#e3465482697ea53e10bba510c5217c42b1d40ab0"
-  integrity sha512-JFao273dOG9XgrunqlfJn+e3DUr001MePCmJasQwaX3aPjM/L158hKfCnYPmoDKn1u5bfekMK6tVauBtbnkmqA==
+pl-api@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-0.1.5.tgz#373d58fc40ae23b12c6d20def8d3332112e2dd93"
+  integrity sha512-IMcwANPtTRMv+tTLW4ic/o/usYIHeapR+aOx5YhmmVQsXTiVUZQtCVLmrfIrqMnyXm8PHvE/arzzozRFU8+GXQ==
   dependencies:
     blurhash "^2.0.5"
     http-link-header "^1.1.3"
