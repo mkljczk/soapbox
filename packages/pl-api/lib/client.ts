@@ -248,9 +248,16 @@ class PlApiClient {
     close: () =>  void;
   };
 
-  constructor(baseURL: string, accessToken?: string, { instance, fetchInstance }: {
+  constructor(baseURL: string, accessToken?: string, {
+    instance,
+    fetchInstance,
+    onInstanceFetchSuccess,
+    onInstanceFetchError,
+  }: {
     instance?: Instance;
     fetchInstance?: boolean;
+    onInstanceFetchSuccess?: (instance: Instance) => void;
+    onInstanceFetchError?: (error?: any) => void;
   } = {}) {
     this.baseURL = baseURL;
     this.#accessToken = accessToken;
@@ -259,7 +266,7 @@ class PlApiClient {
       this.#setInstance(instance);
     }
     if (fetchInstance) {
-      this.instance.getInstance();
+      this.instance.getInstance().then(onInstanceFetchSuccess).catch(onInstanceFetchError);
     }
   }
 
