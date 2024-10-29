@@ -39,13 +39,3 @@ jobs:
         NODE_ENV: production
       working-directory: ./packages/pl-api
       run: yarn build
-
-    - name: Build documentation
-      working-directory: ./packages/pl-api
-      run: npx typedoc lib/main.ts
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: pl-api
-        path: packages/pl-api/docs
