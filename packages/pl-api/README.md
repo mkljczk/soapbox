@@ -1,5 +1,9 @@
 # `pl-api`
 
+![GitHub License](https://img.shields.io/github/license/mkljczk/pl-fe)
+![NPM Version](https://img.shields.io/npm/v/pl-api)
+![NPM Downloads](https://img.shields.io/npm/dw/pl-api)
+
 A JavaScript library for interacting with Mastodon API-compatible servers, focused on support for projects extending the official Mastodon API.
 
 `pl-api` attempts to abstract out the implementation details when supporting different backends, implementing the same features in different ways. It uses [Valibot](https://valibot.dev/) to ensure type safety and normalize API responses.

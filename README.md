@@ -1,3 +1,7 @@
+![GitHub Repo stars](https://img.shields.io/github/stars/mkljczk/pl-fe)
+![GitHub License](https://img.shields.io/github/license/mkljczk/pl-fe)
+![Discord](https://img.shields.io/discord/1279834339470872598)
+
 This repo hosts a few of my projects related to the Fediverse client `pl-fe`. This includes:
 
 - [pl-fe](./packages/pl-fe/) — a social networking client app forked from Soapbox

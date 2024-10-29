@@ -1,5 +1,10 @@
 `pl-fe` is a social networking client app. It works with any Mastodon API-compatible software, but it's focused on supporting alternative backends, like Pleroma or GoToSocial.
 
+![GitHub Repo stars](https://img.shields.io/github/stars/mkljczk/pl-fe)
+![GitHub License](https://img.shields.io/github/license/mkljczk/pl-fe)
+![Weblate project translated](https://img.shields.io/weblate/progress/pl-fe)
+![Discord](https://img.shields.io/discord/1279834339470872598)
+
 ## Try it out
 
 Want to test `pl-fe` with **any existing MastoAPI-compatible server?** Try [pl.mkljczk.pl](https://pl.mkljczk.pl) — enter your server's domain name to use `pl-fe` on any server!
