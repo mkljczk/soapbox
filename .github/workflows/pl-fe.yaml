@@ -65,7 +65,7 @@ jobs:
 
     - name: Build pl-api documentation
       working-directory: ./packages/pl-api
-      run: npx typedoc lib/main.ts
+      run: npx typedoc
 
     - name: Copy pl-api documentation
       working-directory: ./packages/pl-api
