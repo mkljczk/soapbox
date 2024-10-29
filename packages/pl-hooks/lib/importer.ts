@@ -1,6 +1,6 @@
 import { queryClient } from 'pl-hooks/contexts/query-client';
 
-import { type DeduplicatedNotification, type NormalizedNotification, normalizeNotification } from './normalizers/notification';
+import { type DeduplicatedNotification, getNotificationStatus, type NormalizedNotification, normalizeNotification } from './normalizers/notification';
 import { type NormalizedStatus, normalizeStatus } from './normalizers/status';
 
 import type {
@@ -70,9 +70,9 @@ const importEntities = (entities: {
     processAccount(notification.account);
     if (notification.type === 'move') processAccount(notification.target);
 
-    if (['mention', 'status', 'reblog', 'favourite', 'poll', 'update', 'emoji_reaction', 'event_reminder', 'participation_accepted', 'participation_request'].includes(notification.type)) {
-      // @ts-ignore
-      processStatus(notification.status);
+    const status = getNotificationStatus(notification);
+    if (status) {
+      processStatus(status);
     }
   };
 
