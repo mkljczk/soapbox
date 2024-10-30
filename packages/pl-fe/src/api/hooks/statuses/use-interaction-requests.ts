@@ -1,4 +1,4 @@
-import { type InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
+import { type InfiniteData, useInfiniteQuery, useMutation } from '@tanstack/react-query';
 
 import { importEntities } from 'pl-fe/actions/importer';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
@@ -47,4 +47,29 @@ const useInteractionRequests = <T>(select?: (data: InfiniteData<PaginatedRespons
 
 const useInteractionRequestsCount = () => useInteractionRequests(data => data.pages.map(({ items }) => items).flat().length);
 
-export { useInteractionRequests, useInteractionRequestsCount };
+const useAuthorizeInteractionRequestMutation = () => {
+  const client = useClient();
+  const { refetch } = useInteractionRequests();
+
+  return useMutation({
+    mutationFn: (requestId: string) => client.interactionRequests.authorizeInteractionRequest(requestId),
+    onSettled: () => refetch(),
+  });
+};
+
+const useRejectInteractionRequestMutation = () => {
+  const client = useClient();
+  const { refetch } = useInteractionRequests();
+
+  return useMutation({
+    mutationFn: (requestId: string) => client.interactionRequests.rejectInteractionRequest(requestId),
+    onSettled: () => refetch(),
+  });
+};
+
+export {
+  useInteractionRequests,
+  useInteractionRequestsCount,
+  useAuthorizeInteractionRequestMutation,
+  useRejectInteractionRequestMutation,
+};
