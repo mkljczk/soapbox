@@ -120,6 +120,7 @@ const ReducerCompose = ImmutableRecord({
   modified_language: null as Language | null,
   suggested_language: null as string | null,
   federated: true,
+  approvalRequired: false,
 });
 
 type State = ImmutableMap<string, Compose>;
@@ -345,6 +346,7 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
         map.set('caretPosition', null);
         map.set('idempotencyKey', crypto.randomUUID());
         map.set('content_type', defaultCompose.content_type);
+        map.set('approvalRequired', action.approvalRequired || false);
         if (action.preserveSpoilers && action.status.spoiler_text) {
           map.set('sensitive', true);
           map.set('spoiler_text', action.status.spoiler_text);

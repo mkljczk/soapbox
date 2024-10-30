@@ -167,11 +167,13 @@ interface ComposeReplyAction {
   explicitAddressing: boolean;
   preserveSpoilers: boolean;
   rebloggedBy?: Pick<Account, 'acct' | 'id'>;
+  approvalRequired?: boolean;
 }
 
 const replyCompose = (
   status: ComposeReplyAction['status'],
   rebloggedBy?: ComposeReplyAction['rebloggedBy'],
+  approvalRequired?: ComposeReplyAction['approvalRequired'],
 ) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
@@ -190,6 +192,7 @@ const replyCompose = (
       explicitAddressing,
       preserveSpoilers,
       rebloggedBy,
+      approvalRequired,
     });
     useModalsStore.getState().openModal('COMPOSE');
   };

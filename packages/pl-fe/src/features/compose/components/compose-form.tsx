@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { CLEAR_EDITOR_COMMAND, TextNode, type LexicalEditor } from 'lexical';
 import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { length } from 'stringz';
 
@@ -45,6 +45,7 @@ import SpoilerInput from './spoiler-input';
 import TextCharacterCounter from './text-character-counter';
 import UploadForm from './upload-form';
 import VisualCharacterCounter from './visual-character-counter';
+import Warning from './warning';
 
 import type { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import type { Emoji } from 'pl-fe/features/emoji';
@@ -227,6 +228,14 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
 
   return (
     <Stack className='w-full' space={4} ref={formRef} onClick={handleClick} element='form' onSubmit={handleSubmit}>
+      {!!compose.in_reply_to && compose.approvalRequired && (
+        <Warning
+          message={(
+            <FormattedMessage id='compose_form.approval_required' defaultMessage='The reply needs to be approved by the post author.' />
+          )}
+        />
+      )}
+
       <WarningContainer composeId={id} />
 
       {!shouldCondense && !event && !group && groupId && <ReplyGroupIndicator composeId={id} />}

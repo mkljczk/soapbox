@@ -134,6 +134,9 @@ const messages = defineMessages({
   replyInteractionPolicyFollowing: { id: 'status.interaction_policy.reply.following_only', defaultMessage: 'Only users followed by the author can reply.' },
   replyInteractionPolicyMutuals: { id: 'status.interaction_policy.reply.mutuals_only', defaultMessage: 'Only users mutually following the author can reply.' },
   replyInteractionPolicyMentioned: { id: 'status.interaction_policy.reply.mentioned_only', defaultMessage: 'Only users mentioned by the author can reply.' },
+
+  favouriteApprovalRequired: { id: 'status.interaction_policy.favourite.approval_required', defaultMessage: 'The author needs to approve your like.' },
+  reblogApprovalRequired: { id: 'status.interaction_policy.reblog.approval_required', defaultMessage: 'The author needs to approve your repost.' },
 });
 
 interface IInteractionPopover {
@@ -225,7 +228,7 @@ const ReplyButton: React.FC<IReplyButton> = ({
 
   const handleReplyClick: React.MouseEventHandler = (e) => {
     if (me) {
-      dispatch(replyCompose(status, rebloggedBy));
+      dispatch(replyCompose(status, rebloggedBy, canReply.approvalRequired || false));
     } else {
       onOpenUnauthorizedModal('REPLY');
     }
@@ -292,7 +295,9 @@ const ReblogButton: React.FC<IReblogButton> = ({
 
   const handleReblogClick: React.EventHandler<React.MouseEvent> = e => {
     if (me) {
-      const modalReblog = () => dispatch(toggleReblog(status));
+      const modalReblog = () => dispatch(toggleReblog(status)).then(() => {
+        if (canReblog.approvalRequired) toast.info(messages.reblogApprovalRequired);
+      });
       if ((e && e.shiftKey) || !boostModal) {
         modalReblog();
       } else {
@@ -378,7 +383,9 @@ const FavouriteButton: React.FC<IActionButton> = ({
 
   const handleFavouriteClick: React.EventHandler<React.MouseEvent> = (e) => {
     if (me) {
-      dispatch(toggleFavourite(status));
+      dispatch(toggleFavourite(status)).then(() => {
+        if (canFavourite.approvalRequired) toast.info(messages.favouriteApprovalRequired);
+      }).catch(() => {});
     } else {
       onOpenUnauthorizedModal('FAVOURITE');
     }
@@ -411,6 +418,7 @@ const FavouriteButton: React.FC<IActionButton> = ({
       {favouriteButton}
     </Popover>
   );
+  return favouriteButton;
 };
 
 const DislikeButton: React.FC<IActionButton> = ({
