@@ -1,6 +1,6 @@
-![GitHub Repo stars](https://img.shields.io/github/stars/mkljczk/pl-fe)
-![GitHub License](https://img.shields.io/github/license/mkljczk/pl-fe)
-![Discord](https://img.shields.io/discord/1279834339470872598)
+[![GitHub Repo stars](https://img.shields.io/github/stars/mkljczk/pl-fe)](https://github.com/mkljczk/pl-fe)
+[![GitHub License](https://img.shields.io/github/license/mkljczk/pl-fe)](https://github.com/mkljczk/pl-fe?tab=AGPL-3.0-1-ov-file#readme)
+[![Discord](https://img.shields.io/discord/1279834339470872598)](https://discord.gg/NCZZsqqgUH)
 
 This repo hosts a few of my projects related to the Fediverse client `pl-fe`. This includes:
 

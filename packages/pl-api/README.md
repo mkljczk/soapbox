@@ -1,8 +1,8 @@
 # `pl-api`
 
-![GitHub License](https://img.shields.io/github/license/mkljczk/pl-fe)
-![NPM Version](https://img.shields.io/npm/v/pl-api)
-![NPM Downloads](https://img.shields.io/npm/dw/pl-api)
+[![GitHub License](https://img.shields.io/github/license/mkljczk/pl-fe)](https://github.com/mkljczk/pl-fe?tab=AGPL-3.0-1-ov-file#readme)
+[![NPM Version](https://img.shields.io/npm/v/pl-api)
+![NPM Downloads](https://img.shields.io/npm/dw/pl-api)](https://www.npmjs.com/package/pl-api)
 
 A JavaScript library for interacting with Mastodon API-compatible servers, focused on support for projects extending the official Mastodon API.
 
