@@ -683,7 +683,6 @@ const Header: React.FC<IHeader> = ({ account }) => {
                     theme='outlined'
                     className='px-2'
                     iconClassName='h-4 w-4'
-                    children={null}
                   />
                 </DropdownMenu>
               )}

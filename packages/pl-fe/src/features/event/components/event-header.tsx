@@ -389,7 +389,6 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
               theme='outlined'
               className='h-[30px] px-2'
               iconClassName='h-4 w-4'
-              children={null}
             />
           </DropdownMenu>
 

@@ -27,6 +27,7 @@ import EmojiPickerDropdown from 'pl-fe/features/emoji/containers/emoji-picker-dr
 import { languages } from 'pl-fe/features/preferences';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useCanInteract } from 'pl-fe/hooks/use-can-interact';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
@@ -38,6 +39,9 @@ import toast from 'pl-fe/toast';
 import copy from 'pl-fe/utils/copy';
 
 import GroupPopover from './groups/popover/group-popover';
+import Popover from './ui/popover';
+import Stack from './ui/stack';
+import Text from './ui/text';
 
 import type { Menu } from 'pl-fe/components/dropdown-menu';
 import type { Emoji as EmojiType } from 'pl-fe/features/emoji';
@@ -111,7 +115,75 @@ const messages = defineMessages({
   addKnownLanguage: { id: 'status.add_known_language', defaultMessage: 'Do not auto-translate posts in {language}.' },
   translate: { id: 'status.translate', defaultMessage: 'Translate' },
   hideTranslation: { id: 'status.hide_translation', defaultMessage: 'Hide translation' },
+
+  favouriteInteractionPolicyHeader: { id: 'status.interaction_policy.favourite.header', defaultMessage: 'The author limits who can like this post.' },
+  reblogInteractionPolicyHeader: { id: 'status.interaction_policy.reblog.header', defaultMessage: 'The author limits who can repost this post.' },
+  replyInteractionPolicyHeader: { id: 'status.interaction_policy.reply.header', defaultMessage: 'The author limits who can reply to this post.' },
+
+  favouriteInteractionPolicyFollowers: { id: 'status.interaction_policy.favourite.followers_only', defaultMessage: 'Only users following the author can like.' },
+  favouriteInteractionPolicyFollowing: { id: 'status.interaction_policy.favourite.following_only', defaultMessage: 'Only users followed by the author can like.' },
+  favouriteInteractionPolicyMutuals: { id: 'status.interaction_policy.favourite.mutuals_only', defaultMessage: 'Only users mutually following the author can like.' },
+  favouriteInteractionPolicyMentioned: { id: 'status.interaction_policy.favourite.mentioned_only', defaultMessage: 'Only users mentioned by the author can like.' },
+
+  reblogInteractionPolicyFollowers: { id: 'status.interaction_policy.reblog.followers_only', defaultMessage: 'Only users following the author can repost.' },
+  reblogInteractionPolicyFollowing: { id: 'status.interaction_policy.reblog.following_only', defaultMessage: 'Only users followed by the author can repost.' },
+  reblogInteractionPolicyMutuals: { id: 'status.interaction_policy.reblog.mutuals_only', defaultMessage: 'Only users mutually following the author can repost.' },
+  reblogInteractionPolicyMentioned: { id: 'status.interaction_policy.reblog.mentioned_only', defaultMessage: 'Only users mentioned by the author can repost.' },
+
+  replyInteractionPolicyFollowers: { id: 'status.interaction_policy.reply.followers_only', defaultMessage: 'Only users following the author can reply.' },
+  replyInteractionPolicyFollowing: { id: 'status.interaction_policy.reply.following_only', defaultMessage: 'Only users followed by the author can reply.' },
+  replyInteractionPolicyMutuals: { id: 'status.interaction_policy.reply.mutuals_only', defaultMessage: 'Only users mutually following the author can reply.' },
+  replyInteractionPolicyMentioned: { id: 'status.interaction_policy.reply.mentioned_only', defaultMessage: 'Only users mentioned by the author can reply.' },
 });
+
+interface IInteractionPopover {
+  type: 'favourite' | 'reblog' | 'reply';
+  allowed: ReturnType<typeof useCanInteract>['allowed'];
+}
+
+const INTERACTION_POLICY_HEADERS = {
+  favourite: messages.favouriteInteractionPolicyHeader,
+  reblog: messages.reblogInteractionPolicyHeader,
+  reply: messages.replyInteractionPolicyHeader,
+};
+
+const INTERACTION_POLICY_DESCRIPTIONS = {
+  favourite: {
+    followers: messages.favouriteInteractionPolicyFollowers,
+    following: messages.favouriteInteractionPolicyFollowing,
+    mutuals: messages.favouriteInteractionPolicyMutuals,
+    mentioned: messages.favouriteInteractionPolicyMentioned,
+  },
+  reblog: {
+    followers: messages.reblogInteractionPolicyFollowers,
+    following: messages.reblogInteractionPolicyFollowing,
+    mutuals: messages.reblogInteractionPolicyMutuals,
+    mentioned: messages.reblogInteractionPolicyMentioned,
+  },
+  reply: {
+    followers: messages.replyInteractionPolicyFollowers,
+    following: messages.replyInteractionPolicyFollowing,
+    mutuals: messages.replyInteractionPolicyMutuals,
+    mentioned: messages.replyInteractionPolicyMentioned,
+  },
+};
+
+const InteractionPopover: React.FC<IInteractionPopover> = ({ type, allowed }) => {
+  const intl = useIntl();
+
+  const allowedType = allowed?.includes('followers') ? 'followers' : allowed?.includes('following') ? 'following' : allowed?.includes('mutuals') ? 'mutuals' : 'mentioned';
+
+  return (
+    <Stack space={1} className='max-w-96'>
+      <Text weight='semibold' align='center'>
+        {intl.formatMessage(INTERACTION_POLICY_HEADERS[type])}
+      </Text>
+      <Text theme='muted' align='center'>
+        {intl.formatMessage(INTERACTION_POLICY_DESCRIPTIONS[type][allowedType])}
+      </Text>
+    </Stack>
+  );
+};
 
 interface IActionButton extends Pick<IStatusActionBar, 'status'  | 'statusActionButtonTheme' | 'withLabels'> {
   me: Me;
@@ -133,6 +205,7 @@ const ReplyButton: React.FC<IReplyButton> = ({
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
+  const canReply = useCanInteract(status, 'can_reply');
   const { groupRelationship } = useGroupRelationship(status.group_id || undefined);
 
   let replyTitle;
@@ -170,6 +243,15 @@ const ReplyButton: React.FC<IReplyButton> = ({
     />
   );
 
+  if (me && !canReply.canInteract) return (
+    <Popover
+      interaction='click'
+      content={<InteractionPopover allowed={canReply.allowed} type='reply' />}
+    >
+      {replyButton}
+    </Popover>
+  );
+
   return status.group ? (
     <GroupPopover
       group={status.group}
@@ -198,6 +280,7 @@ const ReblogButton: React.FC<IReblogButton> = ({
 
   const { boostModal } = useSettings();
   const { openModal } = useModalsStore();
+  const canReblog = useCanInteract(status, 'can_reblog');
 
   let reblogIcon = require('@tabler/icons/outline/repeat.svg');
 
@@ -237,6 +320,15 @@ const ReblogButton: React.FC<IReblogButton> = ({
       text={withLabels ? intl.formatMessage(messages.reblog) : undefined}
       theme={statusActionButtonTheme}
     />
+  );
+
+  if (me && !canReblog.canInteract) return (
+    <Popover
+      interaction='click'
+      content={<InteractionPopover allowed={canReblog.allowed} type='reblog' />}
+    >
+      {reblogButton}
+    </Popover>
   );
 
   if (!features.quotePosts || !me) return reblogButton;
@@ -282,6 +374,7 @@ const FavouriteButton: React.FC<IActionButton> = ({
   const intl = useIntl();
 
   const { openModal } = useModalsStore();
+  const canFavourite = useCanInteract(status, 'can_favourite');
 
   const handleFavouriteClick: React.EventHandler<React.MouseEvent> = (e) => {
     if (me) {
@@ -295,7 +388,7 @@ const FavouriteButton: React.FC<IActionButton> = ({
     openModal('FAVOURITES', { statusId: status.id });
   } : undefined;
 
-  return (
+  const favouriteButton = (
     <StatusActionButton
       title={intl.formatMessage(messages.favourite)}
       icon={features.statusDislikes ? require('@tabler/icons/outline/thumb-up.svg') : require('@tabler/icons/outline/heart.svg')}
@@ -308,6 +401,15 @@ const FavouriteButton: React.FC<IActionButton> = ({
       text={withLabels ? intl.formatMessage(messages.favourite) : undefined}
       theme={statusActionButtonTheme}
     />
+  );
+
+  if (me && !canFavourite.canInteract) return (
+    <Popover
+      interaction='click'
+      content={<InteractionPopover allowed={canFavourite.allowed} type='favourite' />}
+    >
+      {favouriteButton}
+    </Popover>
   );
 };
 
