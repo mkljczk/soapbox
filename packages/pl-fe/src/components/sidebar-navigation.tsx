@@ -1,6 +1,7 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
+import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import { useStatContext } from 'pl-fe/contexts/stat-context';
@@ -31,6 +32,7 @@ const messages = defineMessages({
   scheduledStatuses: { id: 'column.scheduled_statuses', defaultMessage: 'Scheduled posts' },
   drafts: { id: 'navigation.drafts', defaultMessage: 'Drafts' },
   conversations: { id: 'navigation.direct_messages', defaultMessage: 'Direct messages' },
+  interactionRequests: { id: 'navigation.interaction_requests', defaultMessage: 'Interaction requests' },
 });
 
 /** Desktop sidebar with links to different views in the app. */
@@ -47,6 +49,7 @@ const SidebarNavigation = () => {
 
   const notificationCount = useAppSelector((state) => state.notifications.unread);
   const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.count());
+  const interactionRequestsCount = useInteractionRequestsCount().data || 0;
   const dashboardCount = useAppSelector((state) => state.admin.openReports.count() + state.admin.awaitingApproval.count());
   const scheduledStatusCount = useAppSelector((state) => state.scheduled_statuses.size);
   const draftCount = useAppSelector((state) => state.draft_statuses.size);
@@ -71,6 +74,15 @@ const SidebarNavigation = () => {
           text: intl.formatMessage(messages.followRequests),
           icon: require('@tabler/icons/outline/user-plus.svg'),
           count: followRequestsCount,
+        });
+      }
+
+      if (interactionRequestsCount > 0) {
+        menu.push({
+          to: '/interaction_requests',
+          text: intl.formatMessage(messages.interactionRequests),
+          icon: require('@tabler/icons/outline/flag-question.svg'),
+          count: interactionRequestsCount,
         });
       }
 
