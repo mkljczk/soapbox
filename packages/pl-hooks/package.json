@@ -2,7 +2,7 @@
   "name": "pl-hooks",
   "version": "0.0.1",
   "type": "module",
-  "homepage": "https://github.com/mkljczk/pl-fe/tree/fork/packages/pl-hooks",
+  "homepage": "https://github.com/mkljczk/pl-fe/tree/develop/packages/pl-hooks",
   "repository": {
     "type": "git",
     "url": "https://github.com/mkljczk/pl-fe"

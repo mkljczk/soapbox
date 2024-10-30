@@ -2,7 +2,7 @@
   "name": "pl-api",
   "version": "0.1.6",
   "type": "module",
-  "homepage": "https://github.com/mkljczk/pl-fe/tree/fork/packages/pl-api",
+  "homepage": "https://github.com/mkljczk/pl-fe/tree/develop/packages/pl-api",
   "repository": {
     "type": "git",
     "url": "https://github.com/mkljczk/pl-fe"
