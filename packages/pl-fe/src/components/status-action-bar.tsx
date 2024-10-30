@@ -365,6 +365,12 @@ const WrenchButton: React.FC<IActionButton> = ({
   const { openModal } = useModalsStore();
   const { showWrenchButton } = useSettings();
 
+  const hasLongerWrench = useAppSelector(({ custom_emojis }) => {
+    if (!features.customEmojiReacts) return null;
+
+    return (custom_emojis.find(({ shortcode }) => shortcode === 'longestest_wrench') || custom_emojis.find(({ shortcode }) => shortcode === 'longest_wrench'));
+  });
+
   if (!me || withLabels || !features.emojiReacts || !showWrenchButton) return;
 
   const wrenches = showWrenchButton && status.emoji_reactions.find(emoji => emoji.name === '🔧') || undefined;
@@ -377,9 +383,12 @@ const WrenchButton: React.FC<IActionButton> = ({
     }
   };
 
-  const handleWrenchLongPress = wrenches?.count ? () => {
-    openModal('REACTIONS', { statusId: status.id, reaction: wrenches.name });
-  } : undefined;
+  const handleWrenchLongPress = () => {
+    if (hasLongerWrench) dispatch(emojiReact(status, hasLongerWrench.shortcode, hasLongerWrench.url));
+    else if (wrenches?.count) {
+      openModal('REACTIONS', { statusId: status.id, reaction: wrenches.name });
+    }
+  };
 
   return (
     <StatusActionButton
