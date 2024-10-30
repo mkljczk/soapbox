@@ -2,6 +2,7 @@ import { GroupRoles } from 'pl-api';
 import React, { useMemo } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import { createSelector } from 'reselect';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose, replyCompose } from 'pl-fe/actions/compose';
@@ -31,6 +32,7 @@ import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
+import { RootState } from 'pl-fe/store';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 import copy from 'pl-fe/utils/copy';
@@ -352,6 +354,11 @@ const DislikeButton: React.FC<IActionButton> = ({
   );
 };
 
+const getLongerWrench = createSelector(
+  [(state: RootState) => state.custom_emojis],
+  (emojis) => emojis.find(({ shortcode }) => shortcode === 'longestest_wrench') || emojis.find(({ shortcode }) => shortcode === 'longest_wrench'),
+);
+
 const WrenchButton: React.FC<IActionButton> = ({
   status,
   statusActionButtonTheme,
@@ -365,11 +372,7 @@ const WrenchButton: React.FC<IActionButton> = ({
   const { openModal } = useModalsStore();
   const { showWrenchButton } = useSettings();
 
-  const hasLongerWrench = useAppSelector(({ custom_emojis }) => {
-    if (!features.customEmojiReacts) return null;
-
-    return (custom_emojis.find(({ shortcode }) => shortcode === 'longestest_wrench') || custom_emojis.find(({ shortcode }) => shortcode === 'longest_wrench'));
-  });
+  const hasLongerWrench = useAppSelector(getLongerWrench);
 
   if (!me || withLabels || !features.emojiReacts || !showWrenchButton) return;
 
@@ -384,8 +387,9 @@ const WrenchButton: React.FC<IActionButton> = ({
   };
 
   const handleWrenchLongPress = () => {
-    if (hasLongerWrench) dispatch(emojiReact(status, hasLongerWrench.shortcode, hasLongerWrench.url));
-    else if (wrenches?.count) {
+    if (features.customEmojiReacts && hasLongerWrench) {
+      dispatch(emojiReact(status, hasLongerWrench.shortcode, hasLongerWrench.url));
+    } else if (wrenches?.count) {
       openModal('REACTIONS', { statusId: status.id, reaction: wrenches.name });
     }
   };
