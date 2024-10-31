@@ -205,8 +205,8 @@ const InteractionRequest: React.FC<IInteractionRequest> = ({
               </HStack>
             </div>
 
-            {interactionRequest.status_id && <InteractionRequestStatus id={interactionRequest.status_id} hasReply={interactionRequest.type === 'reply'} actions={actions} />}
-            {interactionRequest.reply_id && <InteractionRequestStatus id={interactionRequest.reply_id} isReply />}
+            {interactionRequest.status_id && <InteractionRequestStatus id={interactionRequest.status_id} hasReply={interactionRequest.type === 'reply'} actions={interactionRequest.reply_id ? undefined : actions} />}
+            {interactionRequest.reply_id && <InteractionRequestStatus id={interactionRequest.reply_id} isReply actions={actions} />}
           </Stack>
         </div>
       </div>
