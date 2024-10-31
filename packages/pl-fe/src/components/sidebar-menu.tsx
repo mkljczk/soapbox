@@ -6,6 +6,7 @@ import { Link, NavLink } from 'react-router-dom';
 
 import { fetchOwnAccounts, logOut, switchAccount } from 'pl-fe/actions/auth';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import Account from 'pl-fe/components/account';
 import Divider from 'pl-fe/components/ui/divider';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -42,6 +43,7 @@ const messages = defineMessages({
   drafts: { id: 'navigation.drafts', defaultMessage: 'Drafts' },
   addAccount: { id: 'profile_dropdown.add_account', defaultMessage: 'Add an existing account' },
   followRequests: { id: 'navigation_bar.follow_requests', defaultMessage: 'Follow requests' },
+  interactionRequests: { id: 'navigation.interaction_requests', defaultMessage: 'Interaction requests' },
   close: { id: 'lightbox.close', defaultMessage: 'Close' },
   login: { id: 'account.login', defaultMessage: 'Log in' },
   register: { id: 'account.register', defaultMessage: 'Sign up' },
@@ -96,6 +98,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const otherAccounts: ImmutableList<AccountEntity> = useAppSelector((state) => getOtherAccounts(state));
   const { settings } = useSettingsStore();
   const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.count());
+  const interactionRequestsCount = useInteractionRequestsCount().data || 0;
   const scheduledStatusCount = useAppSelector((state) => state.scheduled_statuses.size);
   const draftCount = useAppSelector((state) => state.draft_statuses.size);
   // const dashboardCount = useAppSelector((state) => state.admin.openReports.count() + state.admin.awaitingApproval.count());
@@ -228,6 +231,15 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                       to='/follow_requests'
                       icon={require('@tabler/icons/outline/user-plus.svg')}
                       text={intl.formatMessage(messages.followRequests)}
+                      onClick={closeSidebar}
+                    />
+                  )}
+
+                  {(interactionRequestsCount > 0) && (
+                    <SidebarLink
+                      to='/interaction_requests'
+                      icon={require('@tabler/icons/outline/flag-question.svg')}
+                      text={intl.formatMessage(messages.interactionRequests)}
                       onClick={closeSidebar}
                     />
                   )}
