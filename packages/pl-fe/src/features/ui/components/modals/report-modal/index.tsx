@@ -53,7 +53,7 @@ const SelectedStatus = ({ statusId }: { statusId: string }) => {
   return (
     <Stack space={2} className='rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
       <AccountContainer
-        id={status.account?.id}
+        id={status.account_id}
         showAccountHoverCard={false}
         withLinkToProfile={false}
         timestamp={status.created_at}

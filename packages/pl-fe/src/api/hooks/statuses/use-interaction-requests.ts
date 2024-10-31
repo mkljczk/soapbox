@@ -10,8 +10,8 @@ import type { AppDispatch } from 'pl-fe/store';
 
 const minifyInteractionRequest = ({ account, status, reply, ...interactionRequest }: InteractionRequest) => ({
   account_id: account.id,
-  status: status?.id || null,
-  reply: reply?.id || null,
+  status_id: status?.id || null,
+  reply_id: reply?.id || null,
   ...interactionRequest,
 });
 
@@ -30,13 +30,15 @@ const minifyInteractionRequestsList = (dispatch: AppDispatch, { previous, next, 
   };
 };
 
-const useInteractionRequests = <T>(select?: (data: InfiniteData<PaginatedResponse<MinifiedInteractionRequest>>) => T) => {
+const useInteractionRequests = <T>(
+  select?: ((data: InfiniteData<PaginatedResponse<MinifiedInteractionRequest>>) => T),
+) => {
   const client = useClient();
   const features = useFeatures();
   const dispatch = useAppDispatch();
 
   return useInfiniteQuery({
-    queryKey: ['interaction_requests'],
+    queryKey: ['interactionRequests'],
     queryFn: ({ pageParam }) => pageParam.next?.() || client.interactionRequests.getInteractionRequests().then(response => minifyInteractionRequestsList(dispatch, response)),
     initialPageParam: { previous: null, next: null, items: [], partial: false } as PaginatedResponse<MinifiedInteractionRequest>,
     getNextPageParam: (page) => page.next ? page : undefined,
@@ -45,24 +47,30 @@ const useInteractionRequests = <T>(select?: (data: InfiniteData<PaginatedRespons
   });
 };
 
+const useFlatInteractionRequests = () => useInteractionRequests(
+  (data: InfiniteData<PaginatedResponse<MinifiedInteractionRequest>>) => data.pages.map(page => page.items).flat(),
+);
+
 const useInteractionRequestsCount = () => useInteractionRequests(data => data.pages.map(({ items }) => items).flat().length);
 
-const useAuthorizeInteractionRequestMutation = () => {
+const useAuthorizeInteractionRequestMutation = (requestId: string) => {
   const client = useClient();
   const { refetch } = useInteractionRequests();
 
   return useMutation({
-    mutationFn: (requestId: string) => client.interactionRequests.authorizeInteractionRequest(requestId),
+    mutationKey: ['interactionRequests', requestId],
+    mutationFn: () => client.interactionRequests.authorizeInteractionRequest(requestId),
     onSettled: () => refetch(),
   });
 };
 
-const useRejectInteractionRequestMutation = () => {
+const useRejectInteractionRequestMutation = (requestId: string) => {
   const client = useClient();
   const { refetch } = useInteractionRequests();
 
   return useMutation({
-    mutationFn: (requestId: string) => client.interactionRequests.rejectInteractionRequest(requestId),
+    mutationKey: ['interactionRequests', requestId],
+    mutationFn: () => client.interactionRequests.rejectInteractionRequest(requestId),
     onSettled: () => refetch(),
   });
 };
@@ -70,6 +78,8 @@ const useRejectInteractionRequestMutation = () => {
 export {
   useInteractionRequests,
   useInteractionRequestsCount,
+  useFlatInteractionRequests,
   useAuthorizeInteractionRequestMutation,
   useRejectInteractionRequestMutation,
+  type MinifiedInteractionRequest,
 };

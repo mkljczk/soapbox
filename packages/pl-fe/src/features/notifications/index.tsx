@@ -47,7 +47,6 @@ const Notifications = () => {
   const hasMore = useAppSelector(state => state.notifications.hasMore);
   const totalQueuedNotificationsCount = useAppSelector(state => state.notifications.totalQueuedNotificationsCount || 0);
 
-  const column = useRef<HTMLDivElement>(null);
   const scrollableContentRef = useRef<ImmutableList<JSX.Element> | null>(null);
 
   // const handleLoadGap = (maxId) => {
@@ -143,7 +142,7 @@ const Notifications = () => {
   );
 
   return (
-    <Column ref={column} label={intl.formatMessage(messages.title)} withHeader={false}>
+    <Column label={intl.formatMessage(messages.title)} withHeader={false}>
       {filterBarContainer}
 
       <Portal>
