@@ -56,8 +56,9 @@ const EmojiPickerDropdownContainer: React.FC<IEmojiPickerDropdownContainer> = ({
         })
       ) : (
         <IconButton
-          className={clsx('emoji-picker-dropdown', {
-            'text-gray-600 hover:text-gray-700 dark:hover:text-gray-500': theme === 'default',
+          theme='transparent'
+          className={clsx('emoji-picker-dropdown -m-1 p-2', {
+            'text-gray-600 hover:text-gray-800 dark:hover:text-white bg-transparent hover:bg-primary-100 dark:hover:bg-primary-800 black:hover:bg-gray-800': theme === 'default',
             'text-white/80 hover:text-white bg-transparent dark:bg-transparent': theme === 'inverse',
           })}
           ref={refs.setReference}
