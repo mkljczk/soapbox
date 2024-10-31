@@ -9,9 +9,9 @@ import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
 import { Entities } from 'pl-fe/entity-store/entities';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useChatActions } from 'pl-fe/queries/chats';
 import { useModalsStore } from 'pl-fe/stores/modals';
 

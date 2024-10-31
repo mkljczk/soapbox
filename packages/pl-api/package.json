@@ -1,8 +1,8 @@
 {
   "name": "pl-api",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "type": "module",
-  "homepage": "https://github.com/mkljczk/pl-fe/tree/fork/packages/pl-api",
+  "homepage": "https://github.com/mkljczk/pl-fe/tree/develop/packages/pl-api",
   "repository": {
     "type": "git",
     "url": "https://github.com/mkljczk/pl-fe"
@@ -30,6 +30,9 @@
     "eslint-plugin-compat": "^6.0.1",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-promise": "^6.0.0",
+    "typedoc": "^0.26.10",
+    "typedoc-material-theme": "^1.1.0",
+    "typedoc-plugin-valibot": "^1.0.0",
     "typescript": "^5.6.2",
     "vite": "^5.4.8",
     "vite-plugin-dts": "^4.2.3"

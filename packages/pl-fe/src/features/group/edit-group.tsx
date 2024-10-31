@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useGroup } from 'pl-fe/api/hooks/groups/useGroup';
-import { useUpdateGroup } from 'pl-fe/api/hooks/groups/useUpdateGroup';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
+import { useUpdateGroup } from 'pl-fe/api/hooks/groups/use-update-group';
 import Button from 'pl-fe/components/ui/button';
 import Column from 'pl-fe/components/ui/column';
 import Form from 'pl-fe/components/ui/form';
@@ -12,10 +12,10 @@ import Icon from 'pl-fe/components/ui/icon';
 import Input from 'pl-fe/components/ui/input';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Textarea from 'pl-fe/components/ui/textarea';
-import { useImageField } from 'pl-fe/hooks/forms/useImageField';
-import { useTextField } from 'pl-fe/hooks/forms/useTextField';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { useImageField } from 'pl-fe/hooks/forms/use-image-field';
+import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import toast from 'pl-fe/toast';
 import { isDefaultAvatar, isDefaultHeader } from 'pl-fe/utils/accounts';
 import { unescapeHTML } from 'pl-fe/utils/html';

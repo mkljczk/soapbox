@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
 import { List as ImmutableList, OrderedSet as ImmutableOrderedSet } from 'immutable';
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -16,8 +16,8 @@ import Stack from 'pl-fe/components/ui/stack';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import PendingStatus from 'pl-fe/features/ui/components/pending-status';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { RootState } from 'pl-fe/store';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
@@ -31,7 +31,7 @@ import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';
 import type { SelectedStatus } from 'pl-fe/selectors';
 
-const getAncestorsIds = createSelector([
+const makeGetAncestorsIds = () => createSelector([
   (_: RootState, statusId: string | undefined) => statusId,
   (state: RootState) => state.contexts.inReplyTos,
 ], (statusId, inReplyTos) => {
@@ -46,7 +46,7 @@ const getAncestorsIds = createSelector([
   return ancestorsIds;
 });
 
-const getDescendantsIds = createSelector([
+const makeGetDescendantsIds = () => createSelector([
   (_: RootState, statusId: string) => statusId,
   (state: RootState) => state.contexts.replies,
 ], (statusId, contextReplies) => {
@@ -77,6 +77,26 @@ const getDescendantsIds = createSelector([
   return descendantsIds;
 });
 
+const makeGetThread = () => {
+  const getAncestorsIds = makeGetAncestorsIds();
+  const getDescendantsIds = makeGetDescendantsIds();
+
+  return createSelector([
+    (state: RootState, statusId: string) => getAncestorsIds(state, statusId),
+    (state: RootState, statusId: string) => getDescendantsIds(state, statusId),
+    (_, statusId: string) => statusId,
+  ],
+  (ancestorsIds, descendantsIds, statusId) => {
+    ancestorsIds = ancestorsIds.delete(statusId).subtract(descendantsIds);
+    descendantsIds = descendantsIds.delete(statusId).subtract(ancestorsIds);
+
+    return {
+      ancestorsIds,
+      descendantsIds,
+    };
+  });
+};
+
 interface IThread {
   status: SelectedStatus;
   withMedia?: boolean;
@@ -97,24 +117,9 @@ const Thread: React.FC<IThread> = ({
   const { openModal } = useModalsStore();
   const { settings } = useSettingsStore();
 
-  const { ancestorsIds, descendantsIds } = useAppSelector((state) => {
-    let ancestorsIds = ImmutableOrderedSet<string>();
-    let descendantsIds = ImmutableOrderedSet<string>();
+  const getThread = useCallback(makeGetThread(), []);
 
-    if (status) {
-      const statusId = status.id;
-      ancestorsIds = getAncestorsIds(state, state.contexts.inReplyTos.get(statusId));
-      descendantsIds = getDescendantsIds(state, statusId);
-      ancestorsIds = ancestorsIds.delete(statusId).subtract(descendantsIds);
-      descendantsIds = descendantsIds.delete(statusId).subtract(ancestorsIds);
-    }
-
-    return {
-      status,
-      ancestorsIds,
-      descendantsIds,
-    };
-  });
+  const { ancestorsIds, descendantsIds } = useAppSelector((state) => getThread(state, status.id));
 
   let initialIndex = ancestorsIds.size;
   if (isModal && initialIndex !== 0) initialIndex = ancestorsIds.size + 1;
@@ -418,4 +423,4 @@ const Thread: React.FC<IThread> = ({
   );
 };
 
-export { getDescendantsIds, Thread as default };
+export { makeGetDescendantsIds, Thread as default };

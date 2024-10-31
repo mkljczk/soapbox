@@ -35,6 +35,8 @@ Changes made since the project forked from Soapbox in April 2024.
 - You can browse Bubble timeline, if supported by backend.
 - Mastodon displays trending articles on Search page.
 - Posts can be addressed to lists of users, on Pleroma.
+- Support for events with external registration.
+- Added a dedicated wrench reaction button.
 
 ### Changed
 
@@ -67,6 +69,7 @@ Changes made since the project forked from Soapbox in April 2024.
 
 **Internal:**
 - Migrated some local stores from Redux to Zustand.
+- Posts are now emojified during render, instead of when inserting posts to the state.
 
 **Dependencies:**
 - `@tanstack/react-virtual` is used for list virtualization, instead of `react-virtuoso`. This improves compatibility with Ladybird browser.

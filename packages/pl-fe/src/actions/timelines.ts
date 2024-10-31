@@ -59,18 +59,19 @@ const updateTimeline = (timeline: string, statusId: string) => ({
   statusId,
 });
 
-const updateTimelineQueue = (timeline: string, statusId: string) =>
-  (dispatch: AppDispatch) => {
-    // if (typeof accept === 'function' && !accept(status)) {
-    //   return;
-    // }
+const updateTimelineQueue = (timeline: string, statusId: string) => ({
+// if (typeof accept === 'function' && !accept(status)) {
+//   return;
+// }
+  type: TIMELINE_UPDATE_QUEUE,
+  timeline,
+  statusId,
+});
 
-    dispatch({
-      type: TIMELINE_UPDATE_QUEUE,
-      timeline,
-      statusId,
-    });
-  };
+interface TimelineDequeueAction {
+  type: typeof TIMELINE_DEQUEUE;
+  timeline: string;
+}
 
 const dequeueTimeline = (timelineId: string, expandFunc?: (lastStatusId: string) => void) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
@@ -80,7 +81,7 @@ const dequeueTimeline = (timelineId: string, expandFunc?: (lastStatusId: string)
     if (queuedCount <= 0) return;
 
     if (queuedCount <= MAX_QUEUED_ITEMS) {
-      dispatch({ type: TIMELINE_DEQUEUE, timeline: timelineId });
+      dispatch<TimelineDequeueAction>({ type: TIMELINE_DEQUEUE, timeline: timelineId });
       return;
     }
 
@@ -113,15 +114,13 @@ const deleteFromTimelines = (statusId: string) =>
     const references = getState().statuses.filter(status => status.reblog_id === statusId).map(status => [status.id, status.account_id] as const);
     const reblogOf = getState().statuses.get(statusId)?.reblog_id || null;
 
-    const action: TimelineDeleteAction = {
+    dispatch<TimelineDeleteAction>({
       type: TIMELINE_DELETE,
       statusId,
       accountId,
       references,
       reblogOf,
-    };
-
-    dispatch(action);
+    });
   };
 
 const clearTimeline = (timeline: string) => ({ type: TIMELINE_CLEAR, timeline });
@@ -321,12 +320,20 @@ const scrollTopTimeline = (timeline: string, top: boolean) => ({
   top,
 });
 
-const insertSuggestionsIntoTimeline = () => (dispatch: AppDispatch, getState: () => RootState) => {
-  dispatch({ type: TIMELINE_INSERT, timeline: 'home' });
-};
+const insertSuggestionsIntoTimeline = () => ({ type: TIMELINE_INSERT, timeline: 'home' });
 
 // TODO: other actions
-type TimelineAction = TimelineDeleteAction;
+type TimelineAction =
+  | ReturnType<typeof updateTimeline>
+  | TimelineDeleteAction
+  | ReturnType<typeof clearTimeline>
+  | ReturnType<typeof updateTimelineQueue>
+  | TimelineDequeueAction
+  | ReturnType<typeof scrollTopTimeline>
+  | ReturnType<typeof expandTimelineRequest>
+  | ReturnType<typeof expandTimelineSuccess>
+  | ReturnType<typeof expandTimelineFail>
+  | ReturnType<typeof insertSuggestionsIntoTimeline>;
 
 export {
   TIMELINE_UPDATE,

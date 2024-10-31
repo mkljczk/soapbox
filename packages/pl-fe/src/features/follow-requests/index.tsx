@@ -6,8 +6,8 @@ import { fetchFollowRequests, expandFollowRequests } from 'pl-fe/actions/account
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Column from 'pl-fe/components/ui/column';
 import Spinner from 'pl-fe/components/ui/spinner';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import AccountAuthorize from './components/account-authorize';
 

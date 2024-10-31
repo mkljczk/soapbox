@@ -8,10 +8,10 @@ import { CardHeader, CardTitle } from 'pl-fe/components/ui/card';
 import Column from 'pl-fe/components/ui/column';
 import HStack from 'pl-fe/components/ui/hstack';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 
 import Account from './components/account';
 import Search from './components/search';

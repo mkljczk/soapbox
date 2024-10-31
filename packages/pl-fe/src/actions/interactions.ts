@@ -77,6 +77,8 @@ const FAVOURITES_EXPAND_FAIL = 'FAVOURITES_EXPAND_FAIL' as const;
 const REBLOGS_EXPAND_SUCCESS = 'REBLOGS_EXPAND_SUCCESS' as const;
 const REBLOGS_EXPAND_FAIL = 'REBLOGS_EXPAND_FAIL' as const;
 
+const noOp = () => new Promise(f => f(undefined));
+
 type AccountListLink = () => Promise<PaginatedResponse<Account>>;
 
 const messages = defineMessages({
@@ -89,7 +91,7 @@ const messages = defineMessages({
 
 const reblog = (status: Pick<Status, 'id'>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
+    if (!isLoggedIn(getState)) return noOp();
 
     dispatch(reblogRequest(status.id));
 
@@ -105,7 +107,7 @@ const reblog = (status: Pick<Status, 'id'>) =>
 
 const unreblog = (status: Pick<Status, 'id'>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
+    if (!isLoggedIn(getState)) return noOp();
 
     dispatch(unreblogRequest(status.id));
 
@@ -116,14 +118,13 @@ const unreblog = (status: Pick<Status, 'id'>) =>
     });
   };
 
-const toggleReblog = (status: Pick<Status, 'id' | 'reblogged'>) =>
-  (dispatch: AppDispatch) => {
-    if (status.reblogged) {
-      dispatch(unreblog(status));
-    } else {
-      dispatch(reblog(status));
-    }
-  };
+const toggleReblog = (status: Pick<Status, 'id' | 'reblogged'>) => {
+  if (status.reblogged) {
+    return unreblog(status);
+  } else {
+    return reblog(status);
+  }
+};
 
 const reblogRequest = (statusId: string) => ({
   type: REBLOG_REQUEST,
@@ -161,7 +162,7 @@ const unreblogFail = (statusId: string, error: unknown) => ({
 
 const favourite = (status: Pick<Status, 'id'>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
+    if (!isLoggedIn(getState)) return noOp();
 
     dispatch(favouriteRequest(status.id));
 
@@ -174,7 +175,7 @@ const favourite = (status: Pick<Status, 'id'>) =>
 
 const unfavourite = (status: Pick<Status, 'id'>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
+    if (!isLoggedIn(getState)) return noOp();
 
     dispatch(unfavouriteRequest(status.id));
 
@@ -185,14 +186,13 @@ const unfavourite = (status: Pick<Status, 'id'>) =>
     });
   };
 
-const toggleFavourite = (status: Pick<Status, 'id' | 'favourited'>) =>
-  (dispatch: AppDispatch) => {
-    if (status.favourited) {
-      dispatch(unfavourite(status));
-    } else {
-      dispatch(favourite(status));
-    }
-  };
+const toggleFavourite = (status: Pick<Status, 'id' | 'favourited'>) => {
+  if (status.favourited) {
+    return unfavourite(status);
+  } else {
+    return favourite(status);
+  }
+};
 
 const favouriteRequest = (statusId: string) => ({
   type: FAVOURITE_REQUEST,

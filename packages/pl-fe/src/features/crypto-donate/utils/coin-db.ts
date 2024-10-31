@@ -11,4 +11,4 @@ const getTitle = (ticker: string): string => {
   return typeof title === 'string' ? title : '';
 };
 
-export { getTitle, coinDB as default };
+export { getTitle };

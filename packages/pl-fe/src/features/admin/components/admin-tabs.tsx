@@ -3,7 +3,7 @@ import { useIntl, defineMessages } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
 import Tabs from 'pl-fe/components/ui/tabs';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 const messages = defineMessages({
   dashboard: { id: 'admin_nav.dashboard', defaultMessage: 'Dashboard' },

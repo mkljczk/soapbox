@@ -67,7 +67,7 @@ const createStatus = (params: CreateStatusParams, idempotencyKey: string, status
         // The backend might still be processing the rich media attachment
         const expectsCard = status.scheduled_at === null && !status.card && shouldHaveCard(status);
 
-        if (status.scheduled_at === null) dispatch(importFetchedStatus({ ...status, expectsCard }, idempotencyKey));
+        if (status.scheduled_at === null) dispatch(importEntities({ statuses: [{ ...status, expectsCard }] }, { idempotencyKey, withParents: true }));
         dispatch({ type: STATUS_CREATE_SUCCESS, status, params, idempotencyKey, editing: !!statusId });
 
         // Poll the backend for the updated card
@@ -165,14 +165,10 @@ const fetchContext = (statusId: string, intl?: IntlShape) =>
     } : undefined;
 
     return getClient(getState()).statuses.getContext(statusId, params).then(context => {
-      if (typeof context === 'object') {
-        const { ancestors, descendants } = context;
-        const statuses = ancestors.concat(descendants);
-        importEntities({ statuses });
-        dispatch({ type: CONTEXT_FETCH_SUCCESS, statusId, ancestors, descendants });
-      } else {
-        throw context;
-      }
+      const { ancestors, descendants } = context;
+      const statuses = ancestors.concat(descendants);
+      importEntities({ statuses });
+      dispatch({ type: CONTEXT_FETCH_SUCCESS, statusId, ancestors, descendants });
       return context;
     }).catch(error => {
       if (error.response?.status === 404) {
@@ -272,14 +268,6 @@ const expandStatusSpoiler = (statusIds: string[] | string) => {
     type: STATUS_EXPAND_SPOILER,
     statusIds,
   };
-};
-
-const toggleStatusSpoilerExpanded = (status: Pick<Status, 'id' | 'expanded'>) => {
-  if (status.expanded) {
-    return collapseStatusSpoiler(status.id);
-  } else {
-    return expandStatusSpoiler(status.id);
-  }
 };
 
 let TRANSLATIONS_QUEUE: Set<string> = new Set();
@@ -415,7 +403,6 @@ export {
   toggleStatusMediaHidden,
   expandStatusSpoiler,
   collapseStatusSpoiler,
-  toggleStatusSpoilerExpanded,
   translateStatus,
   undoStatusTranslation,
   unfilterStatus,

@@ -7,7 +7,7 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import IconButton from 'pl-fe/components/ui/icon-button';
 import Text from 'pl-fe/components/ui/text';
-import { useDraggedFiles } from 'pl-fe/hooks/useDraggedFiles';
+import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 const messages = defineMessages({

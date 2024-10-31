@@ -13,18 +13,20 @@ import { register as registerPushNotifications } from 'pl-fe/actions/push-notifi
 import { fetchScheduledStatuses } from 'pl-fe/actions/scheduled-statuses';
 import { fetchSuggestionsForTimeline } from 'pl-fe/actions/suggestions';
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
-import { useUserStream } from 'pl-fe/api/hooks/streaming/useUserStream';
+import { useUserStream } from 'pl-fe/api/hooks/streaming/use-user-stream';
 import SidebarNavigation from 'pl-fe/components/sidebar-navigation';
 import ThumbNavigation from 'pl-fe/components/thumb-navigation';
 import Layout from 'pl-fe/components/ui/layout';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useDraggedFiles } from 'pl-fe/hooks/useDraggedFiles';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useInstance } from 'pl-fe/hooks/useInstance';
-import { useLoggedIn } from 'pl-fe/hooks/useLoggedIn';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
-import { usePlFeConfig } from 'pl-fe/hooks/usePlFeConfig';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useClient } from 'pl-fe/hooks/use-client';
+import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import AdminLayout from 'pl-fe/layouts/admin-layout';
 import ChatsLayout from 'pl-fe/layouts/chats-layout';
 import DefaultLayout from 'pl-fe/layouts/default-layout';
@@ -140,6 +142,7 @@ import {
   Circle,
   BubbleTimeline,
   InteractionPolicies,
+  InteractionRequests,
 } from './util/async-components';
 import GlobalHotkeys from './util/global-hotkeys';
 import { WrappedRoute } from './util/react-router-helpers';
@@ -259,6 +262,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
       {(features.filters || features.filtersV2) && <WrappedRoute path='/filters/:id' layout={DefaultLayout} component={EditFilter} content={children} />}
       {(features.filters || features.filtersV2) && <WrappedRoute path='/filters' layout={DefaultLayout} component={Filters} content={children} />}
       {(features.followedHashtagsList) && <WrappedRoute path='/followed_tags' layout={DefaultLayout} component={FollowedTags} content={children} />}
+      {features.interactionRequests && <WrappedRoute path='/interaction_requests' layout={DefaultLayout} component={InteractionRequests} content={children} />}
       <WrappedRoute path='/@:username' publicRoute exact layout={ProfileLayout} component={AccountTimeline} content={children} />
       <WrappedRoute path='/@:username/with_replies' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={AccountTimeline} content={children} componentParams={{ withReplies: true }} />
       <WrappedRoute path='/@:username/followers' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={Followers} content={children} />

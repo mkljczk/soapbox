@@ -4,8 +4,8 @@ import { useHistory } from 'react-router-dom';
 
 import Text from 'pl-fe/components/ui/text';
 import Widget from 'pl-fe/components/ui/widget';
-import { useInstance } from 'pl-fe/hooks/useInstance';
-import { usePlFeConfig } from 'pl-fe/hooks/usePlFeConfig';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
 import SiteWallet from './site-wallet';
 

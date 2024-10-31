@@ -126,4 +126,4 @@ const normalizeNotification = (notification: BaseNotification | DeduplicatedNoti
 
 type NormalizedNotification = ReturnType<typeof normalizeNotification>;
 
-export { deduplicateNotifications, normalizeNotification, type DeduplicatedNotification, type NormalizedNotification };
+export { deduplicateNotifications, getNotificationStatus, normalizeNotification, type DeduplicatedNotification, type NormalizedNotification };

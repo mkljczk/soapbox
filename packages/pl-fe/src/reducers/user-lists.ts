@@ -218,9 +218,6 @@ const userLists = (state = ReducerRecord(), action: DirectoryAction | AnyAction)
 
 export {
   ListRecord,
-  type List,
-  ReactionRecord,
-  ParticipationRequest,
   ReducerRecord,
   userLists as default,
 };

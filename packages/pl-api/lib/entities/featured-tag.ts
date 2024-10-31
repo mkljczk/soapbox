@@ -1,6 +1,9 @@
 import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/FeaturedTag/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/FeaturedTag/}
+ */
 const featuredTagSchema = v.object({
   id: v.string(),
   name: v.string(),

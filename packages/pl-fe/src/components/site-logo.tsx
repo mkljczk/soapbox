@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { useLogo } from 'pl-fe/hooks/useLogo';
+import { useLogo } from 'pl-fe/hooks/use-logo';
 
 const messages = defineMessages({
   logo: { id: 'generic.logo', defaultMessage: 'Logo' },

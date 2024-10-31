@@ -3,7 +3,10 @@ import * as v from 'valibot';
 import { accountSchema } from './account';
 import { datetimeSchema } from './utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Report/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Report/}
+ */
 const reportSchema = v.object({
   id: v.string(),
   action_taken: v.fallback(v.optional(v.boolean()), undefined),

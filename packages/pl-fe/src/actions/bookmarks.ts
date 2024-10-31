@@ -90,7 +90,6 @@ type BookmarksAction =
   ReturnType<typeof fetchBookmarkedStatusesRequest>
   | ReturnType<typeof fetchBookmarkedStatusesSuccess>
   | ReturnType<typeof fetchBookmarkedStatusesFail>
-  | ReturnType<typeof expandBookmarkedStatuses>
   | ReturnType<typeof expandBookmarkedStatusesRequest>
   | ReturnType<typeof expandBookmarkedStatusesSuccess>
   | ReturnType<typeof expandBookmarkedStatusesFail>;

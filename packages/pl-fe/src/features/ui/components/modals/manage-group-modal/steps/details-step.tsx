@@ -7,9 +7,9 @@ import Input from 'pl-fe/components/ui/input';
 import Textarea from 'pl-fe/components/ui/textarea';
 import AvatarPicker from 'pl-fe/features/edit-profile/components/avatar-picker';
 import HeaderPicker from 'pl-fe/features/edit-profile/components/header-picker';
-import { usePreview } from 'pl-fe/hooks/forms/usePreview';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { usePreview } from 'pl-fe/hooks/forms/use-preview';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import resizeImage from 'pl-fe/utils/resize-image';
 
 import type { CreateGroupParams } from 'pl-api';

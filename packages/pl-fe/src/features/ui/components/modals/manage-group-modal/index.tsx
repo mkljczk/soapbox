@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import * as v from 'valibot';
 
-import { useCreateGroup } from 'pl-fe/api/hooks/groups/useCreateGroup';
+import { useCreateGroup } from 'pl-fe/api/hooks/groups/use-create-group';
 import Modal from 'pl-fe/components/ui/modal';
 import Stack from 'pl-fe/components/ui/stack';
 import toast from 'pl-fe/toast';

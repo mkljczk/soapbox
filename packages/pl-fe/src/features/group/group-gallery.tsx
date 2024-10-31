@@ -1,8 +1,8 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useGroup } from 'pl-fe/api/hooks/groups/useGroup';
-import { useGroupMedia } from 'pl-fe/api/hooks/groups/useGroupMedia';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
+import { useGroupMedia } from 'pl-fe/api/hooks/groups/use-group-media';
 import LoadMore from 'pl-fe/components/load-more';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import Column from 'pl-fe/components/ui/column';
@@ -34,7 +34,7 @@ const GroupGallery: React.FC<IGroupGallery> = (props) => {
   } = useGroupMedia(groupId);
 
   const attachments = statuses.reduce<AccountGalleryAttachment[]>((result, status) => {
-    result.push(...status.media_attachments.map((a) => ({ ...a, status: status as any, account: status.account })));
+    result.push(...status.media_attachments.map((a) => ({ ...a, status, account: status.account })));
     return result;
   }, []);
 

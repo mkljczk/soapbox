@@ -1,8 +1,8 @@
 import React from 'react';
 import { FormattedList, FormattedMessage } from 'react-intl';
 
-import { useCompose } from 'pl-fe/hooks/useCompose';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 interface IReplyMentions {

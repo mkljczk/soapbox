@@ -6,8 +6,8 @@ import { fetchAccountTimeline } from 'pl-fe/actions/timelines';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Text from 'pl-fe/components/ui/text';
 import Widget from 'pl-fe/components/ui/widget';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { type AccountGalleryAttachment, getAccountGallery } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 

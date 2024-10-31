@@ -1,3 +1,6 @@
+/**
+ * @category Request params
+ */
 interface CreateAccountParams {
   /** String. The desired username for the account */
   username: string;
@@ -30,6 +33,9 @@ interface CreateAccountParams {
   accepts_email_list?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 interface UpdateCredentialsParams {
   /** String. The display name to use for the profile. */
   display_name?: string;
@@ -115,6 +121,9 @@ interface UpdateCredentialsParams {
   enable_rss?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 interface UpdateNotificationSettingsParams {
   /**
    * blocks notifications from accounts you do not follow
@@ -127,6 +136,9 @@ interface UpdateNotificationSettingsParams {
   hide_notification_contents?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 type UpdateInteractionPoliciesParams = Record<
   'public' | 'unlisted' | 'private' | 'direct',
   Record<

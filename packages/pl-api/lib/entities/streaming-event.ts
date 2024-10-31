@@ -8,6 +8,9 @@ import { markersSchema } from './marker';
 import { notificationSchema } from './notification';
 import { statusSchema } from './status';
 
+/**
+ * @category Schemas
+ */
 const followRelationshipUpdateSchema = v.object({
   state: v.picklist(['follow_pending', 'follow_accept', 'follow_reject']),
   follower: v.object({
@@ -96,7 +99,10 @@ const markerStreamingEventSchema = v.object({
   payload: v.pipe(v.any(), v.transform((payload: any) => JSON.parse(payload)), markersSchema),
 });
 
-/** @see {@link https://docs.joinmastodon.org/methods/streaming/#events} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/methods/streaming/#events}
+ */
 const streamingEventSchema: v.BaseSchema<any, StreamingEvent, v.BaseIssue<unknown>> = v.pipe(
   v.any(),
   v.transform((event: any) => ({

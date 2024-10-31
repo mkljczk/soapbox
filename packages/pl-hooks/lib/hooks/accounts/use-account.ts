@@ -1,13 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
 import { usePlHooksApiClient } from 'pl-hooks/contexts/api-client';
 import { queryClient, usePlHooksQueryClient } from 'pl-hooks/contexts/query-client';
 import { importEntities } from 'pl-hooks/importer';
-import { type Account, normalizeAccount } from 'pl-hooks/normalizers/account';
+import { normalizeAccount, type NormalizedAccount } from 'pl-hooks/normalizers/account';
 
 import { useAccountRelationship } from './use-account-relationship';
 
-import type { PlApiClient } from 'pl-api';
+import type { PlApiClient, Relationship } from 'pl-api';
+
+interface Account extends NormalizedAccount {
+  relationship: Relationship | null;
+  moved: Account | null;
+}
 
 interface UseAccountOpts {
   withRelationship?: boolean;
@@ -15,7 +20,9 @@ interface UseAccountOpts {
   withMoveTarget?: boolean;
 }
 
-const useAccount = (accountId?: string, opts: UseAccountOpts = {}) => {
+type UseAccountQueryResult = Omit<UseQueryResult<NormalizedAccount>, 'data'> & { data: Account | undefined };
+
+const useAccount = (accountId?: string, opts: UseAccountOpts = {}): UseAccountQueryResult => {
   const { client } = usePlHooksApiClient();
   const queryClient = usePlHooksQueryClient();
 
@@ -28,15 +35,15 @@ const useAccount = (accountId?: string, opts: UseAccountOpts = {}) => {
 
   const relationshipQuery = useAccountRelationship(opts.withRelationship ? accountId : undefined);
 
-  let data;
+  let data: Account | undefined;
 
   if (accountQuery.data) {
     data = {
       ...accountQuery.data,
-      relationship: relationshipQuery.data,
+      relationship: relationshipQuery.data || null,
       moved: opts.withMoveTarget && queryClient.getQueryData(['accounts', 'entities', accountQuery.data?.moved_id]) as Account || null,
     };
-  } else data = null;
+  }
 
   return { ...accountQuery, data };
 };
@@ -52,4 +59,4 @@ const prefetchAccount = (client: PlApiClient, accountId: string) =>
       }),
   });
 
-export { useAccount, prefetchAccount, type UseAccountOpts };
+export { useAccount, prefetchAccount, type UseAccountOpts, type Account as UseAccountData };

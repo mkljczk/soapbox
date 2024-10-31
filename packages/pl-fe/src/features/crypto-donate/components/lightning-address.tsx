@@ -32,7 +32,4 @@ const LightningAddress: React.FC<ILightningAddress> = (props): JSX.Element => {
   );
 };
 
-export {
-  type ILightningAddress,
-  LightningAddress as default,
-};
+export { LightningAddress as default };

@@ -6,8 +6,8 @@ import Button from 'pl-fe/components/ui/button';
 import Form from 'pl-fe/components/ui/form';
 import HStack from 'pl-fe/components/ui/hstack';
 import Input from 'pl-fe/components/ui/input';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 const messages = defineMessages({
   label: { id: 'lists.new.title_placeholder', defaultMessage: 'New list title' },

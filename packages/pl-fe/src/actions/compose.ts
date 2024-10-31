@@ -137,7 +137,7 @@ const setComposeToStatus = (
     const client = getClient(getState);
     const { createStatusExplicitAddressing: explicitAddressing, version: v } = client.features;
 
-    const action: ComposeSetStatusAction = {
+    dispatch<ComposeSetStatusAction>({
       type: COMPOSE_SET_STATUS,
       composeId: 'compose-modal',
       status,
@@ -150,9 +150,7 @@ const setComposeToStatus = (
       withRedraft,
       draftId,
       editorState,
-    };
-
-    dispatch(action);
+    });
   };
 
 const changeCompose = (composeId: string, text: string) => ({
@@ -169,11 +167,13 @@ interface ComposeReplyAction {
   explicitAddressing: boolean;
   preserveSpoilers: boolean;
   rebloggedBy?: Pick<Account, 'acct' | 'id'>;
+  approvalRequired?: boolean;
 }
 
 const replyCompose = (
   status: ComposeReplyAction['status'],
   rebloggedBy?: ComposeReplyAction['rebloggedBy'],
+  approvalRequired?: ComposeReplyAction['approvalRequired'],
 ) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
@@ -184,7 +184,7 @@ const replyCompose = (
 
     if (!account) return;
 
-    const action: ComposeReplyAction = {
+    dispatch<ComposeReplyAction>({
       type: COMPOSE_REPLY,
       composeId: 'compose-modal',
       status,
@@ -192,9 +192,8 @@ const replyCompose = (
       explicitAddressing,
       preserveSpoilers,
       rebloggedBy,
-    };
-
-    dispatch(action);
+      approvalRequired,
+    });
     useModalsStore.getState().openModal('COMPOSE');
   };
 
@@ -216,15 +215,13 @@ const quoteCompose = (status: ComposeQuoteAction['status']) =>
     const state = getState();
     const { createStatusExplicitAddressing: explicitAddressing } = state.auth.client.features;
 
-    const action: ComposeQuoteAction = {
+    dispatch<ComposeQuoteAction>({
       type: COMPOSE_QUOTE,
       composeId: 'compose-modal',
       status,
       account: selectOwnAccount(state),
       explicitAddressing,
-    };
-
-    dispatch(action);
+    });
     useModalsStore.getState().openModal('COMPOSE');
   };
 
@@ -256,13 +253,11 @@ const mentionCompose = (account: ComposeMentionAction['account']) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!getState().me) return;
 
-    const action: ComposeMentionAction = {
+    dispatch<ComposeMentionAction>({
       type: COMPOSE_MENTION,
       composeId: 'compose-modal',
       account: account,
-    };
-
-    dispatch(action);
+    });
     useModalsStore.getState().openModal('COMPOSE');
   };
 
@@ -274,13 +269,11 @@ interface ComposeDirectAction {
 
 const directCompose = (account: ComposeDirectAction['account']) =>
   (dispatch: AppDispatch) => {
-    const action: ComposeDirectAction = {
+    dispatch<ComposeDirectAction>({
       type: COMPOSE_DIRECT,
       composeId: 'compose-modal',
       account,
-    };
-
-    dispatch(action);
+    });
     useModalsStore.getState().openModal('COMPOSE');
   };
 
@@ -289,13 +282,11 @@ const directComposeById = (accountId: string) =>
     const account = selectAccount(getState(), accountId);
     if (!account) return;
 
-    const action: ComposeDirectAction = {
+    dispatch<ComposeDirectAction>({
       type: COMPOSE_DIRECT,
       composeId: 'compose-modal',
       account,
-    };
-
-    dispatch(action);
+    });
     useModalsStore.getState().openModal('COMPOSE');
   };
 
@@ -343,11 +334,12 @@ const validateSchedule = (state: RootState, composeId: string) => {
 interface SubmitComposeOpts {
   history?: History;
   force?: boolean;
+  onSuccess?: () => void;
 }
 
 const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
-    const { history, force = false } = opts;
+    const { history, force = false, onSuccess } = opts;
 
     if (!isLoggedIn(getState)) return;
     const state = getState();
@@ -372,7 +364,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
       useModalsStore.getState().openModal('MISSING_DESCRIPTION', {
         onContinue: () => {
           useModalsStore.getState().closeModal('MISSING_DESCRIPTION');
-          dispatch(submitCompose(composeId, { history, force: true }));
+          dispatch(submitCompose(composeId, { history, force: true, onSuccess }));
         },
       });
       return;
@@ -444,6 +436,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
         history.push('/conversations');
       }
       handleComposeSubmit(dispatch, getState, composeId, data, status, !!statusId);
+      onSuccess?.();
     }).catch((error) => {
       dispatch(submitComposeFail(composeId, error));
     });
@@ -699,16 +692,14 @@ const selectComposeSuggestion = (composeId: string, position: number, token: str
       startPosition = position;
     }
 
-    const action: ComposeSuggestionSelectAction = {
+    dispatch<ComposeSuggestionSelectAction>({
       type: COMPOSE_SUGGESTION_SELECT,
       composeId,
       position: startPosition,
       token,
       completion,
       path,
-    };
-
-    dispatch(action);
+    });
   };
 
 const updateSuggestionTags = (composeId: string, token: string, tags: Array<Tag>) => ({
@@ -868,13 +859,11 @@ const addToMentions = (composeId: string, accountId: string) =>
     const account = selectAccount(state, accountId);
     if (!account) return;
 
-    const action: ComposeAddToMentionsAction = {
+    return dispatch<ComposeAddToMentionsAction>({
       type: COMPOSE_ADD_TO_MENTIONS,
       composeId,
       account: account.acct,
-    };
-
-    return dispatch(action);
+    });
   };
 
 interface ComposeRemoveFromMentionsAction {
@@ -889,13 +878,11 @@ const removeFromMentions = (composeId: string, accountId: string) =>
     const account = selectAccount(state, accountId);
     if (!account) return;
 
-    const action: ComposeRemoveFromMentionsAction = {
+    return dispatch<ComposeRemoveFromMentionsAction>({
       type: COMPOSE_REMOVE_FROM_MENTIONS,
       composeId,
       account: account.acct,
-    };
-
-    return dispatch(action);
+    });
   };
 
 interface ComposeEventReplyAction {

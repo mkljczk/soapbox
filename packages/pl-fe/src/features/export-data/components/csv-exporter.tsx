@@ -5,7 +5,7 @@ import Button from 'pl-fe/components/ui/button';
 import Form from 'pl-fe/components/ui/form';
 import FormActions from 'pl-fe/components/ui/form-actions';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { AppDispatch, RootState } from 'pl-fe/store';
 
 interface ICSVExporter {

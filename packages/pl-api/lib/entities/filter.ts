@@ -2,20 +2,29 @@ import * as v from 'valibot';
 
 import { datetimeSchema, filteredArray } from './utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/FilterKeyword/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/FilterKeyword/}
+ */
 const filterKeywordSchema = v.object({
   id: v.string(),
   keyword: v.string(),
   whole_word: v.boolean(),
 });
 
-/** @see {@link https://docs.joinmastodon.org/entities/FilterStatus/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/FilterStatus/}
+ */
 const filterStatusSchema = v.object({
   id: v.string(),
   status_id: v.string(),
 });
 
-/** @see {@link https://docs.joinmastodon.org/entities/Filter/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Filter/}
+ */
 const filterSchema = v.pipe(
   v.any(),
   v.transform((filter: any) => {

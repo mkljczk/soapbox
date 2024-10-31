@@ -2,7 +2,7 @@ import React from 'react';
 
 import Button from 'pl-fe/components/ui/button';
 import HStack from 'pl-fe/components/ui/hstack';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 interface IPinnedHostsPicker {
   /** The active host among pinned hosts. */

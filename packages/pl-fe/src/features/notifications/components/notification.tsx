@@ -16,9 +16,9 @@ import AccountContainer from 'pl-fe/containers/account-container';
 import StatusContainer from 'pl-fe/containers/status-container';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useInstance } from 'pl-fe/hooks/useInstance';
-import { useLoggedIn } from 'pl-fe/hooks/useLoggedIn';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { NotificationType } from 'pl-fe/utils/notification';
@@ -377,7 +377,7 @@ const Notification: React.FC<INotification> = ({ hidden = false, id, onMoveUp, o
     }
   };
 
-  const targetName = notification.type === 'move' ? notification.target.acct : '';
+  const targetName = notification.type === 'move' && notification.target?.acct || '';
 
   const message: React.ReactNode = account && typeof account === 'object'
     ? buildMessage(intl, displayedType, accounts, targetName, instance.title)
@@ -446,4 +446,4 @@ const Notification: React.FC<INotification> = ({ hidden = false, id, onMoveUp, o
   );
 };
 
-export { Notification as default, getNotificationStatus };
+export { Notification as default, buildLink, getNotificationStatus };

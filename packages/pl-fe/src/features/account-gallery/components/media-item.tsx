@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import Blurhash from 'pl-fe/components/blurhash';
 import Icon from 'pl-fe/components/icon';
 import StillImage from 'pl-fe/components/still-image';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { isIOS } from 'pl-fe/is-mobile';
 
 import type { AccountGalleryAttachment } from 'pl-fe/selectors';

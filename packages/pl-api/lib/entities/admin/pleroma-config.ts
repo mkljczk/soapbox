@@ -1,5 +1,8 @@
 import * as v from 'valibot';
 
+/**
+ * @category Schemas
+ */
 const pleromaConfigSchema = v.object({
   configs: v.array(v.object({
     value: v.any(),

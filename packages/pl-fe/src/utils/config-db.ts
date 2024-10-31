@@ -57,4 +57,4 @@ const ConfigDB = {
   fromSimplePolicy,
 };
 
-export { type Config, type Policy, ConfigDB as default };
+export { type Config, ConfigDB as default };

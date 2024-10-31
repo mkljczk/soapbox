@@ -5,10 +5,10 @@ import { fetchInstance } from 'pl-fe/actions/instance';
 import { fetchMe } from 'pl-fe/actions/me';
 import { loadPlFeConfig } from 'pl-fe/actions/pl-fe';
 import LoadingScreen from 'pl-fe/components/loading-screen';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useLocale } from 'pl-fe/hooks/useLocale';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useLocale } from 'pl-fe/hooks/use-locale';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import MESSAGES from 'pl-fe/messages';
 
 /** Load initial data from the backend */

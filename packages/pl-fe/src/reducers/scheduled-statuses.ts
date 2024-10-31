@@ -1,6 +1,6 @@
 import { Map as ImmutableMap } from 'immutable';
 
-import { STATUS_IMPORT, STATUSES_IMPORT } from 'pl-fe/actions/importer';
+import { STATUS_IMPORT, STATUSES_IMPORT, type ImporterAction } from 'pl-fe/actions/importer';
 import {
   SCHEDULED_STATUSES_FETCH_SUCCESS,
   SCHEDULED_STATUS_CANCEL_REQUEST,
@@ -25,7 +25,7 @@ const importStatuses = (state: State, statuses: Array<Status | ScheduledStatus>)
 
 const deleteStatus = (state: State, statusId: string) => state.delete(statusId);
 
-const scheduled_statuses = (state: State = initialState, action: AnyAction) => {
+const scheduled_statuses = (state: State = initialState, action: AnyAction | ImporterAction) => {
   switch (action.type) {
     case STATUS_IMPORT:
     case STATUS_CREATE_SUCCESS:

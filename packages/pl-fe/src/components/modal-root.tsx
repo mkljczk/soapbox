@@ -5,8 +5,8 @@ import { useHistory } from 'react-router-dom';
 
 import { cancelReplyCompose } from 'pl-fe/actions/compose';
 import { saveDraftStatus } from 'pl-fe/actions/draft-statuses';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { usePrevious } from 'pl-fe/hooks/usePrevious';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { usePrevious } from 'pl-fe/hooks/use-previous';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import type { ModalType } from 'pl-fe/features/ui/components/modal-root';

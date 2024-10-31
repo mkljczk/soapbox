@@ -3,8 +3,8 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import IconButton from 'pl-fe/components/icon-button';
 import { DatePicker } from 'pl-fe/features/ui/util/async-components';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 const messages = defineMessages({
   birthdayPlaceholder: { id: 'edit_profile.fields.birthday_placeholder', defaultMessage: 'Your birthday' },

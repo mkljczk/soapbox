@@ -136,11 +136,11 @@ const makeGetReport = () => {
 
   return createSelector(
     [
-      (state: RootState, id: string) => state.admin.reports.get(id),
-      (state: RootState, id: string) => selectAccount(state, state.admin.reports.get(id)?.account_id || ''),
-      (state: RootState, id: string) => selectAccount(state, state.admin.reports.get(id)?.target_account_id || ''),
-      (state: RootState, id: string) => state.admin.reports.get(id)!.status_ids
-        .map((id) => getStatus(state, { id }))
+      (state: RootState, reportId: string) => state.admin.reports.get(reportId),
+      (state: RootState, reportId: string) => selectAccount(state, state.admin.reports.get(reportId)?.account_id || ''),
+      (state: RootState, reportId: string) => selectAccount(state, state.admin.reports.get(reportId)?.target_account_id || ''),
+      (state: RootState, reportId: string) => state.admin.reports.get(reportId)!.status_ids
+        .map((statusId) => getStatus(state, { id: statusId }))
         .filter((status): status is SelectedStatus => status !== null),
     ],
     (report, account, target_account, statuses) => {
@@ -157,12 +157,12 @@ const makeGetReport = () => {
 
 const getAuthUserIds = createSelector(
   [(state: RootState) => state.auth.users],
-  authUsers => authUsers.reduce((ids: ImmutableOrderedSet<string>, authUser) => {
+  authUsers => authUsers.reduce((userIds: ImmutableOrderedSet<string>, authUser) => {
     try {
-      const id = authUser.id;
-      return validId(id) ? ids.add(id) : ids;
+      const userId = authUser.id;
+      return validId(userId) ? userIds.add(userId) : userIds;
     } catch {
-      return ids;
+      return userIds;
     }
   }, ImmutableOrderedSet<string>()));
 
@@ -248,7 +248,6 @@ const makeGetStatusIds = () => createSelector([
 );
 
 export {
-  type HostFederation,
   type RemoteInstance,
   selectAccount,
   selectAccounts,
@@ -261,7 +260,6 @@ export {
   makeGetReport,
   makeGetOtherAccounts,
   makeGetHosts,
-  RemoteInstanceRecord,
   makeGetRemoteInstance,
   makeGetStatusIds,
 };

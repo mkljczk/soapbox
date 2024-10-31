@@ -5,7 +5,10 @@ import { mediaAttachmentSchema } from './media-attachment';
 import { previewCardSchema } from './preview-card';
 import { datetimeSchema, filteredArray } from './utils';
 
-/** @see {@link https://docs.pleroma.social/backend/development/API/chats/#getting-the-messages-for-a-chat} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.pleroma.social/backend/development/API/chats/#getting-the-messages-for-a-chat}
+ */
 const chatMessageSchema = v.object({
   id: v.string(),
   content: v.fallback(v.string(), ''),

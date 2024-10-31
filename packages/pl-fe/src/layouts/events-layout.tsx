@@ -7,7 +7,7 @@ import {
   TrendsPanel,
   NewEventPanel,
 } from 'pl-fe/features/ui/util/async-components';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 
 interface IEventsLayout {
   children: React.ReactNode;

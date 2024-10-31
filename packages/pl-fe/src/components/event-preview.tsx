@@ -11,7 +11,7 @@ import VerificationBadge from 'pl-fe/components/verification-badge';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import EventActionButton from 'pl-fe/features/event/components/event-action-button';
 import EventDate from 'pl-fe/features/event/components/event-date';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
 

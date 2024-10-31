@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { CLEAR_EDITOR_COMMAND, TextNode, type LexicalEditor } from 'lexical';
 import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { length } from 'stringz';
 
@@ -17,12 +17,12 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import EmojiPickerDropdown from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
 import { ComposeEditor } from 'pl-fe/features/ui/util/async-components';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useCompose } from 'pl-fe/hooks/useCompose';
-import { useDraggedFiles } from 'pl-fe/hooks/useDraggedFiles';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import QuotedStatusContainer from '../containers/quoted-status-container';
 import ReplyIndicatorContainer from '../containers/reply-indicator-container';
@@ -45,6 +45,7 @@ import SpoilerInput from './spoiler-input';
 import TextCharacterCounter from './text-character-counter';
 import UploadForm from './upload-form';
 import VisualCharacterCounter from './visual-character-counter';
+import Warning from './warning';
 
 import type { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import type { Emoji } from 'pl-fe/features/emoji';
@@ -142,9 +143,9 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
     if (!canSubmit) return;
     e?.preventDefault();
 
-    dispatch(submitCompose(id, { history })).then(() => {
+    dispatch(submitCompose(id, { history, onSuccess: () => {
       editorRef.current?.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
-    }).catch(() => {});
+    } }));
   };
 
   const onSuggestionsClearRequested = () => {
@@ -227,6 +228,14 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
 
   return (
     <Stack className='w-full' space={4} ref={formRef} onClick={handleClick} element='form' onSubmit={handleSubmit}>
+      {!!compose.in_reply_to && compose.approvalRequired && (
+        <Warning
+          message={(
+            <FormattedMessage id='compose_form.approval_required' defaultMessage='The reply needs to be approved by the post author.' />
+          )}
+        />
+      )}
+
       <WarningContainer composeId={id} />
 
       {!shouldCondense && !event && !group && groupId && <ReplyGroupIndicator composeId={id} />}

@@ -7,8 +7,8 @@ import { useIntl } from 'react-intl';
 
 import { addSuggestedLanguage, addSuggestedQuote, setEditorState } from 'pl-fe/actions/compose';
 import { fetchStatus } from 'pl-fe/actions/statuses';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { getStatusIdsFromLinksInContent } from 'pl-fe/utils/status';
 
 import type { LanguageIdentificationModel } from 'fasttext.wasm.js/dist/models/language-identification/common.js';

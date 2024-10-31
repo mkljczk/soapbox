@@ -32,8 +32,7 @@ const fetchInstance = () => async (dispatch: AppDispatch, getState: () => RootSt
   try {
     const instance = await getClient(getState).instance.getInstance();
 
-    const action: InstanceFetchSuccessAction = { type: INSTANCE_FETCH_SUCCESS, instance };
-    dispatch(action);
+    dispatch<InstanceFetchSuccessAction>({ type: INSTANCE_FETCH_SUCCESS, instance });
   } catch (error) {
     dispatch({ type: INSTANCE_FETCH_FAIL, error });
   }

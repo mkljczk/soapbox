@@ -2,8 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import Text from 'pl-fe/components/ui/text';
-import { usePlFeConfig } from 'pl-fe/hooks/usePlFeConfig';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 interface INavlinks {
   type: string;

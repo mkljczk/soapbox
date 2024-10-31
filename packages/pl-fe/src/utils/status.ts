@@ -68,7 +68,6 @@ const getStatusIdsFromLinksInContent = (content: string): string[] => {
 
 export {
   defaultMediaVisibility,
-  getFirstExternalLink,
   shouldHaveCard,
   hasIntegerMediaIds,
   textForScreenReader,

@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 import { filterSchema } from './filter';
 
-/** @see {@link https://docs.joinmastodon.org/entities/FilterResult/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/FilterResult/}
+ */
 const filterResultSchema = v.object({
   filter: filterSchema,
   keyword_matches: v.fallback(v.nullable(v.string()), null),

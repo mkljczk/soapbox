@@ -450,10 +450,10 @@ const fetchPinnedAccountsFail = (accountId: string, error: unknown) => ({
 const accountSearch = (q: string, signal?: AbortSignal) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: ACCOUNT_SEARCH_REQUEST, params: { q } });
-    return getClient(getState()).accounts.searchAccounts(q, { resolve: false, limit: 4, following: true }, { signal }).then((response) => {
-      importEntities({ accounts: response });
-      dispatch({ type: ACCOUNT_SEARCH_SUCCESS, accounts: response });
-      return response;
+    return getClient(getState()).accounts.searchAccounts(q, { resolve: false, limit: 4, following: true }, { signal }).then((accounts) => {
+      importEntities({ accounts });
+      dispatch({ type: ACCOUNT_SEARCH_SUCCESS, accounts });
+      return accounts;
     }).catch(error => {
       dispatch({ type: ACCOUNT_SEARCH_FAIL, skipAlert: true });
       throw error;

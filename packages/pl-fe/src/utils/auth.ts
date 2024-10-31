@@ -70,7 +70,6 @@ export {
   parseBaseURL,
   getLoggedInAccount,
   isLoggedIn,
-  getUserToken,
   getAccessToken,
   getAuthUserId,
   getAuthUserUrl,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormattedDate, FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useAnnouncements } from 'pl-fe/api/hooks/admin/useAnnouncements';
+import { useAnnouncements } from 'pl-fe/api/hooks/admin/use-announcements';
 import { ParsedContent } from 'pl-fe/components/parsed-content';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Button from 'pl-fe/components/ui/button';

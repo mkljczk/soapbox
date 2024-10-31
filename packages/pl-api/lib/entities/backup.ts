@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 import { datetimeSchema, mimeSchema } from './utils';
 
-/** @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#post-apiv1pleromabackups} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#post-apiv1pleromabackups}
+ */
 const backupSchema = v.object({
   id: v.pipe(v.unknown(), v.transform(String)),
   contentType: mimeSchema,

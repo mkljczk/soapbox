@@ -2,16 +2,16 @@ import React, { useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { translateStatus, undoStatusTranslation } from 'pl-fe/actions/statuses';
-import { useTranslationLanguages } from 'pl-fe/api/hooks/instance/useTranslationLanguages';
+import { useTranslationLanguages } from 'pl-fe/api/hooks/instance/use-translation-languages';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useInstance } from 'pl-fe/hooks/useInstance';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 import type { Status } from 'pl-fe/normalizers/status';
 
@@ -87,7 +87,14 @@ const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
       <Stack space={3} alignItems='start'>
         {button}
         <Text theme='muted'>
-          <FormattedMessage id='status.translated_from_with' defaultMessage='Translated from {lang} using {provider}' values={{ lang: languageName, provider }} />
+          <FormattedMessage
+            id='status.translated_from_with'
+            defaultMessage='Translated from {lang} {provider}'
+            values={{
+              lang: languageName,
+              provider: provider ? <FormattedMessage id='status.translated_from_with.provider' defaultMessage='with {provider}' values={{ provider }} /> : undefined,
+            }}
+          />
         </Text>
       </Stack>
     );

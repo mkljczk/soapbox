@@ -1,11 +1,13 @@
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery, UseQueryOptions, type UseQueryResult } from '@tanstack/react-query';
 
 import { usePlHooksApiClient } from 'pl-hooks/contexts/api-client';
 import { queryClient, usePlHooksQueryClient } from 'pl-hooks/contexts/query-client';
+import { usePoll } from 'pl-hooks/hooks/polls/use-poll';
 import { importEntities } from 'pl-hooks/importer';
-import { type Account, normalizeAccount } from 'pl-hooks/normalizers/account';
+import { type NormalizedAccount } from 'pl-hooks/normalizers/account';
+import { type NormalizedStatus, normalizeStatus } from 'pl-hooks/normalizers/status';
 
-import { normalizeStatus, type Status } from '../../normalizers/status';
+import type { Poll } from 'pl-api';
 
 // const toServerSideType = (columnType: string): Filter['context'][0] => {
 //   switch (columnType) {
@@ -77,14 +79,28 @@ import { normalizeStatus, type Status } from '../../normalizers/status';
 //       return result;
 //     }, [])), []);
 
-const importStatus = (status: Status) => {
-  queryClient.setQueryData<Status>(
+const importStatus = (status: NormalizedStatus) => {
+  queryClient.setQueryData<NormalizedStatus>(
     ['statuses', 'entities', status.id],
     status,
   );
 };
 
-const useStatus = (statusId?: string, opts: { language?: string } = {}) => {
+type Status = NormalizedStatus & {
+  account: NormalizedAccount;
+  accounts: Array<NormalizedAccount>;
+  poll?: Poll;
+  reblog?: Status;
+};
+
+interface UseStatusOpts {
+  language?: string;
+  withReblog?: boolean;
+}
+
+type UseStatusQueryResult = Omit<UseQueryResult<NormalizedStatus>, 'data'> & { data: Status | undefined };
+
+const useStatus = (statusId?: string, opts: UseStatusOpts = { withReblog: true }): UseStatusQueryResult => {
   const queryClient = usePlHooksQueryClient();
   const { client } = usePlHooksApiClient();
 
@@ -100,25 +116,28 @@ const useStatus = (statusId?: string, opts: { language?: string } = {}) => {
 
   const status = statusQuery.data;
 
-  const accountsQuery = useQueries({
+  const pollQuery = usePoll(status?.poll_id || undefined);
+
+  let reblogQuery: UseStatusQueryResult | undefined;
+  if (opts.withReblog) {
+    reblogQuery = useStatus(status?.reblog_id || undefined, { ...opts, withReblog: false });
+  }
+
+  const accountsQuery = useQueries<UseQueryOptions<NormalizedAccount>[]>({
     queries: status?.account_ids.map(accountId => ({
       queryKey: ['accounts', 'entities', accountId],
-      queryFn: () => client.accounts.getAccount(accountId!)
-        .then(account => (importEntities({ accounts: [account] }, { withParents: false }), account))
-        .then(normalizeAccount),
     })) || [],
   }, queryClient);
 
-  let data: (Status & {
-    account: Account;
-    accounts: Array<Account>;
-  }) | null = null;
+  let data: Status | undefined;
 
   if (status) {
     data = {
       ...status,
       account: accountsQuery[0].data!,
       accounts: accountsQuery.map(({ data }) => data!).filter(Boolean),
+      poll: pollQuery.data || undefined,
+      reblog: reblogQuery?.data || undefined,
       // quote,
       // reblog,
       // poll
@@ -128,4 +147,4 @@ const useStatus = (statusId?: string, opts: { language?: string } = {}) => {
   return { ...statusQuery, data };
 };
 
-export { useStatus, importStatus };
+export { useStatus, importStatus, type Status as UseStatusData };

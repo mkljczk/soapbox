@@ -64,7 +64,7 @@ import {
 import { EVENT_COMPOSE_CANCEL, EVENT_FORM_SET, type EventsAction } from '../actions/events';
 import { ME_FETCH_SUCCESS, ME_PATCH_SUCCESS, MeAction } from '../actions/me';
 import { FE_NAME } from '../actions/settings';
-import { TIMELINE_DELETE, TimelineAction } from '../actions/timelines';
+import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 import { unescapeHTML } from '../utils/html';
 
 import type { Emoji } from 'pl-fe/features/emoji';
@@ -119,6 +119,7 @@ const ReducerCompose = ImmutableRecord({
   modified_language: null as Language | null,
   suggested_language: null as string | null,
   federated: true,
+  approvalRequired: false,
 });
 
 type State = ImmutableMap<string, Compose>;
@@ -344,6 +345,7 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
         map.set('caretPosition', null);
         map.set('idempotencyKey', crypto.randomUUID());
         map.set('content_type', defaultCompose.content_type);
+        map.set('approvalRequired', action.approvalRequired || false);
         if (action.preserveSpoilers && action.status.spoiler_text) {
           map.set('sensitive', true);
           map.set('spoiler_text', action.status.spoiler_text);
@@ -604,8 +606,6 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
 
 export {
   ReducerCompose,
-  type Compose,
-  statusToMentionsArray,
   statusToMentionsAccountIdsArray,
   initialState,
   compose as default,

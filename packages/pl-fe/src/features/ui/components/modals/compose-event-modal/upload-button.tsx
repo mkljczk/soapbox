@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import Icon from 'pl-fe/components/icon';
 import HStack from 'pl-fe/components/ui/hstack';
 import Text from 'pl-fe/components/ui/text';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 interface IUploadButton {
   disabled?: boolean;

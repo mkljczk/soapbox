@@ -1,6 +1,6 @@
 import { List as ImmutableList, OrderedSet as ImmutableOrderedSet } from 'immutable';
 import { useStatus } from 'pl-hooks';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { eventDiscussionCompose } from 'pl-fe/actions/compose';
@@ -11,11 +11,11 @@ import Tombstone from 'pl-fe/components/tombstone';
 import Stack from 'pl-fe/components/ui/stack';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import PendingStatus from 'pl-fe/features/ui/components/pending-status';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import ComposeForm from '../compose/components/compose-form';
-import { getDescendantsIds } from '../status/components/thread';
+import { makeGetDescendantsIds } from '../status/components/thread';
 import ThreadStatus from '../status/components/thread-status';
 
 import type { MediaAttachment } from 'pl-api';
@@ -33,6 +33,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statu
   const dispatch = useAppDispatch();
 
   const { data: status } = useStatus(statusId);
+  const getDescendantsIds = useCallback(makeGetDescendantsIds(), []);
 
   const me = useAppSelector((state) => state.me);
 

@@ -3,8 +3,8 @@ import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { Redirect, Route, useHistory, RouteProps, RouteComponentProps, match as MatchType, useLocation } from 'react-router-dom';
 
 import Layout from 'pl-fe/components/ui/layout';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 import ColumnForbidden from '../components/column-forbidden';
 import ColumnLoading from '../components/column-loading';

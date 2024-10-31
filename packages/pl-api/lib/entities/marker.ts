@@ -2,6 +2,10 @@ import * as v from 'valibot';
 
 import { datetimeSchema } from './utils';
 
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Marker/}
+ */
 const markerSchema = v.pipe(
   v.any(),
   v.transform((marker: any) => marker ? ({
@@ -16,9 +20,11 @@ const markerSchema = v.pipe(
   }),
 );
 
-/** @see {@link https://docs.joinmastodon.org/entities/Marker/} */
 type Marker = v.InferOutput<typeof markerSchema>;
 
+/**
+ * @category Schemas
+ */
 const markersSchema = v.record(v.string(), markerSchema);
 
 type Markers = v.InferOutput<typeof markersSchema>;

@@ -1,5 +1,8 @@
 import * as v from 'valibot';
 
+/**
+ * @category Schemas
+ */
 const bookmarkFolderSchema = v.object({
   id: v.pipe(v.unknown(), v.transform(String)),
   name: v.fallback(v.string(), ''),

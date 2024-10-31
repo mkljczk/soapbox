@@ -47,7 +47,11 @@ const Emojify: React.FC<IEmojify> = ({ text, emojis = {} }) => React.useMemo(() 
     stack = '';
   };
 
-  for (let c of split(text)) {
+  const splitText = split(text);
+
+  for (const index in splitText) {
+    let c = splitText[index];
+
     // convert FE0E selector to FE0F so it can be found in unimap
     if (c.codePointAt(c.length - 1) === 65038) {
       c = c.slice(0, -1) + String.fromCodePoint(65039);
@@ -62,7 +66,7 @@ const Emojify: React.FC<IEmojify> = ({ text, emojis = {} }) => React.useMemo(() 
       const { unified, shortcode } = unicodeMapping[c];
 
       nodes.push(
-        <img draggable={false} className='emojione' alt={c} title={`:${shortcode}:`} src={`/packs/emoji/${unified}.svg`} />,
+        <img key={index} draggable={false} className='emojione' alt={c} title={`:${shortcode}:`} src={`/packs/emoji/${unified}.svg`} />,
       );
     } else if (unqualified in unicodeMapping) {
       clearStack();
@@ -70,7 +74,7 @@ const Emojify: React.FC<IEmojify> = ({ text, emojis = {} }) => React.useMemo(() 
       const { unified, shortcode } = unicodeMapping[unqualified];
 
       nodes.push(
-        <img draggable={false} className='emojione' alt={unqualified} title={`:${shortcode}:`} src={`/packs/emoji/${unified}.svg`} />,
+        <img key={index} draggable={false} className='emojione' alt={unqualified} title={`:${shortcode}:`} src={`/packs/emoji/${unified}.svg`} />,
       );
     } else if (c === ':') {
       if (!open) {
@@ -81,7 +85,7 @@ const Emojify: React.FC<IEmojify> = ({ text, emojis = {} }) => React.useMemo(() 
 
       // we see another : we convert it and clear the stack buffer
       if (open) {
-        nodes.push(<MaybeEmoji text={stack} emojis={emojis} />);
+        nodes.push(<MaybeEmoji key={index} text={stack} emojis={emojis} />);
         stack = '';
       }
 

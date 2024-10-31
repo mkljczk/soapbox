@@ -39,25 +39,22 @@ const fetchStatusQuotes = (statusId: string) =>
       return dispatch(noOp);
     }
 
-    const action: FetchStatusQuotesRequestAction = { type: STATUS_QUOTES_FETCH_REQUEST, statusId };
-    dispatch(action);
+    dispatch<FetchStatusQuotesRequestAction>({ type: STATUS_QUOTES_FETCH_REQUEST, statusId });
 
     return getClient(getState).statuses.getStatusQuotes(statusId).then(response => {
       importEntities({ statuses: response.items });
-      const action: FetchStatusQuotesSuccessAction = {
+      return dispatch<FetchStatusQuotesSuccessAction>({
         type: STATUS_QUOTES_FETCH_SUCCESS,
         statusId,
         statuses: response.items,
         next: response.next,
-      };
-      return dispatch(action);
+      });
     }).catch(error => {
-      const action: FetchStatusQuotesFailAction = {
+      dispatch<FetchStatusQuotesFailAction>({
         type: STATUS_QUOTES_FETCH_FAIL,
         statusId,
         error,
-      };
-      dispatch(action);
+      });
     });
   };
 
@@ -87,28 +84,25 @@ const expandStatusQuotes = (statusId: string) =>
       return dispatch(noOp);
     }
 
-    const action: ExpandStatusQuotesRequestAction = {
+    dispatch<ExpandStatusQuotesRequestAction>({
       type: STATUS_QUOTES_EXPAND_REQUEST,
       statusId,
-    };
-    dispatch(action);
+    });
 
     return next().then(response => {
       importEntities({ statuses: response.items });
-      const action: ExpandStatusQuotesSuccessAction = {
+      dispatch<ExpandStatusQuotesSuccessAction>({
         type: STATUS_QUOTES_EXPAND_SUCCESS,
         statusId,
         statuses: response.items,
         next: response.next,
-      };
-      dispatch(action);
+      });
     }).catch(error => {
-      const action: ExpandStatusQuotesFailAction = {
+      dispatch<ExpandStatusQuotesFailAction>({
         type: STATUS_QUOTES_EXPAND_FAIL,
         statusId,
         error,
-      };
-      dispatch(action);
+      });
     });
   };
 

@@ -3,8 +3,8 @@ import { FormattedMessage } from 'react-intl';
 
 import { BigCard } from 'pl-fe/components/big-card';
 import Text from 'pl-fe/components/ui/text';
-import { useInstance } from 'pl-fe/hooks/useInstance';
-import { useRegistrationStatus } from 'pl-fe/hooks/useRegistrationStatus';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
 
 import RegistrationForm from './registration-form';
 

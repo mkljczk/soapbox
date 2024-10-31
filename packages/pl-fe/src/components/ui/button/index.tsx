@@ -101,7 +101,4 @@ const Button = React.forwardRef<HTMLButtonElement, IButton>(({
   return renderButton();
 });
 
-export {
-  Button as default,
-  Button,
-};
+export { Button as default };

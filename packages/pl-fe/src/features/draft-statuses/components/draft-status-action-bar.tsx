@@ -5,7 +5,7 @@ import { setComposeToStatus } from 'pl-fe/actions/compose';
 import { cancelDraftStatus } from 'pl-fe/actions/draft-statuses';
 import Button from 'pl-fe/components/ui/button';
 import HStack from 'pl-fe/components/ui/hstack';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 

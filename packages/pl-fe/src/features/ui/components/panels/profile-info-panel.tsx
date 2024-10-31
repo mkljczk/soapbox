@@ -11,8 +11,8 @@ import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { usePlFeConfig } from 'pl-fe/hooks/usePlFeConfig';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { capitalize } from 'pl-fe/utils/strings';
 
 import ProfileFamiliarFollowers from '../profile-familiar-followers';

@@ -6,7 +6,7 @@ import AltIndicator from 'pl-fe/components/alt-indicator';
 import Avatar from 'pl-fe/components/ui/avatar';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
-import { useDraggedFiles } from 'pl-fe/hooks/useDraggedFiles';
+import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 const messages = defineMessages({

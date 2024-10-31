@@ -3,11 +3,11 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import { fetchAccount } from 'pl-fe/actions/accounts';
 import { addToMentions, removeFromMentions } from 'pl-fe/actions/compose';
-import { useAccount } from 'pl-fe/api/hooks/accounts/useAccount';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import AccountComponent from 'pl-fe/components/account';
 import IconButton from 'pl-fe/components/icon-button';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useCompose } from 'pl-fe/hooks/useCompose';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 
 const messages = defineMessages({
   remove: { id: 'reply_mentions.account.remove', defaultMessage: 'Remove from mentions' },

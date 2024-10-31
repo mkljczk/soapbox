@@ -9,8 +9,8 @@ import Button from 'pl-fe/components/ui/button';
 import Icon from 'pl-fe/components/ui/icon';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import toast from 'pl-fe/toast';
 import { isDefaultAvatar } from 'pl-fe/utils/accounts';
 import resizeImage from 'pl-fe/utils/resize-image';
@@ -59,7 +59,7 @@ const AvatarSelectionStep = ({ onNext }: { onNext: () => void }) => {
         setSelectedFile(null);
 
         if (error.response?.status === 422) {
-          toast.error((error.response.json as any).error.replace('Validation failed: ', ''));
+          toast.error(error.response.json.error.replace('Validation failed: ', ''));
         } else {
           toast.error(messages.error);
         }

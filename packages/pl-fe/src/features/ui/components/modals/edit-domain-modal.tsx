@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useDomains } from 'pl-fe/api/hooks/admin/useDomains';
+import { useDomains } from 'pl-fe/api/hooks/admin/use-domains';
 import Form from 'pl-fe/components/ui/form';
 import FormGroup from 'pl-fe/components/ui/form-group';
 import HStack from 'pl-fe/components/ui/hstack';

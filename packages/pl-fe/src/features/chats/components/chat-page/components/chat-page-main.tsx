@@ -12,9 +12,9 @@ import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import { useChatContext } from 'pl-fe/contexts/chat-context';
 import { Entities } from 'pl-fe/entity-store/entities';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useChat, useChatActions, useChats } from 'pl-fe/queries/chats';
 import { useModalsStore } from 'pl-fe/stores/modals';
 

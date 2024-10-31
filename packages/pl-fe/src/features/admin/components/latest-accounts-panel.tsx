@@ -6,8 +6,8 @@ import { useHistory } from 'react-router-dom';
 import { fetchUsers } from 'pl-fe/actions/admin';
 import Widget from 'pl-fe/components/ui/widget';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 const messages = defineMessages({
   title: { id: 'admin.latest_accounts_panel.title', defaultMessage: 'Latest Accounts' },

@@ -7,7 +7,7 @@ const usePoll = (pollId?: string) => {
   const queryClient = usePlHooksQueryClient();
   const { client } = usePlHooksApiClient();
 
-  return  useQuery({
+  return useQuery({
     queryKey: ['polls', 'entities', pollId],
     queryFn: () => client.polls.getPoll(pollId!),
     enabled: !!pollId,

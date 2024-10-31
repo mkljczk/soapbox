@@ -1,7 +1,7 @@
 import React from 'react';
 
 import unicodeMapping from 'pl-fe/features/emoji/mapping';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { joinPublicPath } from 'pl-fe/utils/static';
 
 import type { Map as ImmutableMap } from 'immutable';

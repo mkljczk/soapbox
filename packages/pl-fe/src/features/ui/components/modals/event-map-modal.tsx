@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import Button from 'pl-fe/components/ui/button';
 import Modal from 'pl-fe/components/ui/modal';
 import Stack from 'pl-fe/components/ui/stack';
-import { usePlFeConfig } from 'pl-fe/hooks/usePlFeConfig';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
 import type { BaseModalProps } from '../modal-root';
 

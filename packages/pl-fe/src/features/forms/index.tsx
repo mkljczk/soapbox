@@ -71,16 +71,6 @@ const LabelInput: React.FC<ILabelInput> = ({ label, ...props }) => (
   </LabelInputContainer>
 );
 
-interface ILabelTextarea {
-  label?: React.ReactNode;
-}
-
-const LabelTextarea: React.FC<ILabelTextarea> = ({ label, ...props }) => (
-  <LabelInputContainer label={label}>
-    <textarea {...props} />
-  </LabelInputContainer>
-);
-
 interface ISimpleInput {
   type: string;
   label?: React.ReactNode;
@@ -109,20 +99,6 @@ const SimpleInput: React.FC<ISimpleInput> = (props) => {
     </InputContainer>
   );
 };
-
-interface ICheckbox {
-  label?: React.ReactNode;
-  hint?: React.ReactNode;
-  name?: string;
-  checked?: boolean;
-  disabled?: boolean;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  required?: boolean;
-}
-
-const Checkbox: React.FC<ICheckbox> = (props) => (
-  <SimpleInput type='checkbox' {...props} />
-);
 
 interface ISelectDropdown {
   className?: string;
@@ -189,25 +165,6 @@ const Mutliselect: React.FC<IMultiselect> = (props) => {
   ) : selectElem;
 };
 
-interface ITextInput {
-  name?: string;
-  onChange?: React.ChangeEventHandler;
-  label?: React.ReactNode;
-  hint?: React.ReactNode;
-  placeholder?: string;
-  value?: string;
-  autoComplete?: string;
-  autoCorrect?: string;
-  autoCapitalize?: string;
-  pattern?: string;
-  error?: boolean;
-  required?: boolean;
-}
-
-const TextInput: React.FC<ITextInput> = props => (
-  <SimpleInput type='text' {...props} />
-);
-
 const FileChooser : React.FC = (props) => (
   <SimpleInput type='file' {...props} />
 );
@@ -233,15 +190,6 @@ FileChooserLogo.defaultProps = {
 };
 
 export {
-  InputContainer,
-  LabelInputContainer,
-  LabelInput,
-  LabelTextarea,
-  SimpleInput,
-  Checkbox,
   SelectDropdown,
   Mutliselect,
-  TextInput,
-  FileChooser,
-  FileChooserLogo,
 };

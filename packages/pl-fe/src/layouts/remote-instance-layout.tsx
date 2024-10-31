@@ -7,8 +7,8 @@ import {
   InstanceInfoPanel,
   InstanceModerationPanel,
 } from 'pl-fe/features/ui/util/async-components';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { federationRestrictionsDisclosed } from 'pl-fe/utils/state';
 
 interface IRemoteInstanceLayout {

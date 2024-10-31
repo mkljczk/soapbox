@@ -1,7 +1,13 @@
 import type { LanguageParam, OnlyEventsParam, OnlyMediaParam, PaginationParams, WithMutedParam, WithRelationshipsParam } from './common';
 
+/**
+ * @category Request params
+ */
 type GetAccountParams = WithMutedParam;
 
+/**
+ * @category Request params
+ */
 interface GetAccountStatusesParams extends PaginationParams, WithMutedParam, OnlyEventsParam, OnlyMediaParam, LanguageParam {
   /** Boolean. Filter out statuses in reply to a different account. */
   exclude_replies?: boolean;
@@ -11,9 +17,19 @@ interface GetAccountStatusesParams extends PaginationParams, WithMutedParam, Onl
   tagged?: string;
 }
 
+/**
+ * @category Request params
+ */
 type GetAccountFollowersParams = PaginationParams & WithRelationshipsParam;
+
+/**
+ * @category Request params
+ */
 type GetAccountFollowingParams = PaginationParams & WithRelationshipsParam;
 
+/**
+ * @category Request params
+ */
 interface FollowAccountParams {
   /** Boolean. Receive this account’s reblogs in home timeline? Defaults to true. */
   reblogs?: boolean;
@@ -26,11 +42,17 @@ interface FollowAccountParams {
   languages?: string[];
 }
 
+/**
+ * @category Request params
+ */
 interface GetRelationshipsParams {
   /** Boolean. Whether relationships should be returned for suspended users, defaults to false. */
   with_suspended?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 interface SearchAccountParams {
   /** Integer. Maximum number of results. Defaults to 40 accounts. Max 80 accounts. */
   limit?: number;
@@ -42,6 +64,9 @@ interface SearchAccountParams {
   following?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 interface ReportAccountParams {
   status_ids?: string[];
   comment?: string;
@@ -50,11 +75,24 @@ interface ReportAccountParams {
   rule_ids?: string[];
 }
 
+/**
+ * @category Request params
+ */
 type GetAccountEndorsementsParams = WithRelationshipsParam;
+
+/**
+ * @category Request params
+ */
 type GetAccountFavouritesParams = PaginationParams;
 
+/**
+ * @category Request params
+ */
 type GetScrobblesParams = PaginationParams;
 
+/**
+ * @category Request params
+ */
 interface CreateScrobbleParams {
   /** the title of the media playing */
   title: string;

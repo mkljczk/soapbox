@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { useClient } from 'pl-fe/hooks/useClient';
+import { useClient } from 'pl-fe/hooks/use-client';
 
 type Embed = {
   type: string;

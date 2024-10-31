@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 import { datetimeSchema } from './utils';
 
-/** @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#get-apioauth_tokens} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#get-apioauth_tokens}
+ */
 const oauthTokenSchema = v.pipe(
   v.any(),
   v.transform((token: any) => ({

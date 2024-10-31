@@ -13,7 +13,7 @@ import {
   NOTIFICATIONS_DEQUEUE,
   MAX_QUEUED_NOTIFICATIONS,
 } from '../actions/notifications';
-import { TIMELINE_DELETE } from '../actions/timelines';
+import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
 import type { AccountWarning, Notification as BaseNotification, Relationship, RelationshipSeveranceEvent, Report } from 'pl-api';
 import type { Notification } from 'pl-fe/normalizers/notification';
@@ -157,7 +157,7 @@ const updateNotificationsQueue = (state: State, notification: BaseNotification, 
   });
 };
 
-const notifications = (state: State = ReducerRecord(), action: AnyAction) => {
+const notifications = (state: State = ReducerRecord(), action: AnyAction | TimelineAction) => {
   switch (action.type) {
     case NOTIFICATIONS_UPDATE:
       return importNotification(state, action.notification);

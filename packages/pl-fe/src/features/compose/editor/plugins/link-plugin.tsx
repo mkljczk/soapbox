@@ -20,7 +20,4 @@ const validateUrl = (url: string): boolean => {
 
 const LinkPlugin = (): JSX.Element => <LexicalLinkPlugin validateUrl={validateUrl} />;
 
-export {
-  validateUrl,
-  LinkPlugin as default,
-};
+export { LinkPlugin as default };

@@ -4,8 +4,8 @@ import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
 import { expandSearch, setFilter, setSearchAccount } from 'pl-fe/actions/search';
 import { fetchTrendingStatuses } from 'pl-fe/actions/trending-statuses';
-import { useAccount } from 'pl-fe/api/hooks/accounts/useAccount';
-import { useTrendingLinks } from 'pl-fe/api/hooks/trends/useTrendingLinks';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import { useTrendingLinks } from 'pl-fe/api/hooks/trends/use-trending-links';
 import Hashtag from 'pl-fe/components/hashtag';
 import IconButton from 'pl-fe/components/icon-button';
 import ScrollableList from 'pl-fe/components/scrollable-list';
@@ -18,9 +18,9 @@ import StatusContainer from 'pl-fe/containers/status-container';
 import PlaceholderAccount from 'pl-fe/features/placeholder/components/placeholder-account';
 import PlaceholderHashtag from 'pl-fe/features/placeholder/components/placeholder-hashtag';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 
 import type { SearchFilter } from 'pl-fe/reducers/search';
 

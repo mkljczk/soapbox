@@ -59,6 +59,18 @@ jobs:
       working-directory: ./packages/pl-fe/dist
       run: zip -r pl-fe.zip .
 
+    - name: Install pl-api deps
+      working-directory: ./packages/pl-api
+      run: yarn install --ignore-scripts
+
+    - name: Build pl-api documentation
+      working-directory: ./packages/pl-api
+      run: npx typedoc
+
+    - name: Copy pl-api documentation
+      working-directory: ./packages/pl-api
+      run: cp docs ../pl-fe/dist/pl-api-docs -r
+
     - name: Upload Github Pages artifact
       uses: actions/upload-pages-artifact@v3
       with:

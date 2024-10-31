@@ -6,7 +6,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { locationSearch } from 'pl-fe/actions/events';
 import AutosuggestInput, { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import Icon from 'pl-fe/components/icon';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
 import AutosuggestLocation from './autosuggest-location';
 

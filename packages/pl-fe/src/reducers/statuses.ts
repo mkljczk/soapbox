@@ -15,8 +15,9 @@ import {
   EVENT_JOIN_FAIL,
   EVENT_LEAVE_REQUEST,
   EVENT_LEAVE_FAIL,
+  type EventsAction,
 } from '../actions/events';
-import { STATUS_IMPORT, STATUSES_IMPORT } from '../actions/importer';
+import { STATUS_IMPORT, STATUSES_IMPORT, type ImporterAction } from '../actions/importer';
 import {
   REBLOG_REQUEST,
   REBLOG_FAIL,
@@ -28,6 +29,7 @@ import {
   DISLIKE_REQUEST,
   UNDISLIKE_REQUEST,
   DISLIKE_FAIL,
+  type InteractionsAction,
 } from '../actions/interactions';
 import {
   STATUS_CREATE_REQUEST,
@@ -46,8 +48,9 @@ import {
   STATUS_LANGUAGE_CHANGE,
   STATUS_COLLAPSE_SPOILER,
   STATUS_EXPAND_SPOILER,
+  type StatusesAction,
 } from '../actions/statuses';
-import { TIMELINE_DELETE } from '../actions/timelines';
+import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
 import type { Status as BaseStatus, Translation } from 'pl-api';
 import type { AnyAction } from 'redux';
@@ -184,7 +187,7 @@ const deleteTranslation = (state: State, statusId: string) => state.deleteIn([st
 
 const initialState: State = ImmutableMap();
 
-const statuses = (state = initialState, action: EmojiReactsAction | AnyAction): State => {
+const statuses = (state = initialState, action: AnyAction | EmojiReactsAction | EventsAction | ImporterAction | InteractionsAction | StatusesAction | TimelineAction): State => {
   switch (action.type) {
     case STATUS_IMPORT:
       return importStatus(state, action.status);

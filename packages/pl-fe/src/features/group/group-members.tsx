@@ -2,9 +2,9 @@ import clsx from 'clsx';
 import { GroupRoles } from 'pl-api';
 import React, { useMemo } from 'react';
 
-import { useGroup } from 'pl-fe/api/hooks/groups/useGroup';
-import { useGroupMembers } from 'pl-fe/api/hooks/groups/useGroupMembers';
-import { useGroupMembershipRequests } from 'pl-fe/api/hooks/groups/useGroupMembershipRequests';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
+import { useGroupMembers } from 'pl-fe/api/hooks/groups/use-group-members';
+import { useGroupMembershipRequests } from 'pl-fe/api/hooks/groups/use-group-membership-requests';
 import { PendingItemsRow } from 'pl-fe/components/pending-items-row';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 

@@ -56,4 +56,4 @@ const getTextDirection = (text?: string, { fallback = 'ltr', confidence }: GetTe
   return isRtl(text, confidence) ? 'rtl' : 'ltr';
 };
 
-export { getTextDirection, isRtl };
+export { getTextDirection };

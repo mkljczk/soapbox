@@ -4,6 +4,9 @@ import { customEmojiSchema } from './custom-emoji';
 import { groupRelationshipSchema } from './group-relationship';
 import { datetimeSchema, filteredArray } from './utils';
 
+/**
+ * @category Schemas
+ */
 const groupSchema = v.object({
   avatar: v.fallback(v.string(), ''),
   avatar_static: v.fallback(v.string(), ''),

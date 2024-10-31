@@ -5,18 +5,18 @@ import { Link } from 'react-router-dom';
 
 import { groupCompose, uploadCompose } from 'pl-fe/actions/compose';
 import { fetchGroupTimeline } from 'pl-fe/actions/timelines';
-import { useGroup } from 'pl-fe/api/hooks/groups/useGroup';
-import { useGroupStream } from 'pl-fe/api/hooks/streaming/useGroupStream';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
+import { useGroupStream } from 'pl-fe/api/hooks/streaming/use-group-stream';
 import Avatar from 'pl-fe/components/ui/avatar';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import ComposeForm from 'pl-fe/features/compose/components/compose-form';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useDraggedFiles } from 'pl-fe/hooks/useDraggedFiles';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { makeGetStatusIds } from 'pl-fe/selectors';
 
 import Timeline from '../ui/components/timeline';

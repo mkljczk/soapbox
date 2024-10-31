@@ -4,7 +4,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { submitReport, submitReportSuccess, submitReportFail, ReportableEntities } from 'pl-fe/actions/reports';
 import { fetchAccountTimeline } from 'pl-fe/actions/timelines';
-import { useAccount } from 'pl-fe/api/hooks/accounts/useAccount';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import AttachmentThumbs from 'pl-fe/components/attachment-thumbs';
 import StatusContent from 'pl-fe/components/status-content';
 import Modal from 'pl-fe/components/ui/modal';
@@ -12,9 +12,9 @@ import ProgressBar from 'pl-fe/components/ui/progress-bar';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import ConfirmationStep from './steps/confirmation-step';
 import OtherActionsStep from './steps/other-actions-step';
@@ -53,7 +53,7 @@ const SelectedStatus = ({ statusId }: { statusId: string }) => {
   return (
     <Stack space={2} className='rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
       <AccountContainer
-        id={status.account as any}
+        id={status.account_id}
         showAccountHoverCard={false}
         withLinkToProfile={false}
         timestamp={status.created_at}

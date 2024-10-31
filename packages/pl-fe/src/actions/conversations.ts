@@ -3,7 +3,7 @@ import { importEntities } from 'pl-hooks';
 import { getClient } from 'pl-fe/api';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 
-import type { Account, Conversation, PaginatedResponse, Status } from 'pl-api';
+import type { Account, Conversation, PaginatedResponse } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const CONVERSATIONS_MOUNT = 'CONVERSATIONS_MOUNT' as const;
@@ -43,11 +43,10 @@ const expandConversations = (expand = true) => (dispatch: AppDispatch, getState:
 
   return (state.conversations.next?.() || getClient(state).timelines.getConversations())
     .then(response => {
-      const accounts = response.items.reduce((aggr: Array<Account>, item) => aggr.concat(item.accounts), []);
-      const statuses = response.items.map((item) => item.last_status).filter((x): x is Status => x !== null);
-
-      importEntities({ accounts, statuses });
-
+      importEntities({
+        accounts: response.items.reduce((aggr: Array<Account>, item) => aggr.concat(item.accounts), []),
+        statuses: response.items.map((item) => item.last_status),
+      });
       dispatch(expandConversationsSuccess(response.items, response.next, isLoadingRecent));
     })
     .catch(err => dispatch(expandConversationsFail(err)));
@@ -72,13 +71,10 @@ const expandConversationsFail = (error: unknown) => ({
 });
 
 const updateConversations = (conversation: Conversation) => (dispatch: AppDispatch) => {
-  const statuses: Array<Status> = [];
-
-  if (conversation.last_status) {
-    statuses.push(conversation.last_status);
-  }
-
-  importEntities({ accounts: conversation.accounts, statuses });
+  importEntities({
+    accounts: conversation.accounts,
+    statuses: [conversation.last_status],
+  });
 
   return dispatch({
     type: CONVERSATIONS_UPDATE,

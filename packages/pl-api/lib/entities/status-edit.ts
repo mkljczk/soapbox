@@ -5,7 +5,10 @@ import { customEmojiSchema } from './custom-emoji';
 import { mediaAttachmentSchema } from './media-attachment';
 import { datetimeSchema, filteredArray } from './utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/StatusEdit/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/StatusEdit/}
+ */
 const statusEditSchema = v.object({
   content: v.fallback(v.string(), ''),
   spoiler_text: v.fallback(v.string(), ''),

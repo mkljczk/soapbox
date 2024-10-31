@@ -15,6 +15,9 @@ interface Params {
   registrations?: 'instant' | 'manual';
 }
 
+/**
+ * @category Clients
+ */
 class PlApiDirectoryClient {
 
   accessToken = undefined;

@@ -5,7 +5,7 @@ import React from 'react';
 import Emoji from 'pl-fe/components/ui/emoji';
 import Icon from 'pl-fe/components/ui/icon';
 import Text from 'pl-fe/components/ui/text';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 import AnimatedNumber from './animated-number';
 

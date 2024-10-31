@@ -13,8 +13,4 @@ const generateText = (length: number) => {
 // https://stackoverflow.com/a/7228322/8811886
 const randomIntFromInterval = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 
-export {
-  PLACEHOLDER_CHAR,
-  generateText,
-  randomIntFromInterval,
-};
+export { generateText, randomIntFromInterval };

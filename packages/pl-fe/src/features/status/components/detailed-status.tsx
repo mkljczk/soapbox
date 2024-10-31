@@ -1,8 +1,8 @@
-import { useGroup } from 'pl-fe/api/hooks';
 import React, { useRef } from 'react';
 import { defineMessages, FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import Account from 'pl-fe/components/account';
 import StatusContent from 'pl-fe/components/status-content';
 import StatusLanguagePicker from 'pl-fe/components/status-language-picker';

@@ -34,7 +34,7 @@ jobs:
       working-directory: ./packages/pl-api
       run: yarn lint
 
-    - name: build
+    - name: Build
       env:
         NODE_ENV: production
       working-directory: ./packages/pl-api

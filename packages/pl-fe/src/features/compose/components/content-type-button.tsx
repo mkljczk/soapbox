@@ -4,9 +4,9 @@ import { defineMessages, useIntl } from 'react-intl';
 import { changeComposeContentType } from 'pl-fe/actions/compose';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import Button from 'pl-fe/components/ui/button';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useCompose } from 'pl-fe/hooks/useCompose';
-import { useInstance } from 'pl-fe/hooks/useInstance';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 const messages = defineMessages({
   content_type_plaintext: { id: 'preferences.options.content_type_plaintext', defaultMessage: 'Plain text' },

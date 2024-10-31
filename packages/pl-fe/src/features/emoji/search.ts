@@ -75,8 +75,4 @@ const search = (
     }
   }).filter(Boolean) as Emoji[];
 
-export {
-  type searchOptions,
-  addCustomToPool,
-  search as default,
-};
+export { search as default, addCustomToPool };

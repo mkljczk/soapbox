@@ -31,4 +31,4 @@ const ForkAwesomeIcon: React.FC<IForkAwesomeIcon> = ({ id, className, fixedWidth
   );
 };
 
-export { type IForkAwesomeIcon, ForkAwesomeIcon as default };
+export { ForkAwesomeIcon as default };

@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import Helmet from 'pl-fe/components/helmet';
-import { usePlFeConfig } from 'pl-fe/hooks/usePlFeConfig';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
 import { Card, CardBody, CardHeader, CardTitle, type CardSizes } from './card';
 
@@ -120,8 +120,6 @@ const Column = React.forwardRef<HTMLDivElement, IColumn>((props, ref): JSX.Eleme
 });
 
 export {
-  type IColumn,
   Column as default,
   Column,
-  ColumnHeader,
 };

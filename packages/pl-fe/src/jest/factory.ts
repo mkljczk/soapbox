@@ -4,7 +4,6 @@ import {
   groupRelationshipSchema,
   groupSchema,
   instanceSchema,
-  previewCardSchema,
   relationshipSchema,
   statusSchema,
   GroupRoles,
@@ -13,7 +12,6 @@ import {
   type GroupMember,
   type GroupRelationship,
   type Instance,
-  type PreviewCard,
   type Relationship,
   type Status,
 } from 'pl-api';
@@ -28,11 +26,6 @@ const buildAccount = (props: PartialDeep<Account> = {}): Account =>
   v.parse(accountSchema, Object.assign({
     id: crypto.randomUUID(),
     url: `https://soapbox.test/users/${crypto.randomUUID()}`,
-  }, props));
-
-const buildCard = (props: PartialDeep<PreviewCard> = {}): PreviewCard =>
-  v.parse(previewCardSchema, Object.assign({
-    url: 'https://soapbox.test',
   }, props));
 
 const buildGroup = (props: PartialDeep<Group> = {}): Group =>
@@ -72,7 +65,6 @@ const buildStatus = (props: PartialDeep<Status> = {}) =>
 
 export {
   buildAccount,
-  buildCard,
   buildGroup,
   buildGroupMember,
   buildGroupRelationship,

@@ -72,6 +72,119 @@ import {
 } from './entities';
 import { filteredArray } from './entities/utils';
 import { AKKOMA, type Features, getFeatures, GOTOSOCIAL, MITRA } from './features';
+import {
+  CreateScrobbleParams,
+  FollowAccountParams,
+  GetAccountEndorsementsParams,
+  GetAccountFavouritesParams,
+  GetAccountFollowersParams,
+  GetAccountFollowingParams,
+  GetAccountParams,
+  GetAccountStatusesParams,
+  GetRelationshipsParams,
+  GetScrobblesParams,
+  ReportAccountParams,
+  SearchAccountParams,
+} from './params/accounts';
+import { CreateApplicationParams } from './params/apps';
+import {
+  CreateChatMessageParams,
+  GetChatMessagesParams,
+  GetChatsParams,
+} from './params/chats';
+import {
+  CreateEventParams,
+  EditEventParams,
+  GetEventParticipationRequestsParams,
+  GetEventParticipationsParams,
+  GetJoinedEventsParams,
+} from './params/events';
+import {
+  CreateFilterParams,
+  GetBlocksParams,
+  GetDomainBlocksParams,
+  GetMutesParams,
+  MuteAccountParams,
+  UpdateFilterParams,
+} from './params/filtering';
+import {
+  CreateGroupParams,
+  GetGroupBlocksParams,
+  GetGroupMembershipRequestsParams,
+  GetGroupMembershipsParams,
+  UpdateGroupParams,
+} from './params/groups';
+import { ProfileDirectoryParams } from './params/instance';
+import {
+  GetInteractionRequestsParams,
+} from './params/interaction-requests';
+import {
+  CreateListParams,
+  GetListAccountsParams,
+  UpdateListParams,
+} from './params/lists';
+import {
+  UpdateMediaParams,
+  UploadMediaParams,
+} from './params/media';
+import {
+  CreateBookmarkFolderParams,
+  GetBookmarksParams,
+  GetEndorsementsParams,
+  GetFavouritesParams,
+  GetFollowedTagsParams,
+  GetFollowRequestsParams,
+  UpdateBookmarkFolderParams,
+} from './params/my-account';
+import {
+  GetNotificationParams,
+  GetNotificationRequestsParams,
+  GetUnreadNotificationCountParams,
+  UpdateNotificationPolicyRequest,
+} from './params/notifications';
+import {
+  GetTokenParams,
+  MfaChallengeParams,
+  OauthAuthorizeParams,
+  RevokeTokenParams,
+} from './params/oauth';
+import {
+  CreatePushNotificationsSubscriptionParams,
+  UpdatePushNotificationsSubscriptionParams,
+} from './params/push-notifications';
+import { GetScheduledStatusesParams } from './params/scheduled-statuses';
+import { SearchParams } from './params/search';
+import {
+  CreateAccountParams,
+  UpdateCredentialsParams,
+  UpdateInteractionPoliciesParams,
+  UpdateNotificationSettingsParams,
+} from './params/settings';
+import {
+  CreateStatusParams,
+  EditStatusParams,
+  GetFavouritedByParams,
+  GetRebloggedByParams,
+  GetStatusContextParams,
+  GetStatusesParams,
+  GetStatusParams,
+  GetStatusQuotesParams,
+} from './params/statuses';
+import {
+  BubbleTimelineParams,
+  GetConversationsParams,
+  GroupTimelineParams,
+  HashtagTimelineParams,
+  HomeTimelineParams,
+  ListTimelineParams,
+  PublicTimelineParams,
+  SaveMarkersParams,
+} from './params/timelines';
+import {
+  GetTrendingLinks,
+  GetTrendingStatuses,
+  GetTrendingTags,
+} from './params/trends';
 import request, { getNextLink, getPrevLink, type RequestBody, RequestMeta } from './request';
 import { buildFullPath } from './utils/url';
 
@@ -114,89 +227,12 @@ import type {
   AdminUpdateReportParams,
   AdminUpdateRuleParams,
   AdminUpdateStatusParams,
-  BubbleTimelineParams,
-  CreateAccountParams,
-  CreateApplicationParams,
-  CreateBookmarkFolderParams,
-  CreateChatMessageParams,
-  CreateEventParams,
-  CreateFilterParams,
-  CreateGroupParams,
-  CreateListParams,
-  CreatePushNotificationsSubscriptionParams,
-  CreateScrobbleParams,
-  CreateStatusParams,
-  EditEventParams,
-  EditStatusParams,
-  FollowAccountParams,
-  GetAccountEndorsementsParams,
-  GetAccountFavouritesParams,
-  GetAccountFollowersParams,
-  GetAccountFollowingParams,
-  GetAccountParams,
-  GetAccountStatusesParams,
-  GetBlocksParams,
-  GetBookmarksParams,
-  GetChatMessagesParams,
-  GetChatsParams,
-  GetConversationsParams,
-  GetDomainBlocksParams,
-  GetEndorsementsParams,
-  GetEventParticipationRequestsParams,
-  GetEventParticipationsParams,
-  GetFavouritedByParams,
-  GetFavouritesParams,
-  GetFollowedTagsParams,
-  GetFollowRequestsParams,
-  GetGroupBlocksParams,
-  GetGroupMembershipRequestsParams,
-  GetGroupMembershipsParams,
-  GetInteractionRequestsParams,
-  GetJoinedEventsParams,
-  GetListAccountsParams,
-  GetMutesParams,
-  GetNotificationParams,
-  GetNotificationRequestsParams,
-  GetRebloggedByParams,
-  GetRelationshipsParams,
-  GetScheduledStatusesParams,
-  GetScrobblesParams,
-  GetStatusContextParams,
-  GetStatusesParams,
-  GetStatusParams,
-  GetStatusQuotesParams,
-  GetTokenParams,
-  GetTrendingLinks,
-  GetTrendingStatuses,
-  GetTrendingTags,
-  GroupTimelineParams,
-  HashtagTimelineParams,
-  HomeTimelineParams,
-  ListTimelineParams,
-  MfaChallengeParams,
-  MuteAccountParams,
-  OauthAuthorizeParams,
-  ProfileDirectoryParams,
-  PublicTimelineParams,
-  ReportAccountParams,
-  RevokeTokenParams,
-  SaveMarkersParams,
-  SearchAccountParams,
-  SearchParams,
-  UpdateBookmarkFolderParams,
-  UpdateCredentialsParams,
-  UpdateFilterParams,
-  UpdateGroupParams,
-  UpdateInteractionPoliciesParams,
-  UpdateListParams,
-  UpdateMediaParams,
-  UpdateNotificationPolicyRequest,
-  UpdateNotificationSettingsParams,
-  UpdatePushNotificationsSubscriptionParams,
-  UploadMediaParams,
-} from './params';
+} from './params/admin';
 import type { PaginatedResponse } from './responses';
 
+/**
+ * @category Clients
+ */
 class PlApiClient {
 
   baseURL: string;
@@ -212,9 +248,16 @@ class PlApiClient {
     close: () =>  void;
   };
 
-  constructor(baseURL: string, accessToken?: string, { instance, fetchInstance }: {
+  constructor(baseURL: string, accessToken?: string, {
+    instance,
+    fetchInstance,
+    onInstanceFetchSuccess,
+    onInstanceFetchError,
+  }: {
     instance?: Instance;
     fetchInstance?: boolean;
+    onInstanceFetchSuccess?: (instance: Instance) => void;
+    onInstanceFetchError?: (error?: any) => void;
   } = {}) {
     this.baseURL = baseURL;
     this.#accessToken = accessToken;
@@ -223,7 +266,7 @@ class PlApiClient {
       this.#setInstance(instance);
     }
     if (fetchInstance) {
-      this.instance.getInstance();
+      this.instance.getInstance().then(onInstanceFetchSuccess).catch(onInstanceFetchError);
     }
   }
 
@@ -910,7 +953,7 @@ class PlApiClient {
      * Register an account
      * Creates a user and account records. Returns an account access token for the app that initiated the request. The app should save this token for later, and should wait for the user to confirm their account by clicking a link in their email inbox.
      *
-     * Requires features{@link Features['accountCreation`
+     * Requires features{@link Features['accountCreation']}
      * @see {@link https://docs.joinmastodon.org/methods/accounts/#create}
      */
     createAccount: async (params: CreateAccountParams) => {
@@ -1216,7 +1259,7 @@ class PlApiClient {
 
     mfa: {
       /**
-       * Requires features{@link Features['manageMfa`.
+       * Requires features{@link Features['manageMfa']}.
        */
       getMfaSettings: async () => {
         const response = await this.request('/api/pleroma/accounts/mfa');
@@ -1230,7 +1273,7 @@ class PlApiClient {
       },
 
       /**
-       * Requires features{@link Features['manageMfa`.
+       * Requires features{@link Features['manageMfa']}.
        */
       getMfaBackupCodes: async () => {
         const response = await this.request('/api/pleroma/accounts/mfa/backup_codes');
@@ -1241,7 +1284,7 @@ class PlApiClient {
       },
 
       /**
-       * Requires features{@link Features['manageMfa`.
+       * Requires features{@link Features['manageMfa']}.
        */
       getMfaSetup: async (method: 'totp') => {
         const response = await this.request(`/api/pleroma/accounts/mfa/setup/${method}`);
@@ -1253,7 +1296,7 @@ class PlApiClient {
       },
 
       /**
-       * Requires features{@link Features['manageMfa`.
+       * Requires features{@link Features['manageMfa']}.
        */
       confirmMfaSetup: async (method: 'totp', code: string, password: string) => {
         const response = await this.request(`/api/pleroma/accounts/mfa/confirm/${method}`, {
@@ -1267,7 +1310,7 @@ class PlApiClient {
       },
 
       /**
-       * Requires features{@link Features['manageMfa`.
+       * Requires features{@link Features['manageMfa']}.
        */
       disableMfa: async (method: 'totp', password: string) => {
         const response = await this.request(`/api/pleroma/accounts/mfa/${method}`, {
@@ -2525,12 +2568,29 @@ class PlApiClient {
     },
 
     /**
+     * Get the number of unread notification
+     * Get the (capped) number of unread notifications for the current user.
+     *
+     * Requires features{@link Features['notificationsGetUnreadCount']}.
+     * @see {@link https://docs.joinmastodon.org/methods/notifications/#unread-count}
+     */
+    getUnreadNotificationCount: async (params?: GetUnreadNotificationCountParams) => {
+      const response = await this.request('/api/v1/notifications/unread_count', { params });
+
+      return v.parse(v.object({
+        count: v.number(),
+      }), response.json);
+    },
+
+    /**
      * Get the filtering policy for notifications
      * Notifications filtering policy for the user.
+     *
+     * Requires features{@link Features['notificationsPolicy']}.
      * @see {@link https://docs.joinmastodon.org/methods/notifications/#get-policy}
      */
     getNotificationPolicy: async () => {
-      const response = await this.request('/api/v1/notifications/policy');
+      const response = await this.request('/api/v2/notifications/policy');
 
       return v.parse(notificationPolicySchema, response.json);
     },
@@ -2538,10 +2598,12 @@ class PlApiClient {
     /**
      * Update the filtering policy for notifications
      * Update the user’s notifications filtering policy.
+     *
+     * Requires features{@link Features['notificationsPolicy']}.
      * @see {@link https://docs.joinmastodon.org/methods/notifications/#update-the-filtering-policy-for-notifications}
      */
     updateNotificationPolicy: async (params: UpdateNotificationPolicyRequest) => {
-      const response = await this.request('/api/v1/notifications/policy', { method: 'POST', body: params });
+      const response = await this.request('/api/v2/notifications/policy', { method: 'PATCH', body: params });
 
       return v.parse(notificationPolicySchema, response.json);
     },
@@ -4051,7 +4113,7 @@ class PlApiClient {
   public readonly events = {
     /**
      * Creates an event
-     * @see {@link }
+     * @see {@link https://github.com/mkljczk/pl/blob/fork/docs/development/API/pleroma_api.md#apiv1pleromaevents}
      */
     createEvent: async (params: CreateEventParams) => {
       const response = await this.request('/api/v1/pleroma/events', { method: 'POST', body: params });
@@ -4061,7 +4123,7 @@ class PlApiClient {
 
     /**
      * Edits an event
-     * @see {@link }
+     * @see {@link https://github.com/mkljczk/pl/blob/fork/docs/development/API/pleroma_api.md#apiv1pleromaeventsid}
      */
     editEvent: async (statusId: string, params: EditEventParams) => {
       const response = await this.request(`/api/v1/pleroma/events/${statusId}`, { method: 'PUT', body: params });
@@ -4071,7 +4133,7 @@ class PlApiClient {
 
     /**
      * Gets user's joined events
-     * @see {@link }
+     * @see {@link https://github.com/mkljczk/pl/blob/fork/docs/development/API/pleroma_api.md#apiv1pleromaeventsjoined_events}
      */
     getJoinedEvents: async (state?: 'pending' | 'reject' | 'accept', params?: GetJoinedEventsParams) =>
       this.#paginatedGet('/api/v1/pleroma/events/joined_events', { params: { ...params, state } }, statusSchema),

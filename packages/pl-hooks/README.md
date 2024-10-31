@@ -1,6 +1,6 @@
 # `pl-hooks`
 
-> This project should be considered unstable before the 1.0.0 release. I will not provide any changelog or information on breaking changes until then.
+> This project API should be considered unstable before the 1.0.0 release. I will not provide any changelog or information on breaking changes until then.
 
 ## License
 

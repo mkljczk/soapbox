@@ -83,7 +83,10 @@ const eventParticipationRequestNotificationSchema = v.object({
   participation_message: v.fallback(v.nullable(v.string()), null),
 });
 
-/** @see {@link https://docs.joinmastodon.org/entities/Notification/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Notification/}
+ * */
 const notificationSchema: v.BaseSchema<any, Notification, v.BaseIssue<unknown>> = v.pipe(
   v.any(),
   v.transform((notification: any) => ({

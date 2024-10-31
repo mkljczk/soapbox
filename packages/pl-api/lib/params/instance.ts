@@ -1,3 +1,6 @@
+/**
+ * @category Request params
+ */
 interface ProfileDirectoryParams {
   /** Number. Skip the first n results. */
   offset?: number;

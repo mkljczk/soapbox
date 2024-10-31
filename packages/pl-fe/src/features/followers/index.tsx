@@ -1,8 +1,8 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useFollowers } from 'pl-fe/api/hooks/accounts/useAccountList';
-import { useAccountLookup } from 'pl-fe/api/hooks/accounts/useAccountLookup';
+import { useFollowers } from 'pl-fe/api/hooks/accounts/use-account-list';
+import { useAccountLookup } from 'pl-fe/api/hooks/accounts/use-account-lookup';
 import Account from 'pl-fe/components/account';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import ScrollableList from 'pl-fe/components/scrollable-list';

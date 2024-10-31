@@ -5,8 +5,8 @@ import { removeFromListEditor, addToListEditor } from 'pl-fe/actions/lists';
 import IconButton from 'pl-fe/components/icon-button';
 import HStack from 'pl-fe/components/ui/hstack';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 const messages = defineMessages({
   remove: { id: 'lists.account.remove', defaultMessage: 'Remove from list' },

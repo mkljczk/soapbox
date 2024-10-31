@@ -17,8 +17,8 @@ import Emojify from 'pl-fe/features/emoji/emojify';
 import StatusTypeIcon from 'pl-fe/features/status/components/status-type-icon';
 import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { textForScreenReader } from 'pl-fe/utils/status';
 
@@ -230,7 +230,7 @@ const Status: React.FC<IStatus> = (props) => {
         <Link key={account.acct} to={`/@${account.acct}`} className='hover:underline'>
           <bdi className='truncate'>
             <strong className='text-gray-800 dark:text-gray-200'>
-              <Emojify text={status.account.display_name} emojis={status.account.emojis} />
+              <Emojify text={account.display_name} emojis={account.emojis} />
             </strong>
           </bdi>
         </Link>

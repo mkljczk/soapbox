@@ -22,6 +22,8 @@ const customEmojiReactionSchema = v.object({
 
 /**
  * Pleroma emoji reaction.
+ *
+ * @category Schemas
  * @see {@link https://docs.pleroma.social/backend/development/API/differences_in_mastoapi_responses/#statuses}
 */
 const emojiReactionSchema = v.pipe(

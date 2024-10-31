@@ -4,8 +4,8 @@ import { useIntl, defineMessages } from 'react-intl';
 import { fetchMfa } from 'pl-fe/actions/mfa';
 import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import DisableOtpForm from './mfa/disable-otp-form';
 import EnableOtpForm from './mfa/enable-otp-form';

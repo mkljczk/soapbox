@@ -1,4 +1,3 @@
-
 import { importEntities } from 'pl-hooks';
 
 import { fetchRelationships } from 'pl-fe/actions/accounts';
@@ -115,10 +114,7 @@ const fetchReports = (params?: AdminGetReportsParams) =>
         const statuses: Array<Status> = [];
 
         items.forEach((report) => {
-          if (report.account?.account) accounts.push(report.account.account);
-          if (report.target_account?.account) accounts.push(report.target_account.account);
-          statuses.push(...report.statuses as Array<Status>);
-
+          importEntities({ statuses: report.statuses as Array<Status>, accounts: [report.account?.account, report.target_account?.account] });
           dispatch({ type: ADMIN_REPORTS_FETCH_SUCCESS, reports: items, params });
         });
 
@@ -148,8 +144,7 @@ const fetchUsers = (params?: AdminGetAccountsParams) =>
     dispatch({ type: ADMIN_USERS_FETCH_REQUEST, params });
 
     return getClient(state).admin.accounts.getAccounts(params).then((res) => {
-      const accounts = res.items.map(({ account }) => account).filter((account): account is Account => account !== null);
-      importEntities({ accounts });
+      importEntities({ accounts: res.items.map(({ account }) => account).filter((account): account is Account => account !== null) });
       dispatch(fetchRelationships(res.items.map((account) => account.id)));
       dispatch({ type: ADMIN_USERS_FETCH_SUCCESS, users: res.items, params, next: res.next });
       return res;

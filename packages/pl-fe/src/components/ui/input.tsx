@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { useLocale } from 'pl-fe/hooks/useLocale';
+import { useLocale } from 'pl-fe/hooks/use-locale';
 import { getTextDirection } from 'pl-fe/utils/rtl';
 
 import Icon from './icon';

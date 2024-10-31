@@ -7,21 +7,11 @@ const createPushSubscription = (params: CreatePushNotificationsSubscriptionParam
   (dispatch: AppDispatch, getState: () => RootState) =>
     getClient(getState).pushNotifications.createSubscription(params);
 
-const fetchPushSubscription = () =>
-  (dispatch: AppDispatch, getState: () => RootState) =>
-    getClient(getState).pushNotifications.getSubscription();
-
 const updatePushSubscription = (params: UpdatePushNotificationsSubscriptionParams) =>
   (dispatch: AppDispatch, getState: () => RootState) =>
     getClient(getState).pushNotifications.updateSubscription(params);
 
-const deletePushSubscription = () =>
-  (dispatch: AppDispatch, getState: () => RootState) =>
-    getClient(getState).pushNotifications.deleteSubscription();
-
 export {
   createPushSubscription,
-  fetchPushSubscription,
   updatePushSubscription,
-  deletePushSubscription,
 };

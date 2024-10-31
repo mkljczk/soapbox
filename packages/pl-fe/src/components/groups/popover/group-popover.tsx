@@ -106,10 +106,9 @@ const GroupPopover = (props: IGroupPopoverContainer) => {
         </Stack>
       }
       isFlush
-      children={
-        <div className='inline-block'>{children}</div>
-      }
-    />
+    >
+      <div className='inline-block'>{children}</div>
+    </Popover>
   );
 };
 

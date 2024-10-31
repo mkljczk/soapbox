@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { useRelationship } from 'pl-fe/api/hooks/accounts/useRelationship';
+import { useRelationship } from 'pl-fe/api/hooks/accounts/use-relationship';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import { ParsedContent } from 'pl-fe/components/parsed-content';
 import RelativeTimestamp from 'pl-fe/components/relative-timestamp';
@@ -13,7 +13,7 @@ import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import { useChatContext } from 'pl-fe/contexts/chat-context';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useChatActions } from 'pl-fe/queries/chats';
 import { useModalsStore } from 'pl-fe/stores/modals';
 

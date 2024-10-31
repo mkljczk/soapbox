@@ -9,98 +9,143 @@ const any = (arr: Array<any>): boolean => arr.some(Boolean);
 
 /**
  * Ditto, a Nostr server with Mastodon API.
+ *
+ * @category Software
  * @see {@link https://gitlab.com/soapbox-pub/ditto}
  */
 const DITTO = 'Ditto';
 
 /**
  * Firefish, a fork of Misskey. Formerly known as Calckey.
+ *
+ * @category Software
  * @see {@link https://joinfirefish.org/}
  */
 const FIREFISH = 'Firefish';
 
 /**
  * Friendica, decentralized social platform implementing multiple federation protocols.
+ *
+ * @category Software
  * @see {@link https://friendi.ca/}
  */
 const FRIENDICA = 'Friendica';
 
 /**
  * GoToSocial, an ActivityPub server written in Golang.
+ *
+ * @category Software
  * @see {@link https://gotosocial.org/}
  */
 const GOTOSOCIAL = 'GoToSocial';
 
 /**
  * Iceshrimp, yet another Misskey fork.
+ *
+ * @category Software
  * @see {@link https://iceshrimp.dev/}
  */
 const ICESHRIMP = 'Iceshrimp';
 
 /**
  * Mastodon, the software upon which this is all based.
+ *
+ * @category Software
  * @see {@link https://joinmastodon.org/}
  */
 const MASTODON = 'Mastodon';
 
 /**
  * Mitra, a Rust backend with cryptocurrency integrations.
+ *
+ * @category Software
  * @see {@link https://codeberg.org/silverpill/mitra}
  */
 const MITRA = 'Mitra';
 
 /**
  * Pixelfed, a federated image sharing platform.
+ *
+ * @category Software
  * @see {@link https://pixelfed.org/}
  */
 const PIXELFED = 'Pixelfed';
 
 /**
  * Pleroma, a feature-rich alternative written in Elixir.
+ *
+ * @category Software
  * @see {@link https://pleroma.social/}
  */
 const PLEROMA = 'Pleroma';
 
 /**
  * Takahē, backend with support for serving multiple domains.
+ *
+ * @category Software
  * @see {@link https://jointakahe.org/}
  */
 const TAKAHE = 'Takahe';
 
 /**
  * Toki, a C# Fediverse server.
+ *
+ * @category Software
  * @see {@link https://github.com/purifetchi/Toki}
  */
 const TOKI = 'Toki';
 
 /**
  * Akkoma, a Pleroma fork.
+ *
+ * @category Software
  * @see {@link https://akkoma.dev/AkkomaGang/akkoma}
  */
 const AKKOMA = 'akkoma';
 
 /**
  * glitch-soc, fork of Mastodon with a number of experimental features.
+ *
+ * @category Software
  * @see {@link https://glitch-soc.github.io/docs/}
  */
 const GLITCH = 'glitch';
 
 /**
+ * glitch-soc, fork of Mastodon that provides local posting and a wider range of content types.
+ *
+ * @category Software
+ * @see {@link https://github.com/hometown-fork/hometown}
+ */
+const HOMETOWN = 'hometown';
+
+/**
  * Pl, fork of Pleroma developed by pl-api author.
+ *
+ * @category Software
  * @see {@link https://github.com/mkljczk/pl}
  */
 const PL = 'pl';
 
 /**
  * Rebased, fork of Pleroma developed by Soapbox author.
+ *
+ * @category Software
  * @see {@link https://gitlab.com/soapbox-pub/rebased}
  */
 const REBASED = 'soapbox';
 
-/** Backend name reserved only for tests. */
+/**
+ * Backend name reserved only for tests.
+ *
+ * @category Software
+ */
 const UNRELEASED = 'unreleased';
 
-/** Parse features for the given instance */
+/**
+ * Parse features for the given instance
+ * @category Utils
+ */
 const getFeatures = (instance: Instance) => {
   const v = parseVersion(instance.version || '');
   const federation = !!instance.pleroma.metadata.federation.enabled;
@@ -113,7 +158,7 @@ const getFeatures = (instance: Instance) => {
      * @see PATCH /api/v1/accounts/update_credentials
      */
     accountAvatarDescription: any([
-      v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === PLEROMA && v.build === PL,
     ]),
 
@@ -304,7 +349,7 @@ const getFeatures = (instance: Instance) => {
     conversations: any([
       v.software === FIREFISH,
       v.software === FRIENDICA,
-      v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === ICESHRIMP,
       v.software === MASTODON,
       v.software === PIXELFED,
@@ -533,7 +578,7 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/tags/:name/unfollow
      */
     followHashtags: any([
-      v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === MASTODON && gte(v.compatVersion, '4.0.0'),
       v.software === PLEROMA && v.build === AKKOMA,
       v.software === PLEROMA && v.build === PL,
@@ -558,7 +603,7 @@ const getFeatures = (instance: Instance) => {
      * @see GET /api/v1/followed_tags
      */
     followedHashtagsList: any([
-      v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === MASTODON && gte(v.compatVersion, '4.1.0'),
       v.software === PLEROMA && v.build === AKKOMA,
       v.software === PLEROMA && v.build === PL,
@@ -617,7 +662,7 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/import
      */
     importBlocks: any([
-      v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === PLEROMA,
     ]),
 
@@ -628,7 +673,7 @@ const getFeatures = (instance: Instance) => {
 
      */
     importFollows: any([
-      v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === PLEROMA,
     ]),
 
@@ -642,7 +687,7 @@ const getFeatures = (instance: Instance) => {
      * Allow to specify mode of data import to either `merge` or `overwrite`.
      * @see POST /api/v1/import
      */
-    importOverwrite: v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+    importOverwrite: v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
 
     /**
      * View posts from specific instance.
@@ -663,7 +708,7 @@ const getFeatures = (instance: Instance) => {
       v.software === PLEROMA && gte(v.version, '2.7.0'),
     ]),
 
-    interactionRequests: v.software === GOTOSOCIAL && gte(v.version, '0.16.1'),
+    interactionRequests: v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
 
     /**
      * Server-side status language detection.
@@ -694,7 +739,10 @@ const getFeatures = (instance: Instance) => {
      * Ability to post statuses that don't federate.
      * @see POST /api/v1/statuses
      */
-    localOnlyStatuses: federation && v.software === GOTOSOCIAL,
+    localOnlyStatuses: federation && any([
+      v.software === GOTOSOCIAL,
+      v.software === MASTODON && v.build === HOMETOWN,
+    ]),
 
     /**
      * Can sign in using username instead of e-mail address.
@@ -825,6 +873,11 @@ const getFeatures = (instance: Instance) => {
     notificationsExcludeVisibilities: v.software === PLEROMA,
 
     /**
+     * @see GET /api/v1/notifications/unread_count
+     */
+    notificationsGetUnreadCount: instance.api_versions.mastodon >= 1,
+
+    /**
      * Allows specifying notification types to include, rather than to exclude.
      * @see GET /api/v1/notifications
      */
@@ -836,6 +889,12 @@ const getFeatures = (instance: Instance) => {
       v.software === TAKAHE && gte(v.version, '0.6.2'),
       v.software === GOTOSOCIAL,
     ]),
+
+    /**
+     * @see GET /api/v2/notifications/policy
+     * @see PATCH /api/v2/notifications/policy
+     */
+    notificationsPolicy: instance.api_versions.mastodon >= 1,
 
     pleromaAdminAccounts: v.software === PLEROMA,
 
@@ -1217,7 +1276,7 @@ const parseVersion = (version: string): Backend => {
   const compat = match ? semverParse(match[1]) || semverCoerce(match[1]) : null;
   if (match && semver && compat) {
     return {
-      build: semver.build[0],
+      build: semver.build[0]?.split('-')[0],
       compatVersion: compat.version,
       software: match[2] || MASTODON,
       version: semver.version.split('-')[0],

@@ -5,7 +5,7 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { fetchRelationships } from 'pl-fe/actions/accounts';
-import { useAccount } from 'pl-fe/api/hooks/accounts/useAccount';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import Badge from 'pl-fe/components/badge';
 import Card, { CardBody } from 'pl-fe/components/ui/card';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -14,8 +14,8 @@ import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import ActionButton from 'pl-fe/features/ui/components/action-button';
 import { UserPanel } from 'pl-fe/features/ui/util/async-components';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useAccountHoverCardStore } from 'pl-fe/stores/account-hover-card';
 
 import { showAccountHoverCard } from './hover-account-wrapper';

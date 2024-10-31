@@ -5,7 +5,7 @@ import { unblockDomain } from 'pl-fe/actions/domain-blocks';
 import HStack from 'pl-fe/components/ui/hstack';
 import IconButton from 'pl-fe/components/ui/icon-button';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
 const messages = defineMessages({
   blockDomainConfirm: { id: 'confirmations.domain_block.confirm', defaultMessage: 'Hide entire domain' },

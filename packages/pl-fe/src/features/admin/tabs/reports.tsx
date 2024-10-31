@@ -3,8 +3,8 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import { fetchReports } from 'pl-fe/actions/admin';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import Report from '../components/report';
 

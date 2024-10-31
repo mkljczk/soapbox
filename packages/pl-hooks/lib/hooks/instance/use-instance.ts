@@ -5,17 +5,18 @@ import * as v from 'valibot';
 import { usePlHooksApiClient } from 'pl-hooks/contexts/api-client';
 import { usePlHooksQueryClient } from 'pl-hooks/contexts/query-client';
 
-const placeholderData = v.parse(instanceSchema, {});
+const initialData = v.parse(instanceSchema, {});
 
 const useInstance = () => {
   const { client } = usePlHooksApiClient();
   const queryClient = usePlHooksQueryClient();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['instance'],
     queryFn: client.instance.getInstance,
-    placeholderData,
   }, queryClient);
+
+  return { ...query, data: query.data || initialData };
 };
 
 export { useInstance };

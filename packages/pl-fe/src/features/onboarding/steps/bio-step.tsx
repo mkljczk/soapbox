@@ -7,8 +7,8 @@ import Button from 'pl-fe/components/ui/button';
 import FormGroup from 'pl-fe/components/ui/form-group';
 import Stack from 'pl-fe/components/ui/stack';
 import Textarea from 'pl-fe/components/ui/textarea';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import toast from 'pl-fe/toast';
 
 import type { PlfeResponse } from 'pl-fe/api';
@@ -40,7 +40,7 @@ const BioStep = ({ onNext }: { onNext: () => void }) => {
         setSubmitting(false);
 
         if (error.response?.status === 422) {
-          setErrors([(error.response.json as any).error.replace('Validation failed: ', '')]);
+          setErrors([error.response.json.error.replace('Validation failed: ', '')]);
         } else {
           toast.error(messages.error);
         }

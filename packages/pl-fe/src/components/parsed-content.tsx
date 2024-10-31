@@ -107,9 +107,9 @@ const ParsedContent: React.FC<IParsedContent> = (({ html, mentions, hasQuote, em
         }
       },
 
-      transform(reactNode) {
+      transform(reactNode, _domNode, index) {
         if (typeof reactNode === 'string') {
-          return <Emojify text={reactNode} emojis={emojiMap} />;
+          return <Emojify key={index} text={reactNode} emojis={emojiMap} />;
         }
 
         return reactNode as JSX.Element;

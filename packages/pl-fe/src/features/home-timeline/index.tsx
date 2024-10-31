@@ -8,12 +8,12 @@ import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Timeline from 'pl-fe/features/ui/components/timeline';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useInstance } from 'pl-fe/hooks/useInstance';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
-import { useTheme } from 'pl-fe/hooks/useTheme';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 
 const messages = defineMessages({
   title: { id: 'column.home', defaultMessage: 'Home' },

@@ -1,13 +1,32 @@
 import { staticFetch } from 'pl-fe/api';
 
-import type { RootState } from 'pl-fe/store';
-import type { AnyAction } from 'redux';
+import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const FETCH_ABOUT_PAGE_REQUEST = 'FETCH_ABOUT_PAGE_REQUEST' as const;
 const FETCH_ABOUT_PAGE_SUCCESS = 'FETCH_ABOUT_PAGE_SUCCESS' as const;
 const FETCH_ABOUT_PAGE_FAIL = 'FETCH_ABOUT_PAGE_FAIL' as const;
 
-const fetchAboutPage = (slug = 'index', locale?: string) => (dispatch: React.Dispatch<AnyAction>, getState: () => RootState) => {
+interface FetchAboutPageRequestAction {
+  type: typeof FETCH_ABOUT_PAGE_REQUEST;
+  slug: string;
+  locale?: string;
+}
+
+interface FetchAboutPageSuccessAction {
+  type: typeof FETCH_ABOUT_PAGE_SUCCESS;
+  slug: string;
+  locale?: string;
+  html: string;
+}
+
+interface FetchAboutPageFailAction {
+  type: typeof FETCH_ABOUT_PAGE_FAIL;
+  slug: string;
+  locale?: string;
+  error: any;
+}
+
+const fetchAboutPage = (slug = 'index', locale?: string) => (dispatch: AppDispatch, getState: () => RootState) => {
   dispatch({ type: FETCH_ABOUT_PAGE_REQUEST, slug, locale });
 
   const filename = `${slug}${locale ? `.${locale}` : ''}.html`;
@@ -22,9 +41,15 @@ const fetchAboutPage = (slug = 'index', locale?: string) => (dispatch: React.Dis
     });
 };
 
+type AboutAction =
+  | FetchAboutPageRequestAction
+  | FetchAboutPageSuccessAction
+  | FetchAboutPageFailAction;
+
 export {
   fetchAboutPage,
   FETCH_ABOUT_PAGE_REQUEST,
   FETCH_ABOUT_PAGE_SUCCESS,
   FETCH_ABOUT_PAGE_FAIL,
+  type AboutAction,
 };

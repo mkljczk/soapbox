@@ -10,7 +10,7 @@ import toast from 'pl-fe/toast';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 
 import type { AppDispatch, RootState } from 'pl-fe/store';
-import type { Account } from 'pl-hooks/normalizers/normalizeAccount';
+import type { NormalizedAccount as Account } from 'pl-hooks';
 
 const FE_NAME = 'pl_fe';
 

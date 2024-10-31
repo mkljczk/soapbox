@@ -11,7 +11,7 @@ import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
-import { usePlFeConfig } from 'pl-fe/hooks/usePlFeConfig';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 type RouteParams = { statusId: string };

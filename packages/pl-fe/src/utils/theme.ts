@@ -131,7 +131,6 @@ const hueShift = (hex: string, delta: number): string => {
 export {
   generateAccent,
   generateNeutral,
-  colorsToCss,
   generateThemeCss,
   hexToHsl,
   hueShift,

@@ -6,7 +6,7 @@ import { changeSetting } from 'pl-fe/actions/settings';
 import Column from 'pl-fe/components/ui/column';
 import SvgIcon from 'pl-fe/components/ui/svg-icon';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import toast from 'pl-fe/toast';
 import sourceCode from 'pl-fe/utils/code';
 

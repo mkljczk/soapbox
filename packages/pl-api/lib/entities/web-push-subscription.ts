@@ -1,6 +1,9 @@
 import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/WebPushSubscription/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/WebPushSubscription/}
+ */
 const webPushSubscriptionSchema = v.object({
   id: v.pipe(v.unknown(), v.transform(String)),
   endpoint: v.string(),

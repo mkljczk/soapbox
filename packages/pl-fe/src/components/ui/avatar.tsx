@@ -60,4 +60,4 @@ const Avatar = (props: IAvatar) => {
   );
 };
 
-export { Avatar as default, AVATAR_SIZE };
+export { Avatar as default };

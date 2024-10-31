@@ -7,10 +7,10 @@ import List, { ListItem } from 'pl-fe/components/list';
 import Form from 'pl-fe/components/ui/form';
 import { Mutliselect, SelectDropdown } from 'pl-fe/features/forms';
 import SettingToggle from 'pl-fe/features/notifications/components/setting-toggle';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useFeatures } from 'pl-fe/hooks/useFeatures';
-import { useInstance } from 'pl-fe/hooks/useInstance';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 import ThemeToggle from '../ui/components/theme-toggle';
 

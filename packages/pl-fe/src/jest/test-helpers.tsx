@@ -113,7 +113,6 @@ export {
   mockStore,
   applyActions,
   rootState,
-  rootReducer,
   mockWindowProperty,
   createTestStore,
   queryClient,

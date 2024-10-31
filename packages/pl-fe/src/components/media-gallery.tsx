@@ -5,8 +5,8 @@ import Blurhash from 'pl-fe/components/blurhash';
 import Icon from 'pl-fe/components/icon';
 import StillImage from 'pl-fe/components/still-image';
 import { MIMETYPE_ICONS } from 'pl-fe/components/upload';
-import { usePlFeConfig } from 'pl-fe/hooks/usePlFeConfig';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { truncateFilename } from 'pl-fe/utils/media';
 
 import { isIOS } from '../is-mobile';
@@ -289,6 +289,7 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
     height,
     visible,
   } = props;
+
   const [width, setWidth] = useState<number>(defaultWidth);
 
   const node = useRef<HTMLDivElement>(null);
@@ -563,7 +564,4 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
   );
 };
 
-export {
-  type IMediaGallery,
-  MediaGallery as default,
-};
+export { MediaGallery as default };

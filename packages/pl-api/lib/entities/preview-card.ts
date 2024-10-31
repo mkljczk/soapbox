@@ -1,6 +1,9 @@
 import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/PreviewCard/} */
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/PreviewCard/}
+ */
 const previewCardSchema = v.object({
   author_name: v.fallback(v.string(), ''),
   author_url: v.fallback(v.pipe(v.string(), v.url()), ''),

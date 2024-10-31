@@ -1,5 +1,8 @@
 import * as v from 'valibot';
 
+/**
+ * @category Schemas
+ */
 const locationSchema = v.object({
   url: v.fallback(v.pipe(v.string(), v.url()), ''),
   description: v.fallback(v.string(), ''),

@@ -1,5 +1,10 @@
+import { UpdateInteractionPoliciesParams } from './settings';
+
 import type { PaginationParams } from './common';
 
+/**
+ * @category Request params
+ */
 interface CreateStatusWithContent {
   /** The text content of the status. If `media_ids` is provided, this becomes optional. Attaching a `poll` is optional while `status` is provided. */
   status: string;
@@ -7,6 +12,9 @@ interface CreateStatusWithContent {
   media_ids?: string[];
 }
 
+/**
+ * @category Request params
+ */
 interface CreateStatusWithMedia {
   /** The text content of the status. If `media_ids` is provided, this becomes optional. Attaching a `poll` is optional while `status` is provided. */
   status?: string;
@@ -14,6 +22,9 @@ interface CreateStatusWithMedia {
   media_ids: string[];
 }
 
+/**
+ * @category Request params
+ */
 interface CreateStatusOptionalParams {
   poll?: {
     /** Array of String. Possible answers to the poll. If provided, `media_ids` cannot be used, and poll[expires_in] must be provided. */
@@ -83,32 +94,66 @@ interface CreateStatusOptionalParams {
 
   status_map?: Record<string, string>;
   spoiler_text_map?: Record<string, string>;
+
+  /** The 'interaction_policy' field can be used to set an interaction policy for this status. */
+  interaction_policy?: UpdateInteractionPoliciesParams['public'];
 }
 
+/**
+ * @category Request params
+ */
 type CreateStatusParams = (CreateStatusWithContent | CreateStatusWithMedia) & CreateStatusOptionalParams;
 
+/**
+ * @category Request params
+ */
 interface LanguageParam {
   /** Attach translated version of a post. Requires `features.autoTranslate`. */
   language?: string;
 }
 
+/**
+ * @category Request params
+ */
 type GetStatusParams = LanguageParam;
 
+/**
+ * @category Request params
+ */
 type GetStatusesParams = LanguageParam;
 
+/**
+ * @category Request params
+ */
 type GetStatusContextParams = LanguageParam;
 
+/**
+ * @category Request params
+ */
 type GetRebloggedByParams = Omit<PaginationParams, 'min_id'>
 
+/**
+ * @category Request params
+ */
 type GetFavouritedByParams = Omit<PaginationParams, 'min_id'>
 
+/**
+ * @category Request params
+ */
 interface EditStatusOptionalParams {
   sensitive?: boolean;
   spoiler_text?: string;
   language?: string;
 }
 
+/**
+ * @category Request params
+ */
 type EditStatusParams = (CreateStatusWithContent | CreateStatusWithMedia) & EditStatusOptionalParams;
+
+/**
+ * @category Request params
+ */
 type GetStatusQuotesParams = PaginationParams;
 
 export type {

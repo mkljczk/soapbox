@@ -17,7 +17,7 @@ import Audio from 'pl-fe/features/audio';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import Thread from 'pl-fe/features/status/components/thread';
 import Video from 'pl-fe/features/video';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { userTouching } from 'pl-fe/is-mobile';
 
 import ImageLoader from '../image-loader';

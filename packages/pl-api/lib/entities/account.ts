@@ -166,6 +166,9 @@ type WithMoved = {
 
 type Account = v.InferOutput<typeof accountWithMovedAccountSchema> & WithMoved;
 
+/**
+ * @category Schemas
+ */
 const accountSchema: v.BaseSchema<any, Account, v.BaseIssue<unknown>> = untypedAccountSchema as any;
 
 const untypedCredentialAccountSchema = v.pipe(v.any(), preprocessAccount, v.object({
@@ -199,6 +202,9 @@ const untypedCredentialAccountSchema = v.pipe(v.any(), preprocessAccount, v.obje
 
 type CredentialAccount = v.InferOutput<typeof untypedCredentialAccountSchema> & WithMoved;
 
+/**
+ * @category Schemas
+ */
 const credentialAccountSchema: v.BaseSchema<any, CredentialAccount, v.BaseIssue<unknown>> = untypedCredentialAccountSchema as any;
 
 const untypedMutedAccountSchema = v.pipe(v.any(), preprocessAccount, v.object({
@@ -208,6 +214,9 @@ const untypedMutedAccountSchema = v.pipe(v.any(), preprocessAccount, v.object({
 
 type MutedAccount = v.InferOutput<typeof untypedMutedAccountSchema> & WithMoved;
 
+/**
+ * @category Schemas
+ */
 const mutedAccountSchema: v.BaseSchema<any, MutedAccount, v.BaseIssue<unknown>> = untypedMutedAccountSchema as any;
 
 export {

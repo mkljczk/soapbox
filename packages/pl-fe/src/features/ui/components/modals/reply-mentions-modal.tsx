@@ -4,8 +4,8 @@ import { FormattedMessage } from 'react-intl';
 
 import Modal from 'pl-fe/components/ui/modal';
 import Account from 'pl-fe/features/reply-mentions/account';
-import { useCompose } from 'pl-fe/hooks/useCompose';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { statusToMentionsAccountIdsArray } from 'pl-fe/reducers/compose';
 
 import type { BaseModalProps } from '../modal-root';

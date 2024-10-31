@@ -134,6 +134,9 @@ const preprocess = (status: any) => {
   return status;
 };
 
+/**
+ * @category Schemas
+ */
 const statusSchema: v.BaseSchema<any, Status, v.BaseIssue<unknown>> = v.pipe(v.any(), v.transform(preprocess), v.object({
   ...baseStatusSchema.entries,
   reblog: v.fallback(v.nullable(v.lazy(() => statusSchema)), null),
@@ -141,6 +144,9 @@ const statusSchema: v.BaseSchema<any, Status, v.BaseIssue<unknown>> = v.pipe(v.a
   quote: v.fallback(v.nullable(v.lazy(() => statusSchema)), null),
 })) as any;
 
+/**
+ * @category Schemas
+ */
 const statusWithoutAccountSchema = v.pipe(v.any(), v.transform(preprocess), v.object({
   ...(v.omit(baseStatusSchema, ['account']).entries),
   account: v.fallback(v.nullable(accountSchema), null),

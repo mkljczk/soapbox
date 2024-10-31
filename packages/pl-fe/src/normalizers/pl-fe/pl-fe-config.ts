@@ -221,7 +221,6 @@ const normalizePlFeConfig = (plFeConfig: Record<string, any>) => PlFeConfigRecor
 
 export {
   PromoPanelItemRecord,
-  PromoPanelRecord,
   FooterItemRecord,
   CryptoAddressRecord,
   PlFeConfigRecord,

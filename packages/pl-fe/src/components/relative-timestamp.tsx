@@ -199,6 +199,5 @@ const RelativeTimestamp = injectIntl(class RelativeTimestamp extends React.Compo
 
 export {
   dateFormatOptions,
-  timeAgoString,
   RelativeTimestamp as default,
 };

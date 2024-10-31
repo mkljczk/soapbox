@@ -10,7 +10,7 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
 import PollPreview from 'pl-fe/features/ui/components/poll-preview';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import { buildStatus } from '../builder';
 

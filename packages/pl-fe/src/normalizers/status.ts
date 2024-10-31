@@ -139,8 +139,6 @@ const normalizeStatus = (status: BaseStatus & {
     mentions,
     expanded: null,
     hidden: null,
-    /** Rewrite `<p></p>` to empty string. */
-    content: status.content === '<p></p>' ? '' : status.content,
     filtered: status.filtered?.map(result => result.filter.title),
     event,
     group,

@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import Link from 'pl-fe/components/link';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
-import { useCompose } from 'pl-fe/hooks/useCompose';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 
 interface IReplyGroupIndicator {
   composeId: string;

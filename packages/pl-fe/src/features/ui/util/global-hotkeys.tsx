@@ -3,8 +3,8 @@ import { useHistory } from 'react-router-dom';
 
 import { resetCompose } from 'pl-fe/actions/compose';
 import { FOCUS_EDITOR_COMMAND } from 'pl-fe/features/compose/editor/plugins/focus-plugin';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useOwnAccount } from 'pl-fe/hooks/useOwnAccount';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import { HotKeys } from '../components/hotkeys';

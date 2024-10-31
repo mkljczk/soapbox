@@ -2,7 +2,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { useAccount } from 'pl-fe/api/hooks/accounts/useAccount';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import Account from 'pl-fe/components/account';
 import Badge from 'pl-fe/components/badge';
 import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
@@ -12,7 +12,7 @@ import Avatar from 'pl-fe/components/ui/avatar';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import ActionButton from 'pl-fe/features/ui/components/action-button';
-import { useAppSelector } from 'pl-fe/hooks/useAppSelector';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { shortNumberFormat } from 'pl-fe/utils/numbers';
 

@@ -87,14 +87,6 @@ const getPointerPosition = (el: HTMLElement, event: MouseEvent & TouchEvent): Po
   };
 };
 
-const fileNameFromURL = (str: string) => {
-  const url = new URL(str);
-  const pathname = url.pathname;
-  const index = pathname.lastIndexOf('/');
-
-  return pathname.substring(index + 1);
-};
-
 interface IVideo {
   preview?: string;
   src: string;
@@ -579,6 +571,5 @@ export {
   formatTime,
   findElementPosition,
   getPointerPosition,
-  fileNameFromURL,
   Video as default,
 };

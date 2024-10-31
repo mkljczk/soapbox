@@ -3,11 +3,11 @@ import { FormattedMessage } from 'react-intl';
 import { useLocation, useRouteMatch } from 'react-router-dom';
 
 import { groupComposeModal } from 'pl-fe/actions/compose';
-import { useGroup } from 'pl-fe/api/hooks/groups/useGroup';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import Avatar from 'pl-fe/components/ui/avatar';
 import Button from 'pl-fe/components/ui/button';
 import HStack from 'pl-fe/components/ui/hstack';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 const ComposeButton = () => {

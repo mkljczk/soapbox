@@ -5,11 +5,10 @@
 
 import { produce } from 'immer';
 
-import { VERIFY_CREDENTIALS_SUCCESS, AUTH_ACCOUNT_REMEMBER_SUCCESS } from 'pl-fe/actions/auth';
-import { ME_FETCH_SUCCESS, ME_PATCH_SUCCESS } from 'pl-fe/actions/me';
+import { VERIFY_CREDENTIALS_SUCCESS, AUTH_ACCOUNT_REMEMBER_SUCCESS, type AuthAction } from 'pl-fe/actions/auth';
+import { ME_FETCH_SUCCESS, ME_PATCH_SUCCESS, type MeAction } from 'pl-fe/actions/me';
 
 import type { Account, CredentialAccount } from 'pl-api';
-import type { AnyAction } from 'redux';
 
 interface AccountMeta {
   pleroma: Account['__meta']['pleroma'];
@@ -28,7 +27,7 @@ const importAccount = (state: State, account: CredentialAccount): State =>
     };
   });
 
-const accounts_meta = (state: Readonly<State> = {}, action: AnyAction): State => {
+const accounts_meta = (state: Readonly<State> = {}, action: AuthAction | MeAction): State => {
   switch (action.type) {
     case ME_FETCH_SUCCESS:
     case ME_PATCH_SUCCESS:

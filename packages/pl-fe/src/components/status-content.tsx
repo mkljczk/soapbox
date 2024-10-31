@@ -8,8 +8,8 @@ import Button from 'pl-fe/components/ui/button';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
-import { useAppDispatch } from 'pl-fe/hooks/useAppDispatch';
-import { useSettings } from 'pl-fe/hooks/useSettings';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { onlyEmoji as isOnlyEmoji } from 'pl-fe/utils/rich-content';
 
 import { getTextDirection } from '../utils/rtl';
@@ -27,11 +27,17 @@ interface IReadMoreButton {
   onClick: React.MouseEventHandler;
   quote?: boolean;
   poll?: boolean;
+  preview?: boolean;
 }
 
 /** Button to expand a truncated status (due to too much content) */
-const ReadMoreButton: React.FC<IReadMoreButton> = ({ onClick, quote, poll }) => (
-  <div className='relative -mt-4'>
+const ReadMoreButton: React.FC<IReadMoreButton> = ({ onClick, quote, poll, preview }) => (
+  <div
+    className={clsx('relative', {
+      '-mt-4': !preview,
+      '-mt-2': preview,
+    })}
+  >
     <div
       className={clsx('absolute -top-16 h-16 w-full bg-gradient-to-b from-transparent', {
         'to-white black:to-black dark:to-primary-900': !poll,
@@ -39,10 +45,12 @@ const ReadMoreButton: React.FC<IReadMoreButton> = ({ onClick, quote, poll }) => 
         'group-hover:to-gray-100 black:group-hover:to-gray-800 dark:group-hover:to-gray-800': quote,
       })}
     />
-    <button className='flex items-center border-0 bg-transparent p-0 pt-2 text-gray-900 hover:underline active:underline dark:text-gray-300' onClick={onClick}>
-      <FormattedMessage id='status.read_more' defaultMessage='Read more' />
-      <Icon className='inline-block size-5' src={require('@tabler/icons/outline/chevron-right.svg')} />
-    </button>
+    {!preview && (
+      <button className='flex items-center border-0 bg-transparent p-0 pt-2 text-gray-900 hover:underline active:underline dark:text-gray-300' onClick={onClick}>
+        <FormattedMessage id='status.read_more' defaultMessage='Read more' />
+        <Icon className='inline-block size-5' src={require('@tabler/icons/outline/chevron-right.svg')} />
+      </button>
+    )}
   </div>
 );
 
@@ -53,6 +61,7 @@ interface IStatusContent {
   translatable?: boolean;
   textSize?: Sizes;
   quote?: boolean;
+  preview?: boolean;
 }
 
 /** Renders the text content of a status */
@@ -63,6 +72,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   translatable,
   textSize = 'md',
   quote = false,
+  preview,
 }) => {
   const dispatch = useAppDispatch();
   const { displaySpoilers } = useSettings();
@@ -77,9 +87,9 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   const maybeSetCollapsed = (): void => {
     if (!node.current) return;
 
-    if (collapsable && !collapsed) {
+    if ((collapsable || preview) && !collapsed) {
       // 20px * x lines (+ 2px padding at the top)
-      if (node.current.clientHeight > (quote ? 202 : 282)) {
+      if (node.current.clientHeight > (preview ? 82 : quote ? 202 : 282)) {
         setCollapsed(true);
       }
     }
@@ -130,8 +140,9 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   const className = clsx('relative text-ellipsis break-words text-gray-900 focus:outline-none dark:text-gray-100', {
     'cursor-pointer': onClick,
     'overflow-hidden': collapsed,
-    'max-h-[200px]': collapsed && !quote,
+    'max-h-[200px]': collapsed && !quote && !preview,
     'max-h-[120px]': collapsed && quote,
+    'max-h-[80px]': collapsed && preview,
     'leading-normal big-emoji': onlyEmoji,
   });
 
@@ -212,7 +223,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     }
 
     if (collapsed) {
-      output.push(<ReadMoreButton onClick={() => {}} key='read-more' quote={quote} />);
+      output.push(<ReadMoreButton onClick={() => {}} key='read-more' quote={quote} preview={preview} />);
     }
 
     if (status.poll_id) {

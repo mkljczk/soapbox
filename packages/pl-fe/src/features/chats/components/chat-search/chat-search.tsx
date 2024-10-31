@@ -7,7 +7,7 @@ import Icon from 'pl-fe/components/ui/icon';
 import Input from 'pl-fe/components/ui/input';
 import Stack from 'pl-fe/components/ui/stack';
 import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
-import { useDebounce } from 'pl-fe/hooks/useDebounce';
+import { useDebounce } from 'pl-fe/hooks/use-debounce';
 import { useChats } from 'pl-fe/queries/chats';
 import { queryClient } from 'pl-fe/queries/client';
 import useAccountSearch from 'pl-fe/queries/search';
