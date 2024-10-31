@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { useStatusTranslation, type UseStatusData as Status } from 'pl-hooks';
 import React, { useState, useRef, useLayoutEffect, useMemo, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -10,6 +11,7 @@ import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { onlyEmoji as isOnlyEmoji } from 'pl-fe/utils/rich-content';
 
 import { getTextDirection } from '../utils/rtl';
@@ -19,7 +21,6 @@ import { ParsedContent } from './parsed-content';
 import Poll from './polls/poll';
 
 import type { Sizes } from 'pl-fe/components/ui/text';
-import type { MinifiedStatus } from 'pl-fe/reducers/statuses';
 
 const BIG_EMOJI_LIMIT = 10;
 
@@ -55,7 +56,7 @@ const ReadMoreButton: React.FC<IReadMoreButton> = ({ onClick, quote, poll, previ
 );
 
 interface IStatusContent {
-  status: MinifiedStatus;
+  status: Status;
   onClick?: () => void;
   collapsable?: boolean;
   translatable?: boolean;
@@ -76,6 +77,9 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
 }) => {
   const dispatch = useAppDispatch();
   const { displaySpoilers } = useSettings();
+
+  const statusMeta = useStatusMetaStore().statuses[status.id];
+  const { data: translation } = useStatusTranslation(status.id, statusMeta?.targetLanguage);
 
   const [collapsed, setCollapsed] = useState(false);
   const [onlyEmoji, setOnlyEmoji] = useState(false);
@@ -118,12 +122,12 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   });
 
   const content = useMemo(
-    (): string => translatable && status.translation
-      ? status.translation.content!
-      : (status.content_map && status.currentLanguage)
-        ? (status.content_map[status.currentLanguage] || status.content)
+    (): string => translatable && translation
+      ? translation.content
+      : (status.content_map && statusMeta?.currentLanguage)
+        ? (status.content_map[statusMeta.currentLanguage] || status.content)
         : status.content,
-    [status.content, status.translation, status.currentLanguage],
+    [status.content, translation?.content, statusMeta?.currentLanguage],
   );
 
   useEffect(() => {
@@ -132,11 +136,11 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
 
   const withSpoiler = status.spoiler_text.length > 0;
 
-  const spoilerText = status.spoiler_text_map && status.currentLanguage
-    ? status.spoiler_text_map[status.currentLanguage] || status.spoiler_text
+  const spoilerText = status.spoiler_text_map && statusMeta?.currentLanguage
+    ? status.spoiler_text_map[statusMeta.currentLanguage] || status.spoiler_text
     : status.spoiler_text;
 
-  const direction = getTextDirection(status.search_index);
+  const direction = getTextDirection(content);
   const className = clsx('relative text-ellipsis break-words text-gray-900 focus:outline-none dark:text-gray-100', {
     'cursor-pointer': onClick,
     'overflow-hidden': collapsed,
@@ -147,7 +151,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   });
 
   const expandable = !displaySpoilers;
-  const expanded = !withSpoiler || status.expanded || false;
+  const expanded = !withSpoiler || /* status.expanded || */ false;
 
   const output = [];
 

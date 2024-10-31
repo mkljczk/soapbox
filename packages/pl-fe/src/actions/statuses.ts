@@ -7,7 +7,6 @@ import { isLoggedIn } from 'pl-fe/utils/auth';
 import { shouldHaveCard } from 'pl-fe/utils/status';
 
 import { setComposeToStatus } from './compose';
-import { importFetchedStatus } from './importer';
 import { deleteFromTimelines } from './timelines';
 
 import type { CreateStatusParams, Status as BaseStatus } from 'pl-api';
@@ -48,11 +47,6 @@ const STATUS_HIDE_MEDIA = 'STATUS_HIDE_MEDIA' as const;
 
 const STATUS_EXPAND_SPOILER = 'STATUS_EXPAND_SPOILER' as const;
 const STATUS_COLLAPSE_SPOILER = 'STATUS_COLLAPSE_SPOILER' as const;
-
-const STATUS_TRANSLATE_REQUEST = 'STATUS_TRANSLATE_REQUEST' as const;
-const STATUS_TRANSLATE_SUCCESS = 'STATUS_TRANSLATE_SUCCESS' as const;
-const STATUS_TRANSLATE_FAIL = 'STATUS_TRANSLATE_FAIL' as const;
-const STATUS_TRANSLATE_UNDO = 'STATUS_TRANSLATE_UNDO' as const;
 
 const STATUS_UNFILTER = 'STATUS_UNFILTER' as const;
 
@@ -270,76 +264,6 @@ const expandStatusSpoiler = (statusIds: string[] | string) => {
   };
 };
 
-let TRANSLATIONS_QUEUE: Set<string> = new Set();
-let TRANSLATIONS_TIMEOUT: NodeJS.Timeout | null = null;
-
-const translateStatus = (statusId: string, targetLanguage: string, lazy?: boolean) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const client = getClient(getState);
-    const features = client.features;
-
-    dispatch({ type: STATUS_TRANSLATE_REQUEST, statusId });
-
-    const handleTranslateMany = () => {
-      const copy = [...TRANSLATIONS_QUEUE];
-      TRANSLATIONS_QUEUE = new Set();
-      if (TRANSLATIONS_TIMEOUT) clearTimeout(TRANSLATIONS_TIMEOUT);
-
-      return client.statuses.translateStatuses(copy, targetLanguage).then((response) => {
-        response.forEach((translation) => {
-          dispatch({
-            type: STATUS_TRANSLATE_SUCCESS,
-            statusId: translation.id,
-            translation: translation,
-          });
-
-          copy
-            .filter((statusId) => !response.some(({ id }) => id === statusId))
-            .forEach((statusId) => dispatch({
-              type: STATUS_TRANSLATE_FAIL,
-              statusId,
-            }));
-        });
-      }).catch(error => {
-        dispatch({
-          type: STATUS_TRANSLATE_FAIL,
-          statusId,
-          error,
-        });
-      });
-    };
-
-    if (features.lazyTranslations && lazy) {
-      TRANSLATIONS_QUEUE.add(statusId);
-
-      if (TRANSLATIONS_TIMEOUT) clearTimeout(TRANSLATIONS_TIMEOUT);
-      TRANSLATIONS_TIMEOUT = setTimeout(() => handleTranslateMany(), 3000);
-    } else if (features.lazyTranslations && TRANSLATIONS_QUEUE.size) {
-      TRANSLATIONS_QUEUE.add(statusId);
-
-      handleTranslateMany();
-    } else {
-      return client.statuses.translateStatus(statusId, targetLanguage).then(response => {
-        dispatch({
-          type: STATUS_TRANSLATE_SUCCESS,
-          statusId,
-          translation: response,
-        });
-      }).catch(error => {
-        dispatch({
-          type: STATUS_TRANSLATE_FAIL,
-          statusId,
-          error,
-        });
-      });
-    }
-  };
-
-const undoStatusTranslation = (statusId: string) => ({
-  type: STATUS_TRANSLATE_UNDO,
-  statusId,
-});
-
 const unfilterStatus = (statusId: string) => ({
   type: STATUS_UNFILTER,
   statusId,
@@ -382,10 +306,6 @@ export {
   STATUS_HIDE_MEDIA,
   STATUS_EXPAND_SPOILER,
   STATUS_COLLAPSE_SPOILER,
-  STATUS_TRANSLATE_REQUEST,
-  STATUS_TRANSLATE_SUCCESS,
-  STATUS_TRANSLATE_FAIL,
-  STATUS_TRANSLATE_UNDO,
   STATUS_UNFILTER,
   STATUS_LANGUAGE_CHANGE,
   createStatus,
@@ -403,8 +323,6 @@ export {
   toggleStatusMediaHidden,
   expandStatusSpoiler,
   collapseStatusSpoiler,
-  translateStatus,
-  undoStatusTranslation,
   unfilterStatus,
   changeStatusLanguage,
   type StatusesAction,

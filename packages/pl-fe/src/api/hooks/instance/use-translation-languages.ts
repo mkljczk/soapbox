@@ -1,15 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
+import { useInstance } from 'pl-hooks';
 
 import { useClient } from 'pl-fe/hooks/use-client';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 
 const useTranslationLanguages = () => {
   const client = useClient();
   const { isLoggedIn } = useLoggedIn();
   const features = useFeatures();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
 
   const getTranslationLanguages = async () => {
     const metadata = instance.pleroma.metadata;

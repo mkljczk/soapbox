@@ -1,17 +1,15 @@
+import { useStatusTranslation, useTranslationLanguages, useInstance } from 'pl-hooks';
 import React, { useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { translateStatus, undoStatusTranslation } from 'pl-fe/actions/statuses';
-import { useTranslationLanguages } from 'pl-fe/api/hooks/instance/use-translation-languages';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
 import type { Status } from 'pl-fe/normalizers/status';
 
@@ -20,16 +18,19 @@ interface ITranslateButton {
 }
 
 const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
-  const dispatch = useAppDispatch();
   const intl = useIntl();
   const features = useFeatures();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
   const settings = useSettings();
   const autoTranslate = settings.autoTranslate;
   const knownLanguages = autoTranslate ? [...settings.knownLanguages, intl.locale] : [intl.locale];
 
   const me = useAppSelector((state) => state.me);
-  const { translationLanguages } = useTranslationLanguages();
+  const { data: translationLanguages } = useTranslationLanguages();
+  const { statuses: statusesMeta, fetchTranslation, hideTranslation } = useStatusMetaStore();
+
+  const targetLanguage = statusesMeta[status.id]?.targetLanguage;
+  const translationQuery = useStatusTranslation(status.id, targetLanguage);
 
   const {
     allow_remote: allowRemote,
@@ -38,21 +39,21 @@ const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
 
   const renderTranslate = (me || allowUnauthenticated) && (allowRemote || status.account.local) && ['public', 'unlisted'].includes(status.visibility) && status.content.length > 0 && status.language !== null && intl.locale !== status.language && !status.content_map?.[intl.locale];
 
-  const supportsLanguages = (translationLanguages[status.language!]?.includes(intl.locale));
+  const supportsLanguages = (translationLanguages?.[status.language!]?.includes(intl.locale));
 
   const handleTranslate: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
 
-    if (status.translation) {
-      dispatch(undoStatusTranslation(status.id));
+    if (targetLanguage) {
+      hideTranslation(status.id);
     } else {
-      dispatch(translateStatus(status.id, intl.locale));
+      fetchTranslation(status.id, intl.locale);
     }
   };
 
   useEffect(() => {
     if (status.translation === null && settings.autoTranslate && features.translations && renderTranslate && supportsLanguages && status.translation !== false && status.language !== null && !knownLanguages.includes(status.language)) {
-      dispatch(translateStatus(status.id, intl.locale, true));
+      fetchTranslation(status.id, intl.locale);
     }
   }, []);
 
@@ -78,10 +79,10 @@ const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
     </button>
   );
 
-  if (status.translation) {
+  if (translationQuery.data) {
     const languageNames = new Intl.DisplayNames([intl.locale], { type: 'language' });
     const languageName = languageNames.of(status.language!);
-    const provider = status.translation.provider;
+    const provider = translationQuery.data.provider;
 
     return (
       <Stack space={3} alignItems='start'>
