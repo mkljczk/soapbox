@@ -13,8 +13,6 @@ import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const FE_NAME = 'pl_fe';
 
-const getAccount = makeGetAccount();
-
 /** Options when changing/saving settings. */
 type SettingOpts = {
   /** Whether to display an alert when settings are saved. */
@@ -71,7 +69,7 @@ const updateSettingsStore = (settings: any) =>
         },
       }));
     } else {
-      const accountUrl = getAccount(state, state.me as string)!.url;
+      const accountUrl = makeGetAccount()(state, state.me as string)!.url;
 
       return updateAuthAccount(accountUrl, settings);
     }

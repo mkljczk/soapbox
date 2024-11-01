@@ -1,6 +1,6 @@
 import { List as ImmutableList, Map as ImmutableMap, Record as ImmutableRecord, fromJS } from 'immutable';
 import trim from 'lodash/trim';
-import { applicationSchema, PlApiClient, tokenSchema, type Application, type CredentialAccount, type Token } from 'pl-api';
+import { applicationSchema, PlApiClient, tokenSchema, type CredentialAccount, type CredentialApplication, type Token } from 'pl-api';
 import * as v from 'valibot';
 
 import { MASTODON_PRELOAD_IMPORT, type PreloadAction } from 'pl-fe/actions/preload';
@@ -33,7 +33,7 @@ const AuthUserRecord = ImmutableRecord({
 });
 
 const ReducerRecord = ImmutableRecord({
-  app: null as Application | null,
+  app: null as CredentialApplication | null,
   tokens: ImmutableMap<string, Token>(),
   users: ImmutableMap<string, AuthUser>(),
   me: null as string | null,

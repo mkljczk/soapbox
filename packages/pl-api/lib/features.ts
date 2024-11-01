@@ -620,6 +620,15 @@ const getFeatures = (instance: Instance) => {
     ]),
 
     /**
+     * @see GET /api/v2/notifications/:group_key
+     * @see GET /api/v2/notifications/:group_key
+     * @see POST /api/v2/notifications/:group_key/dismiss
+     * @see GET /api/v2/notifications/:group_key/accounts
+     * @see GET /api/v2/notifications/unread_count
+     */
+    groupedNotifications: instance.api_versions.mastodon >= 2,
+
+    /**
      * Groups.
      * @see POST /api/v1/groups
      * @see GET /api/v1/groups

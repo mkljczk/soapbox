@@ -1,3 +1,4 @@
+import omit from 'lodash.omit';
 import * as v from 'valibot';
 
 import {
@@ -27,6 +28,7 @@ import {
   contextSchema,
   conversationSchema,
   credentialAccountSchema,
+  credentialApplicationSchema,
   customEmojiSchema,
   domainBlockSchema,
   emojiReactionSchema,
@@ -70,6 +72,7 @@ import {
   trendsLinkSchema,
   webPushSubscriptionSchema,
 } from './entities';
+import { GroupedNotificationsResults, groupedNotificationsResultsSchema, NotificationGroup } from './entities/grouped-notifications-results';
 import { filteredArray } from './entities/utils';
 import { AKKOMA, type Features, getFeatures, GOTOSOCIAL, MITRA } from './features';
 import {
@@ -107,6 +110,7 @@ import {
   MuteAccountParams,
   UpdateFilterParams,
 } from './params/filtering';
+import { GetGroupedNotificationsParams } from './params/grouped-notifications';
 import {
   CreateGroupParams,
   GetGroupBlocksParams,
@@ -195,6 +199,7 @@ import type {
   AdminReport,
   GroupRole,
   Instance,
+  Notification,
   PleromaConfig,
   Status,
   StreamingEvent,
@@ -228,7 +233,9 @@ import type {
   AdminUpdateRuleParams,
   AdminUpdateStatusParams,
 } from './params/admin';
-import type { PaginatedResponse } from './responses';
+import type { PaginatedResponse, PaginatedSingleResponse } from './responses';
+
+const GROUPED_TYPES = ['favourite', 'reblog', 'emoji_reaction', 'event_reminder', 'participation_accepted', 'participation_request'];
 
 /**
  * @category Clients
@@ -353,6 +360,60 @@ class PlApiClient {
     };
   };
 
+  #groupNotifications = ({ previous, next, items, ...response }: PaginatedResponse<Notification>, params?: GetGroupedNotificationsParams): PaginatedSingleResponse<GroupedNotificationsResults> => {
+    const notificationGroups: Array<NotificationGroup> = [];
+
+    for (const notification of items) {
+      let existingGroup: NotificationGroup | undefined;
+      if ((params?.grouped_types || GROUPED_TYPES).includes(notification.type)) {
+        existingGroup = notificationGroups
+          .find(notificationGroup =>
+            notificationGroup.type === notification.type
+              && ((notification.type === 'emoji_reaction' && notificationGroup.type === 'emoji_reaction') ? notification.emoji === notificationGroup.emoji : true)
+              // @ts-ignore
+              && notificationGroup.status_id === notification.status?.id,
+          );
+      }
+
+      if (existingGroup) {
+        existingGroup.notifications_count += 1;
+        existingGroup.page_min_id = notification.id;
+        existingGroup.sample_account_ids.push(notification.account.id);
+      } else {
+        notificationGroups.push({
+          ...(omit(notification, ['account', 'status', 'target'])),
+          group_key: notification.id,
+          notifications_count: 1,
+          most_recent_notification_id: notification.id,
+          page_min_id: notification.id,
+          page_max_id: notification.id,
+          latest_page_notification_at: notification.created_at,
+          sample_account_ids: [notification.account.id],
+          // @ts-ignore
+          status_id: notification.status?.id,
+          // @ts-ignore
+          target_id: notification.target?.id,
+        });
+      }
+    }
+
+    const groupedNotificationsResults: GroupedNotificationsResults = {
+      accounts: items.map(({ account }) => account),
+      statuses: items.reduce<Array<Status>>((statuses, notification) => {
+        if ('status' in notification) statuses.push(notification.status);
+        return statuses;
+      }, []),
+      notification_groups: notificationGroups,
+    };
+
+    return {
+      ...response,
+      previous: previous ? async () => this.#groupNotifications(await previous(), params) : null,
+      next: next ? async () => this.#groupNotifications(await next(), params) : null,
+      items: groupedNotificationsResults,
+    };
+  };
+
   /** Register client applications that can be used to obtain OAuth tokens. */
   public readonly apps = {
     /**
@@ -363,7 +424,7 @@ class PlApiClient {
     createApplication: async (params: CreateApplicationParams) => {
       const response = await this.request('/api/v1/apps', { method: 'POST', body: params });
 
-      return v.parse(applicationSchema, response.json);
+      return v.parse(credentialApplicationSchema, response.json);
     },
 
     /**
@@ -2703,6 +2764,16 @@ class PlApiClient {
     },
 
 
+  };
+
+  public readonly groupedNotifications = {
+    getGroupedNotifications: async (params: GetGroupedNotificationsParams) => {
+      if (this.features.groupedNotifications) {
+        return this.#paginatedGet('/api/v2/notifications', { params }, groupedNotificationsResultsSchema);
+      } else {
+        return this.#groupNotifications(await this.notifications.getNotifications(), params);
+      }
+    },
   };
 
   public readonly pushNotifications = {
