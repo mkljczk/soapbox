@@ -5,7 +5,6 @@ import {
 } from 'immutable';
 import { createSelector } from 'reselect';
 
-import { getLocale } from 'pl-fe/actions/settings';
 import { Entities } from 'pl-fe/entity-store/entities';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { getDomain } from 'pl-fe/utils/accounts';
@@ -16,7 +15,6 @@ import { shouldFilter } from 'pl-fe/utils/timelines';
 import type { Account as BaseAccount, MediaAttachment, Relationship } from 'pl-api';
 import type { EntityStore } from 'pl-fe/entity-store/types';
 import type { Account } from 'pl-fe/normalizers/account';
-import type { Group } from 'pl-fe/normalizers/group';
 import type { MinifiedStatus } from 'pl-fe/reducers/statuses';
 import type { MRFSimple } from 'pl-fe/schemas/pleroma';
 import type { RootState } from 'pl-fe/store';
@@ -49,54 +47,6 @@ const makeGetAccount = () => createSelector([
     __meta: { meta, ...account.__meta },
   };
 });
-
-type APIStatus = { id: string; username?: string };
-
-const makeGetStatus = () => createSelector(
-  [
-    (state: RootState, { id }: APIStatus) => state.statuses.get(id),
-    (state: RootState, { id }: APIStatus) => state.statuses.get(state.statuses.get(id)?.reblog_id || '', null),
-    (state: RootState, { id }: APIStatus) => state.statuses.get(state.statuses.get(id)?.quote_id || '', null),
-    (state: RootState, { id }: APIStatus) => {
-      const group = state.statuses.get(id)?.group_id;
-      if (group) return state.entities[Entities.GROUPS]?.store[group] as Group;
-      return undefined;
-    },
-    (state: RootState, { id }: APIStatus) => state.polls.get(id) || null,
-    (_state: RootState, { username }: APIStatus) => username,
-    (state: RootState) => state.me,
-    (state: RootState) => state.auth.client.features,
-    (state: RootState) => getLocale('en'),
-  ],
-
-  (statusBase, statusReblog, statusQuote, statusGroup, poll, username, me, features, locale) => {
-    if (!statusBase) return null;
-    const { account } = statusBase;
-    const accountUsername = account.acct;
-
-    // Must be owner of status if username exists.
-    if (accountUsername !== username && username !== undefined) {
-      return null;
-    }
-
-    return {
-      ...statusBase,
-      reblog: statusReblog || null,
-      quote: statusQuote || null,
-      group: statusGroup || null,
-      poll,
-    };
-    // if (map.currentLanguage === null && map.content_map?.size) {
-    //   let currentLanguage: string | null = null;
-    //   if (map.content_map.has(locale)) currentLanguage = locale;
-    //   else if (map.language && map.content_map.has(map.language)) currentLanguage = map.language;
-    //   else currentLanguage = map.content_map.keySeq().first();
-    //   map.set('currentLanguage', currentLanguage);
-    // }
-  },
-);
-
-type SelectedStatus = Exclude<ReturnType<ReturnType<typeof makeGetStatus>>, null>;
 
 type AccountGalleryAttachment = MediaAttachment & {
   status: MinifiedStatus;
@@ -131,29 +81,25 @@ const getGroupGallery = createSelector([
   }, ImmutableList()),
 );
 
-const makeGetReport = () => {
-  const getStatus = makeGetStatus();
-
-  return createSelector(
-    [
-      (state: RootState, reportId: string) => state.admin.reports.get(reportId),
-      (state: RootState, reportId: string) => selectAccount(state, state.admin.reports.get(reportId)?.account_id || ''),
-      (state: RootState, reportId: string) => selectAccount(state, state.admin.reports.get(reportId)?.target_account_id || ''),
-      (state: RootState, reportId: string) => state.admin.reports.get(reportId)!.status_ids
-        .map((statusId) => getStatus(state, { id: statusId }))
-        .filter((status): status is SelectedStatus => status !== null),
-    ],
-    (report, account, target_account, statuses) => {
-      if (!report) return null;
-      return {
-        ...report,
-        account,
-        target_account,
-        statuses,
-      };
-    },
-  );
-};
+const makeGetReport = () => createSelector(
+  [
+    (state: RootState, reportId: string) => state.admin.reports.get(reportId),
+    (state: RootState, reportId: string) => selectAccount(state, state.admin.reports.get(reportId)?.account_id || ''),
+    (state: RootState, reportId: string) => selectAccount(state, state.admin.reports.get(reportId)?.target_account_id || ''),
+    // (state: RootState, reportId: string) =>  state.admin.reports.get(reportId)!.status_ids
+    //   .map((statusId) => queryClient.getQueryData() getStatus(state, { id: statusId }))
+    //   .filter((status): status !== null),
+  ],
+  (report, account, target_account/*, statuses */) => {
+    if (!report) return null;
+    return {
+      ...report,
+      account,
+      target_account,
+      // statuses,
+    };
+  },
+);
 
 const getAuthUserIds = createSelector(
   [(state: RootState) => state.auth.users],
@@ -253,7 +199,6 @@ export {
   selectAccounts,
   selectOwnAccount,
   makeGetAccount,
-  type SelectedStatus,
   type AccountGalleryAttachment,
   getAccountGallery,
   getGroupGallery,

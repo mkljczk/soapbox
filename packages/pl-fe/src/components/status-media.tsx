@@ -10,11 +10,11 @@ import { useModalsStore } from 'pl-fe/stores/modals';
 import { isMediaVisible } from './statuses/sensitive-content-overlay';
 
 import type { MediaAttachment } from 'pl-api';
-import type { Status } from 'pl-fe/normalizers/status';
+import type { UseStatusData as Status } from 'pl-hooks';
 
 interface IStatusMedia {
   /** Status entity to render media for. */
-  status: Pick<Status, 'id' | 'account' | 'card' | 'expectsCard' | 'hidden' | 'media_attachments' | 'quote_id' | 'sensitive' | 'spoiler_text' | 'visibility'>;
+  status: Pick<Status, 'id' | 'account' | 'card' | 'expectsCard' /* | 'hidden' */ | 'media_attachments' | 'quote_id' | 'sensitive' | 'spoiler_text' | 'visibility'>;
   /** Whether to display compact media. */
   muted?: boolean;
   /** Callback when compact media is clicked. */

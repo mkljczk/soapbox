@@ -32,7 +32,7 @@ import StatusReplyMentions from './status-reply-mentions';
 import SensitiveContentOverlay from './statuses/sensitive-content-overlay';
 import StatusInfo from './statuses/status-info';
 
-import type { SelectedStatus } from 'pl-fe/selectors';
+import type { UseStatusData } from 'pl-hooks';
 
 const messages = defineMessages({
   reblogged_by: { id: 'status.reblogged_by', defaultMessage: '{name} reposted' },
@@ -41,7 +41,7 @@ const messages = defineMessages({
 interface IStatus {
   id?: string;
   avatarSize?: number;
-  status: SelectedStatus;
+  status: UseStatusData;
   onClick?: () => void;
   muted?: boolean;
   hidden?: boolean;

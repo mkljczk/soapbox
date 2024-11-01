@@ -9,7 +9,7 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
-import type { SelectedStatus } from 'pl-fe/selectors';
+import type { UseStatusData as Status } from 'pl-hooks';
 
 const messages = defineMessages({
   viewStatus: { id: 'admin.reports.actions.view_status', defaultMessage: 'View post' },
@@ -17,7 +17,7 @@ const messages = defineMessages({
 });
 
 interface IReportStatus {
-  status: SelectedStatus;
+  status: Status;
 }
 
 const ReportStatus: React.FC<IReportStatus> = ({ status }) => {

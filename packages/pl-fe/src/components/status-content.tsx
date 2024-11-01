@@ -56,7 +56,7 @@ const ReadMoreButton: React.FC<IReadMoreButton> = ({ onClick, quote, poll, previ
 );
 
 interface IStatusContent {
-  status: Status;
+  status: Pick<Status, 'id' | 'content' | 'content_map' | 'emojis' | 'language' | 'mentions' | 'poll_id' | 'quote_id' | 'spoiler_text' | 'spoiler_text_map' | 'url'>;
   onClick?: () => void;
   collapsable?: boolean;
   translatable?: boolean;
@@ -127,7 +127,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
       : (status.content_map && statusMeta?.currentLanguage)
         ? (status.content_map[statusMeta.currentLanguage] || status.content)
         : status.content,
-    [status.content, translation?.content, statusMeta?.currentLanguage],
+    [status.content, translation, statusMeta?.currentLanguage],
   );
 
   useEffect(() => {

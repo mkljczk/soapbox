@@ -70,7 +70,7 @@ import { unescapeHTML } from '../utils/html';
 import type { Emoji } from 'pl-fe/features/emoji';
 import type { Language } from 'pl-fe/features/preferences';
 import type { Account } from 'pl-fe/normalizers/account';
-import type { Status } from 'pl-fe/normalizers/status';
+import type { UseStatusData as Status } from 'pl-hooks';
 
 const getResetFileKey = () => Math.floor((Math.random() * 0x10000));
 
@@ -126,7 +126,10 @@ type State = ImmutableMap<string, Compose>;
 type Compose = ReturnType<typeof ReducerCompose>;
 type Poll = ReturnType<typeof PollRecord>;
 
-const statusToTextMentions = (status: Pick<Status, 'account' | 'mentions'>, account: Pick<Account, 'acct'>) => {
+const statusToTextMentions = (
+  status: Pick<Status, 'mentions'> & { account: Pick<Account, 'acct'> },
+  account: Pick<Account, 'acct'>,
+) => {
   const author = status.account.acct;
   const mentions = status.mentions.map((m) => m.acct) || [];
 
@@ -137,7 +140,11 @@ const statusToTextMentions = (status: Pick<Status, 'account' | 'mentions'>, acco
     .join('');
 };
 
-const statusToMentionsArray = (status: Pick<Status, 'account' | 'mentions'>, account: Pick<Account, 'acct'>, rebloggedBy?: Pick<Account, 'acct'>) => {
+const statusToMentionsArray = (
+  status: Pick<Status, 'mentions'> & { account: Pick<Account, 'acct'> },
+  account: Pick<Account, 'acct'>,
+  rebloggedBy?: Pick<Account, 'acct'>,
+) => {
   const author = status.account.acct;
   const mentions = status.mentions.map((m) => m.acct) || [];
 

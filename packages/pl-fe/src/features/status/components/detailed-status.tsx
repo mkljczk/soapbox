@@ -22,16 +22,16 @@ import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-contain
 import StatusInteractionBar from './status-interaction-bar';
 import StatusTypeIcon from './status-type-icon';
 
-import type { SelectedStatus } from 'pl-fe/selectors';
+import type { UseStatusData } from 'pl-hooks';
 
 const messages = defineMessages({
   applicationName: { id: 'status.application_name', defaultMessage: 'Sent from {name}' },
 });
 
 interface IDetailedStatus {
-  status: SelectedStatus;
+  status: UseStatusData;
   withMedia?: boolean;
-  onOpenCompareHistoryModal: (status: Pick<SelectedStatus, 'id'>) => void;
+  onOpenCompareHistoryModal: (status: Pick<UseStatusData, 'id'>) => void;
 }
 
 const DetailedStatus: React.FC<IDetailedStatus> = ({

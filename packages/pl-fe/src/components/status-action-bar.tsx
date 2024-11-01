@@ -48,8 +48,8 @@ import type { Emoji as EmojiType } from 'pl-fe/features/emoji';
 import type { UnauthorizedModalAction } from 'pl-fe/features/ui/components/modals/unauthorized-modal';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Group } from 'pl-fe/normalizers/group';
-import type { SelectedStatus } from 'pl-fe/selectors';
 import type { Me } from 'pl-fe/types/pl-fe';
+import type { UseStatusData as Status } from 'pl-hooks';
 
 const messages = defineMessages({
   adminAccount: { id: 'status.admin_account', defaultMessage: 'Moderate @{name}' },
@@ -1050,7 +1050,7 @@ const MenuButton: React.FC<IMenuButton> = ({
 };
 
 interface IStatusActionBar {
-  status: SelectedStatus;
+  status: Status;
   rebloggedBy?: Account;
   withLabels?: boolean;
   expandable?: boolean;

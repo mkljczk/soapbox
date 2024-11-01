@@ -119,7 +119,7 @@ const baseAccountSchema = v.object({
   following_count: v.fallback(v.number(), 0),
   roles: filteredArray(roleSchema),
 
-  fqn: v.fallback(v.nullable(v.string()), null),
+  fqn: v.string(),
   ap_id: v.fallback(v.nullable(v.string()), null),
   background_image: v.fallback(v.nullable(v.string()), null),
   relationship: v.fallback(v.optional(relationshipSchema), undefined),

@@ -11,10 +11,10 @@ import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
-import type { Status } from 'pl-fe/normalizers/status';
+import type { UseStatusData as Status } from 'pl-hooks';
 
 interface ITranslateButton {
-  status: Pick<Status, 'id' | 'account' | 'content' | 'content_map' | 'language' | 'translating' | 'translation' | 'visibility'>;
+  status: Pick<Status, 'id' | 'account' | 'content' | 'content_map' | 'language' | 'visibility'>;
 }
 
 const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
@@ -52,27 +52,27 @@ const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
   };
 
   useEffect(() => {
-    if (status.translation === null && settings.autoTranslate && features.translations && renderTranslate && supportsLanguages && status.translation !== false && status.language !== null && !knownLanguages.includes(status.language)) {
+    if (settings.autoTranslate && features.translations && renderTranslate && supportsLanguages && translationQuery.data !== false && status.language !== null && !knownLanguages.includes(status.language)) {
       fetchTranslation(status.id, intl.locale);
     }
   }, []);
 
-  if (!features.translations || !renderTranslate || !supportsLanguages || status.translation === false) return null;
+  if (!features.translations || !renderTranslate || !supportsLanguages || translationQuery.data === false) return null;
 
   const button = (
     <button className='w-fit' onClick={handleTranslate}>
       <HStack alignItems='center' space={1} className='text-primary-600 hover:underline dark:text-gray-600'>
         <Icon src={require('@tabler/icons/outline/language.svg')} className='size-4' />
         <span>
-          {status.translation ? (
+          {translationQuery.data ? (
             <FormattedMessage id='status.show_original' defaultMessage='Show original' />
-          ) : status.translating ? (
+          ) : translationQuery.isLoading ? (
             <FormattedMessage id='status.translating' defaultMessage='Translating…' />
           ) : (
             <FormattedMessage id='status.translate' defaultMessage='Translate' />
           )}
         </span>
-        {status.translating && (
+        {translationQuery.isLoading && (
           <Icon src={require('@tabler/icons/outline/loader-2.svg')} className='size-4 animate-spin' />
         )}
       </HStack>

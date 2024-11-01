@@ -9,7 +9,7 @@ import Text from 'pl-fe/components/ui/text';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 
-import type { Status } from 'pl-fe/normalizers/status';
+import type { UseStatusData as Status } from 'pl-hooks';
 
 const isMediaVisible = (status: Pick<Status, 'media_attachments' | 'sensitive' | 'spoiler_text'> & { hidden?: boolean | null }, displayMedia: 'default' | 'show_all' | 'hide_all') => {
   let visible = !(status.sensitive || status.spoiler_text);
@@ -41,7 +41,7 @@ const messages = defineMessages({
 });
 
 interface ISensitiveContentOverlay {
-  status: Pick<Status, 'id' | 'sensitive' | 'spoiler_text' | 'hidden' | 'media_attachments' | 'currentLanguage'>;
+  status: Pick<Status, 'id' | 'sensitive' | 'spoiler_text' | 'hidden' | 'media_attachments'>;
 }
 
 const SensitiveContentOverlay = React.forwardRef<HTMLDivElement, ISensitiveContentOverlay>((props, ref) => {
