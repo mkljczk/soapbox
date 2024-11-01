@@ -2650,6 +2650,44 @@ class PlApiClient {
     },
 
     /**
+     * Accept multiple notification requests
+     * Accepts multiple notification requests, which merges the filtered notifications from those users back into the main notifications and accepts any future notification from them.
+     * @see {@link https://docs.joinmastodon.org/methods/notifications/#accept-multiple-requests}
+     * Requires features{@link Features['notificationsRequestsAcceptMultiple']}.
+     */
+    acceptMultipleNotificationRequests: async (notificationRequestIds: Array<string>) => {
+      const response = await this.request('/api/v1/notifications/requests/accept', { method: 'POST', body: { id: notificationRequestIds } });
+
+      return response.json as {};
+    },
+
+    /**
+     * Dismiss multiple notification requests
+     * Dismiss multiple notification requests, which hides them and prevent them from contributing to the pending notification requests count.
+     * @see {@link https://docs.joinmastodon.org/methods/notifications/#dismiss-multiple-requests}
+     * Requires features{@link Features['notificationsRequestsAcceptMultiple']}.
+     */
+    dismissMultipleNotificationRequests: async (notificationRequestIds: Array<string>) => {
+      const response = await this.request('/api/v1/notifications/requests/dismiss', { method: 'POST', body: { id: notificationRequestIds } });
+
+      return response.json as {};
+    },
+
+    /**
+     * Check if accepted notification requests have been merged
+     * Check whether accepted notification requests have been merged. Accepting notification requests schedules a background job to merge the filtered notifications back into the normal notification list. When that process has finished, the client should refresh the notifications list at its earliest convenience. This is communicated by the `notifications_merged` streaming event but can also be polled using this endpoint.
+     * @see {@link https://docs.joinmastodon.org/methods/notifications/#requests-merged}
+     * Requires features{@link Features['notificationsRequestsAcceptMultiple']}.
+     */
+    checkNotificationRequestsMerged: async () => {
+      const response = await this.request('/api/v1/notifications/requests/merged');
+
+      return v.parse(v.object({
+        merged: v.boolean(),
+      }), response.json);
+    },
+
+    /**
      * An endpoint to delete multiple statuses by IDs.
      *
      * Requires features{@link Features['notificationsDismissMultiple']}.
@@ -2663,6 +2701,8 @@ class PlApiClient {
 
       return response.json as {};
     },
+
+
   };
 
   public readonly pushNotifications = {

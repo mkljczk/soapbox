@@ -896,6 +896,12 @@ const getFeatures = (instance: Instance) => {
      */
     notificationsPolicy: instance.api_versions.mastodon >= 1,
 
+    /**
+     * @see POST /api/v1/notifications/requests/accept
+     * @see POST /api/v1/notifications/requests/dismiss
+     */
+    notificationsRequestsAcceptMultiple: instance.api_versions.mastodon >= 1,
+
     pleromaAdminAccounts: v.software === PLEROMA,
 
     /**

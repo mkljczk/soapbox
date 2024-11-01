@@ -1,12 +1,18 @@
 import * as v from 'valibot';
 
+import { previewCardAuthorSchema } from './preview-card-author';
+import { filteredArray } from './utils';
+
 /**
  * @category Schemas
  * @see {@link https://docs.joinmastodon.org/entities/PreviewCard/}
  */
 const previewCardSchema = v.object({
+  /** @deprecated */
   author_name: v.fallback(v.string(), ''),
+  /** @deprecated */
   author_url: v.fallback(v.pipe(v.string(), v.url()), ''),
+  authors: filteredArray(previewCardAuthorSchema),
   blurhash: v.fallback(v.nullable(v.string()), null),
   description: v.fallback(v.string(), ''),
   embed_url: v.fallback(v.pipe(v.string(), v.url()), ''),

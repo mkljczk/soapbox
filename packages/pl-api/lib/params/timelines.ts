@@ -11,7 +11,7 @@ interface PublicTimelineParams extends PaginationParams, WithMutedParam, OnlyEve
   /**
    * Boolean. Show only statuses from the given domain.
    *
-   * Requires `features.instanceTimeline`.
+   * Requires features{@link Features['instanceTimeline']}.
    */
   instance?: string;
 }
@@ -53,7 +53,7 @@ type ListTimelineParams = PaginationParams & WithMutedParam & OnlyEventsParam & 
 interface GetConversationsParams extends PaginationParams, LanguageParam {
   /**
    * Only return conversations with the given recipients (a list of user ids).
-   * Requires `features.conversationsByRecipients`.
+   * Requires features{@link Features['conversationsByRecipients']}.
    * */
   recipients?: string[];
 }

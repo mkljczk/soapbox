@@ -6,7 +6,7 @@ import type { PaginationParams } from './common';
 interface GetBookmarksParams extends PaginationParams {
   /**
    * Bookmark folder ID
-   * Requires `features.bookmarkFolders`.
+   * Requires features{@link Features['bookmarkFolders']}.
    */
   folder_id?: string;
 }

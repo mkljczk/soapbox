@@ -11,8 +11,13 @@ interface GetNotificationParams extends PaginationParams {
   /** Return only notifications received from the specified account. */
   account_id?: string;
   /**
+   * Whether to include notifications filtered by the user’s NotificationPolicy. Defaults to false.
+   * Requires features.{@link Features['notificationsPolicy']}.
+   */
+  include_filtered?: boolean;
+  /**
    * will exclude the notifications for activities with the given visibilities. The parameter accepts an array of visibility types (`public`, `unlisted`, `private`, `direct`).
-   * Requires `features.notificationsExcludeVisibilities`.
+   * Requires features{@link Features['notificationsExcludeVisibilities']}.
    */
   exclude_visibilities?: string[];
 }

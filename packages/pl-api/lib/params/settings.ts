@@ -106,17 +106,18 @@ interface UpdateCredentialsParams {
 
   /**
    * Description of avatar image, for alt-text.
-   * Requires `features.accountAvatarDescription`.
+   *
+   * Requires features{@link Features['accountAvatarDescription']}.
    */
   avatar_description?: boolean;
   /**
    * Description of header image, for alt-text.
-   * Requires `features.accountAvatarDescription`.
+   * Requires features{@link Features['accountAvatarDescription']}.
    */
   header_description?: boolean;
   /**
    * Enable RSS feed for this account's Public posts at `/[username]/feed.rss`
-   * Requires `features.accountEnableRss`.
+   * Requires features{@link Features['accountEnableRss']}.
   */
   enable_rss?: boolean;
 }
