@@ -35,7 +35,7 @@ const settingsSchema = v.object({
   preserveSpoilers: v.fallback(v.boolean(), false),
   autoTranslate: v.fallback(v.boolean(), false),
   knownLanguages: v.fallback(v.array(v.string()), []),
-  showWrenchButton: v.fallback(v.boolean(), true),
+  showWrenchButton: v.fallback(v.boolean(), false),
 
   systemFont: v.fallback(v.boolean(), false),
   demetricator: v.fallback(v.boolean(), false),
