@@ -15,4 +15,17 @@ interface GetGroupedNotificationsParams extends PaginationParams {
   include_filtered?: boolean;
 }
 
-export type { GetGroupedNotificationsParams };
+interface GetUnreadNotificationGroupCountParams {
+  /** Maximum number of results to return. Defaults to 100 notifications. Max 1000 notifications. */
+  limit?: number;
+  /** Types of notifications that should count towards unread notifications. */
+  types?: Array<string>;
+  /** Types of notifications that should not count towards unread notifications. */
+  exclude_types?: Array<string>;
+  /** Only count unread notifications received from the specified account. */
+  account_id?: string;
+  /** Restrict which notification types can be grouped. Use this if there are notification types for which your client does not support grouping. If omitted, the server will group notifications of all types it supports (currently, `favourite`, `follow` and `reblog`). If you do not want any notification grouping, use GET /api/v1/notifications/unread_count instead. */
+  grouped_types?: Array<string>;
+}
+
+export type { GetGroupedNotificationsParams, GetUnreadNotificationGroupCountParams };

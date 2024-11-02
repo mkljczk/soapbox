@@ -38,9 +38,16 @@ const accountNotificationGroupSchema = v.object({
   type: v.picklist(['follow', 'follow_request', 'admin.sign_up', 'bite']),
 });
 
+const mentionNotificationGroupSchema = v.object({
+  ...baseNotificationGroupSchema.entries,
+  type: v.literal('mention'),
+  subtype: v.fallback(v.nullable(v.picklist(['reply'])), null),
+  status_id: v.string(),
+});
+
 const statusNotificationGroupSchema = v.object({
   ...baseNotificationGroupSchema.entries,
-  type: v.picklist(['status', 'mention', 'reblog', 'favourite', 'poll', 'update', 'event_reminder']),
+  type: v.picklist(['status', 'reblog', 'favourite', 'poll', 'update', 'event_reminder']),
   status_id: v.string(),
 });
 
@@ -105,6 +112,7 @@ const notificationGroupSchema: v.BaseSchema<any, NotificationGroup, v.BaseIssue<
   })),
   v.variant('type', [
     accountNotificationGroupSchema,
+    mentionNotificationGroupSchema,
     statusNotificationGroupSchema,
     reportNotificationGroupSchema,
     severedRelationshipNotificationGroupSchema,
@@ -117,6 +125,7 @@ const notificationGroupSchema: v.BaseSchema<any, NotificationGroup, v.BaseIssue<
 
 type NotificationGroup = v.InferOutput<
   | typeof accountNotificationGroupSchema
+  | typeof mentionNotificationGroupSchema
   | typeof statusNotificationGroupSchema
   | typeof reportNotificationGroupSchema
   | typeof severedRelationshipNotificationGroupSchema

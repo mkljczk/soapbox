@@ -1,5 +1,4 @@
 import { Record as ImmutableRecord, OrderedMap as ImmutableOrderedMap } from 'immutable';
-import omit from 'lodash/omit';
 
 import {
   ACCOUNT_BLOCK_SUCCESS,
@@ -27,18 +26,17 @@ import {
 } from '../actions/notifications';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
-import type { AccountWarning, Notification as BaseNotification, Markers, PaginatedResponse, Relationship, RelationshipSeveranceEvent, Report } from 'pl-api';
-import type { Notification } from 'pl-fe/normalizers/notification';
+import type { Notification as BaseNotification, Markers, NotificationGroup, PaginatedResponse, Relationship } from 'pl-api';
 import type { AnyAction } from 'redux';
 
 const QueuedNotificationRecord = ImmutableRecord({
-  notification: {} as any as BaseNotification,
+  notification: {} as any as NotificationGroup,
   intlMessages: {} as Record<string, string>,
   intlLocale: '',
 });
 
 const ReducerRecord = ImmutableRecord({
-  items: ImmutableOrderedMap<string, MinifiedNotification>(),
+  items: ImmutableOrderedMap<string, NotificationGroup>(),
   hasMore: true,
   top: false,
   unread: 0,
@@ -54,103 +52,103 @@ type QueuedNotification = ReturnType<typeof QueuedNotificationRecord>;
 const parseId = (id: string | number) => parseInt(id as string, 10);
 
 // For sorting the notifications
-const comparator = (a: Pick<Notification, 'id'>, b: Pick<Notification, 'id'>) => {
-  const parse = (m: Pick<Notification, 'id'>) => parseId(m.id);
+const comparator = (a: Pick<NotificationGroup, 'group_key'>, b: Pick<NotificationGroup, 'group_key'>) => {
+  const parse = (m: Pick<NotificationGroup, 'group_key'>) => parseId(m.group_key);
   if (parse(a) < parse(b)) return 1;
   if (parse(a) > parse(b)) return -1;
   return 0;
 };
 
-const minifyNotification = (notification: Notification) => {
-  // @ts-ignore
-  const minifiedNotification: {
-    duplicate: boolean;
-    account_id: string;
-    account_ids: string[];
-    created_at: string;
-    id: string;
-  } & (
-    | { type: 'follow' | 'follow_request' | 'admin.sign_up' | 'bite' }
-    | {
-      type: 'mention' | 'status' | 'reblog' | 'favourite' | 'poll' | 'update' | 'event_reminder';
-      status_id: string;
-     }
-    | {
-      type: 'admin.report';
-      report: Report;
-    }
-    | {
-      type: 'severed_relationships';
-      relationship_severance_event: RelationshipSeveranceEvent;
-    }
-    | {
-      type: 'moderation_warning';
-      moderation_warning: AccountWarning;
-    }
-    | {
-      type: 'move';
-      target_id: string;
-    }
-    | {
-      type: 'emoji_reaction';
-      emoji: string;
-      emoji_url: string | null;
-      status_id: string;
-    }
-    | {
-      type: 'chat_mention';
-      chat_message_id: string;
-    }
-    | {
-      type: 'participation_accepted' | 'participation_request';
-      status_id: string;
-      participation_message: string | null;
-    }
-  ) = {
-    ...omit(notification, ['account', 'accounts']),
-    created_at: notification.created_at,
-    id: notification.id,
-    type: notification.type,
-  };
+// const minifyNotification = (notification: Notification) => {
+//   // @ts-ignore
+//   const minifiedNotification: {
+//     duplicate: boolean;
+//     account_id: string;
+//     account_ids: string[];
+//     created_at: string;
+//     id: string;
+//   } & (
+//     | { type: 'follow' | 'follow_request' | 'admin.sign_up' | 'bite' }
+//     | {
+//       type: 'mention' | 'status' | 'reblog' | 'favourite' | 'poll' | 'update' | 'event_reminder';
+//       status_id: string;
+//      }
+//     | {
+//       type: 'admin.report';
+//       report: Report;
+//     }
+//     | {
+//       type: 'severed_relationships';
+//       relationship_severance_event: RelationshipSeveranceEvent;
+//     }
+//     | {
+//       type: 'moderation_warning';
+//       moderation_warning: AccountWarning;
+//     }
+//     | {
+//       type: 'move';
+//       target_id: string;
+//     }
+//     | {
+//       type: 'emoji_reaction';
+//       emoji: string;
+//       emoji_url: string | null;
+//       status_id: string;
+//     }
+//     | {
+//       type: 'chat_mention';
+//       chat_message_id: string;
+//     }
+//     | {
+//       type: 'participation_accepted' | 'participation_request';
+//       status_id: string;
+//       participation_message: string | null;
+//     }
+//   ) = {
+//     ...omit(notification, ['account', 'accounts']),
+//     created_at: notification.latest_page_notification_at,
+//     id: notification.id,
+//     type: notification.type,
+//   };
 
-  // @ts-ignore
-  if (notification.status) minifiedNotification.status_id = notification.status.id;
-  // @ts-ignore
-  if (notification.target) minifiedNotification.target_id = notification.target.id;
-  // @ts-ignore
-  if (notification.chat_message) minifiedNotification.chat_message_id = notification.chat_message.id;
+//   // @ts-ignore
+//   if (notification.status) minifiedNotification.status_id = notification.status.id;
+//   // @ts-ignore
+//   if (notification.target) minifiedNotification.target_id = notification.target.id;
+//   // @ts-ignore
+//   if (notification.chat_message) minifiedNotification.chat_message_id = notification.chat_message.id;
 
-  return minifiedNotification;
-};
+//   return minifiedNotification;
+// };
 
-type MinifiedNotification = ReturnType<typeof minifyNotification>;
+// type MinifiedNotification = ReturnType<typeof minifyNotification>;
 
 // Count how many notifications appear after the given ID (for unread count)
-const countFuture = (notifications: ImmutableOrderedMap<string, MinifiedNotification>, lastId: string | number) =>
+const countFuture = (notifications: ImmutableOrderedMap<string, NotificationGroup>, lastId: string | number) =>
   notifications.reduce((acc, notification) => {
-    if (!notification.duplicate && parseId(notification.id) > parseId(lastId)) {
+    if (parseId(notification.group_key) > parseId(lastId)) {
       return acc + 1;
     } else {
       return acc;
     }
   }, 0);
 
-const importNotification = (state: State, notification: Notification) => {
+const importNotification = (state: State, notification: NotificationGroup) => {
   const top = state.top;
 
-  if (!top && !notification.duplicate) state = state.update('unread', unread => unread + 1);
+  if (!top) state = state.update('unread', unread => unread + 1);
 
   return state.update('items', map => {
     if (top && map.size > 40) {
       map = map.take(20);
     }
 
-    return map.set(notification.id, minifyNotification(notification)).sort(comparator);
+    return map.set(notification.group_key, notification).sort(comparator);
   });
 };
 
-const expandNormalizedNotifications = (state: State, notifications: Notification[], next: (() => Promise<PaginatedResponse<BaseNotification>>) | null) => {
-  const items = ImmutableOrderedMap(notifications.map(minifyNotification).map(n => [n.id, n]));
+const expandNormalizedNotifications = (state: State, notifications: NotificationGroup[], next: (() => Promise<PaginatedResponse<BaseNotification>>) | null) => {
+  const items = ImmutableOrderedMap(notifications.map(n => [n.group_key, n]));
 
   return state.withMutations(mutable => {
     mutable.update('items', map => map.merge(items).sort(comparator));
@@ -161,10 +159,10 @@ const expandNormalizedNotifications = (state: State, notifications: Notification
 };
 
 const filterNotifications = (state: State, relationship: Relationship) =>
-  state.update('items', map => map.filterNot(item => item !== null && item.account_ids.includes(relationship.id)));
+  state.update('items', map => map.filterNot(item => item !== null && item.sample_account_ids.includes(relationship.id)));
 
 const filterNotificationIds = (state: State, accountIds: Array<string>, type?: string) => {
-  const helper = (list: ImmutableOrderedMap<string, MinifiedNotification>) => list.filterNot(item => item !== null && accountIds.includes(item.account_ids[0]) && (type === undefined || type === item.type));
+  const helper = (list: ImmutableOrderedMap<string, NotificationGroup>) => list.filterNot(item => item !== null && accountIds.includes(item.sample_account_ids[0]) && (type === undefined || type === item.type));
   return state.update('items', helper);
 };
 
@@ -177,19 +175,19 @@ const deleteByStatus = (state: State, statusId: string) =>
   // @ts-ignore
   state.update('items', map => map.filterNot(item => item !== null && item.status === statusId));
 
-const updateNotificationsQueue = (state: State, notification: BaseNotification, intlMessages: Record<string, string>, intlLocale: string) => {
+const updateNotificationsQueue = (state: State, notification: NotificationGroup, intlMessages: Record<string, string>, intlLocale: string) => {
   const queuedNotifications = state.queuedNotifications;
   const listedNotifications = state.items;
   const totalQueuedNotificationsCount = state.totalQueuedNotificationsCount;
 
-  const alreadyExists = queuedNotifications.has(notification.id) || listedNotifications.has(notification.id);
+  const alreadyExists = queuedNotifications.has(notification.group_key) || listedNotifications.has(notification.group_key);
   if (alreadyExists) return state;
 
   const newQueuedNotifications = queuedNotifications;
 
   return state.withMutations(mutable => {
     if (totalQueuedNotificationsCount <= MAX_QUEUED_NOTIFICATIONS) {
-      mutable.set('queuedNotifications', newQueuedNotifications.set(notification.id, QueuedNotificationRecord({
+      mutable.set('queuedNotifications', newQueuedNotifications.set(notification.group_key, QueuedNotificationRecord({
         notification,
         intlMessages,
         intlLocale,
@@ -259,7 +257,4 @@ const notifications = (state: State = ReducerRecord(), action: AnyAction | Timel
   }
 };
 
-export {
-  notifications as default,
-  type MinifiedNotification,
-};
+export { notifications as default };

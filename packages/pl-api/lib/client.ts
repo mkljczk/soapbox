@@ -1,4 +1,5 @@
 import omit from 'lodash.omit';
+import pick from 'lodash.pick';
 import * as v from 'valibot';
 
 import {
@@ -110,7 +111,7 @@ import {
   MuteAccountParams,
   UpdateFilterParams,
 } from './params/filtering';
-import { GetGroupedNotificationsParams } from './params/grouped-notifications';
+import { GetGroupedNotificationsParams, GetUnreadNotificationGroupCountParams } from './params/grouped-notifications';
 import {
   CreateGroupParams,
   GetGroupBlocksParams,
@@ -193,6 +194,7 @@ import request, { getNextLink, getPrevLink, type RequestBody, RequestMeta } from
 import { buildFullPath } from './utils/url';
 
 import type {
+  Account,
   AdminAccount,
   AdminAnnouncement,
   AdminModerationLogEntry,
@@ -299,6 +301,28 @@ class PlApiClient {
     };
   };
 
+  #paginatedSingleGet = async <T>(input: URL | RequestInfo, body: RequestBody, schema: v.BaseSchema<any, T, v.BaseIssue<unknown>>): Promise<PaginatedSingleResponse<T>> => {
+    const getMore = (input: string | null) => input ? async () => {
+      const response = await this.request(input);
+
+      return {
+        previous: getMore(getPrevLink(response)),
+        next: getMore(getNextLink(response)),
+        items: v.parse(schema, response.json),
+        partial: response.status === 206,
+      };
+    } : null;
+
+    const response = await this.request(input, body);
+
+    return {
+      previous: getMore(getPrevLink(response)),
+      next: getMore(getNextLink(response)),
+      items: v.parse(schema, response.json),
+      partial: response.status === 206,
+    };
+  };
+
   #paginatedPleromaAccounts = async (params: {
     query?: string;
     filters?: string;
@@ -398,11 +422,16 @@ class PlApiClient {
     }
 
     const groupedNotificationsResults: GroupedNotificationsResults = {
-      accounts: items.map(({ account }) => account),
-      statuses: items.reduce<Array<Status>>((statuses, notification) => {
-        if ('status' in notification) statuses.push(notification.status);
+      accounts: Object.values(items.reduce<Record<string, Account>>((accounts, notification) => {
+        accounts[notification.account.id] = notification.account;
+        if ('target' in notification) accounts[notification.target.id] = notification.target;
+
+        return accounts;
+      }, {})),
+      statuses: Object.values(items.reduce<Record<string, Status>>((statuses, notification) => {
+        if ('status' in notification) statuses[notification.status.id] = notification.status;
         return statuses;
-      }, []),
+      }, {})),
       notification_groups: notificationGroups,
     };
 
@@ -2767,11 +2796,66 @@ class PlApiClient {
   };
 
   public readonly groupedNotifications = {
-    getGroupedNotifications: async (params: GetGroupedNotificationsParams) => {
+    getGroupedNotifications: async (params: GetGroupedNotificationsParams, meta?: RequestMeta) => {
       if (this.features.groupedNotifications) {
-        return this.#paginatedGet('/api/v2/notifications', { params }, groupedNotificationsResultsSchema);
+        return this.#paginatedSingleGet('/api/v2/notifications', { ...meta, params }, groupedNotificationsResultsSchema);
       } else {
-        return this.#groupNotifications(await this.notifications.getNotifications(), params);
+        const response = await this.notifications.getNotifications(
+          pick(params, ['max_id', 'since_id', 'limit', 'min_id', 'types', 'exclude_types', 'account_id', 'include_filtered']),
+        );
+
+        return this.#groupNotifications(response, params);
+      }
+    },
+
+    getNotificationGroup: async (groupKey: string) => {
+      if (this.features.groupedNotifications) {
+        const response = await this.request(`/api/v2/notifications/${groupKey}`);
+
+        return v.parse(groupedNotificationsResultsSchema, response.json);
+      } else {
+        const response = await this.request(`/api/v1/notifications/${groupKey}`);
+
+        return this.#groupNotifications({
+          previous: null,
+          next: null,
+          items: [response.json],
+          partial: false,
+        }).items;
+      }
+    },
+
+    dismissNotificationGroup: async (groupKey: string) => {
+      if (this.features.groupedNotifications) {
+        const response = await this.request(`/api/v2/notifications/${groupKey}/dismiss`, { method: 'POST' });
+
+        return response.json as {};
+      } else {
+        return this.notifications.dismissNotification(groupKey);
+      }
+    },
+
+    getNotificationGroupAccounts: async (groupKey: string) => {
+      if (this.features.groupedNotifications) {
+        const response = await this.request(`/api/v2/notifications/${groupKey}/accounts`);
+
+        return v.parse(filteredArray(accountSchema), response.json);
+      } else {
+        return (await (this.groupedNotifications.getNotificationGroup(groupKey))).accounts;
+      }
+    },
+
+    getUnreadNotificationGroupCount: async (params: GetUnreadNotificationGroupCountParams) => {
+      if (this.features.groupedNotifications) {
+        const response = await this.request('/api/v2/notifications/unread_count', { params });
+
+        return v.parse(v.object({
+          count: v.number(),
+        }), response.json);
+      } else {
+        return this.notifications.getUnreadNotificationCount(
+          pick(params || {}, ['max_id', 'since_id', 'limit', 'min_id', 'types', 'exclude_types', 'account_id']),
+        );
       }
     },
   };

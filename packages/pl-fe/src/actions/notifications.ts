@@ -1,10 +1,11 @@
 import IntlMessageFormat from 'intl-messageformat';
+
 import 'intl-pluralrules';
 import { defineMessages } from 'react-intl';
 
 import { getClient } from 'pl-fe/api';
 import { getNotificationStatus } from 'pl-fe/features/notifications/components/notification';
-import { normalizeNotification, normalizeNotifications, type Notification } from 'pl-fe/normalizers/notification';
+import { normalizeNotification } from 'pl-fe/normalizers/notification';
 import { getFilters, regexFromFilters } from 'pl-fe/selectors';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { isLoggedIn } from 'pl-fe/utils/auth';
@@ -18,7 +19,7 @@ import { importEntities } from './importer';
 import { saveMarker } from './markers';
 import { saveSettings } from './settings';
 
-import type { Account, Notification as BaseNotification, PaginatedResponse, Status } from 'pl-api';
+import type { Notification as BaseNotification, GetGroupedNotificationsParams, GroupedNotificationsResults, NotificationGroup, PaginatedSingleResponse } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const NOTIFICATIONS_UPDATE = 'NOTIFICATIONS_UPDATE' as const;
@@ -58,8 +59,8 @@ defineMessages({
   mention: { id: 'notification.mention', defaultMessage: '{name} mentioned you' },
 });
 
-const fetchRelatedRelationships = (dispatch: AppDispatch, notifications: Array<BaseNotification>) => {
-  const accountIds = notifications.filter(item => item.type === 'follow').map(item => item.account.id);
+const fetchRelatedRelationships = (dispatch: AppDispatch, notifications: Array<NotificationGroup>) => {
+  const accountIds = notifications.filter(item => item.type === 'follow').map(item => item.sample_account_ids).flat();
 
   if (accountIds.length > 0) {
     dispatch(fetchRelationships(accountIds));
@@ -76,13 +77,16 @@ const updateNotifications = (notification: BaseNotification) =>
       statuses: [getNotificationStatus(notification)],
     }));
 
+
     if (showInColumn) {
+      const normalizedNotification = normalizeNotification(notification);
+
       dispatch({
         type: NOTIFICATIONS_UPDATE,
-        notification: normalizeNotification(notification),
+        notification: normalizedNotification,
       });
 
-      fetchRelatedRelationships(dispatch, [notification]);
+      fetchRelatedRelationships(dispatch, [normalizedNotification]);
     }
   };
 
@@ -195,7 +199,7 @@ const expandNotifications = ({ maxId }: Record<string, any> = {}, done: () => an
       }
     }
 
-    const params: Record<string, any> = {
+    const params: GetGroupedNotificationsParams = {
       max_id: maxId,
     };
 
@@ -203,7 +207,7 @@ const expandNotifications = ({ maxId }: Record<string, any> = {}, done: () => an
       if (features.notificationsIncludeTypes) {
         params.types = NOTIFICATION_TYPES.filter(type => !EXCLUDE_TYPES.includes(type as any));
       } else {
-        params.exclude_types = EXCLUDE_TYPES;
+        params.exclude_types = [...EXCLUDE_TYPES];
       }
     } else {
       const filtered = FILTER_TYPES[activeFilter] || [activeFilter];
@@ -215,51 +219,65 @@ const expandNotifications = ({ maxId }: Record<string, any> = {}, done: () => an
     }
 
     if (!maxId && notifications.items.size > 0) {
-      params.since_id = notifications.getIn(['items', 0, 'id']);
+      params.since_id = notifications.items.first()?.page_max_id;
     }
 
     dispatch(expandNotificationsRequest());
 
-    return getClient(state).notifications.getNotifications(params, { signal: abortExpandNotifications.signal }).then(response => {
-      const entries = (response.items).reduce((acc, item) => {
-        if (item.account?.id) {
-          acc.accounts[item.account.id] = item.account;
-        }
-
-        // Used by Move notification
-        if (item.type === 'move' && item.target.id) {
-          acc.accounts[item.target.id] = item.target;
-        }
-
-        // TODO actually check for type
-        // @ts-ignore
-        if (item.status?.id) {
-          // @ts-ignore
-          acc.statuses[item.status.id] = item.status;
-        }
-
-        return acc;
-      }, { accounts: {}, statuses: {} } as { accounts: Record<string, Account>; statuses: Record<string, Status> });
-
+    return getClient(state).groupedNotifications.getGroupedNotifications(params, { signal: abortExpandNotifications.signal }).then(({ items: { accounts, statuses, notification_groups }, next }) => {
       dispatch(importEntities({
-        accounts: Object.values(entries.accounts),
-        statuses: Object.values(entries.statuses),
+        accounts,
+        statuses,
       }));
 
-      const deduplicatedNotifications = normalizeNotifications(response.items, state.notifications.items);
-
-      dispatch(expandNotificationsSuccess(deduplicatedNotifications, response.next));
-      fetchRelatedRelationships(dispatch, response.items);
+      dispatch(expandNotificationsSuccess(notification_groups, next));
+      fetchRelatedRelationships(dispatch, notification_groups);
       done();
     }).catch(error => {
       dispatch(expandNotificationsFail(error));
       done();
     });
+
+    // return getClient(state).notifications.getNotifications(params, { signal: abortExpandNotifications.signal }).then(response => {
+    //   const entries = (response.items).reduce((acc, item) => {
+    //     if (item.account?.id) {
+    //       acc.accounts[item.account.id] = item.account;
+    //     }
+
+    //     // Used by Move notification
+    //     if (item.type === 'move' && item.target.id) {
+    //       acc.accounts[item.target.id] = item.target;
+    //     }
+
+    //     // TODO actually check for type
+    //     // @ts-ignore
+    //     if (item.status?.id) {
+    //       // @ts-ignore
+    //       acc.statuses[item.status.id] = item.status;
+    //     }
+
+    //     return acc;
+    //   }, { accounts: {}, statuses: {} } as { accounts: Record<string, Account>; statuses: Record<string, Status> });
+
+    //   dispatch(importEntities({
+    //     accounts: Object.values(entries.accounts),
+    //     statuses: Object.values(entries.statuses),
+    //   }));
+
+    //   const deduplicatedNotifications = normalizeNotifications(response.items, state.notifications.items);
+
+    //   dispatch(expandNotificationsSuccess(deduplicatedNotifications, response.next));
+    //   fetchRelatedRelationships(dispatch, response.items);
+    //   done();
+    // }).catch(error => {
+    //   dispatch(expandNotificationsFail(error));
+    //   done();
+    // });
   };
 
 const expandNotificationsRequest = () => ({ type: NOTIFICATIONS_EXPAND_REQUEST });
 
-const expandNotificationsSuccess = (notifications: Array<Notification>, next: (() => Promise<PaginatedResponse<BaseNotification>>) | null) => ({
+const expandNotificationsSuccess = (notifications: Array<NotificationGroup>, next: (() => Promise<PaginatedSingleResponse<GroupedNotificationsResults>>) | null) => ({
   type: NOTIFICATIONS_EXPAND_SUCCESS,
   notifications,
   next,
@@ -297,7 +315,7 @@ const markReadNotifications = () =>
     if (!isLoggedIn(getState)) return;
 
     const state = getState();
-    const topNotificationId = state.notifications.items.first()?.id;
+    const topNotificationId = state.notifications.items.first()?.page_max_id;
     const lastReadId = state.notifications.lastRead;
 
     if (topNotificationId && (lastReadId === -1 || compareId(topNotificationId, lastReadId) > 0)) {
