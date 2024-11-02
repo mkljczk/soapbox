@@ -66,7 +66,7 @@ const NotificationFilterBar = () => {
       name: 'status',
     });
     items.push({
-      text: <Icon className='size-4' src={require('@tabler/icons/outline/heart.svg')} />,
+      text: <Icon className='size-4' src={require('@tabler/icons/outline/star.svg')} />,
       title: intl.formatMessage(messages.favourites),
       action: onClick('favourite'),
       name: 'favourite',

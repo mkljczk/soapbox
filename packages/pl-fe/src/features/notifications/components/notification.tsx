@@ -52,7 +52,7 @@ const icons: Partial<Record<NotificationType | 'reply', string>> = {
   follow: require('@tabler/icons/outline/user-plus.svg'),
   follow_request: require('@tabler/icons/outline/user-plus.svg'),
   mention: require('@tabler/icons/outline/at.svg'),
-  favourite: require('@tabler/icons/outline/heart.svg'),
+  favourite: require('@tabler/icons/outline/star.svg'),
   reblog: require('@tabler/icons/outline/repeat.svg'),
   status: require('@tabler/icons/outline/bell-ringing.svg'),
   poll: require('@tabler/icons/outline/chart-bar.svg'),
