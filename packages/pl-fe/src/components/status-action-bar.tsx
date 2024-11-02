@@ -398,7 +398,7 @@ const FavouriteButton: React.FC<IActionButton> = ({
   const favouriteButton = (
     <StatusActionButton
       title={intl.formatMessage(messages.favourite)}
-      icon={features.statusDislikes ? require('@tabler/icons/outline/thumb-up.svg') : require('@tabler/icons/outline/heart.svg')}
+      icon={features.statusDislikes ? require('@tabler/icons/outline/thumb-up.svg') : require('@tabler/icons/outline/star.svg')}
       color='accent'
       filled
       onClick={handleFavouriteClick}
