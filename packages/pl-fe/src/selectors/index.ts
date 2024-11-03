@@ -183,12 +183,24 @@ const makeGetNotification = () => createSelector([
   // @ts-ignore
   (state: RootState, notification: NotificationGroup) => state.statuses.get(notification.status_id),
   (state: RootState, notification: NotificationGroup) => selectAccounts(state, notification.sample_account_ids),
-], (notification, target, status, accounts) => ({
+], (notification, target, status, accounts): SelectedNotification => ({
   ...notification,
   target,
   status,
   accounts,
 }));
+
+type SelectedNotification = NotificationGroup & {
+  accounts: Array<Account>;
+} & ({
+  type: 'follow' | 'follow_request' | 'admin.sign_up' | 'bite';
+} | {
+  type: 'status' | 'mention' | 'reblog' | 'favourite' | 'poll' | 'update' | 'emoji_reaction' | 'event_reminder' | 'participation_accepted' | 'participation_request';
+  status: MinifiedStatus;
+} | {
+  type: 'move';
+  target: Account;
+})
 
 type AccountGalleryAttachment = MediaAttachment & {
   status: MinifiedStatus;
@@ -350,6 +362,7 @@ export {
   makeGetStatus,
   type SelectedStatus,
   makeGetNotification,
+  type SelectedNotification,
   type AccountGalleryAttachment,
   getAccountGallery,
   getGroupGallery,

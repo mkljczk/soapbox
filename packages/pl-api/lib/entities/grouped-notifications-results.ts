@@ -27,7 +27,6 @@ const baseNotificationGroupSchema = v.object({
   page_max_id: v.fallback(v.optional(v.string()), undefined),
   latest_page_notification_at: v.fallback(v.optional(datetimeSchema), undefined),
   sample_account_ids: v.array(v.string()),
-  status_id: v.fallback(v.optional(v.string()), undefined),
 
   is_muted: v.fallback(v.optional(v.boolean()), undefined),
   is_seen: v.fallback(v.optional(v.boolean()), undefined),
