@@ -18,7 +18,7 @@ import { importEntities } from './importer';
 import { saveMarker } from './markers';
 import { saveSettings } from './settings';
 
-import type { Notification as BaseNotification, GetGroupedNotificationsParams, GroupedNotificationsResults, NotificationGroup, PaginatedSingleResponse } from 'pl-api';
+import type { Notification as BaseNotification, GetGroupedNotificationsParams, GroupedNotificationsResults, NotificationGroup, PaginatedResponse } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const NOTIFICATIONS_UPDATE = 'NOTIFICATIONS_UPDATE' as const;
@@ -240,7 +240,7 @@ const expandNotifications = ({ maxId }: Record<string, any> = {}, done: () => an
 
 const expandNotificationsRequest = () => ({ type: NOTIFICATIONS_EXPAND_REQUEST });
 
-const expandNotificationsSuccess = (notifications: Array<NotificationGroup>, next: (() => Promise<PaginatedSingleResponse<GroupedNotificationsResults>>) | null) => ({
+const expandNotificationsSuccess = (notifications: Array<NotificationGroup>, next: (() => Promise<PaginatedResponse<GroupedNotificationsResults, false>>) | null) => ({
   type: NOTIFICATIONS_EXPAND_SUCCESS,
   notifications,
   next,

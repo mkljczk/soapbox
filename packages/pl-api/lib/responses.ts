@@ -1,14 +1,11 @@
-interface PaginatedSingleResponse<T> {
-  previous: (() => Promise<PaginatedSingleResponse<T>>) | null;
-  next: (() => Promise<PaginatedSingleResponse<T>>) | null;
-  items: T;
+interface PaginatedResponse<T, IsArray extends boolean = true> {
+  previous: (() => Promise<PaginatedResponse<T, IsArray>>) | null;
+  next: (() => Promise<PaginatedResponse<T, IsArray>>) | null;
+  items: IsArray extends true ? Array<T> : T;
   partial: boolean;
   total?: number;
 }
 
-type PaginatedResponse<T> = PaginatedSingleResponse<Array<T>>;
-
 export type {
-  PaginatedSingleResponse,
   PaginatedResponse,
 };

@@ -206,6 +206,7 @@ import type {
   Status,
   StreamingEvent,
 } from './entities';
+import type { PlApiResponse } from './main';
 import type {
   AdminAccountAction,
   AdminCreateAnnouncementParams,
@@ -235,7 +236,7 @@ import type {
   AdminUpdateRuleParams,
   AdminUpdateStatusParams,
 } from './params/admin';
-import type { PaginatedResponse, PaginatedSingleResponse } from './responses';
+import type { PaginatedResponse } from './responses';
 
 const GROUPED_TYPES = ['favourite', 'reblog', 'emoji_reaction', 'event_reminder', 'participation_accepted', 'participation_request'];
 
@@ -279,48 +280,21 @@ class PlApiClient {
     }
   }
 
-  #paginatedGet = async <T>(input: URL | RequestInfo, body: RequestBody, schema: v.BaseSchema<any, T, v.BaseIssue<unknown>>): Promise<PaginatedResponse<T>> => {
-    const getMore = (input: string | null) => input ? async () => {
-      const response = await this.request(input);
+  #paginatedGet = async <T, IsArray extends true | false = true>(input: URL | RequestInfo, body: RequestBody, schema: v.BaseSchema<any, T, v.BaseIssue<unknown>>, isArray = true as IsArray): Promise<PaginatedResponse<T, typeof isArray>> => {
+    const targetSchema = isArray ? filteredArray(schema) : schema;
 
-      return {
-        previous: getMore(getPrevLink(response)),
-        next: getMore(getNextLink(response)),
-        items: v.parse(filteredArray(schema), response.json),
-        partial: response.status === 206,
-      };
-    } : null;
+    const processResponse = (response: PlApiResponse<any>) => ({
+      previous: getMore(getPrevLink(response)),
+      next: getMore(getNextLink(response)),
+      items: v.parse(targetSchema, response.json),
+      partial: response.status === 206,
+    } as PaginatedResponse<T, IsArray>);
+
+    const getMore = (input: string | null) => input ? () => this.request(input).then(processResponse) : null;
 
     const response = await this.request(input, body);
 
-    return {
-      previous: getMore(getPrevLink(response)),
-      next: getMore(getNextLink(response)),
-      items: v.parse(filteredArray(schema), response.json),
-      partial: response.status === 206,
-    };
-  };
-
-  #paginatedSingleGet = async <T>(input: URL | RequestInfo, body: RequestBody, schema: v.BaseSchema<any, T, v.BaseIssue<unknown>>): Promise<PaginatedSingleResponse<T>> => {
-    const getMore = (input: string | null) => input ? async () => {
-      const response = await this.request(input);
-
-      return {
-        previous: getMore(getPrevLink(response)),
-        next: getMore(getNextLink(response)),
-        items: v.parse(schema, response.json),
-        partial: response.status === 206,
-      };
-    } : null;
-
-    const response = await this.request(input, body);
-
-    return {
-      previous: getMore(getPrevLink(response)),
-      next: getMore(getNextLink(response)),
-      items: v.parse(schema, response.json),
-      partial: response.status === 206,
-    };
+    return processResponse(response);
   };
 
   #paginatedPleromaAccounts = async (params: {
@@ -384,7 +358,7 @@ class PlApiClient {
     };
   };
 
-  #groupNotifications = ({ previous, next, items, ...response }: PaginatedResponse<Notification>, params?: GetGroupedNotificationsParams): PaginatedSingleResponse<GroupedNotificationsResults> => {
+  #groupNotifications = ({ previous, next, items, ...response }: PaginatedResponse<Notification>, params?: GetGroupedNotificationsParams): PaginatedResponse<GroupedNotificationsResults, false> => {
     const notificationGroups: Array<NotificationGroup> = [];
 
     for (const notification of items) {
@@ -2808,7 +2782,7 @@ class PlApiClient {
      */
     getGroupedNotifications: async (params: GetGroupedNotificationsParams, meta?: RequestMeta) => {
       if (this.features.groupedNotifications) {
-        return this.#paginatedSingleGet('/api/v2/notifications', { ...meta, params }, groupedNotificationsResultsSchema);
+        return this.#paginatedGet('/api/v2/notifications', { ...meta, params }, groupedNotificationsResultsSchema, false);
       } else {
         const response = await this.notifications.getNotifications(
           pick(params, ['max_id', 'since_id', 'limit', 'min_id', 'types', 'exclude_types', 'account_id', 'include_filtered']),
