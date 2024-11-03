@@ -24,11 +24,9 @@ import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { NotificationType } from 'pl-fe/utils/notification';
 
-import type { Notification as BaseNotification } from 'pl-api';
+import type { NotificationGroup } from 'pl-api';
 import type { Account } from 'pl-fe/normalizers/account';
-import type { Notification as NotificationEntity } from 'pl-fe/normalizers/notification';
 import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
-import type { MinifiedNotification } from 'pl-fe/reducers/notifications';
 
 const notificationForScreenReader = (intl: IntlShape, message: string, timestamp: string) => {
   const output = [message];
@@ -184,13 +182,13 @@ const avatarSize = 48;
 
 interface INotification {
   hidden?: boolean;
-  notification: MinifiedNotification;
+  notification: NotificationGroup;
   onMoveUp?: (notificationId: string) => void;
   onMoveDown?: (notificationId: string) => void;
   onReblog?: (status: StatusEntity, e?: KeyboardEvent) => void;
 }
 
-const getNotificationStatus = (n: NotificationEntity | BaseNotification) => {
+const getNotificationStatus = (n: Pick<NotificationGroup, 'type'> & ({ status: StatusEntity } | { })) => {
   if (['mention', 'status', 'reblog', 'favourite', 'poll', 'update', 'emoji_reaction', 'event_reminder', 'participation_accepted', 'participation_request'].includes(n.type))
     // @ts-ignore
     return n.status;
@@ -207,15 +205,17 @@ const Notification: React.FC<INotification> = (props) => {
   const { me } = useLoggedIn();
   const { openModal } = useModalsStore();
   const { settings } = useSettingsStore();
+
   const notification = useAppSelector((state) => getNotification(state, props.notification));
+  const status = getNotificationStatus(notification);
 
   const history = useHistory();
   const intl = useIntl();
   const instance = useInstance();
 
   const type = notification.type;
-  const { account, accounts } = notification;
-  const status = getNotificationStatus(notification);
+  const { accounts } = notification;
+  const account = accounts[0];
 
   const getHandlers = () => ({
     reply: handleMention,
@@ -289,13 +289,13 @@ const Notification: React.FC<INotification> = (props) => {
 
   const handleMoveUp = () => {
     if (onMoveUp) {
-      onMoveUp(notification.id);
+      onMoveUp(notification.group_key);
     }
   };
 
   const handleMoveDown = () => {
     if (onMoveDown) {
-      onMoveDown(notification.id);
+      onMoveDown(notification.group_key);
     }
   };
 
@@ -393,7 +393,7 @@ const Notification: React.FC<INotification> = (props) => {
         name: account && typeof account === 'object' ? account.acct : '',
         targetName,
       }),
-      notification.created_at,
+      notification.latest_page_notification_at!,
     )
   );
 
@@ -433,7 +433,7 @@ const Notification: React.FC<INotification> = (props) => {
                     truncate
                     data-testid='message'
                   >
-                    <RelativeTimestamp timestamp={notification.created_at} theme='muted' size='sm' className='whitespace-nowrap' />
+                    <RelativeTimestamp timestamp={notification.latest_page_notification_at!} theme='muted' size='sm' className='whitespace-nowrap' />
                   </Text>
                 </div>
               )}

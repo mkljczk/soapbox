@@ -13,12 +13,10 @@ import { validId } from 'pl-fe/utils/auth';
 import ConfigDB from 'pl-fe/utils/config-db';
 import { shouldFilter } from 'pl-fe/utils/timelines';
 
-import type { Account as BaseAccount, Filter, MediaAttachment, Relationship } from 'pl-api';
+import type { Account as BaseAccount, Filter, MediaAttachment, NotificationGroup, Relationship } from 'pl-api';
 import type { EntityStore } from 'pl-fe/entity-store/types';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Group } from 'pl-fe/normalizers/group';
-import type { Notification } from 'pl-fe/normalizers/notification';
-import type { MinifiedNotification } from 'pl-fe/reducers/notifications';
 import type { MinifiedStatus } from 'pl-fe/reducers/statuses';
 import type { MRFSimple } from 'pl-fe/schemas/pleroma';
 import type { RootState } from 'pl-fe/store';
@@ -27,7 +25,9 @@ const selectAccount = (state: RootState, accountId: string) =>
   state.entities[Entities.ACCOUNTS]?.store[accountId] as Account | undefined;
 
 const selectAccounts = (state: RootState, accountIds: Array<string>) =>
-  accountIds.map(accountId => state.entities[Entities.ACCOUNTS]?.store[accountId] as Account | undefined);
+  accountIds
+    .map(accountId => state.entities[Entities.ACCOUNTS]?.store[accountId] as Account | undefined)
+    .filter((account): account is Account => account !== undefined);
 
 const selectOwnAccount = (state: RootState) => {
   if (state.me) {
@@ -177,25 +177,32 @@ const makeGetStatus = () => createSelector(
 type SelectedStatus = Exclude<ReturnType<ReturnType<typeof makeGetStatus>>, null>;
 
 const makeGetNotification = () => createSelector([
-  (_state: RootState, notification: MinifiedNotification) => notification,
+  (_state: RootState, notification: NotificationGroup) => notification,
   // @ts-ignore
-  (state: RootState, notification: MinifiedNotification) => selectAccount(state, notification.account_id),
+  (state: RootState, notification: NotificationGroup) => selectAccount(state, notification.target_id),
   // @ts-ignore
-  (state: RootState, notification: MinifiedNotification) => selectAccount(state, notification.target_id),
-  // @ts-ignore
-  (state: RootState, notification: MinifiedNotification) => state.statuses.get(notification.status_id),
-  (state: RootState, notification: MinifiedNotification) => notification.account_ids ? selectAccounts(state, notification.account_ids) : null,
-], (notification, account, target, status, accounts): MinifiedNotification & Notification => ({
+  (state: RootState, notification: NotificationGroup) => state.statuses.get(notification.status_id),
+  (state: RootState, notification: NotificationGroup) => selectAccounts(state, notification.sample_account_ids),
+], (notification, target, status, accounts): SelectedNotification => ({
   ...notification,
   // @ts-ignore
-  account: account || null,
+  target,
   // @ts-ignore
-  target: target || null,
-  // @ts-ignore
-  status: status || null,
-  // @ts-ignore
+  status,
   accounts,
 }));
+
+type SelectedNotification = NotificationGroup & {
+  accounts: Array<Account>;
+} & ({
+  type: 'follow' | 'follow_request' | 'admin.sign_up' | 'bite';
+} | {
+  type: 'status' | 'mention' | 'reblog' | 'favourite' | 'poll' | 'update' | 'emoji_reaction' | 'event_reminder' | 'participation_accepted' | 'participation_request';
+  status: MinifiedStatus;
+} | {
+  type: 'move';
+  target: Account;
+})
 
 type AccountGalleryAttachment = MediaAttachment & {
   status: MinifiedStatus;
@@ -357,6 +364,7 @@ export {
   makeGetStatus,
   type SelectedStatus,
   makeGetNotification,
+  type SelectedNotification,
   type AccountGalleryAttachment,
   getAccountGallery,
   getGroupGallery,

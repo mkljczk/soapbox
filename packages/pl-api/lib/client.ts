@@ -1,3 +1,5 @@
+import omit from 'lodash.omit';
+import pick from 'lodash.pick';
 import * as v from 'valibot';
 
 import {
@@ -27,6 +29,7 @@ import {
   contextSchema,
   conversationSchema,
   credentialAccountSchema,
+  credentialApplicationSchema,
   customEmojiSchema,
   domainBlockSchema,
   emojiReactionSchema,
@@ -70,6 +73,7 @@ import {
   trendsLinkSchema,
   webPushSubscriptionSchema,
 } from './entities';
+import { GroupedNotificationsResults, groupedNotificationsResultsSchema, NotificationGroup } from './entities/grouped-notifications-results';
 import { filteredArray } from './entities/utils';
 import { AKKOMA, type Features, getFeatures, GOTOSOCIAL, MITRA } from './features';
 import {
@@ -107,6 +111,7 @@ import {
   MuteAccountParams,
   UpdateFilterParams,
 } from './params/filtering';
+import { GetGroupedNotificationsParams, GetUnreadNotificationGroupCountParams } from './params/grouped-notifications';
 import {
   CreateGroupParams,
   GetGroupBlocksParams,
@@ -189,12 +194,14 @@ import request, { getNextLink, getPrevLink, type RequestBody, RequestMeta } from
 import { buildFullPath } from './utils/url';
 
 import type {
+  Account,
   AdminAccount,
   AdminAnnouncement,
   AdminModerationLogEntry,
   AdminReport,
   GroupRole,
   Instance,
+  Notification,
   PleromaConfig,
   Status,
   StreamingEvent,
@@ -228,7 +235,9 @@ import type {
   AdminUpdateRuleParams,
   AdminUpdateStatusParams,
 } from './params/admin';
-import type { PaginatedResponse } from './responses';
+import type { PaginatedResponse, PaginatedSingleResponse } from './responses';
+
+const GROUPED_TYPES = ['favourite', 'reblog', 'emoji_reaction', 'event_reminder', 'participation_accepted', 'participation_request'];
 
 /**
  * @category Clients
@@ -288,6 +297,28 @@ class PlApiClient {
       previous: getMore(getPrevLink(response)),
       next: getMore(getNextLink(response)),
       items: v.parse(filteredArray(schema), response.json),
+      partial: response.status === 206,
+    };
+  };
+
+  #paginatedSingleGet = async <T>(input: URL | RequestInfo, body: RequestBody, schema: v.BaseSchema<any, T, v.BaseIssue<unknown>>): Promise<PaginatedSingleResponse<T>> => {
+    const getMore = (input: string | null) => input ? async () => {
+      const response = await this.request(input);
+
+      return {
+        previous: getMore(getPrevLink(response)),
+        next: getMore(getNextLink(response)),
+        items: v.parse(schema, response.json),
+        partial: response.status === 206,
+      };
+    } : null;
+
+    const response = await this.request(input, body);
+
+    return {
+      previous: getMore(getPrevLink(response)),
+      next: getMore(getNextLink(response)),
+      items: v.parse(schema, response.json),
       partial: response.status === 206,
     };
   };
@@ -353,6 +384,65 @@ class PlApiClient {
     };
   };
 
+  #groupNotifications = ({ previous, next, items, ...response }: PaginatedResponse<Notification>, params?: GetGroupedNotificationsParams): PaginatedSingleResponse<GroupedNotificationsResults> => {
+    const notificationGroups: Array<NotificationGroup> = [];
+
+    for (const notification of items) {
+      let existingGroup: NotificationGroup | undefined;
+      if ((params?.grouped_types || GROUPED_TYPES).includes(notification.type)) {
+        existingGroup = notificationGroups
+          .find(notificationGroup =>
+            notificationGroup.type === notification.type
+              && ((notification.type === 'emoji_reaction' && notificationGroup.type === 'emoji_reaction') ? notification.emoji === notificationGroup.emoji : true)
+              // @ts-ignore
+              && notificationGroup.status_id === notification.status?.id,
+          );
+      }
+
+      if (existingGroup) {
+        existingGroup.notifications_count += 1;
+        existingGroup.page_min_id = notification.id;
+        existingGroup.sample_account_ids.push(notification.account.id);
+      } else {
+        notificationGroups.push({
+          ...(omit(notification, ['account', 'status', 'target'])),
+          group_key: notification.id,
+          notifications_count: 1,
+          most_recent_notification_id: notification.id,
+          page_min_id: notification.id,
+          page_max_id: notification.id,
+          latest_page_notification_at: notification.created_at,
+          sample_account_ids: [notification.account.id],
+          // @ts-ignore
+          status_id: notification.status?.id,
+          // @ts-ignore
+          target_id: notification.target?.id,
+        });
+      }
+    }
+
+    const groupedNotificationsResults: GroupedNotificationsResults = {
+      accounts: Object.values(items.reduce<Record<string, Account>>((accounts, notification) => {
+        accounts[notification.account.id] = notification.account;
+        if ('target' in notification) accounts[notification.target.id] = notification.target;
+
+        return accounts;
+      }, {})),
+      statuses: Object.values(items.reduce<Record<string, Status>>((statuses, notification) => {
+        if ('status' in notification) statuses[notification.status.id] = notification.status;
+        return statuses;
+      }, {})),
+      notification_groups: notificationGroups,
+    };
+
+    return {
+      ...response,
+      previous: previous ? async () => this.#groupNotifications(await previous(), params) : null,
+      next: next ? async () => this.#groupNotifications(await next(), params) : null,
+      items: groupedNotificationsResults,
+    };
+  };
+
   /** Register client applications that can be used to obtain OAuth tokens. */
   public readonly apps = {
     /**
@@ -363,7 +453,7 @@ class PlApiClient {
     createApplication: async (params: CreateApplicationParams) => {
       const response = await this.request('/api/v1/apps', { method: 'POST', body: params });
 
-      return v.parse(applicationSchema, response.json);
+      return v.parse(credentialApplicationSchema, response.json);
     },
 
     /**
@@ -2703,6 +2793,108 @@ class PlApiClient {
     },
 
 
+  };
+
+  /**
+   * It is recommended to only use this with features{@link Features['groupedNotifications']} available. However, there is a fallback that groups the notifications client-side.
+   */
+  public readonly groupedNotifications = {
+    /**
+     * Get all grouped notifications
+     * Return grouped notifications concerning the user. This API returns Link headers containing links to the next/previous page. However, the links can also be constructed dynamically using query params and `id` values.
+     *
+     * Requires features{@link Features['groupedNotifications']}.
+     * @see {@link https://docs.joinmastodon.org/methods/grouped_notifications/#get-grouped}
+     */
+    getGroupedNotifications: async (params: GetGroupedNotificationsParams, meta?: RequestMeta) => {
+      if (this.features.groupedNotifications) {
+        return this.#paginatedSingleGet('/api/v2/notifications', { ...meta, params }, groupedNotificationsResultsSchema);
+      } else {
+        const response = await this.notifications.getNotifications(
+          pick(params, ['max_id', 'since_id', 'limit', 'min_id', 'types', 'exclude_types', 'account_id', 'include_filtered']),
+        );
+
+        return this.#groupNotifications(response, params);
+      }
+    },
+
+    /**
+     * Get a single notification group
+     * View information about a specific notification group with a given group key.
+     *
+     * Requires features{@link Features['groupedNotifications']}.
+     * @see {@link https://docs.joinmastodon.org/methods/grouped_notifications/#get-notification-group}
+     */
+    getNotificationGroup: async (groupKey: string) => {
+      if (this.features.groupedNotifications) {
+        const response = await this.request(`/api/v2/notifications/${groupKey}`);
+
+        return v.parse(groupedNotificationsResultsSchema, response.json);
+      } else {
+        const response = await this.request(`/api/v1/notifications/${groupKey}`);
+
+        return this.#groupNotifications({
+          previous: null,
+          next: null,
+          items: [response.json],
+          partial: false,
+        }).items;
+      }
+    },
+
+    /**
+     * Dismiss a single notification group
+     * Dismiss a single notification group from the server.
+     *
+     * Requires features{@link Features['groupedNotifications']}.
+     * @see {@link https://docs.joinmastodon.org/methods/grouped_notifications/#dismiss-group}
+     */
+    dismissNotificationGroup: async (groupKey: string) => {
+      if (this.features.groupedNotifications) {
+        const response = await this.request(`/api/v2/notifications/${groupKey}/dismiss`, { method: 'POST' });
+
+        return response.json as {};
+      } else {
+        return this.notifications.dismissNotification(groupKey);
+      }
+    },
+
+    /**
+     * Get accounts of all notifications in a notification group
+     *
+     * Requires features{@link Features['groupedNotifications']}.
+     * @see {@link https://docs.joinmastodon.org/methods/grouped_notifications/#get-group-accounts}
+     */
+    getNotificationGroupAccounts: async (groupKey: string) => {
+      if (this.features.groupedNotifications) {
+        const response = await this.request(`/api/v2/notifications/${groupKey}/accounts`);
+
+        return v.parse(filteredArray(accountSchema), response.json);
+      } else {
+        return (await (this.groupedNotifications.getNotificationGroup(groupKey))).accounts;
+      }
+    },
+
+    /**
+     * Get the number of unread notifications
+     * Get the (capped) number of unread notification groups for the current user. A notification is considered unread if it is more recent than the notifications read marker. Because the count is dependant on the parameters, it is computed every time and is thus a relatively slow operation (although faster than getting the full corresponding notifications), therefore the number of returned notifications is capped.
+     *
+     * Requires features{@link Features['groupedNotifications']}.
+     * @see {@link https://docs.joinmastodon.org/methods/grouped_notifications/#unread-group-count}
+     */
+    getUnreadNotificationGroupCount: async (params: GetUnreadNotificationGroupCountParams) => {
+      if (this.features.groupedNotifications) {
+        const response = await this.request('/api/v2/notifications/unread_count', { params });
+
+        return v.parse(v.object({
+          count: v.number(),
+        }), response.json);
+      } else {
+        return this.notifications.getUnreadNotificationCount(
+          pick(params || {}, ['max_id', 'since_id', 'limit', 'min_id', 'types', 'exclude_types', 'account_id']),
+        );
+      }
+    },
   };
 
   public readonly pushNotifications = {

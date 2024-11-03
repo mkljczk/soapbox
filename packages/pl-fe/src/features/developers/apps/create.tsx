@@ -16,7 +16,7 @@ import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { getBaseURL } from 'pl-fe/utils/accounts';
 
-import type { Token } from 'pl-api';
+import type { CredentialApplication, Token } from 'pl-api';
 
 const messages = defineMessages({
   heading: { id: 'column.app_create', defaultMessage: 'Create app' },
@@ -53,7 +53,7 @@ const CreateApp: React.FC = () => {
       });
   };
 
-  const handleCreateToken = (app: Record<string, string>) => {
+  const handleCreateToken = (app: CredentialApplication) => {
     const baseURL = getBaseURL(account!);
 
     const tokenParams = {

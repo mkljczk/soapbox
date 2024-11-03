@@ -47,11 +47,11 @@ const externalAuthorize = (instance: Instance, baseURL: string) =>
     const scopes = getInstanceScopes(instance);
 
     return dispatch(createExternalApp(instance, baseURL)).then((app) => {
-      const { client_id, redirect_uri } = app as Record<string, string>;
+      const { client_id, redirect_uri } = app;
 
       const query = new URLSearchParams({
         client_id,
-        redirect_uri,
+        redirect_uri: redirect_uri || app.redirect_uris[0]!,
         response_type: 'code',
         scope: scopes,
       });
