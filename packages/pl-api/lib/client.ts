@@ -2795,7 +2795,17 @@ class PlApiClient {
 
   };
 
+  /**
+   * It is recommended to only use this with features{@link Features['groupedNotifications']} available. However, there is a fallback that groups the notifications client-side.
+   */
   public readonly groupedNotifications = {
+    /**
+     * Get all grouped notifications
+     * Return grouped notifications concerning the user. This API returns Link headers containing links to the next/previous page. However, the links can also be constructed dynamically using query params and `id` values.
+     *
+     * Requires features{@link Features['groupedNotifications']}.
+     * @see {@link https://docs.joinmastodon.org/methods/grouped_notifications/#get-grouped}
+     */
     getGroupedNotifications: async (params: GetGroupedNotificationsParams, meta?: RequestMeta) => {
       if (this.features.groupedNotifications) {
         return this.#paginatedSingleGet('/api/v2/notifications', { ...meta, params }, groupedNotificationsResultsSchema);
@@ -2808,6 +2818,13 @@ class PlApiClient {
       }
     },
 
+    /**
+     * Get a single notification group
+     * View information about a specific notification group with a given group key.
+     *
+     * Requires features{@link Features['groupedNotifications']}.
+     * @see {@link https://docs.joinmastodon.org/methods/grouped_notifications/#get-notification-group}
+     */
     getNotificationGroup: async (groupKey: string) => {
       if (this.features.groupedNotifications) {
         const response = await this.request(`/api/v2/notifications/${groupKey}`);
@@ -2825,6 +2842,13 @@ class PlApiClient {
       }
     },
 
+    /**
+     * Dismiss a single notification group
+     * Dismiss a single notification group from the server.
+     *
+     * Requires features{@link Features['groupedNotifications']}.
+     * @see {@link https://docs.joinmastodon.org/methods/grouped_notifications/#dismiss-group}
+     */
     dismissNotificationGroup: async (groupKey: string) => {
       if (this.features.groupedNotifications) {
         const response = await this.request(`/api/v2/notifications/${groupKey}/dismiss`, { method: 'POST' });
@@ -2835,6 +2859,12 @@ class PlApiClient {
       }
     },
 
+    /**
+     * Get accounts of all notifications in a notification group
+     *
+     * Requires features{@link Features['groupedNotifications']}.
+     * @see {@link https://docs.joinmastodon.org/methods/grouped_notifications/#get-group-accounts}
+     */
     getNotificationGroupAccounts: async (groupKey: string) => {
       if (this.features.groupedNotifications) {
         const response = await this.request(`/api/v2/notifications/${groupKey}/accounts`);
@@ -2845,6 +2875,13 @@ class PlApiClient {
       }
     },
 
+    /**
+     * Get the number of unread notifications
+     * Get the (capped) number of unread notification groups for the current user. A notification is considered unread if it is more recent than the notifications read marker. Because the count is dependant on the parameters, it is computed every time and is thus a relatively slow operation (although faster than getting the full corresponding notifications), therefore the number of returned notifications is capped.
+     *
+     * Requires features{@link Features['groupedNotifications']}.
+     * @see {@link https://docs.joinmastodon.org/methods/grouped_notifications/#unread-group-count}
+     */
     getUnreadNotificationGroupCount: async (params: GetUnreadNotificationGroupCountParams) => {
       if (this.features.groupedNotifications) {
         const response = await this.request('/api/v2/notifications/unread_count', { params });
