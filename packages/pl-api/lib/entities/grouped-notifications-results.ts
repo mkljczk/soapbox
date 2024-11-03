@@ -22,7 +22,7 @@ const partialAccountWithAvatarSchema = v.object({
 const baseNotificationGroupSchema = v.object({
   group_key: v.string(),
   notifications_count: v.pipe(v.number(), v.integer()),
-  most_recent_notification_id: v.string(),
+  most_recent_notification_id: v.pipe(v.unknown(), v.transform(String), v.string()),
   page_min_id: v.fallback(v.optional(v.string()), undefined),
   page_max_id: v.fallback(v.optional(v.string()), undefined),
   latest_page_notification_at: v.fallback(v.optional(datetimeSchema), undefined),
