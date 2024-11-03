@@ -145,7 +145,10 @@ const sanitizeState = (state: State) => {
   });
 };
 
-const persistAuth = (state: State) => localStorage.setItem(STORAGE_KEY, JSON.stringify(state.delete('client').toJS()));
+const persistAuth = (state: State) => {
+  const { client, ...data } = state.toJS();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+};
 
 const persistSession = (state: State) => {
   const me = state.me;
