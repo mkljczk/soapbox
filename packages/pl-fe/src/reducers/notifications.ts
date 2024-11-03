@@ -30,7 +30,7 @@ import type { Notification as BaseNotification, Markers, NotificationGroup, Pagi
 import type { AnyAction } from 'redux';
 
 const QueuedNotificationRecord = ImmutableRecord({
-  notification: {} as any as NotificationGroup,
+  notification: {} as any as BaseNotification,
   intlMessages: {} as Record<string, string>,
   intlLocale: '',
 });
@@ -175,7 +175,7 @@ const deleteByStatus = (state: State, statusId: string) =>
   // @ts-ignore
   state.update('items', map => map.filterNot(item => item !== null && item.status === statusId));
 
-const updateNotificationsQueue = (state: State, notification: NotificationGroup, intlMessages: Record<string, string>, intlLocale: string) => {
+const updateNotificationsQueue = (state: State, notification: BaseNotification, intlMessages: Record<string, string>, intlLocale: string) => {
   const queuedNotifications = state.queuedNotifications;
   const listedNotifications = state.items;
   const totalQueuedNotificationsCount = state.totalQueuedNotificationsCount;

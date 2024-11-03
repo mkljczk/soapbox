@@ -1,5 +1,4 @@
 import IntlMessageFormat from 'intl-messageformat';
-
 import 'intl-pluralrules';
 import { defineMessages } from 'react-intl';
 

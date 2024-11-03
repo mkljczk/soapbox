@@ -19,7 +19,7 @@ import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
-import { makeGetNotification, SelectedNotification } from 'pl-fe/selectors';
+import { makeGetNotification } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { NotificationType } from 'pl-fe/utils/notification';
@@ -188,7 +188,7 @@ interface INotification {
   onReblog?: (status: StatusEntity, e?: KeyboardEvent) => void;
 }
 
-const getNotificationStatus = (n: SelectedNotification) => {
+const getNotificationStatus = (n: Pick<NotificationGroup, 'type'> & ({ status: StatusEntity } | { })) => {
   if (['mention', 'status', 'reblog', 'favourite', 'poll', 'update', 'emoji_reaction', 'event_reminder', 'participation_accepted', 'participation_request'].includes(n.type))
     // @ts-ignore
     return n.status;

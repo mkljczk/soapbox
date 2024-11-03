@@ -185,7 +185,9 @@ const makeGetNotification = () => createSelector([
   (state: RootState, notification: NotificationGroup) => selectAccounts(state, notification.sample_account_ids),
 ], (notification, target, status, accounts): SelectedNotification => ({
   ...notification,
+  // @ts-ignore
   target,
+  // @ts-ignore
   status,
   accounts,
 }));
