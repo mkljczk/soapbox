@@ -236,42 +236,6 @@ const expandNotifications = ({ maxId }: Record<string, any> = {}, done: () => an
       dispatch(expandNotificationsFail(error));
       done();
     });
-
-    // return getClient(state).notifications.getNotifications(params, { signal: abortExpandNotifications.signal }).then(response => {
-    //   const entries = (response.items).reduce((acc, item) => {
-    //     if (item.account?.id) {
-    //       acc.accounts[item.account.id] = item.account;
-    //     }
-
-    //     // Used by Move notification
-    //     if (item.type === 'move' && item.target.id) {
-    //       acc.accounts[item.target.id] = item.target;
-    //     }
-
-    //     // TODO actually check for type
-    //     // @ts-ignore
-    //     if (item.status?.id) {
-    //       // @ts-ignore
-    //       acc.statuses[item.status.id] = item.status;
-    //     }
-
-    //     return acc;
-    //   }, { accounts: {}, statuses: {} } as { accounts: Record<string, Account>; statuses: Record<string, Status> });
-
-    //   dispatch(importEntities({
-    //     accounts: Object.values(entries.accounts),
-    //     statuses: Object.values(entries.statuses),
-    //   }));
-
-    //   const deduplicatedNotifications = normalizeNotifications(response.items, state.notifications.items);
-
-    //   dispatch(expandNotificationsSuccess(deduplicatedNotifications, response.next));
-    //   fetchRelatedRelationships(dispatch, response.items);
-    //   done();
-    // }).catch(error => {
-    //   dispatch(expandNotificationsFail(error));
-    //   done();
-    // });
   };
 
 const expandNotificationsRequest = () => ({ type: NOTIFICATIONS_EXPAND_REQUEST });
