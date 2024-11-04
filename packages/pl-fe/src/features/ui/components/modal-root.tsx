@@ -1,7 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 
 import { cancelReplyCompose } from 'pl-fe/actions/compose';
-import { cancelEventCompose } from 'pl-fe/actions/events';
 import Base from 'pl-fe/components/modal-root';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useModalsStore } from 'pl-fe/stores/modals';
@@ -16,7 +15,6 @@ const MODAL_COMPONENTS = {
   COMPARE_HISTORY: lazy(() => import('pl-fe/features/ui/components/modals/compare-history-modal')),
   COMPONENT: lazy(() => import('pl-fe/features/ui/components/modals/component-modal')),
   COMPOSE: lazy(() => import('pl-fe/features/ui/components/modals/compose-modal')),
-  COMPOSE_EVENT: lazy(() => import('pl-fe/features/ui/components/modals/compose-event-modal')),
   CONFIRM: lazy(() => import('pl-fe/features/ui/components/modals/confirmation-modal')),
   CREATE_GROUP: lazy(() => import('pl-fe/features/ui/components/modals/manage-group-modal')),
   CRYPTO_DONATE: lazy(() => import('pl-fe/features/ui/components/modals/crypto-donate-modal')),
@@ -68,9 +66,6 @@ const ModalRoot: React.FC = () => {
     switch (type) {
       case 'COMPOSE':
         dispatch(cancelReplyCompose());
-        break;
-      case 'COMPOSE_EVENT':
-        dispatch(cancelEventCompose());
         break;
       default:
         break;

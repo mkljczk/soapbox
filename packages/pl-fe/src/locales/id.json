@@ -1197,7 +1197,7 @@
   "navigation_bar.compose": "Tulis toot baru",
   "navigation_bar.compose_direct": "Pesan Langsung",
   "navigation_bar.compose_edit": "Edit postingan",
-  "navigation_bar.compose_event": "Kelola acara",
+  "navigation_bar.manage_event": "Kelola acara",
   "navigation_bar.compose_group": "Menulis ke grup",
   "navigation_bar.compose_group_reply": "Membalas kiriman grup",
   "navigation_bar.compose_quote": "Postingan quote",

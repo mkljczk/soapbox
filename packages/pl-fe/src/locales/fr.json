@@ -1137,7 +1137,7 @@
   "navigation_bar.compose": "Rédiger un nouveau toot",
   "navigation_bar.compose_direct": "Direct message",
   "navigation_bar.compose_edit": "Edit post",
-  "navigation_bar.compose_event": "Gérer l’évènement",
+  "navigation_bar.manage_event": "Gérer l’évènement",
   "navigation_bar.compose_group": "",
   "navigation_bar.compose_group_reply": "",
   "navigation_bar.compose_quote": "Quote post",

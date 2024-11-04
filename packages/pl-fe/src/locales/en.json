@@ -1089,7 +1089,7 @@
   "navigation_bar.compose": "Compose a post",
   "navigation_bar.compose_direct": "Direct message",
   "navigation_bar.compose_edit": "Edit post",
-  "navigation_bar.compose_event": "Manage event",
+  "navigation_bar.manage_event": "Manage event",
   "navigation_bar.compose_group": "Compose to group",
   "navigation_bar.compose_group_reply": "Reply to group post",
   "navigation_bar.compose_quote": "Quote post",

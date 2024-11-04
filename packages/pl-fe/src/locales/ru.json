@@ -1197,7 +1197,7 @@
   "navigation_bar.compose": "Создать новый статус",
   "navigation_bar.compose_direct": "Direct message",
   "navigation_bar.compose_edit": "Edit post",
-  "navigation_bar.compose_event": "Управление мероприятием",
+  "navigation_bar.manage_event": "Управление мероприятием",
   "navigation_bar.compose_group": "Написать в группу",
   "navigation_bar.compose_group_reply": "Ответ на пост группы",
   "navigation_bar.compose_quote": "Quote post",

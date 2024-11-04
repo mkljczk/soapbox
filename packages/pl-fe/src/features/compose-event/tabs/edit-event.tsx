@@ -1,42 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { useHistory } from 'react-router-dom';
 
 import { resetCompose } from 'pl-fe/actions/compose';
 import {
-  submitEvent,
-  fetchEventParticipationRequests,
-  rejectEventParticipationRequest,
-  authorizeEventParticipationRequest,
   cancelEventCompose,
+  initEventEdit,
+  submitEvent,
 } from 'pl-fe/actions/events';
 import { uploadFile } from 'pl-fe/actions/media';
+import { fetchStatus } from 'pl-fe/actions/statuses';
 import { ADDRESS_ICONS } from 'pl-fe/components/autosuggest-location';
 import LocationSearch from 'pl-fe/components/location-search';
 import Button from 'pl-fe/components/ui/button';
 import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
 import FormGroup from 'pl-fe/components/ui/form-group';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import IconButton from 'pl-fe/components/ui/icon-button';
 import Input from 'pl-fe/components/ui/input';
-import Modal from 'pl-fe/components/ui/modal';
-import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
-import Tabs from 'pl-fe/components/ui/tabs';
 import Text from 'pl-fe/components/ui/text';
 import Toggle from 'pl-fe/components/ui/toggle';
-import AccountContainer from 'pl-fe/containers/account-container';
 import { isCurrentOrFutureDate } from 'pl-fe/features/compose/components/schedule-form';
 import { ComposeEditor, DatePicker } from 'pl-fe/features/ui/util/async-components';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useModalsStore } from 'pl-fe/stores/modals';
+import { makeGetStatus } from 'pl-fe/selectors';
+import toast from 'pl-fe/toast';
 
-import UploadButton from './upload-button';
+import UploadButton from '../components/upload-button';
 
-import type { BaseModalProps } from '../../modal-root';
 import type { Location } from 'pl-api';
-import type { MinifiedStatus } from 'pl-fe/reducers/statuses';
 
 const messages = defineMessages({
   eventNamePlaceholder: { id: 'compose_event.fields.name_placeholder', defaultMessage: 'Name' },
@@ -44,86 +40,32 @@ const messages = defineMessages({
   eventStartTimePlaceholder: { id: 'compose_event.fields.start_time_placeholder', defaultMessage: 'Event begins on…' },
   eventEndTimePlaceholder: { id: 'compose_event.fields.end_time_placeholder', defaultMessage: 'Event ends on…' },
   resetLocation: { id: 'compose_event.reset_location', defaultMessage: 'Reset location' },
-  edit: { id: 'compose_event.tabs.edit', defaultMessage: 'Edit details' },
-  pending: { id: 'compose_event.tabs.pending', defaultMessage: 'Manage requests' },
-  authorize: { id: 'compose_event.participation_requests.authorize', defaultMessage: 'Authorize' },
-  reject: { id: 'compose_event.participation_requests.reject', defaultMessage: 'Reject' },
-  confirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
-  cancelEditing: { id: 'confirmations.cancel_editing.confirm', defaultMessage: 'Cancel editing' },
+  eventFetchFail: { id: 'compose_event.fetch_fail', defaultMessage: 'Failed to fetch edited event information' },
 });
 
-interface IAccount {
-  eventId: string;
-  id: string;
-  participationMessage: string | null;
+interface IEditEvent {
+  statusId: string | null;
 }
 
-const Account: React.FC<IAccount> = ({ eventId, id, participationMessage }) => {
+const EditEvent: React.FC<IEditEvent> = ({ statusId }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
+  const history = useHistory();
 
-  const handleAuthorize = () => {
-    dispatch(authorizeEventParticipationRequest(eventId, id));
-  };
-
-  const handleReject = () => {
-    dispatch(rejectEventParticipationRequest(eventId, id));
-  };
-
-  return (
-    <AccountContainer
-      id={id}
-      note={participationMessage || undefined}
-      action={
-        <HStack space={2}>
-          <Button
-            theme='secondary'
-            size='sm'
-            text={intl.formatMessage(messages.authorize)}
-            onClick={handleAuthorize}
-          />
-          <Button
-            theme='danger'
-            size='sm'
-            text={intl.formatMessage(messages.reject)}
-            onClick={handleReject}
-          />
-        </HStack>
-      }
-    />
-  );
-};
-
-interface ComposeEventModalProps {
-  status?: MinifiedStatus;
-  statusText?: string;
-  location?: Location;
-}
-
-const ComposeEventModal: React.FC<BaseModalProps & ComposeEventModalProps> = ({
-  onClose,
-  status,
-  statusText,
-  location: sourceLocation,
-}) => {
-  const intl = useIntl();
-  const dispatch = useAppDispatch();
-  const { openModal } = useModalsStore();
-
-  const [tab, setTab] = useState<'edit' | 'pending'>('edit');
+  const getStatus = useCallback(makeGetStatus(), []);
+  const status = useAppSelector((state) => statusId ? getStatus(state, { id: statusId }) : undefined);
 
   const [name, setName] = useState(status?.event?.name || '');
-  const [text, setText] = useState(statusText || '');
+  const [text, setText] = useState('');
   const [startTime, setStartTime] = useState(status?.event?.start_time ? new Date(status.event.start_time) : new Date());
   const [endTime, setEndTime] = useState(status?.event?.end_time ? new Date(status.event.end_time) : null);
   const [approvalRequired, setApprovalRequired] = useState(status?.event?.join_mode !== 'free');
   const [banner, setBanner] = useState(status?.event?.banner || null);
-  const [location, setLocation] = useState(sourceLocation || null);
+  const [location, setLocation] = useState<Location | null>(null);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(!!statusId);
   const [isUploading, setIsUploading] = useState(false);
 
-  const statusId = status?.id || null;
   const composeId = statusId ? `compose-event-modal-${statusId}` : 'compose-event-modal';
 
   const onChangeName: React.ChangeEventHandler<HTMLInputElement> = ({ target }) => {
@@ -163,26 +105,6 @@ const ComposeEventModal: React.FC<BaseModalProps & ComposeEventModalProps> = ({
     });
   };
 
-  const onClickClose = () => {
-    if (name.length || text.length || location || banner) {
-      openModal('CONFIRM', {
-        heading: statusId
-          ? <FormattedMessage id='confirmations.cancel_event_editing.heading' defaultMessage='Cancel event editing' />
-          : <FormattedMessage id='confirmations.delete_event.heading' defaultMessage='Delete event' />,
-        message: statusId
-          ? <FormattedMessage id='confirmations.cancel_event_editing.message' defaultMessage='Are you sure you want to cancel editing this event? All changes will be lost.' />
-          : <FormattedMessage id='confirmations.delete_event.message' defaultMessage='Are you sure you want to delete this event?' />,
-        confirm: intl.formatMessage(messages.confirm),
-        onConfirm: () => {
-          onClose('COMPOSE_EVENT');
-          dispatch(cancelEventCompose());
-        },
-      });
-    } else {
-      onClose('COMPOSE_EVENT');
-    }
-  };
-
   const handleFiles = (files: FileList) => {
     setIsUploading(true);
 
@@ -202,7 +124,7 @@ const ComposeEventModal: React.FC<BaseModalProps & ComposeEventModalProps> = ({
   };
 
   const handleSubmit = () => {
-    setIsSubmitting(true);
+    setIsDisabled(true);
 
     dispatch(submitEvent({
       statusId,
@@ -213,19 +135,38 @@ const ComposeEventModal: React.FC<BaseModalProps & ComposeEventModalProps> = ({
       endTime,
       joinMode: approvalRequired ? 'restricted' : 'free',
       location,
-    })).then(() => {
-      setIsSubmitting(false);
+    })).then((status) => {
+      if (status) history.push(`/@${status.account.acct}/events/${status.id}`);
       dispatch(resetCompose(composeId));
     }).catch(() => {
-      setIsSubmitting(false);
     });
   };
 
-  const accounts = useAppSelector((state) => state.user_lists.event_participation_requests.get(statusId!)?.items);
-
   useEffect(() => {
-    if (statusId) dispatch(fetchEventParticipationRequests(statusId));
-  }, []);
+    if (statusId) {
+      Promise.all([dispatch(initEventEdit(statusId)), dispatch(fetchStatus(statusId))])
+        .then(([source, status]) => {
+          if (!source || !status) throw new Error();
+
+          setText(source.text);
+          setLocation(source.location);
+
+          setName(status?.event?.name || '');
+          setStartTime(status?.event?.start_time ? new Date(status.event.start_time) : new Date());
+          setEndTime(status?.event?.end_time ? new Date(status.event.end_time) : null);
+          setApprovalRequired(status?.event?.join_mode !== 'free');
+          setBanner(status?.media_attachments[0] || null);
+
+          setIsDisabled(false);
+        }).catch(() => {
+          toast.error(messages.eventFetchFail);
+        });
+    }
+
+    return () => {
+      dispatch(cancelEventCompose());
+    };
+  }, [statusId]);
 
   const renderLocation = () => location && (
     <HStack className='h-[38px] text-gray-700 dark:text-gray-500' alignItems='center' space={2}>
@@ -238,26 +179,8 @@ const ComposeEventModal: React.FC<BaseModalProps & ComposeEventModalProps> = ({
     </HStack>
   );
 
-  const renderTabs = () => {
-    const items = [
-      {
-        text: intl.formatMessage(messages.edit),
-        action: () => setTab('edit'),
-        name: 'edit',
-      },
-      {
-        text: intl.formatMessage(messages.pending),
-        action: () => setTab('pending'),
-        name: 'pending',
-      },
-    ];
-
-    return <Tabs items={items} activeItem={tab} />;
-  };
-
-  let body;
-  if (tab === 'edit') body = (
-    <Form>
+  return (
+    <Form onSubmit={handleSubmit}>
       <FormGroup
         labelText={<FormattedMessage id='compose_event.fields.banner_label' defaultMessage='Event banner' />}
         hintText={<FormattedMessage id='compose_event.fields.banner_hint' defaultMessage='PNG, GIF or JPG. Landscape format is preferred.' />}
@@ -287,6 +210,7 @@ const ComposeEventModal: React.FC<BaseModalProps & ComposeEventModalProps> = ({
         labelText={<FormattedMessage id='compose_event.fields.description_label' defaultMessage='Event description' />}
       >
         <ComposeEditor
+          key={String(isDisabled)}
           className='block w-full rounded-md border border-gray-400 bg-white px-3 py-2 text-base text-gray-900 ring-1 placeholder:text-gray-600 focus-within:border-primary-500 focus-within:ring-primary-500 black:bg-black dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100 dark:ring-gray-800 dark:placeholder:text-gray-600 dark:focus-within:border-primary-500 dark:focus-within:ring-primary-500 sm:text-sm'
           placeholderClassName='pt-2'
           composeId={composeId}
@@ -354,38 +278,15 @@ const ComposeEventModal: React.FC<BaseModalProps & ComposeEventModalProps> = ({
           </Text>
         </HStack>
       )}
+      <FormActions>
+        <Button disabled={isDisabled} theme='primary' type='submit'>
+          {statusId
+            ? <FormattedMessage id='compose_event.update' defaultMessage='Update' />
+            : <FormattedMessage id='compose_event.create' defaultMessage='Create' />}
+        </Button>
+      </FormActions>
     </Form>
-  );
-  else body = accounts ? (
-    <Stack space={3}>
-      {accounts.size > 0 ? (
-        accounts.map(({ account, participation_message }) =>
-          <Account key={account} eventId={statusId!} id={account} participationMessage={participation_message} />,
-        )
-      ) : (
-        <FormattedMessage id='empty_column.event_participant_requests' defaultMessage='There are no pending event participation requests.' />
-      )}
-    </Stack>
-  ) : <Spinner />;
-
-  return (
-    <Modal
-      title={statusId
-        ? <FormattedMessage id='navigation_bar.compose_event' defaultMessage='Manage event' />
-        : <FormattedMessage id='navigation_bar.create_event' defaultMessage='Create new event' />}
-      confirmationAction={tab === 'edit' ? handleSubmit : undefined}
-      confirmationText={statusId
-        ? <FormattedMessage id='compose_event.update' defaultMessage='Update' />
-        : <FormattedMessage id='compose_event.create' defaultMessage='Create' />}
-      confirmationDisabled={isSubmitting}
-      onClose={onClickClose}
-    >
-      <Stack space={2}>
-        {statusId && renderTabs()}
-        {body}
-      </Stack>
-    </Modal>
   );
 };
 
-export { ComposeEventModal as default, type ComposeEventModalProps };
+export { EditEvent };
