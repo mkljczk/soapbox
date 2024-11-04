@@ -3,7 +3,6 @@ import { defineMessages } from 'react-intl';
 
 import { STATUS_FETCH_SOURCE_FAIL, STATUS_FETCH_SOURCE_REQUEST, STATUS_FETCH_SOURCE_SUCCESS } from 'pl-fe/actions/statuses';
 import { getClient } from 'pl-fe/api';
-import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
 import type { Account, CreateEventParams, Location, MediaAttachment, PaginatedResponse, Status } from 'pl-api';
@@ -130,7 +129,6 @@ const submitEvent = ({
         ? getClient(state).events.createEvent(params)
         : getClient(state).events.editEvent(statusId, params)
     ).then((data) => {
-      useModalsStore.getState().closeModal('COMPOSE_EVENT');
       importEntities({ statuses: [data] });
       dispatch(submitEventSuccess(data));
       toast.success(
@@ -140,6 +138,8 @@ const submitEvent = ({
           actionLink: `/@${data.account.acct}/events/${data.id}`,
         },
       );
+
+      return data;
     }).catch((error) => {
       dispatch(submitEventFail(error));
     });
@@ -445,9 +445,7 @@ interface EventFormSetAction {
   text: string;
 }
 
-const editEvent = (statusId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
-  const status = getState().statuses.get(statusId)!;
-
+const initEventEdit = (statusId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
   dispatch({ type: STATUS_FETCH_SOURCE_REQUEST, statusId });
 
   return getClient(getState()).statuses.getStatusSource(statusId).then(response => {
@@ -457,11 +455,7 @@ const editEvent = (statusId: string) => (dispatch: AppDispatch, getState: () => 
       composeId: `compose-event-modal-${statusId}`,
       text: response.text,
     });
-    useModalsStore.getState().openModal('COMPOSE_EVENT', {
-      status,
-      statusText: response.text,
-      location: response.location || undefined,
-    });
+    return response;
   }).catch(error => {
     dispatch({ type: STATUS_FETCH_SOURCE_FAIL, statusId, error });
   });
@@ -591,7 +585,7 @@ export {
   rejectEventParticipationRequestFail,
   fetchEventIcs,
   cancelEventCompose,
-  editEvent,
+  initEventEdit,
   fetchRecentEvents,
   fetchJoinedEvents,
   type EventsAction,

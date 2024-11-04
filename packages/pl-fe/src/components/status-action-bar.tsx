@@ -8,7 +8,6 @@ import { createSelector } from 'reselect';
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose, replyCompose } from 'pl-fe/actions/compose';
 import { emojiReact, unEmojiReact } from 'pl-fe/actions/emoji-reacts';
-import { editEvent } from 'pl-fe/actions/events';
 import { toggleBookmark, toggleDislike, toggleFavourite, togglePin, toggleReblog } from 'pl-fe/actions/interactions';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initMuteModal } from 'pl-fe/actions/mutes';
@@ -398,7 +397,7 @@ const FavouriteButton: React.FC<IActionButton> = ({
   const favouriteButton = (
     <StatusActionButton
       title={intl.formatMessage(messages.favourite)}
-      icon={features.statusDislikes ? require('@tabler/icons/outline/thumb-up.svg') : require('@tabler/icons/outline/heart.svg')}
+      icon={features.statusDislikes ? require('@tabler/icons/outline/thumb-up.svg') : require('@tabler/icons/outline/star.svg')}
       color='accent'
       filled
       onClick={handleFavouriteClick}
@@ -651,7 +650,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   };
 
   const handleEditClick: React.EventHandler<React.MouseEvent> = () => {
-    if (status.event) dispatch(editEvent(status.id));
+    if (status.event) history.push(`/@${status.account.acct}/events/${status.id}/edit`);
     else dispatch(editStatus(status.id));
   };
 

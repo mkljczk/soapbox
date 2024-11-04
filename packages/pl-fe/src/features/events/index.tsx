@@ -8,7 +8,6 @@ import Column from 'pl-fe/components/ui/column';
 import HStack from 'pl-fe/components/ui/hstack';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useModalsStore } from 'pl-fe/stores/modals';
 
 import EventCarousel from './components/event-carousel';
 
@@ -19,17 +18,12 @@ const messages = defineMessages({
 const Events = () => {
   const intl = useIntl();
 
-  const { openModal } = useModalsStore();
   const dispatch = useAppDispatch();
 
   const recentEvents = useAppSelector((state) => state.status_lists.get('recent_events')!.items);
   const recentEventsLoading = useAppSelector((state) => state.status_lists.get('recent_events')!.isLoading);
   const joinedEvents = useAppSelector((state) => state.status_lists.get('joined_events')!.items);
   const joinedEventsLoading = useAppSelector((state) => state.status_lists.get('joined_events')!.isLoading);
-
-  const onComposeEvent = () => {
-    openModal('COMPOSE_EVENT');
-  };
 
   useEffect(() => {
     dispatch(fetchRecentEvents());
@@ -40,12 +34,7 @@ const Events = () => {
     <Column label={intl.formatMessage(messages.title)}>
       <HStack className='mb-2' space={2} justifyContent='between'>
         <CardTitle title={<FormattedMessage id='events.recent_events' defaultMessage='Recent events' />} />
-        <Button
-          className='ml-auto xl:hidden'
-          theme='primary'
-          size='sm'
-          onClick={onComposeEvent}
-        >
+        <Button className='ml-auto xl:hidden' theme='primary' size='sm' to='/events/new'>
           <FormattedMessage id='events.create_event' defaultMessage='Create event' />
         </Button>
       </HStack>

@@ -13,7 +13,7 @@ import { joinPublicPath } from 'pl-fe/utils/static';
 import { fetchRelationships } from './accounts';
 import { saveSettings } from './settings';
 
-import type { Notification } from 'pl-api';
+import type { NotificationGroup } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const NOTIFICATIONS_UPDATE = 'NOTIFICATIONS_UPDATE' as const;
@@ -28,8 +28,8 @@ defineMessages({
   mention: { id: 'notification.mention', defaultMessage: '{name} mentioned you' },
 });
 
-const fetchRelatedRelationships = (dispatch: AppDispatch, notifications: Array<Notification>) => {
-  const accountIds = notifications.filter(item => item.type === 'follow').map(item => item.account.id);
+const fetchRelatedRelationships = (dispatch: AppDispatch, notifications: Array<NotificationGroup>) => {
+  const accountIds = notifications.filter(item => item.type === 'follow').map(item => item.sample_account_ids).flat();
 
   if (accountIds.length > 0) {
     dispatch(fetchRelationships(accountIds));
@@ -43,13 +43,16 @@ const updateNotifications = (notification: Notification) =>
 
     importEntities({ notifications: [{ ...notification, accounts: [notification.account], duplicate: false }] });
 
+
     if (showInColumn) {
+      const normalizedNotification = normalizeNotification(notification);
+
       dispatch({
         type: NOTIFICATIONS_UPDATE,
-        notification: normalizeNotification(notification),
+        notification: normalizedNotification,
       });
 
-      fetchRelatedRelationships(dispatch, [notification]);
+      fetchRelatedRelationships(dispatch, [normalizedNotification]);
     }
   };
 

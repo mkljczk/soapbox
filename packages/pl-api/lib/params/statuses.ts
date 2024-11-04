@@ -46,8 +46,8 @@ interface CreateStatusOptionalParams {
   spoiler_text?: string;
   /**
    * String. Sets the visibility of the posted status to `public`, `unlisted`, `private`, `direct`.
-   * `local` — requires `features.createStatusLocalScope`.
-   * `list:LIST_ID` — requires `features.createStatusListScope`.
+   * `local` — Requires features{@link Features['createStatusLocalScope']}.
+   * `list:LIST_ID` — Requires features{@link Features['createStatusListScope']}.
    */
   visibility?: string;
   /** String. ISO 639 language code for this status. */
@@ -57,7 +57,7 @@ interface CreateStatusOptionalParams {
 
   /**
    * boolean, if set to true the post won't be actually posted, but the status entity would still be rendered back. This could be useful for previewing rich text/custom emoji, for example.
-   * Requires `features.createStatusPreview`.
+   * Requires features{@link Features['createStatusPreview']}.
    */
   preview?: boolean;
   /**
@@ -66,22 +66,22 @@ interface CreateStatusOptionalParams {
   content_type?: string;
   /**
    * A list of nicknames (like `lain@soykaf.club` or `lain` on the local server) that will be used to determine who is going to be addressed by this post. Using this will disable the implicit addressing by mentioned names in the `status` body, only the people in the `to` list will be addressed. The normal rules for post visibility are not affected by this and will still apply.
-   * Requires `features.createStatusExplicitAddressing`.
+   * Requires features{@link Features['createStatusExplicitAddressing']}.
   */
   to?: string[];
   /**
    * The number of seconds the posted activity should expire in. When a posted activity expires it will be deleted from the server, and a delete request for it will be federated. This needs to be longer than an hour.
-   * Requires `features.createStatusExpiration`.
+   * Requires features{@link Features['createStatusExpiration']}.
    */
   expires_in?: number;
   /**
    * Will reply to a given conversation, addressing only the people who are part of the recipient set of that conversation. Sets the visibility to `direct`.
-   * Requires `features.createStatusReplyToConversation`.
+   * Requires features{@link Features['createStatusReplyToConversation']}.
    */
   in_reply_to_conversation_id?: string;
   /**
    * ID of the status being quoted, if any.
-   * Requires `features.quotePosts`.
+   * Requires features{@link Features['quotePosts']}.
    */
   quote_id?: string;
 
@@ -108,7 +108,7 @@ type CreateStatusParams = (CreateStatusWithContent | CreateStatusWithMedia) & Cr
  * @category Request params
  */
 interface LanguageParam {
-  /** Attach translated version of a post. Requires `features.autoTranslate`. */
+  /** Attach translated version of a post. Requires features{@link Features['autoTranslate']}. */
   language?: string;
 }
 

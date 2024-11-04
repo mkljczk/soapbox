@@ -620,6 +620,15 @@ const getFeatures = (instance: Instance) => {
     ]),
 
     /**
+     * @see GET /api/v2/notifications/:group_key
+     * @see GET /api/v2/notifications/:group_key
+     * @see POST /api/v2/notifications/:group_key/dismiss
+     * @see GET /api/v2/notifications/:group_key/accounts
+     * @see GET /api/v2/notifications/unread_count
+     */
+    groupedNotifications: instance.api_versions.mastodon >= 2,
+
+    /**
      * Groups.
      * @see POST /api/v1/groups
      * @see GET /api/v1/groups
@@ -895,6 +904,12 @@ const getFeatures = (instance: Instance) => {
      * @see PATCH /api/v2/notifications/policy
      */
     notificationsPolicy: instance.api_versions.mastodon >= 1,
+
+    /**
+     * @see POST /api/v1/notifications/requests/accept
+     * @see POST /api/v1/notifications/requests/dismiss
+     */
+    notificationsRequestsAcceptMultiple: instance.api_versions.mastodon >= 1,
 
     pleromaAdminAccounts: v.software === PLEROMA,
 

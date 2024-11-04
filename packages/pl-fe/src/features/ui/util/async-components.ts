@@ -16,6 +16,7 @@ export const ChatIndex = lazy(() => import('pl-fe/features/chats'));
 export const Circle = lazy(() => import('pl-fe/features/circle'));
 export const CommunityTimeline = lazy(() => import('pl-fe/features/community-timeline'));
 export const ComposeEditor = lazy(() => import('pl-fe/features/compose/editor'));
+export const ComposeEvent = lazy(() => import('pl-fe/features/compose-event'));
 export const Conversations = lazy(() => import('pl-fe/features/conversations'));
 export const CreateApp = lazy(() => import('pl-fe/features/developers/apps/create'));
 export const CryptoDonate = lazy(() => import('pl-fe/features/crypto-donate'));

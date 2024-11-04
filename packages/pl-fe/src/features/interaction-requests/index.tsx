@@ -37,7 +37,7 @@ const messages = defineMessages({
 });
 
 const icons = {
-  favourite: require('@tabler/icons/outline/heart.svg'),
+  favourite: require('@tabler/icons/outline/star.svg'),
   reblog: require('@tabler/icons/outline/repeat.svg'),
   reply: require('@tabler/icons/outline/corner-up-left.svg'),
 };

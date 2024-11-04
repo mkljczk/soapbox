@@ -4,7 +4,7 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose } from 'pl-fe/actions/compose';
-import { editEvent, fetchEventIcs } from 'pl-fe/actions/events';
+import { fetchEventIcs } from 'pl-fe/actions/events';
 import { toggleBookmark, togglePin, toggleReblog } from 'pl-fe/actions/interactions';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initMuteModal } from 'pl-fe/actions/mutes';
@@ -347,12 +347,6 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
     return menu;
   };
 
-  const handleManageClick: React.MouseEventHandler = e => {
-    e.stopPropagation();
-
-    dispatch(editEvent(status.id));
-  };
-
   const handleParticipantsClick: React.MouseEventHandler = e => {
     e.preventDefault();
     e.stopPropagation();
@@ -396,7 +390,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
             <Button
               size='sm'
               theme='secondary'
-              onClick={handleManageClick}
+              to={`/@${account.acct}/events/${status.id}/edit`}
             >
               <FormattedMessage id='event.manage' defaultMessage='Manage' />
             </Button>

@@ -99,6 +99,11 @@ const markerStreamingEventSchema = v.object({
   payload: v.pipe(v.any(), v.transform((payload: any) => JSON.parse(payload)), markersSchema),
 });
 
+const notificationsMergedEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.literal('notifications_merged'),
+});
+
 /**
  * @category Schemas
  * @see {@link https://docs.joinmastodon.org/methods/streaming/#events}
@@ -121,6 +126,7 @@ const streamingEventSchema: v.BaseSchema<any, StreamingEvent, v.BaseIssue<unknow
     followRelationshipsUpdateStreamingEventSchema,
     respondStreamingEventSchema,
     markerStreamingEventSchema,
+    notificationsMergedEventSchema,
   ]),
 ) as any;
 
@@ -136,6 +142,7 @@ type StreamingEvent = v.InferOutput<
 | typeof followRelationshipsUpdateStreamingEventSchema
 | typeof respondStreamingEventSchema
 | typeof markerStreamingEventSchema
+| typeof notificationsMergedEventSchema
 >;
 
 export {

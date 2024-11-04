@@ -4,6 +4,7 @@ export * from './apps';
 export * from './chats';
 export * from './events';
 export * from './filtering';
+export * from './grouped-notifications';
 export * from './groups';
 export * from './instance';
 export * from './interaction-requests';

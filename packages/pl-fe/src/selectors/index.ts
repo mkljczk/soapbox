@@ -23,7 +23,9 @@ const selectAccount = (state: RootState, accountId: string) =>
   state.entities[Entities.ACCOUNTS]?.store[accountId] as Account | undefined;
 
 const selectAccounts = (state: RootState, accountIds: Array<string>) =>
-  accountIds.map(accountId => state.entities[Entities.ACCOUNTS]?.store[accountId] as Account | undefined);
+  accountIds
+    .map(accountId => state.entities[Entities.ACCOUNTS]?.store[accountId] as Account | undefined)
+    .filter((account): account is Account => account !== undefined);
 
 const selectOwnAccount = (state: RootState) => {
   if (state.me) {

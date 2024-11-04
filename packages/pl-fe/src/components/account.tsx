@@ -358,6 +358,7 @@ const Account = ({
                 <Text
                   truncate
                   size='sm'
+                  className='line-clamp-2 inline text-ellipsis [&_br]:hidden [&_p:first-child]:inline [&_p:first-child]:truncate [&_p]:hidden'
                 >
                   <ParsedContent html={account.note} emojis={account.emojis} />
                 </Text>

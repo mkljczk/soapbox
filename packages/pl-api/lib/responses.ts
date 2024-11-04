@@ -1,7 +1,7 @@
-interface PaginatedResponse<T> {
-  previous: (() => Promise<PaginatedResponse<T>>) | null;
-  next: (() => Promise<PaginatedResponse<T>>) | null;
-  items: Array<T>;
+interface PaginatedResponse<T, IsArray extends boolean = true> {
+  previous: (() => Promise<PaginatedResponse<T, IsArray>>) | null;
+  next: (() => Promise<PaginatedResponse<T, IsArray>>) | null;
+  items: IsArray extends true ? Array<T> : T;
   partial: boolean;
   total?: number;
 }

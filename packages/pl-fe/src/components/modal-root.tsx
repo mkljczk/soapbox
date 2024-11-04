@@ -26,14 +26,6 @@ const checkComposeContent = (compose?: ReturnType<typeof ReducerCompose>) =>
     compose.poll !== null,
   ].some(check => check === true);
 
-// const checkEventComposeContent = (compose?: ReturnType<typeof ReducerComposeEvent>) =>
-//   !!compose && [
-//     compose.name.length > 0,
-//     compose.status.length > 0,
-//     compose.location !== null,
-//     compose.banner !== null,
-//   ].some(check => check === true);
-
 interface IModalRoot {
   onCancel?: () => void;
   onClose: (type?: ModalType) => void;
@@ -69,7 +61,6 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
     dispatch((_, getState) => {
       const compose = getState().compose.get('compose-modal');
       const hasComposeContent = checkComposeContent(compose);
-      // const hasEventComposeContent = checkEventComposeContent(getState().compose_event);
 
       if (hasComposeContent && type === 'COMPOSE') {
         const isEditing = compose!.id !== null;
@@ -95,26 +86,7 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
             dispatch(cancelReplyCompose());
           },
         });
-      // TODO: restore this functionality
-      // } else if (hasEventComposeContent && type === 'COMPOSE_EVENT') {
-      //   const isEditing = getState().compose_event.id !== null;
-      //   openModal('CONFIRM', {
-      //     heading: isEditing
-      //       ? <FormattedMessage id='confirmations.cancel_event_editing.heading' defaultMessage='Cancel event editing' />
-      //       : <FormattedMessage id='confirmations.delete_event.heading' defaultMessage='Delete event' />,
-      //     message: isEditing
-      //       ? <FormattedMessage id='confirmations.cancel_event_editing.message' defaultMessage='Are you sure you want to cancel editing this event? All changes will be lost.' />
-      //       : <FormattedMessage id='confirmations.delete_event.message' defaultMessage='Are you sure you want to delete this event?' />,
-      //     confirm: intl.formatMessage(isEditing ? messages.cancelEditing : messages.confirm),
-      //     onConfirm: () => {
-      //       onClose('COMPOSE_EVENT');
-      //       dispatch(cancelEventCompose());
-      //     },
-      //     onCancel: () => {
-      //       onClose('CONFIRM');
-      //     },
-      //   });
-      } else if ((hasComposeContent/* || hasEventComposeContent */) && type === 'CONFIRM') {
+      } else if (hasComposeContent && type === 'CONFIRM') {
         onClose('CONFIRM');
       } else {
         onClose();
