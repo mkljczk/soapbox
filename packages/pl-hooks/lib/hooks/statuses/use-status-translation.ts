@@ -11,7 +11,8 @@ const useStatusTranslation = (statusId: string, targetLanguage?: string) => {
 
   return useQuery<Translation | false>({
     queryKey: ['statuses', 'translations', statusId, targetLanguage],
-    queryFn: () => client.statuses.translateStatus(statusId, targetLanguage).then(translation => translation).catch(() => false),
+    queryFn: () => client.statuses.translateStatus(statusId, targetLanguage)
+      .then(translation => translation).catch(() => false),
     enabled: !!targetLanguage,
   }, queryClient);
 };

@@ -1,6 +1,6 @@
 # `pl-hooks`
 
-> This project API should be considered unstable before the 1.0.0 release. I will not provide any changelog or information on breaking changes until then.
+This project includes Tanstack Query-based functions for remote state management for Mastodon API clients. The project is currently not aiming at providing stable API, so if you're interested in something more stable, I recommend trying [pl-api](../pl-api/) and handling the state your own way.
 
 ## License
 
