@@ -38,13 +38,15 @@ const importStatus = (status: BaseStatus) => queryClient.setQueryData<Normalized
 
 const isEmpty = (object: Record<string, any>) => !Object.values(object).some(value => value);
 
+type OptionalArray<T> = Array<T | undefined | null>;
+
 const importEntities = (entities: {
-  accounts?: Array<BaseAccount>;
-  groups?: Array<BaseGroup>;
-  notifications?: Array<DeduplicatedNotification>;
-  polls?: Array<BasePoll>;
-  statuses?: Array<BaseStatus>;
-  relationships?: Array<BaseRelationship>;
+  accounts?: OptionalArray<BaseAccount>;
+  groups?: OptionalArray<BaseGroup>;
+  notifications?: OptionalArray<DeduplicatedNotification>;
+  polls?: OptionalArray<BasePoll>;
+  statuses?: OptionalArray<BaseStatus>;
+  relationships?: OptionalArray<BaseRelationship>;
 }, options = {
   withParents: true,
 }) => {
@@ -90,14 +92,14 @@ const importEntities = (entities: {
   };
 
   if (options.withParents) {
-    entities.groups?.forEach(group => groups[group.id] = group);
-    entities.polls?.forEach(poll => polls[poll.id] = poll);
-    entities.relationships?.forEach(relationship => relationships[relationship.id] = relationship);
+    entities.groups?.forEach(group => group && (groups[group.id] = group));
+    entities.polls?.forEach(poll => poll && (polls[poll.id] = poll));
+    entities.relationships?.forEach(relationship => relationship && (relationships[relationship.id] = relationship));
   }
 
-  entities.accounts?.forEach((account) => processAccount(account, options.withParents));
-  entities.notifications?.forEach((notification) => processNotification(notification, options.withParents));
-  entities.statuses?.forEach((status) => processStatus(status, options.withParents));
+  entities.accounts?.forEach((account) => account && processAccount(account, options.withParents));
+  entities.notifications?.forEach((notification) => notification && processNotification(notification, options.withParents));
+  entities.statuses?.forEach((status) => status && processStatus(status, options.withParents));
 
   if (!isEmpty(accounts)) Object.values(accounts).forEach(importAccount);
   if (!isEmpty(groups)) Object.values(groups).forEach(importGroup);
