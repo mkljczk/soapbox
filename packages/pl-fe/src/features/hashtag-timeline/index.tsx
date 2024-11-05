@@ -26,7 +26,7 @@ const HashtagTimeline: React.FC<IHashtagTimeline> = ({ params }) => {
 
   const features = useFeatures();
   const dispatch = useAppDispatch();
-  const tag = useAppSelector((state) => state.tags.get(tagId));
+  const tag = useAppSelector((state) => state.tags[tagId]);
   const { isLoggedIn } = useLoggedIn();
   const theme = useTheme();
   const isMobile = useIsMobile();
