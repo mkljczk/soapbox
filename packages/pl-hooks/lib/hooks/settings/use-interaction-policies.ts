@@ -1,37 +1,35 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type InteractionPolicies, interactionPoliciesSchema } from 'pl-api';
 import * as v from 'valibot';
 
-import { useClient } from 'pl-fe/hooks/use-client';
-import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
-import { queryClient } from 'pl-fe/queries/client';
+import { usePlHooksApiClient } from 'pl-hooks/main';
 
 const emptySchema = v.parse(interactionPoliciesSchema, {});
 
 const useInteractionPolicies = () => {
-  const client = useClient();
-  const { isLoggedIn } = useLoggedIn();
-  const features = useFeatures();
+  const { client, me } = usePlHooksApiClient();
+  const queryClient = useQueryClient();
+
+  const features = client.features;
 
   const { data, ...result } = useQuery({
-    queryKey: ['interactionPolicies'],
+    queryKey: ['settings', 'interactionPolicies'],
     queryFn: client.settings.getInteractionPolicies,
-    placeholderData: emptySchema,
-    enabled: isLoggedIn && features.interactionRequests,
-  });
+    enabled: !!me && features.interactionRequests,
+  }, queryClient);
 
   const {
     mutate: updateInteractionPolicies,
     isPending: isUpdating,
   } = useMutation({
+    mutationKey: ['settings', 'interactionPolicies'],
     mutationFn: (policy: InteractionPolicies) =>
       client.settings.updateInteractionPolicies(policy),
     retry: false,
     onSuccess: (policy) => {
       queryClient.setQueryData(['interactionPolicies'], policy);
     },
-  });
+  }, queryClient);
 
   return {
     interactionPolicies: data || emptySchema,

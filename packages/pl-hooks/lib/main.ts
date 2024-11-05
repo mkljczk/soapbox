@@ -13,6 +13,8 @@ export * from './hooks/notifications/use-notification';
 export * from './hooks/notifications/use-notification-list';
 export * from './hooks/polls/use-poll';
 export * from './hooks/search/use-search';
+export * from './hooks/settings/use-interaction-policies';
+export * from './hooks/statuses/use-interaction-requests';
 export * from './hooks/statuses/use-status';
 export * from './hooks/statuses/use-status-history';
 export * from './hooks/statuses/use-status-translation';
