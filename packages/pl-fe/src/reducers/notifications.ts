@@ -15,7 +15,6 @@ import {
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
 import type { Notification as BaseNotification, NotificationGroup, Relationship } from 'pl-api';
-import type { Notification } from 'pl-fe/normalizers/notification';
 import type { AnyAction } from 'redux';
 
 const QueuedNotificationRecord = ImmutableRecord({
@@ -44,7 +43,7 @@ const comparator = (a: Pick<NotificationGroup, 'group_key'>, b: Pick<Notificatio
   return 0;
 };
 
-const importNotification = (state: State, notification: Notification) => {
+const importNotification = (state: State, notification: NotificationGroup) => {
   const top = false; // state.top;
 
   if (!top) state = state.update('unread', unread => unread + 1);
