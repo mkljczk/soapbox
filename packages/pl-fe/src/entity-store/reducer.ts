@@ -1,4 +1,4 @@
-import { produce, enableMapSet } from 'immer';
+import { create, type Immutable } from 'mutative';
 
 import {
   ENTITIES_IMPORT,
@@ -17,12 +17,10 @@ import { createCache, createList, updateStore, updateList } from './utils';
 import type { DeleteEntitiesOpts } from './actions';
 import type { EntitiesTransaction, Entity, EntityCache, EntityListState, ImportPosition } from './types';
 
-enableMapSet();
-
 /** Entity reducer state. */
-interface State {
+type State = Immutable<{
   [entityType: string]: EntityCache | undefined;
-}
+}>;
 
 /** Import entities into the cache. */
 const importEntities = (
@@ -33,7 +31,7 @@ const importEntities = (
   pos?: ImportPosition,
   newState?: EntityListState,
   overwrite = false,
-): State => produce(state, draft => {
+): State => create(state, draft => {
   const cache = draft[entityType] ?? createCache();
   cache.store = updateStore(cache.store, entities);
 
@@ -54,14 +52,16 @@ const importEntities = (
   }
 
   draft[entityType] = cache;
-});
+
+  return draft;
+}, { enableAutoFreeze: true });
 
 const deleteEntities = (
   state: State,
   entityType: string,
   ids: Iterable<string>,
   opts: DeleteEntitiesOpts,
-) => produce(state, draft => {
+) => create(state, draft => {
   const cache = draft[entityType] ?? createCache();
 
   for (const id of ids) {
@@ -88,7 +88,7 @@ const dismissEntities = (
   entityType: string,
   ids: Iterable<string>,
   listKey: string,
-) => produce(state, draft => {
+) => create(state, draft => {
   const cache = draft[entityType] ?? createCache();
   const list = cache.lists[listKey];
 
@@ -110,7 +110,7 @@ const incrementEntities = (
   entityType: string,
   listKey: string,
   diff: number,
-) => produce(state, draft => {
+) => create(state, draft => {
   const cache = draft[entityType] ?? createCache();
   const list = cache.lists[listKey];
 
@@ -126,7 +126,7 @@ const setFetching = (
   listKey: string | undefined,
   isFetching: boolean,
   error?: any,
-) => produce(state, draft => {
+) => create(state, draft => {
   const cache = draft[entityType] ?? createCache();
 
   if (typeof listKey === 'string') {
@@ -139,13 +139,13 @@ const setFetching = (
   draft[entityType] = cache;
 });
 
-const invalidateEntityList = (state: State, entityType: string, listKey: string) => produce(state, draft => {
+const invalidateEntityList = (state: State, entityType: string, listKey: string) => create(state, draft => {
   const cache = draft[entityType] ?? createCache();
   const list = cache.lists[listKey] ?? createList();
   list.state.invalid = true;
 });
 
-const doTransaction = (state: State, transaction: EntitiesTransaction) => produce(state, draft => {
+const doTransaction = (state: State, transaction: EntitiesTransaction) => create(state, draft => {
   for (const [entityType, changes] of Object.entries(transaction)) {
     const cache = draft[entityType] ?? createCache();
     for (const [id, change] of Object.entries(changes)) {

@@ -1,5 +1,5 @@
-import { produce } from 'immer';
 import { create } from 'zustand';
+import { mutative } from 'zustand-mutative';
 
 import type { ICryptoAddress } from 'pl-fe/features/crypto-donate/components/crypto-address';
 import type { ModalType } from 'pl-fe/features/ui/components/modal-root';
@@ -86,12 +86,12 @@ type State = {
   closeModal: (modalType?: ModalType) => void;
 };
 
-const useModalsStore = create<State>((set) => ({
+const useModalsStore = create<State>()(mutative((set) => ({
   modals: [],
-  openModal: (...[modalType, modalProps]) => set(produce((state: State) => {
+  openModal: (...[modalType, modalProps]) => set((state: State) => {
     state.modals.push({ modalType, modalProps });
-  })),
-  closeModal: (modalType) => set(produce((state: State) => {
+  }),
+  closeModal: (modalType) => set((state: State) => {
     if (state.modals.length === 0) {
       return;
     }
@@ -100,7 +100,7 @@ const useModalsStore = create<State>((set) => ({
     } else if (state.modals.some((modal) => modalType === modal.modalType)) {
       state.modals = state.modals.slice(0, state.modals.findLastIndex((modal) => modalType === modal.modalType));
     }
-  })),
-}));
+  }),
+}), { enableAutoFreeze: true }));
 
 export { useModalsStore };

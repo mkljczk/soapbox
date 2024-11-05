@@ -1,11 +1,9 @@
-import { configureStore, Tuple } from '@reduxjs/toolkit';
+import { configureStore, Tuple, type AnyAction } from '@reduxjs/toolkit';
 import { thunk, type ThunkDispatch } from 'redux-thunk';
 
 import errorsMiddleware from './middleware/errors';
 import soundsMiddleware from './middleware/sounds';
 import appReducer from './reducers';
-
-import type { AnyAction } from 'redux';
 
 const store = configureStore({
   reducer: appReducer,
@@ -16,6 +14,8 @@ const store = configureStore({
   ),
   devTools: true,
 });
+
+(window as any).store = store;
 
 type Store = typeof store;
 

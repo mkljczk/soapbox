@@ -5812,7 +5812,7 @@ immediate@~3.0.5:
   resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
   integrity sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==
 
-immer@^10.0.3, immer@^10.1.1:
+immer@^10.0.3:
   version "10.1.1"
   resolved "https://registry.yarnpkg.com/immer/-/immer-10.1.1.tgz#206f344ea372d8ea176891545ee53ccc062db7bc"
   integrity sha512-s2MPrmjovJcoMaHtx6K11Ra7oD05NT97w1IC5zpMkT6Atjr7H8LjaDd81iIxUYpMKSRRNMJE703M1Fhr/TctHw==
@@ -7145,6 +7145,11 @@ multiselect-react-dropdown@^2.0.25:
   version "2.0.25"
   resolved "https://registry.yarnpkg.com/multiselect-react-dropdown/-/multiselect-react-dropdown-2.0.25.tgz#0c8d16f20d78023d5be2f3af4f15a4a164b6b427"
   integrity sha512-z8kUSyBNOuV7vn4Dk35snzXWtIfTdSEEXhgDdLMvOmR+xJFx35vc1voUlSuOvrk3khb+hXC219Qs9szOvNm25Q==
+
+mutative@^1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/mutative/-/mutative-1.0.11.tgz#a03b48151800129fbc464257eff9ffa869c648a8"
+  integrity sha512-DfxsNvHfJlxp5yul7jhcNSI0EEWlP1vatiOr6Q7cvr8RNFBbIU5nENilUULbNJiOtbXznOxgbxHf4cYbqPDPlg==
 
 mz@^2.7.0:
   version "2.7.0"
@@ -10428,6 +10433,11 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zustand-mutative@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/zustand-mutative/-/zustand-mutative-1.0.5.tgz#00ce93900a25d812b48d3f0d360da8a3890d0dd9"
+  integrity sha512-/Rc2huxi2SxD21EcSrwW6moCRv+phFcrv3bMyrsQMDkI49LqLqMzhfNCZnOv0TmUctgG0u9xD6gHLUoYEwjkkQ==
 
 zustand@^5.0.0-rc.2:
   version "5.0.0-rc.2"

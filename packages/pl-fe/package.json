@@ -87,7 +87,6 @@
     "fuzzysort": "^3.0.2",
     "graphemesplit": "^2.4.4",
     "html-react-parser": "^5.1.16",
-    "immer": "^10.1.1",
     "immutable": "^4.3.7",
     "intersection-observer": "^0.12.2",
     "intl-messageformat": "^10.5.14",
@@ -100,6 +99,7 @@
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^2.9.1",
     "multiselect-react-dropdown": "^2.0.25",
+    "mutative": "^1.0.11",
     "path-browserify": "^1.0.1",
     "pl-api": "^0.1.9",
     "postcss": "^8.4.47",
@@ -142,7 +142,8 @@
     "vite-plugin-html": "^3.2.2",
     "vite-plugin-require": "^1.2.14",
     "vite-plugin-static-copy": "^1.0.6",
-    "zustand": "^5.0.0-rc.2"
+    "zustand": "^5.0.0-rc.2",
+    "zustand-mutative": "^1.0.5"
   },
   "devDependencies": {
     "@formatjs/cli": "^6.2.12",
