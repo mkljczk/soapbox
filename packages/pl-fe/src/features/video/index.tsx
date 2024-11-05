@@ -569,7 +569,6 @@ const Video: React.FC<IVideo> = ({
 
 export {
   formatTime,
-  findElementPosition,
   getPointerPosition,
   Video as default,
 };

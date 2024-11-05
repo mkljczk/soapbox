@@ -6,14 +6,14 @@ import {
   HASHTAG_FOLLOW_FAIL,
   HASHTAG_UNFOLLOW_REQUEST,
   HASHTAG_UNFOLLOW_FAIL,
+  type TagsAction,
 } from 'pl-fe/actions/tags';
 
 import type { Tag } from 'pl-api';
-import type { AnyAction } from 'redux';
 
 const initialState = ImmutableMap<string, Tag>();
 
-const tags = (state = initialState, action: AnyAction) => {
+const tags = (state = initialState, action: TagsAction) => {
   switch (action.type) {
     case HASHTAG_FETCH_SUCCESS:
       return state.set(action.name, action.tag);

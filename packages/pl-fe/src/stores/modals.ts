@@ -103,4 +103,4 @@ const useModalsStore = create<State>((set) => ({
   })),
 }));
 
-export { useModalsStore, type OpenModalProps };
+export { useModalsStore };
