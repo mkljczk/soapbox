@@ -28,7 +28,7 @@ const WhoToFollowPanel = ({ limit }: IWhoToFollowPanel) => {
 
   const suggestionsToRender = suggestions.slice(0, limit);
 
-  const handleDismiss = (account: AccountEntity) => {
+  const handleDismiss = (account: Pick<AccountEntity, 'id'>) => {
     dismissSuggestion.mutate(account.id);
   };
 

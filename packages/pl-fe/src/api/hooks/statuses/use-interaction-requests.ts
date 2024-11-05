@@ -1,6 +1,6 @@
 import { type InfiniteData, useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import { importEntities } from 'pl-hooks';
 
-import { importEntities } from 'pl-fe/actions/importer';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useClient } from 'pl-fe/hooks/use-client';
 import { useFeatures } from 'pl-fe/hooks/use-features';
@@ -18,9 +18,9 @@ const minifyInteractionRequest = ({ account, status, reply, ...interactionReques
 type MinifiedInteractionRequest = ReturnType<typeof minifyInteractionRequest>;
 
 const minifyInteractionRequestsList = (dispatch: AppDispatch, { previous, next, items, ...response }: PaginatedResponse<InteractionRequest>): PaginatedResponse<MinifiedInteractionRequest> => {
-  dispatch(importEntities({
+  importEntities({
     statuses: items.map(item => [item.status, item.reply]).flat(),
-  }));
+  });
 
   return {
     ...response,
