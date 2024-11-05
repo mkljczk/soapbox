@@ -50,7 +50,7 @@ const SidebarNavigation = () => {
   const notificationCount = useAppSelector((state) => state.notifications.unread);
   const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.count());
   const interactionRequestsCount = useInteractionRequestsCount().data || 0;
-  const dashboardCount = useAppSelector((state) => state.admin.openReports.count() + state.admin.awaitingApproval.count());
+  const dashboardCount = useAppSelector((state) => state.admin.openReports.length + state.admin.awaitingApproval.length);
   const scheduledStatusCount = useAppSelector((state) => state.scheduled_statuses.size);
   const draftCount = useAppSelector((state) => state.draft_statuses.size);
 

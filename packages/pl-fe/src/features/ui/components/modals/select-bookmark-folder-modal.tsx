@@ -16,7 +16,6 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 import type { BaseModalProps } from '../modal-root';
-import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
 
 interface SelectBookmarkFolderModalProps {
   statusId: string;
@@ -24,7 +23,7 @@ interface SelectBookmarkFolderModalProps {
 
 const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseModalProps> = ({ statusId, onClose }) => {
   const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector(state => getStatus(state, { id: statusId })) as StatusEntity;
+  const status = useAppSelector(state => getStatus(state, { id: statusId }))!;
   const dispatch = useAppDispatch();
 
   const [selectedFolder, setSelectedFolder] = useState(status.bookmark_folder);

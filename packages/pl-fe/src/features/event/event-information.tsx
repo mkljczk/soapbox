@@ -17,8 +17,6 @@ import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { makeGetStatus } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
-import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
-
 type RouteParams = { statusId: string };
 
 interface IEventInformation {
@@ -30,7 +28,7 @@ const EventInformation: React.FC<IEventInformation> = ({ params }) => {
   const getStatus = useCallback(makeGetStatus(), []);
   const intl = useIntl();
 
-  const status = useAppSelector(state => getStatus(state, { id: params.statusId })) as StatusEntity;
+  const status = useAppSelector(state => getStatus(state, { id: params.statusId }))!;
 
   const { openModal } = useModalsStore();
   const { tileServer } = usePlFeConfig();

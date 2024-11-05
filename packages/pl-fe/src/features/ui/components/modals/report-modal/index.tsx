@@ -44,7 +44,7 @@ const reportSteps = {
 };
 
 const SelectedStatus = ({ statusId }: { statusId: string }) => {
-  const status = useAppSelector((state) => state.statuses.get(statusId));
+  const status = useAppSelector((state) => state.statuses[statusId]);
 
   if (!status) {
     return null;

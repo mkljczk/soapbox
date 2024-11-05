@@ -37,7 +37,7 @@ const messages = defineMessages({
 });
 
 interface IUploadButton {
-  onSelectFile: (src: string) =>  void;
+  onSelectFile: (src: string) => void;
 }
 
 const UploadButton: React.FC<IUploadButton> = ({ onSelectFile }) => {

@@ -25,7 +25,7 @@ const CompareHistoryModal: React.FC<BaseModalProps & CompareHistoryModalProps> =
   const loading = useAppSelector(state => state.history.getIn([statusId, 'loading']));
   const versions = useAppSelector(state => state.history.get(statusId)?.items);
 
-  const status = useAppSelector(state => state.statuses.get(statusId));
+  const status = useAppSelector(state => state.statuses[statusId]);
 
   const onClickClose = () => {
     onClose('COMPARE_HISTORY');

@@ -40,7 +40,7 @@ const StatePlugin: React.FC<IStatePlugin> = ({ composeId, isWysiwyg }) => {
       for (const id of ids) {
         if (compose?.dismissed_quotes.includes(id)) continue;
 
-        if (state.statuses.get(id)) {
+        if (state.statuses[id]) {
           quoteId = id;
           break;
         }

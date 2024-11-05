@@ -1,6 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
-import { List as ImmutableList, OrderedSet as ImmutableOrderedSet } from 'immutable';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useIntl } from 'react-intl';
@@ -35,36 +34,36 @@ const makeGetAncestorsIds = () => createSelector([
   (_: RootState, statusId: string | undefined) => statusId,
   (state: RootState) => state.contexts.inReplyTos,
 ], (statusId, inReplyTos) => {
-  let ancestorsIds = ImmutableOrderedSet<string>();
+  let ancestorsIds: Array<string> = [];
   let id: string | undefined = statusId;
 
   while (id && !ancestorsIds.includes(id)) {
-    ancestorsIds = ImmutableOrderedSet([id]).union(ancestorsIds);
-    id = inReplyTos.get(id);
+    ancestorsIds = [id, ...ancestorsIds];
+    id = inReplyTos[id];
   }
 
-  return ancestorsIds;
+  return [...new Set(ancestorsIds)];
 });
 
 const makeGetDescendantsIds = () => createSelector([
   (_: RootState, statusId: string) => statusId,
   (state: RootState) => state.contexts.replies,
 ], (statusId, contextReplies) => {
-  let descendantsIds = ImmutableOrderedSet<string>();
+  let descendantsIds: Array<string> = [];
   const ids = [statusId];
 
   while (ids.length > 0) {
     const id = ids.shift();
     if (!id) break;
 
-    const replies = contextReplies.get(id);
+    const replies = contextReplies[id];
 
     if (descendantsIds.includes(id)) {
       break;
     }
 
     if (statusId !== id) {
-      descendantsIds = descendantsIds.union([id]);
+      descendantsIds = [...descendantsIds, id];
     }
 
     if (replies) {
@@ -74,7 +73,7 @@ const makeGetDescendantsIds = () => createSelector([
     }
   }
 
-  return descendantsIds;
+  return [...new Set(descendantsIds)];
 });
 
 const makeGetThread = () => {
@@ -87,8 +86,8 @@ const makeGetThread = () => {
     (_, statusId: string) => statusId,
   ],
   (ancestorsIds, descendantsIds, statusId) => {
-    ancestorsIds = ancestorsIds.delete(statusId).subtract(descendantsIds);
-    descendantsIds = descendantsIds.delete(statusId).subtract(ancestorsIds);
+    ancestorsIds = ancestorsIds.filter(id => id !== statusId && !descendantsIds.includes(id));
+    descendantsIds = descendantsIds.filter(id => id !== statusId && !ancestorsIds.includes(id));
 
     return {
       ancestorsIds,
@@ -121,8 +120,8 @@ const Thread: React.FC<IThread> = ({
 
   const { ancestorsIds, descendantsIds } = useAppSelector((state) => getThread(state, status.id));
 
-  let initialIndex = ancestorsIds.size;
-  if (isModal && initialIndex !== 0) initialIndex = ancestorsIds.size + 1;
+  let initialIndex = ancestorsIds.length;
+  if (isModal && initialIndex !== 0) initialIndex = ancestorsIds.length + 1;
 
   const node = useRef<HTMLDivElement>(null);
   const statusRef = useRef<HTMLDivElement>(null);
@@ -213,13 +212,13 @@ const Thread: React.FC<IThread> = ({
 
   const handleMoveUp = (id: string) => {
     if (id === status?.id) {
-      _selectChild(ancestorsIds.size - 1);
+      _selectChild(ancestorsIds.length - 1);
     } else {
-      let index = ImmutableList(ancestorsIds).indexOf(id);
+      let index = ancestorsIds.indexOf(id);
 
       if (index === -1) {
-        index = ImmutableList(descendantsIds).indexOf(id);
-        _selectChild(ancestorsIds.size + index);
+        index = descendantsIds.indexOf(id);
+        _selectChild(ancestorsIds.length + index);
       } else {
         _selectChild(index - 1);
       }
@@ -228,13 +227,13 @@ const Thread: React.FC<IThread> = ({
 
   const handleMoveDown = (id: string) => {
     if (id === status?.id) {
-      _selectChild(ancestorsIds.size + 1);
+      _selectChild(ancestorsIds.length + 1);
     } else {
-      let index = ImmutableList(ancestorsIds).indexOf(id);
+      let index = ancestorsIds.indexOf(id);
 
       if (index === -1) {
-        index = ImmutableList(descendantsIds).indexOf(id);
-        _selectChild(ancestorsIds.size + index + 2);
+        index = descendantsIds.indexOf(id);
+        _selectChild(ancestorsIds.length + index + 2);
       } else {
         _selectChild(index + 1);
       }
@@ -289,7 +288,7 @@ const Thread: React.FC<IThread> = ({
     );
   };
 
-  const renderChildren = (list: ImmutableOrderedSet<string>) => list.map(id => {
+  const renderChildren = (list: Array<string>) => list.map(id => {
     if (id.endsWith('-tombstone')) {
       return renderTombstone(id);
     } else if (id.startsWith('末pending-')) {
@@ -301,8 +300,8 @@ const Thread: React.FC<IThread> = ({
 
   // Scroll focused status into view when thread updates.
   useEffect(() => {
-    virtualizer.current?.scrollToIndex(ancestorsIds.size);
-  }, [status.id, ancestorsIds.size]);
+    virtualizer.current?.scrollToIndex(ancestorsIds.length);
+  }, [status.id, ancestorsIds.length]);
 
   const handleOpenCompareHistoryModal = (status: Pick<Status, 'id'>) => {
     openModal('COMPARE_HISTORY', {
@@ -310,8 +309,8 @@ const Thread: React.FC<IThread> = ({
     });
   };
 
-  const hasAncestors = ancestorsIds.size > 0;
-  const hasDescendants = descendantsIds.size > 0;
+  const hasAncestors = ancestorsIds.length > 0;
+  const hasDescendants = descendantsIds.length > 0;
 
   type HotkeyHandlers = { [key: string]: (keyEvent?: KeyboardEvent) => void };
 
@@ -370,13 +369,13 @@ const Thread: React.FC<IThread> = ({
   }
 
   if (hasAncestors) {
-    children.push(...renderChildren(ancestorsIds).toArray());
+    children.push(...renderChildren(ancestorsIds));
   }
 
   children.push(focusedStatus);
 
   if (hasDescendants) {
-    children.push(...renderChildren(descendantsIds).toArray());
+    children.push(...renderChildren(descendantsIds));
   }
 
   return (

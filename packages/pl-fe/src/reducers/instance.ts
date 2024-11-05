@@ -1,6 +1,6 @@
-import { Map as ImmutableMap, List as ImmutableList, fromJS } from 'immutable';
+import { Map as ImmutableMap } from 'immutable';
 import { create } from 'mutative';
-import { type Instance, instanceSchema } from 'pl-api';
+import { type Instance, instanceSchema, PleromaConfig } from 'pl-api';
 import * as v from 'valibot';
 
 import { ADMIN_CONFIG_UPDATE_REQUEST, ADMIN_CONFIG_UPDATE_SUCCESS } from 'pl-fe/actions/admin';
@@ -27,7 +27,7 @@ const getConfigValue = (instanceConfig: ImmutableMap<string, any>, key: string) 
   return v ? v.getIn(['tuple', 1]) : undefined;
 };
 
-const importConfigs = (state: State, configs: ImmutableList<any>) => {
+const importConfigs = (state: State, configs: PleromaConfig['configs']) => {
   // FIXME: This is pretty hacked together. Need to make a cleaner map.
   const config = ConfigDB.find(configs, ':pleroma', ':instance');
   const simplePolicy = ConfigDB.toSimplePolicy(configs);
@@ -35,7 +35,7 @@ const importConfigs = (state: State, configs: ImmutableList<any>) => {
   if (!config && !simplePolicy) return state;
 
   if (config) {
-    const value = config.get('value', ImmutableList());
+    const value = config.value || [];
     const registrationsOpen = getConfigValue(value, ':registrations_open') as boolean | undefined;
     const approvalRequired = getConfigValue(value, ':account_approval_required') as boolean | undefined;
 
@@ -97,7 +97,7 @@ const instance = (state = initialState, action: AnyAction | InstanceAction | Pre
       return handleInstanceFetchFail(state, action.error);
     case ADMIN_CONFIG_UPDATE_REQUEST:
     case ADMIN_CONFIG_UPDATE_SUCCESS:
-      return create(state, (draft) => importConfigs(draft, ImmutableList(fromJS(action.configs))));
+      return create(state, (draft) => importConfigs(draft, action.configs));
     default:
       return state;
   }

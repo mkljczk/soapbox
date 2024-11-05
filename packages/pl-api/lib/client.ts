@@ -255,7 +255,7 @@ class PlApiClient {
     unlisten: (listener: any) => void;
     subscribe: (stream: string, params?: { list?: string; tag?: string }) => void;
     unsubscribe: (stream: string, params?: { list?: string; tag?: string }) => void;
-    close: () =>  void;
+    close: () => void;
   };
 
   constructor(baseURL: string, accessToken?: string, {

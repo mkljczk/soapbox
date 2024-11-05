@@ -17,8 +17,7 @@ const PLFE_CONFIG_REMEMBER_SUCCESS = 'PLFE_CONFIG_REMEMBER_SUCCESS' as const;
 
 const getPlFeConfig = createSelector([
   (state: RootState) => state.plfe,
-  (state: RootState) => state.auth.client.features,
-], (plfe, features) => {
+], (plfe) => {
   // Do some additional normalization with the state
   return normalizePlFeConfig(plfe);
 });

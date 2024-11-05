@@ -1,4 +1,3 @@
-import { List as ImmutableList, OrderedSet as ImmutableOrderedSet } from 'immutable';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -38,7 +37,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statu
 
   const me = useAppSelector((state) => state.me);
 
-  const descendantsIds = useAppSelector(state => getDescendantsIds(state, statusId).delete(statusId));
+  const descendantsIds = useAppSelector(state => getDescendantsIds(state, statusId).filter(id => id !== statusId));
 
   const [isLoaded, setIsLoaded] = useState<boolean>(!!status);
 
@@ -61,12 +60,12 @@ const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statu
   }, [isLoaded, me]);
 
   const handleMoveUp = (id: string) => {
-    const index = ImmutableList(descendantsIds).indexOf(id);
+    const index = descendantsIds.indexOf(id);
     _selectChild(index - 1);
   };
 
   const handleMoveDown = (id: string) => {
-    const index = ImmutableList(descendantsIds).indexOf(id);
+    const index = descendantsIds.indexOf(id);
     _selectChild(index + 1);
   };
 
@@ -110,7 +109,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statu
     );
   };
 
-  const renderChildren = (list: ImmutableOrderedSet<string>) => list.map(id => {
+  const renderChildren = (list: Array<string>) => list.map(id => {
     if (id.endsWith('-tombstone')) {
       return renderTombstone(id);
     } else if (id.startsWith('末pending-')) {
@@ -120,7 +119,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statu
     }
   });
 
-  const hasDescendants = descendantsIds.size > 0;
+  const hasDescendants = descendantsIds.length > 0;
 
   if (!status && isLoaded) {
     return (
@@ -135,7 +134,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statu
   const children: JSX.Element[] = [];
 
   if (hasDescendants) {
-    children.push(...renderChildren(descendantsIds).toArray());
+    children.push(...renderChildren(descendantsIds));
   }
 
   return (

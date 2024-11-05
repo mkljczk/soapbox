@@ -8,7 +8,6 @@ import { getClient, type PlfeResponse } from '../api';
 
 import { importEntities } from './importer';
 
-import type { Map as ImmutableMap } from 'immutable';
 import type { MinifiedStatus } from 'pl-fe/reducers/statuses';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 import type { History } from 'pl-fe/types/history';
@@ -190,7 +189,7 @@ const blockAccountRequest = (accountId: string) => ({
   accountId,
 });
 
-const blockAccountSuccess = (relationship: Relationship, statuses: ImmutableMap<string, MinifiedStatus>) => ({
+const blockAccountSuccess = (relationship: Relationship, statuses: Record<string, MinifiedStatus>) => ({
   type: ACCOUNT_BLOCK_SUCCESS,
   relationship,
   statuses,
@@ -245,7 +244,7 @@ const muteAccountRequest = (accountId: string) => ({
   accountId,
 });
 
-const muteAccountSuccess = (relationship: Relationship, statuses: ImmutableMap<string, MinifiedStatus>) => ({
+const muteAccountSuccess = (relationship: Relationship, statuses: Record<string, MinifiedStatus>) => ({
   type: ACCOUNT_MUTE_SUCCESS,
   relationship,
   statuses,
