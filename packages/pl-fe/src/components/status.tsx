@@ -399,15 +399,13 @@ const Status: React.FC<IStatus> = (props) => {
 
             <Stack className='relative z-0'>
               {actualStatus.event ? <EventPreview className='shadow-xl' status={actualStatus} /> : (
-                <Stack space={4}>
-                  <StatusContent
-                    status={actualStatus}
-                    onClick={handleClick}
-                    collapsable
-                    translatable
-                    withMedia
-                  />
-                </Stack>
+                <StatusContent
+                  status={actualStatus}
+                  onClick={handleClick}
+                  collapsable
+                  translatable
+                  withMedia
+                />
               )}
             </Stack>
 

@@ -287,6 +287,14 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
       output.push(<TranslateButton status={status} />);
     }
 
+    if (media) {
+      output.push(media);
+    }
+
+    if (hashtags.length) {
+      output.push(<HashtagsBar key='hashtags' hashtags={hashtags} />);
+    }
+
     return <>{output}</>;
   }
 });
