@@ -18,7 +18,7 @@ interface DislikesModalProps {
 const DislikesModal: React.FC<BaseModalProps & DislikesModalProps> = ({ onClose, statusId }) => {
   const dispatch = useAppDispatch();
 
-  const accountIds = useAppSelector((state) => state.user_lists.disliked_by.get(statusId)?.items);
+  const accountIds = useAppSelector((state) => state.user_lists.disliked_by[statusId]?.items);
 
   const fetchData = () => {
     dispatch(fetchDislikes(statusId));

@@ -268,7 +268,7 @@ const fetchEventParticipationsFail = (statusId: string, error: unknown) => ({
 
 const expandEventParticipations = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const next = getState().user_lists.event_participations.get(statusId)?.next || null;
+    const next = getState().user_lists.event_participations[statusId]?.next || null;
 
     if (next === null) {
       return dispatch(noOp);
@@ -337,7 +337,7 @@ const fetchEventParticipationRequestsFail = (statusId: string, error: unknown) =
 
 const expandEventParticipationRequests = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const next = getState().user_lists.event_participation_requests.get(statusId)?.next || null;
+    const next = getState().user_lists.event_participation_requests[statusId]?.next || null;
 
     if (next === null) {
       return dispatch(noOp);

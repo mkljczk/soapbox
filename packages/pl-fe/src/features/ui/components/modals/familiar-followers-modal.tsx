@@ -1,4 +1,3 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -21,7 +20,7 @@ interface FamiliarFollowersModalProps {
 const FamiliarFollowersModal: React.FC<BaseModalProps & FamiliarFollowersModalProps> = ({ accountId, onClose }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const account = useAppSelector(state => getAccount(state, accountId));
-  const familiarFollowerIds: ImmutableOrderedSet<string> = useAppSelector(state => state.user_lists.familiar_followers.get(accountId)?.items || ImmutableOrderedSet());
+  const familiarFollowerIds = useAppSelector(state => state.user_lists.familiar_followers[accountId]?.items || []);
 
   const onClickClose = () => {
     onClose('FAMILIAR_FOLLOWERS');

@@ -51,6 +51,8 @@ const makeGetAccount = () => createSelector([
   };
 });
 
+type SelectedAccount = Exclude<ReturnType<ReturnType<typeof makeGetAccount>>, null>;
+
 const toServerSideType = (columnType: string): Filter['context'][0] => {
   switch (columnType) {
     case 'home':
@@ -277,11 +279,12 @@ const makeGetOtherAccounts = () => createSelector([
   getAuthUserIds,
   (state: RootState) => state.me,
 ], (accounts, authUserIds, me) =>
-  authUserIds.reduce((list: ImmutableList<any>, id: string) => {
+  authUserIds.reduce<Array<Account>>((list, id) => {
     if (id === me) return list;
     const account = accounts?.[id];
-    return account ? list.push(account) : list;
-  }, ImmutableList()),
+    if (account) list.push(account);
+    return list;
+  }, []),
 );
 
 const getSimplePolicy = createSelector([
@@ -353,8 +356,10 @@ const makeGetStatusIds = () => createSelector([
 export {
   type RemoteInstance,
   selectAccount,
+  selectAccounts,
   selectOwnAccount,
   makeGetAccount,
+  type SelectedAccount,
   getFilters,
   regexFromFilters,
   makeGetStatus,

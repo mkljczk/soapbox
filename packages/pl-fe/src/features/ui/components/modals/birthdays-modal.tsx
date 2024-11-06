@@ -10,7 +10,7 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import type { BaseModalProps } from '../modal-root';
 
 const BirthdaysModal = ({ onClose }: BaseModalProps) => {
-  const accountIds = useAppSelector(state => state.user_lists.birthday_reminders.get(state.me as string)?.items);
+  const accountIds = useAppSelector(state => state.user_lists.birthday_reminders[state.me as string]?.items);
 
   const onClickClose = () => {
     onClose('BIRTHDAYS');

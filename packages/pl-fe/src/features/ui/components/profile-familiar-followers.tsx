@@ -1,4 +1,3 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import React, { useEffect } from 'react';
 import { FormattedList, FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -29,8 +28,8 @@ const ProfileFamiliarFollowers: React.FC<IProfileFamiliarFollowers> = ({ account
   const dispatch = useAppDispatch();
   const me = useAppSelector((state) => state.me);
   const features = useFeatures();
-  const familiarFollowerIds = useAppSelector(state => state.user_lists.familiar_followers.get(account.id)?.items || ImmutableOrderedSet<string>());
-  const familiarFollowers: ImmutableOrderedSet<Account | null> = useAppSelector(state => familiarFollowerIds.slice(0, 2).map(accountId => getAccount(state, accountId)));
+  const familiarFollowerIds = useAppSelector(state => state.user_lists.familiar_followers[account.id]?.items || []);
+  const familiarFollowers = useAppSelector(state => familiarFollowerIds.slice(0, 2).map(accountId => getAccount(state, accountId)));
 
   useEffect(() => {
     if (me && features.familiarFollowers) {
@@ -44,7 +43,7 @@ const ProfileFamiliarFollowers: React.FC<IProfileFamiliarFollowers> = ({ account
     });
   };
 
-  if (familiarFollowerIds.size === 0) {
+  if (familiarFollowerIds.length === 0) {
     return null;
   }
 
@@ -60,15 +59,15 @@ const ProfileFamiliarFollowers: React.FC<IProfileFamiliarFollowers> = ({ account
         </HStack>
       </Link>
     </HoverAccountWrapper>
-  )).toArray().filter(Boolean);
+  )).filter(Boolean);
 
-  if (familiarFollowerIds.size > 2) {
+  if (familiarFollowerIds.length > 2) {
     accounts.push(
       <span key='_' className='cursor-pointer hover:underline' role='presentation' onClick={openFamiliarFollowersModal}>
         <FormattedMessage
           id='account.familiar_followers.more'
           defaultMessage='{count, plural, one {# other} other {# others}} you follow'
-          values={{ count: familiarFollowerIds.size - familiarFollowers.size }}
+          values={{ count: familiarFollowerIds.length - familiarFollowers.length }}
         />
       </span>,
     );
