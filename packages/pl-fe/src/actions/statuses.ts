@@ -97,7 +97,7 @@ const editStatus = (statusId: string) => (dispatch: AppDispatch, getState: () =>
   const state = getState();
 
   const status = state.statuses[statusId]!;
-  const poll = status.poll_id ? state.polls.get(status.poll_id) : undefined;
+  const poll = status.poll_id ? state.polls[status.poll_id] : undefined;
 
   dispatch({ type: STATUS_FETCH_SOURCE_REQUEST });
 
@@ -134,7 +134,7 @@ const deleteStatus = (statusId: string, withRedraft = false) =>
     const state = getState();
 
     const status = state.statuses[statusId]!;
-    const poll = status.poll_id ? state.polls.get(status.poll_id) : undefined;
+    const poll = status.poll_id ? state.polls[status.poll_id] : undefined;
 
     dispatch({ type: STATUS_DELETE_REQUEST, params: status });
 

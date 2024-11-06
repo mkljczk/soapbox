@@ -30,7 +30,7 @@ const Poll: React.FC<IPoll> = ({ id, status }): JSX.Element | null => {
   const intl = useIntl();
 
   const isLoggedIn = useAppSelector((state) => state.me);
-  const poll = useAppSelector((state) => state.polls.get(id));
+  const poll = useAppSelector((state) => state.polls[id]);
 
   const [selected, setSelected] = useState({} as Selected);
 

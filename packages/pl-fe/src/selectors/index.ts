@@ -135,7 +135,7 @@ const makeGetStatus = () => createSelector(
       if (group) return state.entities[Entities.GROUPS]?.store[group] as Group;
       return undefined;
     },
-    (state: RootState, { id }: APIStatus) => state.polls.get(id) || null,
+    (state: RootState, { id }: APIStatus) => state.polls[id] || null,
     (_state: RootState, { username }: APIStatus) => username,
     getFilters,
     (state: RootState) => state.me,

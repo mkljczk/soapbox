@@ -1,25 +1,18 @@
-import { Map as ImmutableMap } from 'immutable';
+import { create } from 'mutative';
 
-import { BACKUPS_FETCH_SUCCESS, BACKUPS_CREATE_SUCCESS } from '../actions/backups';
+import { BACKUPS_FETCH_SUCCESS, BACKUPS_CREATE_SUCCESS, type BackupsAction } from '../actions/backups';
 
 import type { Backup } from 'pl-api';
-import type { AnyAction } from 'redux';
 
-type State = ImmutableMap<string, Backup>;
+type State = Record<string, Backup>;
 
-const initialState: State = ImmutableMap();
+const initialState: State = {};
 
-const importBackup = (state: State, backup: Backup) => state.set(backup.inserted_at, backup);
-
-const importBackups = (state: State, backups: Array<Backup>) => state.withMutations(mutable => {
-  backups.forEach(backup => importBackup(mutable, backup));
-});
-
-const backups = (state = initialState, action: AnyAction) => {
+const backups = (state = initialState, action: BackupsAction) => {
   switch (action.type) {
     case BACKUPS_FETCH_SUCCESS:
     case BACKUPS_CREATE_SUCCESS:
-      return importBackups(state, action.backups);
+      return create(state, (draft) => action.backups.forEach((backup) => draft[backup.inserted_at] = backup));
     default:
       return state;
   }

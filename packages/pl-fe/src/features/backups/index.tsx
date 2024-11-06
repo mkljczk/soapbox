@@ -65,7 +65,7 @@ const Backups = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
-  const backups = useAppSelector((state) => state.backups.toList().sortBy((backup) => backup.inserted_at));
+  const backups = useAppSelector((state) => Object.values(state.backups).toSorted((a, b) => a.inserted_at.localeCompare(b.inserted_at)));
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -80,7 +80,7 @@ const Backups = () => {
     }).catch(() => {});
   }, []);
 
-  const showLoading = isLoading && backups.count() === 0;
+  const showLoading = isLoading && backups.length === 0;
 
   const emptyMessage = (
     <Card variant='rounded' size='lg'>
@@ -96,11 +96,11 @@ const Backups = () => {
     </Card>
   );
 
-  const body = showLoading ? <Spinner /> : backups.isEmpty() ? emptyMessage : (
+  const body = showLoading ? <Spinner /> : backups.length ? (
     <div className='mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2'>
       {backups.map((backup) => <Backup key={backup.id} backup={backup} />)}
     </div>
-  );
+  ) : emptyMessage;
 
   return (
     <Column label={intl.formatMessage(messages.heading)}>
