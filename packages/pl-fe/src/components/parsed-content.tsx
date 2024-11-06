@@ -1,6 +1,6 @@
 import parse, { Element, type HTMLReactParserOptions, domToReact, type DOMNode } from 'html-react-parser';
 import DOMPurify from 'isomorphic-dompurify';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 import Emojify from 'pl-fe/features/emoji/emojify';
@@ -26,98 +26,96 @@ interface IParsedContent {
   emojis?: Array<CustomEmoji>;
 }
 
-const ParsedContent: React.FC<IParsedContent> = (({ html, mentions, hasQuote, emojis }) => {
-  return useMemo(() => {
-    if (html.length === 0) {
-      return null;
-    }
+const ParsedContent: React.FC<IParsedContent> = React.memo(({ html, mentions, hasQuote, emojis }) => {
+  if (html.length === 0) {
+    return null;
+  }
 
-    const emojiMap = emojis ? makeEmojiMap(emojis) : undefined;
+  const emojiMap = emojis ? makeEmojiMap(emojis) : undefined;
 
-    const selectors: Array<string> = [];
+  const selectors: Array<string> = [];
 
-    // Explicit mentions
-    if (mentions) selectors.push('recipients-inline');
+  // Explicit mentions
+  if (mentions) selectors.push('recipients-inline');
 
-    // Quote posting
-    if (hasQuote) selectors.push('quote-inline');
+  // Quote posting
+  if (hasQuote) selectors.push('quote-inline');
 
-    const options: HTMLReactParserOptions = {
-      replace(domNode) {
-        if (!(domNode instanceof Element)) {
-          return;
-        }
+  const options: HTMLReactParserOptions = {
+    replace(domNode) {
+      if (!(domNode instanceof Element)) {
+        return;
+      }
 
-        if (['script', 'iframe'].includes(domNode.name)) {
-          return <></>;
-        }
+      if (['script', 'iframe'].includes(domNode.name)) {
+        return <></>;
+      }
 
-        if (domNode.attribs.class?.split(' ').some(className => selectors.includes(className))) {
-          return <></>;
-        }
+      if (domNode.attribs.class?.split(' ').some(className => selectors.includes(className))) {
+        return <></>;
+      }
 
-        if (domNode.name === 'a') {
-          const classes = domNode.attribs.class?.split(' ');
+      if (domNode.name === 'a') {
+        const classes = domNode.attribs.class?.split(' ');
 
-          const fallback = (
-            // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-            <a
-              {...domNode.attribs}
-              onClick={(e) => e.stopPropagation()}
-              rel='nofollow noopener'
-              target='_blank'
-              title={domNode.attribs.href}
-            >
-              {domToReact(domNode.children as DOMNode[], options)}
-            </a>
-          );
+        const fallback = (
+          // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+          <a
+            {...domNode.attribs}
+            onClick={(e) => e.stopPropagation()}
+            rel='nofollow noopener'
+            target='_blank'
+            title={domNode.attribs.href}
+          >
+            {domToReact(domNode.children as DOMNode[], options)}
+          </a>
+        );
 
-          if (classes?.includes('mention')) {
-            if (mentions) {
-              const mention = mentions.find(({ url }) => domNode.attribs.href === url);
-              if (mention) {
-                return (
-                  <HoverAccountWrapper accountId={mention.id} element='span'>
-                    <Link
-                      to={`/@${mention.acct}`}
-                      className='text-primary-600 hover:underline dark:text-accent-blue'
-                      dir='ltr'
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      @{mention.username}
-                    </Link>
-                  </HoverAccountWrapper>
-                );
-              }
-            } else if (domNode.attribs['data-user']) {
+        if (classes?.includes('mention')) {
+          if (mentions) {
+            const mention = mentions.find(({ url }) => domNode.attribs.href === url);
+            if (mention) {
               return (
-                <StatusMention accountId={domNode.attribs['data-user']} fallback={fallback} />
+                <HoverAccountWrapper accountId={mention.id} element='span'>
+                  <Link
+                    to={`/@${mention.acct}`}
+                    className='text-primary-600 hover:underline dark:text-accent-blue'
+                    dir='ltr'
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    @{mention.username}
+                  </Link>
+                </HoverAccountWrapper>
               );
             }
+          } else if (domNode.attribs['data-user']) {
+            return (
+              <StatusMention accountId={domNode.attribs['data-user']} fallback={fallback} />
+            );
           }
-
-          if (classes?.includes('hashtag')) {
-            const hashtag = nodesToText(domNode.children as Array<DOMNode>);
-            if (hashtag) {
-              return <HashtagLink hashtag={hashtag.replace(/^#/, '')} />;
-            }
-          }
-
-          return fallback;
-        }
-      },
-
-      transform(reactNode, _domNode, index) {
-        if (typeof reactNode === 'string') {
-          return <Emojify key={index} text={reactNode} emojis={emojiMap} />;
         }
 
-        return reactNode as JSX.Element;
-      },
-    };
+        if (classes?.includes('hashtag')) {
+          const hashtag = nodesToText(domNode.children as Array<DOMNode>);
+          if (hashtag) {
+            return <HashtagLink hashtag={hashtag.replace(/^#/, '')} />;
+          }
+        }
 
-    return parse(DOMPurify.sanitize(html, { ADD_ATTR: ['target'], USE_PROFILES: { html: true } }), options);
-  }, [html]);
-});
+        return fallback;
+      }
+    },
+
+    transform(reactNode, _domNode, index) {
+      if (typeof reactNode === 'string') {
+        return <Emojify key={index} text={reactNode} emojis={emojiMap} />;
+      }
+
+      return reactNode as JSX.Element;
+    },
+  };
+
+  return parse(DOMPurify.sanitize(html, { ADD_ATTR: ['target'], USE_PROFILES: { html: true } }), options);
+}, (prevProps, nextProps) => prevProps.html === nextProps.html);
 
 export { ParsedContent };

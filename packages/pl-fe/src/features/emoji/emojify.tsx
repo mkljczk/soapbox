@@ -33,7 +33,7 @@ interface IEmojify {
   emojis?: Array<CustomEmoji> | Record<string, CustomEmoji>;
 }
 
-const Emojify: React.FC<IEmojify> = ({ text, emojis = {} }) => React.useMemo(() => {
+const Emojify: React.FC<IEmojify> = React.memo(({ text, emojis = {} }) => {
   if (Array.isArray(emojis)) emojis = makeEmojiMap(emojis);
 
   const nodes = [];
@@ -102,6 +102,6 @@ const Emojify: React.FC<IEmojify> = ({ text, emojis = {} }) => React.useMemo(() 
   if (stack.length) nodes.push(stack);
 
   return nodes;
-}, [text, emojis]);
+});
 
 export { Emojify as default };
