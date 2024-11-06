@@ -33,7 +33,7 @@ const importStatus = (state: State, status: Pick<Status, 'id' | 'in_reply_to_id'
   if (!inReplyToId) return;
 
   const replies = state.replies[inReplyToId] || [];
-  const newReplies = [...replies, id].toSorted();
+  const newReplies = [...new Set([...replies, id])].toSorted();
 
   state.replies[inReplyToId] = newReplies;
   state.inReplyTos[id] = inReplyToId;
