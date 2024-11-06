@@ -8,15 +8,20 @@ import Button from 'pl-fe/components/ui/button';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
+import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { onlyEmoji as isOnlyEmoji } from 'pl-fe/utils/rich-content';
 
 import { getTextDirection } from '../utils/rtl';
 
+import HashtagsBar from './hashtags-bar';
 import Markup from './markup';
-import { ParsedContent } from './parsed-content';
+import { parseContent } from './parsed-content';
 import Poll from './polls/poll';
+import StatusMedia from './status-media';
+import SensitiveContentOverlay from './statuses/sensitive-content-overlay';
+import TranslateButton from './translate-button';
 
 import type { Sizes } from 'pl-fe/components/ui/text';
 import type { MinifiedStatus } from 'pl-fe/reducers/statuses';
@@ -60,8 +65,9 @@ interface IStatusContent {
   collapsable?: boolean;
   translatable?: boolean;
   textSize?: Sizes;
-  quote?: boolean;
+  isQuote?: boolean;
   preview?: boolean;
+  withMedia?: boolean;
 }
 
 /** Renders the text content of a status */
@@ -71,8 +77,9 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   collapsable = false,
   translatable,
   textSize = 'md',
-  quote = false,
+  isQuote = false,
   preview,
+  withMedia,
 }) => {
   const dispatch = useAppDispatch();
   const { displaySpoilers } = useSettings();
@@ -89,7 +96,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
 
     if ((collapsable || preview) && !collapsed) {
       // 20px * x lines (+ 2px padding at the top)
-      if (node.current.clientHeight > (preview ? 82 : quote ? 202 : 282)) {
+      if (node.current.clientHeight > (preview ? 82 : isQuote ? 202 : 282)) {
         setCollapsed(true);
       }
     }
@@ -126,6 +133,13 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     [status.content, status.translation, status.currentLanguage],
   );
 
+  const { content: parsedContent, hashtags } = useMemo(() => parseContent({
+    html: content,
+    mentions: status.mentions,
+    hasQuote: !!status.quote_id,
+    emojis: status.emojis,
+  }, true), [content]);
+
   useEffect(() => {
     setLineClamp(!spoilerNode.current || spoilerNode.current.clientHeight >= 96);
   }, [spoilerNode.current]);
@@ -140,8 +154,8 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   const className = clsx('relative text-ellipsis break-words text-gray-900 focus:outline-none dark:text-gray-100', {
     'cursor-pointer': onClick,
     'overflow-hidden': collapsed,
-    'max-h-[200px]': collapsed && !quote && !preview,
-    'max-h-[120px]': collapsed && quote,
+    'max-h-[200px]': collapsed && !isQuote && !preview,
+    'max-h-[120px]': collapsed && isQuote,
     'max-h-[80px]': collapsed && preview,
     'leading-normal big-emoji': onlyEmoji,
   });
@@ -177,6 +191,33 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
 
   if (expandable && !expanded) return <>{output}</>;
 
+  let quote;
+
+  if (withMedia && status.quote_id) {
+    if ((status.quote_visible ?? true) === false) {
+      quote = (
+        <div className='quoted-status-tombstone'>
+          <p><FormattedMessage id='statuses.quote_tombstone' defaultMessage='Post is unavailable.' /></p>
+        </div>
+      );
+    } else {
+      quote = <QuotedStatus statusId={status.quote_id} />;
+    }
+  }
+
+  const media = withMedia && ((quote || status.card || status.media_attachments.length > 0)) && (
+    <Stack space={4}>
+      {(status.media_attachments.length > 0 || (status.card && !quote)) && (
+        <div className='relative'>
+          <SensitiveContentOverlay status={status} />
+          <StatusMedia status={status} />
+        </div>
+      )}
+
+      {quote}
+    </Stack>
+  );
+
   if (onClick) {
     if (status.content) {
       output.push(
@@ -189,7 +230,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
           lang={status.language || undefined}
           size={textSize}
         >
-          <ParsedContent html={content} mentions={status.mentions} hasQuote={!!status.quote_id} emojis={status.emojis} />
+          {parsedContent}
         </Markup>,
       );
     }
@@ -197,11 +238,23 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     const hasPoll = !!status.poll_id;
 
     if (collapsed) {
-      output.push(<ReadMoreButton onClick={onClick} key='read-more' quote={quote} poll={hasPoll} />);
+      output.push(<ReadMoreButton onClick={onClick} key='read-more' quote={isQuote} poll={hasPoll} />);
     }
 
     if (status.poll_id) {
       output.push(<Poll id={status.poll_id} key='poll' status={status} />);
+    }
+
+    if (translatable) {
+      output.push(<TranslateButton status={status} />);
+    }
+
+    if (media) {
+      output.push(media);
+    }
+
+    if (hashtags.length) {
+      output.push(<HashtagsBar key='hashtags' hashtags={hashtags} />);
     }
 
     return <Stack space={4} className={clsx({ 'bg-gray-100 dark:bg-primary-800 rounded-md p-4': hasPoll })}>{output}</Stack>;
@@ -217,17 +270,21 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
           lang={status.language || undefined}
           size={textSize}
         >
-          <ParsedContent html={content} mentions={status.mentions} hasQuote={!!status.quote_id} emojis={status.emojis} />
+          {parsedContent}
         </Markup>,
       );
     }
 
     if (collapsed) {
-      output.push(<ReadMoreButton onClick={() => {}} key='read-more' quote={quote} preview={preview} />);
+      output.push(<ReadMoreButton onClick={() => {}} key='read-more' quote={isQuote} preview={preview} />);
     }
 
     if (status.poll_id) {
       output.push(<Poll id={status.poll_id} key='poll' status={status} />);
+    }
+
+    if (translatable) {
+      output.push(<TranslateButton status={status} />);
     }
 
     return <>{output}</>;

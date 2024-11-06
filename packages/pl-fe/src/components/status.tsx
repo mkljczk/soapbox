@@ -6,7 +6,6 @@ import { Link, useHistory } from 'react-router-dom';
 import { mentionCompose, replyCompose } from 'pl-fe/actions/compose';
 import { toggleFavourite, toggleReblog } from 'pl-fe/actions/interactions';
 import { toggleStatusMediaHidden, unfilterStatus } from 'pl-fe/actions/statuses';
-import TranslateButton from 'pl-fe/components/translate-button';
 import Card from 'pl-fe/components/ui/card';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
@@ -14,7 +13,6 @@ import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import StatusTypeIcon from 'pl-fe/features/status/components/status-type-icon';
-import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
@@ -27,10 +25,8 @@ import EventPreview from './event-preview';
 import StatusActionBar from './status-action-bar';
 import StatusContent from './status-content';
 import StatusLanguagePicker from './status-language-picker';
-import StatusMedia from './status-media';
 import StatusReactionsBar from './status-reactions-bar';
 import StatusReplyMentions from './status-reply-mentions';
-import SensitiveContentOverlay from './statuses/sensitive-content-overlay';
 import StatusInfo from './statuses/status-info';
 
 const messages = defineMessages({
@@ -341,20 +337,6 @@ const Status: React.FC<IStatus> = (props) => {
     );
   }
 
-  let quote;
-
-  if (actualStatus.quote_id) {
-    if ((actualStatus.quote_visible ?? true) === false) {
-      quote = (
-        <div className='quoted-status-tombstone'>
-          <p><FormattedMessage id='statuses.quote_tombstone' defaultMessage='Post is unavailable.' /></p>
-        </div>
-      );
-    } else {
-      quote = <QuotedStatus statusId={actualStatus.quote_id} />;
-    }
-  }
-
   const handlers = muted ? undefined : {
     reply: handleHotkeyReply,
     favourite: handleHotkeyFavourite,
@@ -423,26 +405,8 @@ const Status: React.FC<IStatus> = (props) => {
                     onClick={handleClick}
                     collapsable
                     translatable
+                    withMedia
                   />
-
-                  <TranslateButton status={actualStatus} />
-
-                  {(quote || actualStatus.card || actualStatus.media_attachments.length > 0) && (
-                    <Stack space={4}>
-                      {(actualStatus.media_attachments.length > 0 || (actualStatus.card && !quote)) && (
-                        <div className='relative'>
-                          <SensitiveContentOverlay status={actualStatus} />
-                          <StatusMedia
-                            status={actualStatus}
-                            muted={muted}
-                            onClick={handleClick}
-                          />
-                        </div>
-                      )}
-
-                      {quote}
-                    </Stack>
-                  )}
                 </Stack>
               )}
             </Stack>

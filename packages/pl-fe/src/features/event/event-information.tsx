@@ -4,13 +4,10 @@ import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { fetchStatus } from 'pl-fe/actions/statuses';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import StatusContent from 'pl-fe/components/status-content';
-import StatusMedia from 'pl-fe/components/status-media';
-import TranslateButton from 'pl-fe/components/translate-button';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
@@ -185,16 +182,8 @@ const EventInformation: React.FC<IEventInformation> = ({ params }) => {
             <FormattedMessage id='event.description' defaultMessage='Description' />
           </Text>
 
-          <StatusContent status={status} translatable />
-
-          <TranslateButton status={status} />
+          <StatusContent status={status} translatable withMedia />
         </Stack>
-      )}
-
-      <StatusMedia status={status} />
-
-      {status.quote_id && (status.quote_visible ?? true) && (
-        <QuotedStatus statusId={status.quote_id} />
       )}
 
       {renderEventLocation()}

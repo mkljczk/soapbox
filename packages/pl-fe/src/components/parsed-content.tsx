@@ -1,5 +1,8 @@
+/* eslint-disable no-redeclare */
 import parse, { Element, type HTMLReactParserOptions, domToReact, type DOMNode } from 'html-react-parser';
 import DOMPurify from 'isomorphic-dompurify';
+import groupBy from 'lodash/groupBy';
+import minBy from 'lodash/minBy';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -26,9 +29,47 @@ interface IParsedContent {
   emojis?: Array<CustomEmoji>;
 }
 
-const ParsedContent: React.FC<IParsedContent> = React.memo(({ html, mentions, hasQuote, emojis }) => {
+// Adapted from Mastodon https://github.com/mastodon/mastodon/blob/main/app/javascript/mastodon/components/hashtag_bar.tsx
+const normalizeHashtag = (hashtag: string) =>(
+  !!hashtag && hashtag.startsWith('#') ? hashtag.slice(1) : hashtag
+).normalize('NFKC');
+
+const uniqueHashtagsWithCaseHandling = (hashtags: string[]) => {
+  const groups = groupBy(hashtags, (tag) =>
+    tag.normalize('NFKD').toLowerCase(),
+  );
+
+  return Object.values(groups).map((tags) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we know that the array has at least one element
+    const firstTag = tags[0]!;
+
+    if (tags.length === 1) return firstTag;
+
+    // The best match is the one where we have the less difference between upper and lower case letter count
+    const best = minBy(tags, (tag) => {
+      const upperCase = Array.from(tag).reduce(
+        (acc, char) => (acc += char.toUpperCase() === char ? 1 : 0),
+        0,
+      );
+
+      const lowerCase = tag.length - upperCase;
+
+      return Math.abs(lowerCase - upperCase);
+    });
+
+    return best ?? firstTag;
+  });
+};
+
+function parseContent(props: IParsedContent): ReturnType<typeof domToReact>;
+function parseContent(props: IParsedContent, extractHashtags: true): {
+  hashtags: Array<string>;
+  content: ReturnType<typeof domToReact>;
+};
+
+function parseContent({ html, mentions, hasQuote, emojis }: IParsedContent, extractHashtags = false) {
   if (html.length === 0) {
-    return null;
+    return extractHashtags ? { content: null, hashtags: [] } : null;
   }
 
   const emojiMap = emojis ? makeEmojiMap(emojis) : undefined;
@@ -41,8 +82,10 @@ const ParsedContent: React.FC<IParsedContent> = React.memo(({ html, mentions, ha
   // Quote posting
   if (hasQuote) selectors.push('quote-inline');
 
+  const hashtags: Array<string> = [];
+
   const options: HTMLReactParserOptions = {
-    replace(domNode) {
+    replace(domNode, index) {
       if (!(domNode instanceof Element)) {
         return;
       }
@@ -104,6 +147,25 @@ const ParsedContent: React.FC<IParsedContent> = React.memo(({ html, mentions, ha
 
         return fallback;
       }
+
+      if (extractHashtags && domNode.type === 'tag' && domNode.parent === null && domNode.next === null) {
+        for (const child of domNode.children) {
+          switch (child.type) {
+            case 'text':
+              if (child.data.trim().length) return;
+              break;
+            case 'tag':
+              if (child.name !== 'a') return;
+              if (!child.attribs.class?.split(' ').includes('hashtag')) return;
+              hashtags.push(normalizeHashtag(nodesToText([child])));
+              break;
+            default:
+              return;
+          }
+        }
+
+        return <></>;
+      }
     },
 
     transform(reactNode, _domNode, index) {
@@ -115,7 +177,16 @@ const ParsedContent: React.FC<IParsedContent> = React.memo(({ html, mentions, ha
     },
   };
 
-  return parse(DOMPurify.sanitize(html, { ADD_ATTR: ['target'], USE_PROFILES: { html: true } }), options);
-}, (prevProps, nextProps) => prevProps.html === nextProps.html);
+  const content = parse(DOMPurify.sanitize(html, { ADD_ATTR: ['target'], USE_PROFILES: { html: true } }), options);
 
-export { ParsedContent };
+  if (extractHashtags) return {
+    content,
+    hashtags: uniqueHashtagsWithCaseHandling(hashtags),
+  };
+
+  return content;
+}
+
+const ParsedContent: React.FC<IParsedContent> = React.memo((props) => parseContent(props), (prevProps, nextProps) => prevProps.html === nextProps.html);
+
+export { ParsedContent, parseContent };

@@ -5,18 +5,14 @@ import { Link } from 'react-router-dom';
 import Account from 'pl-fe/components/account';
 import StatusContent from 'pl-fe/components/status-content';
 import StatusLanguagePicker from 'pl-fe/components/status-language-picker';
-import StatusMedia from 'pl-fe/components/status-media';
 import StatusReactionsBar from 'pl-fe/components/status-reactions-bar';
 import StatusReplyMentions from 'pl-fe/components/status-reply-mentions';
-import SensitiveContentOverlay from 'pl-fe/components/statuses/sensitive-content-overlay';
 import StatusInfo from 'pl-fe/components/statuses/status-info';
-import TranslateButton from 'pl-fe/components/translate-button';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
-import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
 
 import StatusInteractionBar from './status-interaction-bar';
 import StatusTypeIcon from './status-type-icon';
@@ -86,20 +82,6 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
   const { account } = actualStatus;
   if (!account || typeof account !== 'object') return null;
 
-  let quote;
-
-  if (actualStatus.quote_id) {
-    if (actualStatus.quote_visible === false) {
-      quote = (
-        <div className='quoted-actualStatus-tombstone'>
-          <p><FormattedMessage id='status.quote_tombstone' defaultMessage='Post is unavailable.' /></p>
-        </div>
-      );
-    } else {
-      quote = <QuotedStatus statusId={actualStatus.quote_id} />;
-    }
-  }
-
   return (
     <div className='border-box'>
       <div ref={node} className='detailed-actualStatus' tabIndex={-1}>
@@ -123,22 +105,8 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
               status={actualStatus}
               textSize='lg'
               translatable
+              withMedia
             />
-
-            <TranslateButton status={actualStatus} />
-
-            {(withMedia && (quote || actualStatus.card || actualStatus.media_attachments.length > 0)) && (
-              <Stack space={4}>
-                {(actualStatus.media_attachments.length > 0 || (actualStatus.card && !quote)) && (
-                  <div className='relative'>
-                    <SensitiveContentOverlay status={status} />
-                    <StatusMedia status={actualStatus} />
-                  </div>
-                )}
-
-                {quote}
-              </Stack>
-            )}
           </Stack>
         </Stack>
 
