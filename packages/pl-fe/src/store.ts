@@ -15,8 +15,6 @@ const store = configureStore({
   devTools: true,
 });
 
-(window as any).store = store;
-
 type Store = typeof store;
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
