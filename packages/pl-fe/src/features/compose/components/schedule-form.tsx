@@ -38,8 +38,9 @@ const ScheduleForm: React.FC<IScheduleForm> = ({ composeId }) => {
   const scheduledAt = useCompose(composeId).schedule;
   const active = !!scheduledAt;
 
-  const onSchedule = (date: Date) => {
-    dispatch(setSchedule(composeId, date));
+  const onSchedule = (date: Date | null) => {
+    if (date === null) dispatch(removeSchedule(composeId));
+    else dispatch(setSchedule(composeId, date));
   };
 
   const handleRemove = (e: React.MouseEvent<HTMLButtonElement>) => {
