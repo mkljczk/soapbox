@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import { bundleStats } from 'rollup-plugin-bundle-stats';
 import { defineConfig } from 'vite';
@@ -46,6 +47,7 @@ const config = defineConfig(({ command }) => ({
         },
       },
     }),
+    TanStackRouterVite(),
     react(),
     VitePWA({
       injectRegister: null,

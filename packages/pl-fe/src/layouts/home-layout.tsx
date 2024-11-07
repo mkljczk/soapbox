@@ -1,3 +1,4 @@
+import { Outlet } from '@tanstack/react-router';
 import clsx from 'clsx';
 import React, { useRef } from 'react';
 import { useIntl } from 'react-intl';
@@ -27,11 +28,7 @@ import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
-interface IHomeLayout {
-  children: React.ReactNode;
-}
-
-const HomeLayout: React.FC<IHomeLayout> = ({ children }) => {
+const HomeLayout = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
@@ -88,7 +85,7 @@ const HomeLayout: React.FC<IHomeLayout> = ({ children }) => {
           </Card>
         )}
 
-        {children}
+        <Outlet />
       </Layout.Main>
 
       <Layout.Aside>

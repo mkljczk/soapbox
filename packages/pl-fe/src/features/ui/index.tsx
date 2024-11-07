@@ -1,5 +1,6 @@
+import { createRootRoute, createRoute, createRouter, Outlet, Navigate } from '@tanstack/react-router';
 import clsx from 'clsx';
-import React, { Suspense, lazy, useEffect, useRef } from 'react';
+import React, { Suspense, lazy, useEffect, useMemo, useRef } from 'react';
 import { Redirect, Switch, useHistory, useLocation } from 'react-router-dom';
 
 import { fetchFollowRequests } from 'pl-fe/actions/accounts';
@@ -152,12 +153,11 @@ interface ISwitchingColumnsArea {
   children: React.ReactNode;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => {
   const instance = useInstance();
   const features = useFeatures();
   const { search } = useLocation();
-  const { isLoggedIn } = useLoggedIn();
-  const standalone = useAppSelector(isStandalone);
 
   const { authenticatedProfile, cryptoAddresses } = usePlFeConfig();
   const hasCrypto = cryptoAddresses.size > 0;
@@ -169,15 +169,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
   // Ex: use /login instead of /auth, but redirect /auth to /login
   return (
     <Switch>
-      {standalone && <Redirect from='/' to='/login/external' exact />}
-
       <WrappedRoute path='/logout' layout={EmptyLayout} component={LogoutPage} publicRoute exact />
-
-      {isLoggedIn ? (
-        <WrappedRoute path='/' exact layout={HomeLayout} component={HomeTimeline} content={children} />
-      ) : (
-        <WrappedRoute path='/' exact layout={LandingLayout} component={LandingTimeline} content={children} publicRoute />
-      )}
 
       {/*
         NOTE: we cannot nest routes in a fragment
@@ -351,11 +343,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
   );
 };
 
-interface IUI {
-  children?: React.ReactNode;
-}
-
-const UI: React.FC<IUI> = ({ children }) => {
+const UI = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const node = useRef<HTMLDivElement | null>(null);
@@ -477,9 +465,9 @@ const UI: React.FC<IUI> = ({ children }) => {
               {!standalone && <SidebarNavigation />}
             </Layout.Sidebar>
 
-            <SwitchingColumnsArea>
-              {children}
-            </SwitchingColumnsArea>
+            {/* <SwitchingColumnsArea> */}
+            <Outlet />
+            {/* </SwitchingColumnsArea> */}
           </Layout>
 
           <Suspense>
@@ -509,4 +497,68 @@ const UI: React.FC<IUI> = ({ children }) => {
   );
 };
 
-export { UI as default };
+const rootRoute = createRootRoute({
+  component: UI,
+});
+
+const layouts = {
+  admin: createRoute({ getParentRoute: () => rootRoute, id: 'admin-layout', component: AdminLayout }),
+  chats: createRoute({ getParentRoute: () => rootRoute, id: 'chats-layout', component: ChatsLayout }),
+  default: createRoute({ getParentRoute: () => rootRoute, id: 'default-layout', component: DefaultLayout }),
+  empty: createRoute({ getParentRoute: () => rootRoute, id: 'empty-layout', component: EmptyLayout }),
+  event: createRoute({ getParentRoute: () => rootRoute, id: 'event-layout', component: EventLayout }),
+  events: createRoute({ getParentRoute: () => rootRoute, id: 'events-layout', component: EventsLayout }),
+  externalLogin: createRoute({ getParentRoute: () => rootRoute, id: 'external-login-layout', component: ExternalLoginLayout }),
+  group: createRoute({ getParentRoute: () => rootRoute, id: 'group-layout', component: GroupLayout }),
+  groups: createRoute({ getParentRoute: () => rootRoute, id: 'groups-layout', component: GroupsLayout }),
+  home: createRoute({ getParentRoute: () => rootRoute, id: 'home-layout', component: HomeLayout }),
+  landing: createRoute({ getParentRoute: () => rootRoute, id: 'landing-layout', component: LandingLayout }),
+  manageGroups: createRoute({ getParentRoute: () => rootRoute, id: 'manage-groups-layout', component: ManageGroupsLayout }),
+  profile: createRoute({ getParentRoute: () => rootRoute, id: 'profile-layout', component: ProfileLayout }),
+  remoteInstance: createRoute({ getParentRoute: () => rootRoute, id: 'remote-instance-layout', component: RemoteInstanceLayout }),
+  search: createRoute({ getParentRoute: () => rootRoute, id: 'search-layout', component: SearchLayout }),
+  status: createRoute({ getParentRoute: () => rootRoute, id: 'status-layout', component: StatusLayout }),
+};
+
+const HomeComponent = () => {
+  const { isLoggedIn } = useLoggedIn();
+  const standalone = useAppSelector(isStandalone);
+
+  const { redirectRootNoLogin } = usePlFeConfig();
+
+  if (!isLoggedIn && redirectRootNoLogin) return <Navigate to={redirectRootNoLogin} />;
+  else if (standalone) return <Navigate to='/login/external' />;
+  if (isLoggedIn) return <HomeTimeline />;
+  return <LandingTimeline />;
+};
+
+type IRoute = ReturnType<typeof createRoute>;
+
+const buildLayout = (layout: IRoute, routes: Array<{ path: string; component: () => JSX.Element; enabled?: boolean }>) => {
+  const children: Array<IRoute> = [];
+  routes.forEach(({ path, component, enabled = true }) => enabled && children.push(createRoute({ getParentRoute: () => layout, path, component })));
+  return layout.addChildren(children);
+};
+
+// is this even legal lol
+const useRouter = () => {
+  const features = useFeatures();
+
+  return useMemo(() => {
+    const routeTree = rootRoute.addChildren([
+      buildLayout(layouts.home, [
+        { getParentRoute: () => layouts.home, path: '/', component: HomeComponent },
+        { getParentRoute: () => layouts.home, path: '/timeline/local', component: CommunityTimeline, enabled: features.federating },
+        { getParentRoute: () => layouts.home, path: '/timeline/fediverse', component: PublicTimeline, enabled: features.federating },
+        { getParentRoute: () => layouts.home, path: '/timeline/bubble', component: BubbleTimeline, enabled: features.bubbleTimeline },
+      ]),
+      buildLayout(layouts.remoteInstance, [
+        { path: '/timeline/:instance', component: RemoteTimeline, enabled: features.federating },
+      ]),
+    ]);
+
+    return createRouter({ routeTree });
+  }, [features.version]);
+};
+
+export { useRouter };
