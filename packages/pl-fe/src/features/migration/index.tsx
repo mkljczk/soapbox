@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { moveAccount } from 'pl-fe/actions/security';
 import Button from 'pl-fe/components/ui/button';

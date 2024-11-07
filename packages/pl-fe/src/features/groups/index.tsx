@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { useGroups } from 'pl-fe/api/hooks/groups/use-groups';
 import GroupCard from 'pl-fe/components/group-card';

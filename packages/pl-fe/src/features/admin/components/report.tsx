@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { closeReport } from 'pl-fe/actions/admin';
 import { deactivateUserModal, deleteUserModal } from 'pl-fe/actions/moderation';

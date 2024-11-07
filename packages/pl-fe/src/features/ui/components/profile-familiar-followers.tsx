@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { FormattedList, FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { fetchAccountFamiliarFollowers } from 'pl-fe/actions/familiar-followers';
 import AvatarStack from 'pl-fe/components/avatar-stack';

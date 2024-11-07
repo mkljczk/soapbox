@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React, { useEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { groupCompose, uploadCompose } from 'pl-fe/actions/compose';
 import { fetchGroupTimeline } from 'pl-fe/actions/timelines';

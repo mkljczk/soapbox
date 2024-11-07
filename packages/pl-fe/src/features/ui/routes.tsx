@@ -482,7 +482,7 @@ const UI = () => {
             </div>
           )}
 
-          <ThumbNavigation />
+          {/* <ThumbNavigation /> */}
 
           <Suspense>
             <AccountHoverCard />
@@ -495,6 +495,18 @@ const UI = () => {
       </div>
     </GlobalHotkeys>
   );
+};
+
+const HomeComponent = () => {
+  const { isLoggedIn } = useLoggedIn();
+  const standalone = useAppSelector(isStandalone);
+
+  const { redirectRootNoLogin } = usePlFeConfig();
+
+  if (!isLoggedIn && redirectRootNoLogin) return <Navigate to={redirectRootNoLogin} />;
+  else if (standalone) return <Navigate to='/login/external' />;
+  if (isLoggedIn) return <HomeTimeline />;
+  return <LandingTimeline />;
 };
 
 const rootRoute = createRootRoute({
@@ -520,25 +532,16 @@ const layouts = {
   status: createRoute({ getParentRoute: () => rootRoute, id: 'status-layout', component: StatusLayout }),
 };
 
-const HomeComponent = () => {
-  const { isLoggedIn } = useLoggedIn();
-  const standalone = useAppSelector(isStandalone);
+const homeRoute = createRoute({ getParentRoute: () => layouts.home, path: '/', component: HomeComponent });
+const communityTimelineRoute = createRoute({ getParentRoute: () => layouts.home, path: '/timeline/local', component: CommunityTimeline });
+const publicTimelineRoute = createRoute({ getParentRoute: () => layouts.home, path: '/timeline/fediverse', component: PublicTimeline });
+const bubbleTimelineRoute = createRoute({ getParentRoute: () => layouts.home, path: '/timeline/bubble', component: BubbleTimeline });
 
-  const { redirectRootNoLogin } = usePlFeConfig();
-
-  if (!isLoggedIn && redirectRootNoLogin) return <Navigate to={redirectRootNoLogin} />;
-  else if (standalone) return <Navigate to='/login/external' />;
-  if (isLoggedIn) return <HomeTimeline />;
-  return <LandingTimeline />;
-};
+const remoteTimelineRoute = createRoute({ getParentRoute: () => layouts.remoteInstance, path: '/timeline/$instance', component: RemoteTimeline });
 
 type IRoute = ReturnType<typeof createRoute>;
 
-const buildLayout = (layout: IRoute, routes: Array<{ path: string; component: () => JSX.Element; enabled?: boolean }>) => {
-  const children: Array<IRoute> = [];
-  routes.forEach(({ path, component, enabled = true }) => enabled && children.push(createRoute({ getParentRoute: () => layout, path, component })));
-  return layout.addChildren(children);
-};
+const filterRoutes = (routes: Array<IRoute | false>): Array<IRoute> => routes.filter((route): route is IRoute => route !== false);
 
 // is this even legal lol
 const useRouter = () => {
@@ -546,19 +549,22 @@ const useRouter = () => {
 
   return useMemo(() => {
     const routeTree = rootRoute.addChildren([
-      buildLayout(layouts.home, [
-        { getParentRoute: () => layouts.home, path: '/', component: HomeComponent },
-        { getParentRoute: () => layouts.home, path: '/timeline/local', component: CommunityTimeline, enabled: features.federating },
-        { getParentRoute: () => layouts.home, path: '/timeline/fediverse', component: PublicTimeline, enabled: features.federating },
-        { getParentRoute: () => layouts.home, path: '/timeline/bubble', component: BubbleTimeline, enabled: features.bubbleTimeline },
-      ]),
-      buildLayout(layouts.remoteInstance, [
-        { path: '/timeline/:instance', component: RemoteTimeline, enabled: features.federating },
-      ]),
+      layouts.home.addChildren(filterRoutes([
+        homeRoute,
+        features.federating && communityTimelineRoute,
+        features.federating && publicTimelineRoute,
+        features.bubbleTimeline && bubbleTimelineRoute,
+      ])),
+      layouts.remoteInstance.addChildren(filterRoutes([
+        features.federating && remoteTimelineRoute,
+      ])),
     ]);
 
     return createRouter({ routeTree });
   }, [features.version]);
 };
 
-export { useRouter };
+export {
+  remoteTimelineRoute,
+  useRouter,
+};

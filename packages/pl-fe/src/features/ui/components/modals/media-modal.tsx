@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import ReactSwipeableViews from 'react-swipeable-views';
 
 import { fetchStatusWithContext } from 'pl-fe/actions/statuses';

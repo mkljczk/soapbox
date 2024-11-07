@@ -20,7 +20,7 @@ interface IStatusHoverCard {
 const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
-  const history = useHistory();
+  // const history = useHistory();
 
   const { statusId, ref, closeStatusHoverCard, updateStatusHoverCard } = useStatusHoverCardStore();
 
@@ -33,14 +33,14 @@ const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
   }, [statusId, status]);
 
   useEffect(() => {
-    const unlisten = history.listen(() => {
-      showStatusHoverCard.cancel();
-      closeStatusHoverCard(true);
-    });
+    // const unlisten = history.listen(() => {
+    //   showStatusHoverCard.cancel();
+    //   closeStatusHoverCard(true);
+    // });
 
-    return () => {
-      unlisten();
-    };
+    // return () => {
+    //   unlisten();
+    // };
   }, []);
 
   const { x, y, strategy, refs, context, placement } = useFloating({

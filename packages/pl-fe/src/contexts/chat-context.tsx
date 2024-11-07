@@ -1,5 +1,6 @@
+import { useLocation } from '@tanstack/react-router';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { toggleMainWindow } from 'pl-fe/actions/chats';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
@@ -24,11 +25,11 @@ interface IChatProvider {
 }
 
 const ChatProvider: React.FC<IChatProvider> = ({ children }) => {
-  const history = useHistory();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const { chats } = useSettings();
 
-  const path = history.location.pathname;
+  const path = location.pathname;
   const isUsingMainChatPage = Boolean(path.match(/^\/chats/));
   const { chatId } = useParams<{ chatId: string }>();
 

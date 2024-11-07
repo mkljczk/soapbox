@@ -1,6 +1,6 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import Card, { CardBody, CardTitle } from 'pl-fe/components/ui/card';

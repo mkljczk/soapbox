@@ -1,7 +1,8 @@
+import { Link } from '@tanstack/react-router';
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { defineMessages, useIntl, FormattedList, FormattedMessage } from 'react-intl';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { mentionCompose, replyCompose } from 'pl-fe/actions/compose';
 import { toggleFavourite, toggleReblog } from 'pl-fe/actions/interactions';

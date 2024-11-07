@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import Blurhash from 'pl-fe/components/blurhash';
 import Icon from 'pl-fe/components/icon';

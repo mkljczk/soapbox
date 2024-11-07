@@ -1,6 +1,6 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { setFilter } from 'pl-fe/actions/search';
 import Hashtag from 'pl-fe/components/hashtag';

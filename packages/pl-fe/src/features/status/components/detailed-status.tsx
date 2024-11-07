@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { defineMessages, FormattedDate, FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import Account from 'pl-fe/components/account';
 import StatusContent from 'pl-fe/components/status-content';

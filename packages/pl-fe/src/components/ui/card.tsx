@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import SvgIcon from 'pl-fe/components/ui/svg-icon';
 

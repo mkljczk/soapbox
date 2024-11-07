@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import StillImage from 'pl-fe/components/still-image';

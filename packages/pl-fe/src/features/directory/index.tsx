@@ -1,7 +1,7 @@
+import { useLocation } from '@tanstack/react-router';
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
-import { useLocation } from 'react-router-dom';
 
 import { fetchDirectory, expandDirectory } from 'pl-fe/actions/directory';
 import LoadMore from 'pl-fe/components/load-more';

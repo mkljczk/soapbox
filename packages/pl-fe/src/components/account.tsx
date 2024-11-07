@@ -1,6 +1,7 @@
+import { Link } from '@tanstack/react-router';
 import React, { useRef } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
 import Avatar from 'pl-fe/components/ui/avatar';

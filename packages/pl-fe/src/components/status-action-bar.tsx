@@ -1,7 +1,7 @@
+import { useMatch, useNavigate } from '@tanstack/react-router';
 import { GroupRoles } from 'pl-api';
 import React, { useMemo } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useRouteMatch } from 'react-router-dom';
 import { createSelector } from 'reselect';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
@@ -575,15 +575,14 @@ interface IMenuButton extends IActionButton {
 const MenuButton: React.FC<IMenuButton> = ({
   status,
   statusActionButtonTheme,
-  withLabels,
   me,
   expandable,
   fromBookmarks,
 }) => {
   const intl = useIntl();
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const match = useRouteMatch<{ groupId: string }>('/groups/:groupId');
+  const match = useMatch({ from: '/groups/$groupId', shouldThrow: false });
   const { boostModal } = useSettings();
 
   const { openModal } = useModalsStore();
@@ -647,7 +646,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   };
 
   const handleEditClick: React.EventHandler<React.MouseEvent> = () => {
-    if (status.event) history.push(`/@${status.account.acct}/events/${status.id}/edit`);
+    if (status.event) navigate({ to: `/@${status.account.acct}/events/${status.id}/edit` });
     else dispatch(editStatus(status.id));
   };
 
@@ -676,7 +675,7 @@ const MenuButton: React.FC<IMenuButton> = ({
     const account = status.account;
 
     getOrCreateChatByAccountId(account.id)
-      .then((chat) => history.push(`/chats/${chat.id}`))
+      .then((chat) => navigate({ to: `/chats/${chat.id}` }))
       .catch(() => {});
   };
 

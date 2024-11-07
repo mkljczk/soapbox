@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { changeSetting } from 'pl-fe/actions/settings';
 import { fetchPublicTimeline } from 'pl-fe/actions/timelines';

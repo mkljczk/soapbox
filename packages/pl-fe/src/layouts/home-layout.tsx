@@ -2,7 +2,7 @@ import { Outlet } from '@tanstack/react-router';
 import clsx from 'clsx';
 import React, { useRef } from 'react';
 import { useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { uploadCompose } from 'pl-fe/actions/compose';
 import Avatar from 'pl-fe/components/ui/avatar';

@@ -1,5 +1,4 @@
-import { useEffect, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useMemo } from 'react';
 
 import { Entities } from 'pl-fe/entity-store/entities';
 import { useEntity } from 'pl-fe/entity-store/hooks/use-entity';
@@ -21,7 +20,6 @@ interface UseAccountOpts {
 
 const useAccount = (accountId?: string, opts: UseAccountOpts = {}) => {
   const client = useClient();
-  const history = useHistory();
   const features = useFeatures();
   const { me } = useLoggedIn();
   const { withRelationship, withScrobble } = opts;
@@ -51,12 +49,6 @@ const useAccount = (accountId?: string, opts: UseAccountOpts = {}) => {
     () => entity ? { ...entity, relationship, scrobble, __meta: { meta, ...entity.__meta } } : undefined,
     [entity, relationship, scrobble],
   );
-
-  useEffect(() => {
-    if (isUnauthorized) {
-      history.push('/login');
-    }
-  }, [isUnauthorized]);
 
   return {
     ...result,

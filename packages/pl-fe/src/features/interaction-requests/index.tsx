@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import { type MinifiedInteractionRequest, useAuthorizeInteractionRequestMutation, useFlatInteractionRequests, useRejectInteractionRequestMutation } from 'pl-fe/api/hooks/statuses/use-interaction-requests';

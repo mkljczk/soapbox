@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import Account from 'pl-fe/components/account';

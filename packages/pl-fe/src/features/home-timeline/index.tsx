@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';

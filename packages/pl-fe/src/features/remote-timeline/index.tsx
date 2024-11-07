@@ -14,6 +14,7 @@ import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useTheme } from 'pl-fe/hooks/use-theme';
 
 import Timeline from '../ui/components/timeline';
+import { remoteTimelineRoute } from '../ui/routes';
 
 import PinnedHostsPicker from './components/pinned-hosts-picker';
 
@@ -29,7 +30,7 @@ const RemoteTimeline: React.FC<IRemoteTimeline> = ({ params }) => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
 
-  const instance = params?.instance as string;
+  const { instance } = remoteTimelineRoute.useParams();
   const settings = useSettings();
 
   const timelineId = 'remote';

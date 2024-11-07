@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useCompose } from 'pl-fe/hooks/use-compose';

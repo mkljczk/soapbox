@@ -1,6 +1,6 @@
+import { useNavigate } from '@tanstack/react-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { Redirect } from 'react-router-dom';
 
 import { fetchStatusWithContext } from 'pl-fe/actions/statuses';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
@@ -44,6 +44,7 @@ interface IStatusDetails {
 }
 
 const StatusDetails: React.FC<IStatusDetails> = (props) => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const intl = useIntl();
   const { isLoggedIn } = useLoggedIn();
@@ -72,9 +73,9 @@ const StatusDetails: React.FC<IStatusDetails> = (props) => {
   const handleRefresh = () => fetchData();
 
   if (status?.event) {
-    return (
-      <Redirect to={`/@${status.account.acct}/events/${status.id}`} />
-    );
+    navigate({ to: `/@${status.account.acct}/events/${status.id}` });
+
+    return null;
   }
 
   if (!status && isLoaded) {
@@ -91,7 +92,9 @@ const StatusDetails: React.FC<IStatusDetails> = (props) => {
 
   if (status.group && typeof status.group === 'object') {
     if (status.group.id && !props.params.groupId) {
-      return <Redirect to={`/groups/${status.group.id}/posts/${props.params.statusId}`} />;
+      navigate({ to: `/groups/${status.group.id}/posts/${props.params.statusId}` });
+
+      return null;
     }
   }
 
