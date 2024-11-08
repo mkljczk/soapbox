@@ -28,7 +28,7 @@ const toSimplePolicy = (configs: PleromaConfig['configs']) => {
   if (config) {
     const value = config.value || [];
     const result = value.reduce(reducer, {});
-    return v.parse(mrfSimpleSchema, result.toJS());
+    return v.parse(mrfSimpleSchema, result);
   } else {
     return v.parse(mrfSimpleSchema, {});
   }
