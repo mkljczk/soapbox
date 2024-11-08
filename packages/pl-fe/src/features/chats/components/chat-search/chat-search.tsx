@@ -103,7 +103,7 @@ const ChatSearch: React.FC<IChatSearch> = ({ isMainPage = false }) => {
           append={
             <button onClick={clearValue}>
               <Icon
-                src={hasSearchValue ? require('@tabler/icons/outline/x.svg') : require('@tabler/icons/outline/search.svg')}
+                src={hasSearchValue ? require('@tabler/icons/outline/x.svg') : require('@fluentui/search_24_regular.svg')}
                 className='size-4 text-gray-700 dark:text-gray-600'
                 aria-hidden='true'
               />

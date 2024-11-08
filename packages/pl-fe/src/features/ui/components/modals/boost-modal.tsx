@@ -45,7 +45,7 @@ const BoostModal: React.FC<BaseModalProps & BoostModalProps> = ({ statusId, onRe
         <ReplyIndicator status={status} hideActions />
 
         <Text>
-          <FormattedMessage id='boost_modal.combo' defaultMessage='You can press {combo} to skip this next time' values={{ combo: <span>Shift + <Icon className='inline-block align-middle' src={require('@tabler/icons/outline/repeat.svg')} /></span> }} />
+          <FormattedMessage id='boost_modal.combo' defaultMessage='You can press {combo} to skip this next time' values={{ combo: <span>Shift + <Icon className='inline-block align-middle' src={require('@fluentui/arrow_repeat_all_24_regular.svg')} /></span> }} />
         </Text>
       </Stack>
     </Modal>

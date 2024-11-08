@@ -20,7 +20,7 @@ const LoadGap: React.FC<ILoadGap> = ({ disabled, maxId, onClick }) => {
 
   return (
     <button className='m-0 box-border block w-full border-0 bg-transparent p-4 text-gray-900' disabled={disabled} onClick={handleClick} aria-label={intl.formatMessage(messages.load_more)}>
-      <Icon className='mx-auto' src={require('@tabler/icons/outline/dots.svg')} />
+      <Icon className='mx-auto' src={require('@fluentui/more_horizontal_24_regular.svg')} />
     </button>
   );
 };

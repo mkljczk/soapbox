@@ -210,7 +210,7 @@ const FloatingLinkEditor = ({
                 setEditMode(true);
               }}
             >
-              <Icon className='size-5' src={require('@tabler/icons/outline/pencil.svg')} />
+              <Icon className='size-5' src={require('@fluentui/edit_24_regular.svg')} />
             </div>
           </>
         )}

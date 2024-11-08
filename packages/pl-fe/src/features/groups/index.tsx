@@ -58,7 +58,7 @@ const Groups: React.FC = () => {
       {!(!isLoading && groups.length === 0) && (
         <Button
           className='xl:hidden'
-          icon={require('@tabler/icons/outline/circles.svg')}
+          icon={require('@fluentui/group_24_regular.svg')}
           onClick={createGroup}
           theme='secondary'
           block

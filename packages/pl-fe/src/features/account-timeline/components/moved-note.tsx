@@ -18,8 +18,8 @@ const MovedNote: React.FC<IMovedNote> = ({ from, to }) => (
   <div className='p-4'>
     <HStack className='mb-2' alignItems='center' space={1.5}>
       <Icon
-        src={require('@tabler/icons/outline/briefcase.svg')}
-        className='flex-none text-primary-600 dark:text-primary-400'
+        src={require('@fluentui/briefcase_24_regular.svg')}
+        className='fill:text-primary-400 flex-none fill-primary-600'
       />
 
       <div className='truncate'>

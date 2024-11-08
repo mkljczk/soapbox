@@ -96,8 +96,8 @@ const LocationSearch: React.FC<ILocationSearch> = ({ onSelected }) => {
         renderSuggestion={AutosuggestLocation}
       />
       <div role='button' tabIndex={0} className='absolute inset-y-0 right-0 flex cursor-pointer items-center px-3 rtl:left-0 rtl:right-auto' onClick={handleClear}>
-        <Icon src={require('@tabler/icons/outline/search.svg')} className={clsx('size-5 text-gray-600', { 'hidden': !empty })} />
-        <Icon src={require('@tabler/icons/outline/backspace.svg')} className={clsx('size-5 text-gray-600', { 'hidden': empty })} aria-label={intl.formatMessage(messages.placeholder)} />
+        <Icon src={require('@fluentui/search_24_regular.svg')} className={clsx('size-5 text-gray-600', { 'hidden': !empty })} />
+        <Icon src={require('@fluentui/backspace_24_regular.svg')} className={clsx('size-5 text-gray-600', { 'hidden': empty })} aria-label={intl.formatMessage(messages.placeholder)} />
       </div>
     </div>
   );

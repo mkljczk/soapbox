@@ -14,6 +14,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "paths": {
+      "@fluentui*": ["@fluentui/svg-icons/icons/*"],
       "pl-fe/*": ["src/*"],
     },
     "typeRoots": [

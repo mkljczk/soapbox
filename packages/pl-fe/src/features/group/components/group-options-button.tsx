@@ -84,7 +84,7 @@ const GroupOptionsButton = ({ group }: IGroupActionButton) => {
   return (
     <DropdownMenu items={menu} placement='bottom'>
       <IconButton
-        src={require('@tabler/icons/outline/dots.svg')}
+        src={require('@fluentui/more_horizontal_24_regular.svg')}
         theme='secondary'
         iconClassName='h-5 w-5'
         className='self-stretch px-2.5'

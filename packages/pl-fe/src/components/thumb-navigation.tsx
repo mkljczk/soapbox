@@ -52,13 +52,13 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
 
   const composeButton = (
     <button
-      className='flex flex-1 flex-col items-center px-1.5 py-3.5 text-lg text-gray-600'
+      className='flex flex-1 flex-col items-center px-5 py-3.5 text-lg text-gray-600'
       onClick={handleOpenComposeModal}
       title={intl.formatMessage(messages.compose)}
     >
       <Icon
-        src={require('@tabler/icons/outline/square-rounded-plus.svg')}
-        className='size-6 text-gray-600 black:text-white'
+        src={require('@fluentui/add_square_24_regular.svg')}
+        className='size-6 fill-gray-600 black:fill-white'
       />
     </button>
   );
@@ -71,14 +71,14 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
         title={intl.formatMessage(messages.sidebar)}
       >
         <Icon
-          src={require('@tabler/icons/outline/menu-2.svg')}
-          className='size-5 text-gray-600 black:text-white'
+          src={require('@fluentui/navigation_24_regular.svg')}
+          className='size-5 text-gray-600 black:fill-white'
         />
       </button>
 
       <ThumbNavigationLink
-        src={require('@tabler/icons/outline/home.svg')}
-        activeSrc={require('@tabler/icons/filled/home.svg')}
+        src={require('@fluentui/home_24_regular.svg')}
+        activeSrc={require('@fluentui/home_24_filled.svg')}
         text={intl.formatMessage(messages.home)}
         to='/'
         exact
@@ -86,7 +86,7 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
 
       {/* {features.groups && (
         <ThumbNavigationLink
-          src={require('@tabler/icons/outline/circles.svg')}
+          src={require('@fluentui/group_24_regular.svg')}
           activeSrc={require('@tabler/icons/filled/circles.svg')}
           text={<FormattedMessage id='tabs_bar.groups' defaultMessage='Groups' />}
           to='/groups'
@@ -98,7 +98,7 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
 
       {(!standalone || account) && (
         <ThumbNavigationLink
-          src={require('@tabler/icons/outline/search.svg')}
+          src={require('@fluentui/search_24_regular.svg')}
           text={intl.formatMessage(messages.search)}
           to='/search'
           exact
@@ -107,8 +107,8 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
 
       {account && (
         <ThumbNavigationLink
-          src={require('@tabler/icons/outline/bell.svg')}
-          activeSrc={require('@tabler/icons/filled/bell.svg')}
+          src={require('@fluentui/alert_24_regular.svg')}
+          activeSrc={require('@fluentui/alert_24_filled.svg')}
           text={intl.formatMessage(messages.notifications)}
           to='/notifications'
           exact
@@ -119,7 +119,8 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
       {account && features.chats && (
         <>
           <ThumbNavigationLink
-            src={require('@tabler/icons/outline/messages.svg')}
+            src={require('@fluentui/chat_24_regular.svg')}
+            activeSrc={require('@fluentui/chat_24_filled.svg')}
             text={intl.formatMessage(messages.chats)}
             to='/chats'
             exact

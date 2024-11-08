@@ -1,4 +1,4 @@
-import IconCode from '@tabler/icons/outline/code.svg';
+import IconCode from '@fluentui/code_24_regular.svg';
 import React from 'react';
 
 import { render, screen } from 'pl-fe/jest/test-helpers';

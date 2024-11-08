@@ -159,7 +159,7 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
         <div role='button' tabIndex={0} className='absolute inset-y-0 right-0 flex cursor-pointer items-center px-5 rtl:left-0 rtl:right-auto' onClick={handleClear}>
           <Icon
             className='size-5 text-gray-600'
-            src={isSearching ? require('@tabler/icons/outline/backspace.svg') : require('@tabler/icons/outline/search.svg')}
+            src={isSearching ? require('@fluentui/backspace_24_regular.svg') : require('@fluentui/search_24_regular.svg')}
             aria-label={intl.formatMessage(messages.search)}
           />
         </div>
@@ -198,11 +198,11 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
               {features.multiLanguage && !!language && !active && (
                 textMap.has(code) ? (
                   <button title={intl.formatMessage(messages.deleteLanguage)} onClick={handleDeleteLanguageClick}>
-                    <Icon className='size-4' src={require('@tabler/icons/outline/minus.svg')} />
+                    <Icon className='size-4' src={require('@fluentui/add_24_regular.svg')} />
                   </button>
                 ) : (
                   <button title={intl.formatMessage(messages.addLanguage)} onClick={handleAddLanguageClick}>
-                    <Icon className='size-4' src={require('@tabler/icons/outline/plus.svg')} />
+                    <Icon className='size-4' src={require('@fluentui/subtract_24_regular.svg')} />
                   </button>
                 )
               )}

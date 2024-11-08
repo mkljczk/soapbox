@@ -53,7 +53,7 @@ const InstanceRestrictions: React.FC<IInstanceRestrictions> = ({ remoteInstance 
 
     if (followers_only) {
       items.push((
-        <Restriction key='followersOnly' icon={require('@tabler/icons/outline/lock.svg')}>
+        <Restriction key='followersOnly' icon={require('@fluentui/lock_closed_24_regular.svg')}>
           <FormattedMessage
             id='federation_restriction.followers_only'
             defaultMessage='Hidden except to followers'

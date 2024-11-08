@@ -37,9 +37,9 @@ const messages = defineMessages({
 });
 
 const icons = {
-  favourite: require('@tabler/icons/outline/star.svg'),
-  reblog: require('@tabler/icons/outline/repeat.svg'),
-  reply: require('@tabler/icons/outline/corner-up-left.svg'),
+  favourite: require('@fluentui/star_24_regular.svg'),
+  reblog: require('@fluentui/arrow_repeat_all_24_regular.svg'),
+  reply: require('@fluentui/arrow_reply_24_regular.svg'),
 };
 
 const avatarSize = 42;
@@ -185,7 +185,7 @@ const InteractionRequest: React.FC<IInteractionRequest> = ({
                 >
                   <Icon
                     src={icons[interactionRequest.type]}
-                    className='flex-none text-primary-600 dark:text-primary-400'
+                    className='flex-none fill-primary-600 dark:fill-primary-400'
                   />
                 </div>
 

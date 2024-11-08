@@ -62,7 +62,7 @@ const SidebarLink: React.FC<ISidebarLink> = ({ href, to, icon, text, onClick }) 
   const body = (
     <HStack space={2} alignItems='center'>
       <div className='relative inline-flex rounded-full bg-primary-50 p-2 dark:bg-gray-800'>
-        <Icon src={icon} className='size-5 text-primary-500' />
+        <Icon src={icon} className='size-5 fill-primary-500 text-primary-500' />
       </div>
 
       <Text tag='span' weight='medium' theme='inherit'>{text}</Text>
@@ -220,7 +220,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
 
                   <SidebarLink
                     to={`/@${account.acct}`}
-                    icon={require('@tabler/icons/outline/user.svg')}
+                    icon={require('@fluentui/person_24_regular.svg')}
                     text={intl.formatMessage(messages.profile)}
                     onClick={closeSidebar}
                   />
@@ -228,7 +228,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {(account.locked || followRequestsCount > 0) && (
                     <SidebarLink
                       to='/follow_requests'
-                      icon={require('@tabler/icons/outline/user-plus.svg')}
+                      icon={require('@fluentui/person_add_24_regular.svg')}
                       text={intl.formatMessage(messages.followRequests)}
                       onClick={closeSidebar}
                     />
@@ -237,7 +237,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {(interactionRequestsCount > 0) && (
                     <SidebarLink
                       to='/interaction_requests'
-                      icon={require('@tabler/icons/outline/flag-question.svg')}
+                      icon={require('@fluentui/arrow_reply_24_regular.svg')}
                       text={intl.formatMessage(messages.interactionRequests)}
                       onClick={closeSidebar}
                     />
@@ -246,7 +246,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {features.conversations && (
                     <SidebarLink
                       to='/conversations'
-                      icon={require('@tabler/icons/outline/mail.svg')}
+                      icon={require('@fluentui/mail_24_regular.svg')}
                       text={intl.formatMessage(messages.conversations)}
                       onClick={closeSidebar}
                     />
@@ -255,7 +255,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {features.bookmarks && (
                     <SidebarLink
                       to='/bookmarks'
-                      icon={require('@tabler/icons/outline/bookmark.svg')}
+                      icon={require('@fluentui/bookmark_multiple_24_regular.svg')}
                       text={intl.formatMessage(messages.bookmarks)}
                       onClick={closeSidebar}
                     />
@@ -264,7 +264,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {features.groups && (
                     <SidebarLink
                       to='/groups'
-                      icon={require('@tabler/icons/outline/circles.svg')}
+                      icon={require('@fluentui/group_24_regular.svg')}
                       text={intl.formatMessage(messages.groups)}
                       onClick={closeSidebar}
                     />
@@ -273,7 +273,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {features.lists && (
                     <SidebarLink
                       to='/lists'
-                      icon={require('@tabler/icons/outline/list.svg')}
+                      icon={require('@fluentui/people_24_regular.svg')}
                       text={intl.formatMessage(messages.lists)}
                       onClick={closeSidebar}
                     />
@@ -282,7 +282,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {features.events && (
                     <SidebarLink
                       to='/events'
-                      icon={require('@tabler/icons/outline/calendar-event.svg')}
+                      icon={require('@fluentui/calendar_ltr_24_regular.svg')}
                       text={intl.formatMessage(messages.events)}
                       onClick={closeSidebar}
                     />
@@ -291,7 +291,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {features.profileDirectory && (
                     <SidebarLink
                       to='/directory'
-                      icon={require('@tabler/icons/outline/address-book.svg')}
+                      icon={require('@fluentui/book_contacts_24_regular.svg')}
                       text={intl.formatMessage(messages.profileDirectory)}
                       onClick={closeSidebar}
                     />
@@ -300,7 +300,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {scheduledStatusCount > 0 && (
                     <SidebarLink
                       to='/scheduled_statuses'
-                      icon={require('@tabler/icons/outline/calendar-stats.svg')}
+                      icon={require('@fluentui/calendar_clock_24_regular.svg')}
                       text={intl.formatMessage(messages.scheduledStatuses)}
                       onClick={closeSidebar}
                     />
@@ -309,7 +309,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {draftCount > 0 && (
                     <SidebarLink
                       to='/draft_statuses'
-                      icon={require('@tabler/icons/outline/notes.svg')}
+                      icon={require('@fluentui/drafts_24_regular.svg')}
                       text={intl.formatMessage(messages.drafts)}
                       onClick={closeSidebar}
                     />
@@ -348,7 +348,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
 
                   <SidebarLink
                     to='/settings/preferences'
-                    icon={require('@tabler/icons/outline/settings.svg')}
+                    icon={require('@fluentui/settings_24_regular.svg')}
                     text={intl.formatMessage(messages.preferences)}
                     onClick={closeSidebar}
                   />
@@ -356,7 +356,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {features.followedHashtagsList && (
                     <SidebarLink
                       to='/followed_tags'
-                      icon={require('@tabler/icons/outline/hash.svg')}
+                      icon={require('@fluentui/number_symbol_24_regular.svg')}
                       text={intl.formatMessage(messages.followedTags)}
                       onClick={closeSidebar}
                     />
@@ -365,7 +365,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {settings.isDeveloper && (
                     <SidebarLink
                       to='/developers'
-                      icon={require('@tabler/icons/outline/code.svg')}
+                      icon={require('@fluentui/code_24_regular.svg')}
                       text={intl.formatMessage(messages.developers)}
                       onClick={closeSidebar}
                     />
@@ -385,7 +385,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
 
                   <SidebarLink
                     to='/logout'
-                    icon={require('@tabler/icons/outline/logout.svg')}
+                    icon={require('@fluentui/sign_out_24_regular.svg')}
                     text={intl.formatMessage(messages.logout)}
                     onClick={onClickLogOut}
                   />
@@ -394,7 +394,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
 
                   <SidebarLink
                     href={sourceCode.url}
-                    icon={require('@tabler/icons/outline/code.svg')}
+                    icon={require('@fluentui/code_24_regular.svg')}
                     text={intl.formatMessage(messages.sourceCode)}
                     onClick={closeSidebar}
                   />
@@ -471,7 +471,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                 {isOpen && (
                   <SidebarLink
                     to='/signup'
-                    icon={require('@tabler/icons/outline/user-plus.svg')}
+                    icon={require('@fluentui/person_add_24_regular.svg')}
                     text={intl.formatMessage(messages.register)}
                     onClick={closeSidebar}
                   />
@@ -481,7 +481,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
 
                 <SidebarLink
                   href={sourceCode.url}
-                  icon={require('@tabler/icons/outline/code.svg')}
+                  icon={require('@fluentui/code_24_regular.svg')}
                   text={intl.formatMessage(messages.sourceCode)}
                   onClick={closeSidebar}
                 />

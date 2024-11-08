@@ -187,7 +187,7 @@ const ChatMessage = (props: IChatMessage) => {
               data-testid='chat-message-menu'
             >
               <Icon
-                src={require('@tabler/icons/outline/dots.svg')}
+                src={require('@fluentui/more_horizontal_24_regular.svg')}
                 className='size-4'
               />
             </button>

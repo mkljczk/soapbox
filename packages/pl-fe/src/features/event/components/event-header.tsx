@@ -235,7 +235,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
       menu.push({
         text: intl.formatMessage(status.bookmarked ? messages.unbookmark : messages.bookmark),
         action: handleBookmarkClick,
-        icon: status.bookmarked ? require('@tabler/icons/outline/bookmark-off.svg') : require('@tabler/icons/outline/bookmark.svg'),
+        icon: status.bookmarked ? require('@tabler/icons/outline/bookmark-off.svg') : require('@fluentui/bookmark_24_regular.svg'),
       });
     }
 
@@ -243,7 +243,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
       menu.push({
         text: intl.formatMessage(status.reblogged ? messages.unreblog : messages.reblog),
         action: handleReblogClick,
-        icon: require('@tabler/icons/outline/repeat.svg'),
+        icon: require('@fluentui/arrow_repeat_all_24_regular.svg'),
       });
 
       if (features.quotePosts) {
@@ -276,20 +276,20 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
       menu.push({
         text: intl.formatMessage(messages.mention, { name: username }),
         action: handleMentionClick,
-        icon: require('@tabler/icons/outline/at.svg'),
+        icon: require('@fluentui/mention_24_regular.svg'),
       });
 
       if (status.account.accepts_chat_messages === true) {
         menu.push({
           text: intl.formatMessage(messages.chat, { name: username }),
           action: handleChatClick,
-          icon: require('@tabler/icons/outline/messages.svg'),
+          icon: require('@fluentui/chat_24_regular.svg'),
         });
       } else if (features.privacyScopes) {
         menu.push({
           text: intl.formatMessage(messages.direct, { name: username }),
           action: handleDirectClick,
-          icon: require('@tabler/icons/outline/mail.svg'),
+          icon: require('@fluentui/mail_24_regular.svg'),
         });
       }
 
@@ -324,7 +324,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
         menu.push({
           text: intl.formatMessage(messages.adminStatus),
           action: handleModerateStatus,
-          icon: require('@tabler/icons/outline/pencil.svg'),
+          icon: require('@fluentui/edit_24_regular.svg'),
         });
       }
 
@@ -379,7 +379,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
 
           <DropdownMenu items={makeMenu()} placement='bottom-end'>
             <IconButton
-              src={require('@tabler/icons/outline/dots.svg')}
+              src={require('@fluentui/more_horizontal_24_regular.svg')}
               theme='outlined'
               className='h-[30px] px-2'
               iconClassName='h-4 w-4'

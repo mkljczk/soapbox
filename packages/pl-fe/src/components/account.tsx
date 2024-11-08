@@ -332,7 +332,7 @@ const Account = ({
                   <>
                     <Text tag='span' theme='muted' size='sm'>&middot;</Text>
 
-                    <Icon className='size-4 text-gray-700 dark:text-gray-600' src={require('@tabler/icons/outline/pencil.svg')} />
+                    <Icon className='size-4 text-gray-700 dark:text-gray-600' src={require('@fluentui/edit_24_regular.svg')} />
                   </>
                 ) : null}
 

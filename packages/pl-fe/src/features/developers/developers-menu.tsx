@@ -74,7 +74,7 @@ const Developers: React.FC = () => {
           </DashWidget>
 
           <DashWidget to='/developers/timeline'>
-            <SvgIcon src={require('@tabler/icons/outline/home.svg')} className='text-gray-700 dark:text-gray-600' />
+            <SvgIcon src={require('@fluentui/home_24_regular.svg')} className='text-gray-700 dark:text-gray-600' />
 
             <Text>
               <FormattedMessage id='developers.navigation.test_timeline_label' defaultMessage='Test timeline' />

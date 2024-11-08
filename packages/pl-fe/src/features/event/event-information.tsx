@@ -118,7 +118,7 @@ const EventInformation: React.FC<IEventInformation> = ({ params }) => {
           <FormattedMessage id='event.date' defaultMessage='Date' />
         </Text>
         <HStack space={2} alignItems='center'>
-          <Icon src={require('@tabler/icons/outline/calendar.svg')} />
+          <Icon src={require('@fluentui/calendar_ltr_24_regular.svg')} />
           <Text>
             <FormattedDate
               value={startDate}

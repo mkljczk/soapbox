@@ -50,7 +50,7 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
             avatarSize={42}
             icon={
               <Icon
-                src={require('@tabler/icons/outline/circles.svg')}
+                src={require('@fluentui/group_24_regular.svg')}
                 className='size-4 text-primary-600 dark:text-accent-blue'
               />
             }

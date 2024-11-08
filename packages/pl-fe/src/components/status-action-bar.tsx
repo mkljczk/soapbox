@@ -236,7 +236,7 @@ const ReplyButton: React.FC<IReplyButton> = ({
   const replyButton = (
     <StatusActionButton
       title={replyTitle}
-      icon={require('@tabler/icons/outline/message-circle.svg')}
+      icon={require('@fluentui/chat_multiple_24_regular.svg')}
       onClick={handleReplyClick}
       count={replyCount}
       text={withLabels ? intl.formatMessage(messages.reply) : undefined}
@@ -284,12 +284,12 @@ const ReblogButton: React.FC<IReblogButton> = ({
   const { openModal } = useModalsStore();
   const canReblog = useCanInteract(status, 'can_reblog');
 
-  let reblogIcon = require('@tabler/icons/outline/repeat.svg');
+  let reblogIcon = require('@fluentui/arrow_repeat_all_24_regular.svg');
 
   if (status.visibility === 'direct') {
-    reblogIcon = require('@tabler/icons/outline/mail.svg');
+    reblogIcon = require('@fluentui/mail_24_regular.svg');
   } else if (status.visibility === 'private' || status.visibility === 'mutuals_only') {
-    reblogIcon = require('@tabler/icons/outline/lock.svg');
+    reblogIcon = require('@fluentui/lock_closed_24_regular.svg');
   }
 
   const handleReblogClick: React.EventHandler<React.MouseEvent> = e => {
@@ -348,11 +348,11 @@ const ReblogButton: React.FC<IReblogButton> = ({
   const reblogMenu = [{
     text: intl.formatMessage(status.reblogged ? messages.cancel_reblog_private : messages.reblog),
     action: handleReblogClick,
-    icon: require('@tabler/icons/outline/repeat.svg'),
+    icon: require('@fluentui/arrow_repeat_all_24_regular.svg'),
   }, {
     text: intl.formatMessage(messages.quotePost),
     action: handleQuoteClick,
-    icon: require('@tabler/icons/outline/quote.svg'),
+    icon: require('@fluentui/text_quote_24_regular.svg'),
   }];
 
   return (
@@ -397,7 +397,7 @@ const FavouriteButton: React.FC<IActionButton> = ({
   const favouriteButton = (
     <StatusActionButton
       title={intl.formatMessage(messages.favourite)}
-      icon={features.statusDislikes ? require('@tabler/icons/outline/thumb-up.svg') : require('@tabler/icons/outline/star.svg')}
+      icon={features.statusDislikes ? require('@fluentui/thumb_like_24_regular.svg') : require('@fluentui/star_24_regular.svg')}
       color='accent'
       filled
       onClick={handleFavouriteClick}
@@ -450,7 +450,7 @@ const DislikeButton: React.FC<IActionButton> = ({
   return (
     <StatusActionButton
       title={intl.formatMessage(messages.disfavourite)}
-      icon={require('@tabler/icons/outline/thumb-down.svg')}
+      icon={require('@fluentui/thumb_dislike_24_regular.svg')}
       color='accent'
       filled
       onClick={handleDislikeClick}
@@ -506,7 +506,7 @@ const WrenchButton: React.FC<IActionButton> = ({
   return (
     <StatusActionButton
       title={intl.formatMessage(messages.wrench)}
-      icon={require('@tabler/icons/outline/tool.svg')}
+      icon={require('@fluentui/wrench_24_regular.svg')}
       color='accent'
       filled
       onClick={handleWrenchClick}
@@ -560,7 +560,7 @@ const ShareButton: React.FC<Pick<IActionButton, 'status' | 'statusActionButtonTh
   return canShare && (
     <StatusActionButton
       title={intl.formatMessage(messages.share)}
-      icon={require('@tabler/icons/outline/upload.svg')}
+      icon={require('@fluentui/share_24_regular.svg')}
       onClick={handleShareClick}
       theme={statusActionButtonTheme}
     />
@@ -832,7 +832,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       menu.push({
         text: intl.formatMessage(status.bookmarked ? messages.unbookmark : messages.bookmark),
         action: handleBookmarkClick,
-        icon: status.bookmarked ? require('@tabler/icons/outline/bookmark-off.svg') : require('@tabler/icons/outline/bookmark.svg'),
+        icon: status.bookmarked ? require('@tabler/icons/outline/bookmark-off.svg') : require('@fluentui/bookmark_24_regular.svg'),
       });
     }
 
@@ -859,7 +859,7 @@ const MenuButton: React.FC<IMenuButton> = ({
     menu.push({
       text: intl.formatMessage(mutingConversation ? messages.unmuteConversation : messages.muteConversation),
       action: handleConversationMuteClick,
-      icon: mutingConversation ? require('@tabler/icons/outline/bell.svg') : require('@tabler/icons/outline/bell-off.svg'),
+      icon: mutingConversation ? require('@fluentui/alert_24_regular.svg') : require('@tabler/icons/outline/bell-off.svg'),
     });
 
     menu.push(null);
@@ -876,7 +876,7 @@ const MenuButton: React.FC<IMenuButton> = ({
           menu.push({
             text: intl.formatMessage(status.reblogged ? messages.cancel_reblog_private : messages.reblog_private),
             action: handleReblogClick,
-            icon: require('@tabler/icons/outline/repeat.svg'),
+            icon: require('@fluentui/arrow_repeat_all_24_regular.svg'),
           });
         }
       }
@@ -905,20 +905,20 @@ const MenuButton: React.FC<IMenuButton> = ({
       menu.push({
         text: intl.formatMessage(messages.mention, { name: username }),
         action: handleMentionClick,
-        icon: require('@tabler/icons/outline/at.svg'),
+        icon: require('@fluentui/mention_24_regular.svg'),
       });
 
       if (status.account.accepts_chat_messages === true) {
         menu.push({
           text: intl.formatMessage(messages.chat, { name: username }),
           action: handleChatClick,
-          icon: require('@tabler/icons/outline/messages.svg'),
+          icon: require('@fluentui/chat_24_regular.svg'),
         });
       } else if (features.privacyScopes) {
         menu.push({
           text: intl.formatMessage(messages.direct, { name: username }),
           action: handleDirectClick,
-          icon: require('@tabler/icons/outline/mail.svg'),
+          icon: require('@fluentui/mail_24_regular.svg'),
         });
       }
 
@@ -1007,7 +1007,7 @@ const MenuButton: React.FC<IMenuButton> = ({
         menu.push({
           text: intl.formatMessage(messages.admin_status),
           href: `/pleroma/admin/#/statuses/${status.id}/`,
-          icon: require('@tabler/icons/outline/pencil.svg'),
+          icon: require('@fluentui/edit_24_regular.svg'),
         });
       }
 
@@ -1038,7 +1038,7 @@ const MenuButton: React.FC<IMenuButton> = ({
     <DropdownMenu items={menu}>
       <StatusActionButton
         title={intl.formatMessage(messages.more)}
-        icon={require('@tabler/icons/outline/dots.svg')}
+        icon={require('@fluentui/more_vertical_24_regular.svg')}
         theme={statusActionButtonTheme}
       />
     </DropdownMenu>

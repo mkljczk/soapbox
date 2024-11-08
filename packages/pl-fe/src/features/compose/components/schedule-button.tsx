@@ -40,7 +40,7 @@ const ScheduleButton: React.FC<IScheduleButton> = ({ composeId, disabled }) => {
 
   return (
     <ComposeFormButton
-      icon={require('@tabler/icons/outline/calendar-stats.svg')}
+      icon={require('@fluentui/calendar_clock_24_regular.svg')}
       title={intl.formatMessage(active ? messages.remove_schedule : messages.add_schedule)}
       active={active}
       disabled={disabled}

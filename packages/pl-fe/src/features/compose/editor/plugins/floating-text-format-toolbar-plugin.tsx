@@ -58,7 +58,7 @@ const messages = defineMessages({
 const blockTypeToIcon = {
   bullet: require('@tabler/icons/outline/list.svg'),
   check: require('@tabler/icons/outline/list-check.svg'),
-  code: require('@tabler/icons/outline/code.svg'),
+  code: require('@fluentui/code_24_regular.svg'),
   h1: require('@tabler/icons/outline/h-1.svg'),
   h2: require('@tabler/icons/outline/h-2.svg'),
   h3: require('@tabler/icons/outline/h-3.svg'),
@@ -398,7 +398,7 @@ const TextFormatFloatingToolbar = ({
             }}
             active={isCode}
             aria-label={intl.formatMessage(messages.insertCodeBlock)}
-            icon={require('@tabler/icons/outline/code.svg')}
+            icon={require('@fluentui/code_24_regular.svg')}
           />
           <ToolbarButton
             onClick={insertLink}

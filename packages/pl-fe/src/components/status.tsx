@@ -189,7 +189,7 @@ const Status: React.FC<IStatus> = (props) => {
       return (
         <StatusInfo
           avatarSize={avatarSize}
-          icon={<Icon src={require('@tabler/icons/outline/repeat.svg')} className='size-4 text-green-600' />}
+          icon={<Icon src={require('@fluentui/arrow_repeat_all_24_regular.svg')} className='size-4 text-green-600' />}
           text={
             <FormattedMessage
               id='status.reblogged_by_with_group'
@@ -245,7 +245,7 @@ const Status: React.FC<IStatus> = (props) => {
       return (
         <StatusInfo
           avatarSize={avatarSize}
-          icon={<Icon src={require('@tabler/icons/outline/repeat.svg')} className='size-4 text-green-600' />}
+          icon={<Icon src={require('@fluentui/arrow_repeat_all_24_regular.svg')} className='size-4 text-green-600' />}
           text={
             <FormattedMessage
               id='status.reblogged_by'
@@ -272,7 +272,7 @@ const Status: React.FC<IStatus> = (props) => {
       return (
         <StatusInfo
           avatarSize={avatarSize}
-          icon={<Icon src={require('@tabler/icons/outline/circles.svg')} className='size-4 text-primary-600 dark:text-accent-blue' />}
+          icon={<Icon src={require('@fluentui/group_24_regular.svg')} className='size-4 text-primary-600 dark:text-accent-blue' />}
           text={
             <FormattedMessage
               id='status.group'

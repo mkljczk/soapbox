@@ -111,7 +111,7 @@ const Search = (props: ISearch) => {
   const makeMenu = () => [
     {
       text: intl.formatMessage(messages.action, { query: value }),
-      icon: require('@tabler/icons/outline/search.svg'),
+      icon: require('@fluentui/search_24_regular.svg'),
       action: handleSubmit,
     },
   ];
@@ -162,7 +162,7 @@ const Search = (props: ISearch) => {
           onClick={handleClear}
         >
           <SvgIcon
-            src={require('@tabler/icons/outline/search.svg')}
+            src={require('@fluentui/search_24_regular.svg')}
             className={clsx('size-4 text-gray-600', { hidden: hasValue })}
           />
 

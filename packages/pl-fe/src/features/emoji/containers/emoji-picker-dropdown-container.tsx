@@ -58,11 +58,11 @@ const EmojiPickerDropdownContainer: React.FC<IEmojiPickerDropdownContainer> = ({
         <IconButton
           theme='transparent'
           className={clsx('emoji-picker-dropdown -m-1 p-2', {
-            'text-gray-600 hover:text-gray-800 dark:hover:text-white bg-transparent hover:bg-primary-100 dark:hover:bg-primary-800 black:hover:bg-gray-800': theme === 'default',
-            'text-white/80 hover:text-white bg-transparent dark:bg-transparent': theme === 'inverse',
+            'fill-gray-600 hover:fill-gray-800 dark:hover:fill-white bg-transparent hover:bg-primary-100 dark:hover:bg-primary-800 black:hover:bg-gray-800': theme === 'default',
+            'fill-white/80 hover:fill-white bg-transparent dark:bg-transparent': theme === 'inverse',
           })}
           ref={refs.setReference}
-          src={require('@tabler/icons/outline/mood-smile.svg')}
+          src={require('@fluentui/emoji_24_regular.svg')}
           title={title}
           aria-label={title}
           aria-expanded={visible}

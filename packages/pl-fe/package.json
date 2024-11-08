@@ -40,6 +40,7 @@
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
     "@floating-ui/react": "^0.26.27",
+    "@fluentui/svg-icons": "^1.1.264",
     "@fontsource/inter": "^5.1.0",
     "@fontsource/noto-sans-javanese": "^5.1.0",
     "@fontsource/roboto-mono": "^5.1.0",

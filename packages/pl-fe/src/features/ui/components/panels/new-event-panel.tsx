@@ -18,7 +18,7 @@ const NewEventPanel = () => (
     </Stack>
 
     <Button
-      icon={require('@tabler/icons/outline/calendar-event.svg')}
+      icon={require('@fluentui/calendar_ltr_24_regular.svg')}
       theme='secondary'
       block
       to='/events/new'

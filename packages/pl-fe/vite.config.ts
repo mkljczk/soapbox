@@ -164,6 +164,7 @@ const config = defineConfig(({ command }) => ({
   ],
   resolve: {
     alias: [
+      { find: '@fluentui', replacement: '@fluentui/svg-icons/icons' },
       { find: 'pl-fe', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
     ],
   },

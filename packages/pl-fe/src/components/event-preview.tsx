@@ -70,7 +70,7 @@ const EventPreview: React.FC<IEventPreview> = ({ status, className, hideAction, 
 
         <div className='flex flex-wrap gap-x-2 gap-y-1 text-gray-700 dark:text-gray-600'>
           <HStack alignItems='center' space={2}>
-            <Icon src={require('@tabler/icons/outline/user.svg')} />
+            <Icon src={require('@fluentui/person_24_regular.svg')} />
             <HStack space={1} alignItems='center' grow>
               <span>
                 <Emojify text={account.display_name} emojis={account.emojis} />

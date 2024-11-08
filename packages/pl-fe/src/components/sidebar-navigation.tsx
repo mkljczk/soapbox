@@ -64,7 +64,7 @@ const SidebarNavigation = () => {
         menu.push({
           to: '/conversations',
           text: intl.formatMessage(messages.conversations),
-          icon: require('@tabler/icons/outline/mail.svg'),
+          icon: require('@fluentui/mail_24_regular.svg'),
         });
       }
 
@@ -72,7 +72,7 @@ const SidebarNavigation = () => {
         menu.push({
           to: '/follow_requests',
           text: intl.formatMessage(messages.followRequests),
-          icon: require('@tabler/icons/outline/user-plus.svg'),
+          icon: require('@fluentui/person_add_24_regular.svg'),
           count: followRequestsCount,
         });
       }
@@ -81,7 +81,7 @@ const SidebarNavigation = () => {
         menu.push({
           to: '/interaction_requests',
           text: intl.formatMessage(messages.interactionRequests),
-          icon: require('@tabler/icons/outline/flag-question.svg'),
+          icon: require('@fluentui/arrow_reply_24_regular.svg'),
           count: interactionRequestsCount,
         });
       }
@@ -90,7 +90,7 @@ const SidebarNavigation = () => {
         menu.push({
           to: '/bookmarks',
           text: intl.formatMessage(messages.bookmarks),
-          icon: require('@tabler/icons/outline/bookmark.svg'),
+          icon: require('@fluentui/bookmark_multiple_24_regular.svg'),
         });
       }
 
@@ -98,7 +98,7 @@ const SidebarNavigation = () => {
         menu.push({
           to: '/lists',
           text: intl.formatMessage(messages.lists),
-          icon: require('@tabler/icons/outline/list.svg'),
+          icon: require('@fluentui/people_24_regular.svg'),
         });
       }
 
@@ -106,7 +106,7 @@ const SidebarNavigation = () => {
         menu.push({
           to: '/events',
           text: intl.formatMessage(messages.events),
-          icon: require('@tabler/icons/outline/calendar-event.svg'),
+          icon: require('@fluentui/calendar_ltr_24_regular.svg'),
         });
       }
 
@@ -114,7 +114,7 @@ const SidebarNavigation = () => {
         menu.push({
           to: '/directory',
           text: intl.formatMessage(messages.profileDirectory),
-          icon: require('@tabler/icons/outline/address-book.svg'),
+          icon: require('@fluentui/book_contacts_24_regular.svg'),
         });
       }
 
@@ -122,14 +122,14 @@ const SidebarNavigation = () => {
         menu.push({
           to: '/followed_tags',
           text: intl.formatMessage(messages.followedTags),
-          icon: require('@tabler/icons/outline/hash.svg'),
+          icon: require('@fluentui/number_symbol_24_regular.svg'),
         });
       }
 
       if (isDeveloper) {
         menu.push({
           to: '/developers',
-          icon: require('@tabler/icons/outline/code.svg'),
+          icon: require('@fluentui/code_24_regular.svg'),
           text: intl.formatMessage(messages.developers),
         });
       }
@@ -137,7 +137,7 @@ const SidebarNavigation = () => {
       if (scheduledStatusCount > 0) {
         menu.push({
           to: '/scheduled_statuses',
-          icon: require('@tabler/icons/outline/calendar-stats.svg'),
+          icon: require('@fluentui/calendar_clock_24_regular.svg'),
           text: intl.formatMessage(messages.scheduledStatuses),
           count: scheduledStatusCount,
         });
@@ -146,7 +146,7 @@ const SidebarNavigation = () => {
       if (draftCount > 0) {
         menu.push({
           to: '/draft_statuses',
-          icon: require('@tabler/icons/outline/notes.svg'),
+          icon: require('@fluentui/drafts_24_regular.svg'),
           text: intl.formatMessage(messages.drafts),
           count: draftCount,
         });
@@ -184,14 +184,14 @@ const SidebarNavigation = () => {
       <Stack space={1.5}>
         <SidebarNavigationLink
           to='/'
-          icon={require('@tabler/icons/outline/home.svg')}
-          activeIcon={require('@tabler/icons/filled/home.svg')}
+          icon={require('@fluentui/home_24_regular.svg')}
+          activeIcon={require('@fluentui/home_24_filled.svg')}
           text={<FormattedMessage id='tabs_bar.home' defaultMessage='Home' />}
         />
 
         <SidebarNavigationLink
           to='/search'
-          icon={require('@tabler/icons/outline/search.svg')}
+          icon={require('@fluentui/search_24_regular.svg')}
           text={<FormattedMessage id='tabs_bar.search' defaultMessage='Search' />}
         />
 
@@ -199,8 +199,8 @@ const SidebarNavigation = () => {
           <>
             <SidebarNavigationLink
               to='/notifications'
-              icon={require('@tabler/icons/outline/bell.svg')}
-              activeIcon={require('@tabler/icons/filled/bell.svg')}
+              icon={require('@fluentui/alert_24_regular.svg')}
+              activeIcon={require('@fluentui/alert_24_filled.svg')}
               count={notificationCount}
               text={<FormattedMessage id='tabs_bar.notifications' defaultMessage='Notifications' />}
             />
@@ -208,7 +208,8 @@ const SidebarNavigation = () => {
             {features.chats && (
               <SidebarNavigationLink
                 to='/chats'
-                icon={require('@tabler/icons/outline/messages.svg')}
+                icon={require('@fluentui/chat_24_regular.svg')}
+                activeIcon={require('@fluentui/chat_24_filled.svg')}
                 count={unreadChatsCount}
                 countMax={9}
                 text={<FormattedMessage id='navigation.chats' defaultMessage='Chats' />}
@@ -218,8 +219,8 @@ const SidebarNavigation = () => {
             {!features.chats && features.conversations && (
               <SidebarNavigationLink
                 to='/conversations'
-                icon={require('@tabler/icons/outline/mail.svg')}
-                activeIcon={require('@tabler/icons/filled/mail.svg')}
+                icon={require('@fluentui/mail_24_regular.svg')}
+                activeIcon={require('@fluentui/mail_24_filled.svg')}
                 text={<FormattedMessage id='navigation.direct_messages' defaultMessage='Direct messages' />}
               />
             )}
@@ -227,23 +228,23 @@ const SidebarNavigation = () => {
             {features.groups && (
               <SidebarNavigationLink
                 to='/groups'
-                icon={require('@tabler/icons/outline/circles.svg')}
-                activeIcon={require('@tabler/icons/filled/circles.svg')}
+                icon={require('@fluentui/group_24_regular.svg')}
+                activeIcon={require('@fluentui/group_24_filled.svg')}
                 text={<FormattedMessage id='tabs_bar.groups' defaultMessage='Groups' />}
               />
             )}
 
             <SidebarNavigationLink
               to={`/@${account.acct}`}
-              icon={require('@tabler/icons/outline/user.svg')}
-              activeIcon={require('@tabler/icons/filled/user.svg')}
+              icon={require('@fluentui/person_24_regular.svg')}
+              activeIcon={require('@fluentui/person_24_filled.svg')}
               text={<FormattedMessage id='tabs_bar.profile' defaultMessage='Profile' />}
             />
 
             <SidebarNavigationLink
               to='/settings'
-              icon={require('@tabler/icons/outline/settings.svg')}
-              activeIcon={require('@tabler/icons/filled/settings.svg')}
+              icon={require('@fluentui/settings_24_regular.svg')}
+              activeIcon={require('@fluentui/settings_24_filled.svg')}
               text={<FormattedMessage id='tabs_bar.settings' defaultMessage='Settings' />}
             />
 
@@ -291,7 +292,7 @@ const SidebarNavigation = () => {
         {menu.length > 0 && (
           <DropdownMenu items={menu} placement='top'>
             <SidebarNavigationLink
-              icon={require('@tabler/icons/outline/dots-circle-horizontal.svg')}
+              icon={require('@fluentui/more_horizontal_24_filled.svg')}
               text={<FormattedMessage id='tabs_bar.more' defaultMessage='More' />}
             />
           </DropdownMenu>
@@ -307,7 +308,7 @@ const SidebarNavigation = () => {
 
             {isOpen && <SidebarNavigationLink
               to='/signup'
-              icon={require('@tabler/icons/outline/user-plus.svg')}
+              icon={require('@fluentui/person_add_24_regular.svg')}
               text={<FormattedMessage id='account.register' defaultMessage='Sign up' />}
             />}
           </Stack>

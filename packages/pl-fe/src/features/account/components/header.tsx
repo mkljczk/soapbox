@@ -336,7 +336,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
       menu.push({
         text: intl.formatMessage(account.id === ownAccount.id ? messages.searchSelf : messages.search, { name: account.username }),
         action: onSearch,
-        icon: require('@tabler/icons/outline/search.svg'),
+        icon: require('@fluentui/search_24_regular.svg'),
       });
     }
 
@@ -348,12 +348,12 @@ const Header: React.FC<IHeader> = ({ account }) => {
       menu.push({
         text: intl.formatMessage(messages.edit_profile),
         to: '/settings/profile',
-        icon: require('@tabler/icons/outline/user.svg'),
+        icon: require('@fluentui/person_24_regular.svg'),
       });
       menu.push({
         text: intl.formatMessage(messages.preferences),
         to: '/settings',
-        icon: require('@tabler/icons/outline/settings.svg'),
+        icon: require('@fluentui/settings_24_regular.svg'),
       });
       menu.push(null);
       menu.push({
@@ -370,14 +370,14 @@ const Header: React.FC<IHeader> = ({ account }) => {
       menu.push({
         text: intl.formatMessage(messages.mention, { name: account.username }),
         action: onMention,
-        icon: require('@tabler/icons/outline/at.svg'),
+        icon: require('@fluentui/mention_24_regular.svg'),
       });
 
       if (features.privacyScopes) {
         menu.push({
           text: intl.formatMessage(messages.direct, { name: account.username }),
           action: onDirect,
-          icon: require('@tabler/icons/outline/mail.svg'),
+          icon: require('@fluentui/mail_24_regular.svg'),
         });
       }
 
@@ -386,13 +386,13 @@ const Header: React.FC<IHeader> = ({ account }) => {
           menu.push({
             text: intl.formatMessage(messages.hideReblogs, { name: account.username }),
             action: onReblogToggle,
-            icon: require('@tabler/icons/outline/repeat.svg'),
+            icon: require('@fluentui/arrow_repeat_all_24_regular.svg'),
           });
         } else {
           menu.push({
             text: intl.formatMessage(messages.showReblogs, { name: account.username }),
             action: onReblogToggle,
-            icon: require('@tabler/icons/outline/repeat.svg'),
+            icon: require('@fluentui/arrow_repeat_all_24_regular.svg'),
           });
         }
 
@@ -400,7 +400,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
           menu.push({
             text: intl.formatMessage(messages.add_or_remove_from_list),
             action: onAddToList,
-            icon: require('@tabler/icons/outline/list.svg'),
+            icon: require('@fluentui/people_add_24_regular.svg'),
           });
         }
 
@@ -415,7 +415,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
         menu.push({
           text: intl.formatMessage(messages.add_or_remove_from_list),
           action: onAddToList,
-          icon: require('@tabler/icons/outline/list.svg'),
+          icon: require('@fluentui/people_add_24_regular.svg'),
         });
       }
 
@@ -580,7 +580,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
     if (account.accepts_chat_messages) {
       return (
         <IconButton
-          src={require('@tabler/icons/outline/messages.svg')}
+          src={require('@fluentui/chat_24_regular.svg')}
           onClick={() => createAndNavigateToChat.mutate(account.id)}
           title={intl.formatMessage(messages.chat, { name: account.username })}
           theme='outlined'
@@ -679,7 +679,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
               {menu.length > 0 && (
                 <DropdownMenu items={menu} placement='bottom-end'>
                   <IconButton
-                    src={require('@tabler/icons/outline/dots.svg')}
+                    src={require('@fluentui/more_horizontal_24_regular.svg')}
                     theme='outlined'
                     className='px-2'
                     iconClassName='h-4 w-4'
