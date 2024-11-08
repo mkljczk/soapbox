@@ -1,3 +1,4 @@
+import { Outlet } from '@tanstack/react-router';
 import React from 'react';
 
 import Layout from 'pl-fe/components/ui/layout';
@@ -10,18 +11,14 @@ import {
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 
-interface ISearchLayout {
-  children: React.ReactNode;
-}
-
-const SearchLayout: React.FC<ISearchLayout> = ({ children }) => {
+const SearchLayout = () => {
   const me = useAppSelector(state => state.me);
   const features = useFeatures();
 
   return (
     <>
       <Layout.Main>
-        {children}
+        <Outlet />
       </Layout.Main>
 
       <Layout.Aside>

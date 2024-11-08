@@ -1,3 +1,4 @@
+import { Outlet } from '@tanstack/react-router';
 import React from 'react';
 
 import Layout from 'pl-fe/components/ui/layout';
@@ -11,11 +12,7 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { isStandalone } from 'pl-fe/utils/state';
 
-interface IExternalLoginLayout {
-  children: React.ReactNode;
-}
-
-const ExternalLoginLayout: React.FC<IExternalLoginLayout> = ({ children }) => {
+const ExternalLoginLayout = () => {
   const me = useAppSelector(state => state.me);
   const features = useFeatures();
   const standalone = useAppSelector(isStandalone);
@@ -23,7 +20,7 @@ const ExternalLoginLayout: React.FC<IExternalLoginLayout> = ({ children }) => {
   return (
     <>
       <Layout.Main>
-        {children}
+        <Outlet />
       </Layout.Main>
 
       <Layout.Aside>

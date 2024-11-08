@@ -9,19 +9,16 @@ import {
 } from 'pl-fe/features/ui/util/async-components';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
+import { Outlet } from '@tanstack/react-router';
 
-interface IDefaultLayout {
-  children: React.ReactNode;
-}
-
-const DefaultLayout: React.FC<IDefaultLayout> = ({ children }) => {
+const DefaultLayout = () => {
   const me = useAppSelector(state => state.me);
   const features = useFeatures();
 
   return (
     <>
       <Layout.Main>
-        {children}
+        <Outlet />
       </Layout.Main>
 
       <Layout.Aside>

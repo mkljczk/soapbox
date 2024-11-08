@@ -1,7 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import React, { useRef } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
 
 import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
 import Avatar from 'pl-fe/components/ui/avatar';
@@ -35,34 +34,17 @@ const messages = defineMessages({
 });
 
 const InstanceFavicon: React.FC<IInstanceFavicon> = ({ account, disabled }) => {
-  const history = useHistory();
-
-  const handleClick: React.MouseEventHandler = (e) => {
-    e.stopPropagation();
-
-    if (disabled) return;
-
-    const timelineUrl = `/timeline/${account.domain}`;
-    if (!(e.ctrlKey || e.metaKey)) {
-      history.push(timelineUrl);
-    } else {
-      window.open(timelineUrl, '_blank');
-    }
-  };
-
   if (!account.favicon) {
     return null;
   }
 
-  return (
-    <button
-      className='size-4 flex-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2'
-      onClick={handleClick}
-      disabled={disabled}
-    >
-      <img src={account.favicon} alt='' title={account.domain} className='max-h-full w-full' />
-    </button>
-  );
+  const className = 'size-4 flex-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2';
+
+  const image = <img src={account.favicon} alt='' title={account.domain} className='max-h-full w-full' />;
+
+  return disabled
+    ? <div className={className}>{image}</div>
+    : <Link className={className} to={`/timeline/${account.domain}`}>{image}</Link>;
 };
 
 interface IProfilePopper {

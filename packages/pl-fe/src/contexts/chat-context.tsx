@@ -1,6 +1,6 @@
 import { useLocation } from '@tanstack/react-router';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 
 import { toggleMainWindow } from 'pl-fe/actions/chats';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
@@ -31,7 +31,8 @@ const ChatProvider: React.FC<IChatProvider> = ({ children }) => {
 
   const path = location.pathname;
   const isUsingMainChatPage = Boolean(path.match(/^\/chats/));
-  const { chatId } = useParams<{ chatId: string }>();
+  // const { chatId } = useParams<{ chatId: string }>();
+  const chatId = '';
 
   const [screen, setScreen] = useState<ChatWidgetScreens>(ChatWidgetScreens.INBOX);
   const [currentChatId, setCurrentChatId] = useState<null | string>(chatId);

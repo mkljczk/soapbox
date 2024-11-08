@@ -1,6 +1,6 @@
+import { useNavigate } from '@tanstack/react-router';
 import clsx from 'clsx';
 import React, { useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
 
 import Counter from 'pl-fe/components/ui/counter';
 import Icon from 'pl-fe/components/ui/icon';
@@ -34,7 +34,7 @@ interface IDropdownMenuItem {
 }
 
 const DropdownMenuItem = ({ index, item, onClick, autoFocus, onSetTab }: IDropdownMenuItem) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const itemRef = useRef<HTMLAnchorElement>(null);
 
@@ -53,9 +53,10 @@ const DropdownMenuItem = ({ index, item, onClick, autoFocus, onSetTab }: IDropdo
 
     if (item.to) {
       event.preventDefault();
-      if (userTouching.matches) {
-        history.replace(item.to);
-      } else history.push(item.to);
+      navigate({ to: item.to });
+      // if (userTouching.matches) {
+      //   history.replace(item.to);
+      // } else history.push(item.to);
     } else if (typeof item.action === 'function') {
       const action = item.action;
       event.preventDefault();

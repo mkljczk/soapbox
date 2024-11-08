@@ -231,7 +231,7 @@ const cancelQuoteCompose = (composeId: string) => ({
 });
 
 const groupComposeModal = (group: Pick<Group, 'id'>) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
+  (dispatch: AppDispatch) => {
     const composeId = `group:${group.id}`;
 
     dispatch(groupCompose(composeId, group.id));
