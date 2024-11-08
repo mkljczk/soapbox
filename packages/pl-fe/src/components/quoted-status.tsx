@@ -66,7 +66,7 @@ const QuotedStatus: React.FC<IQuotedStatus> = ({ status, onCancel, compose }) =>
   if (onCancel) {
     actions = {
       onActionClick: handleClose,
-      actionIcon: require('@tabler/icons/outline/x.svg'),
+      actionIcon: require('@fluentui/dismiss_24_regular.svg'),
       actionAlignment: 'top',
       actionTitle: intl.formatMessage(messages.cancel),
     };

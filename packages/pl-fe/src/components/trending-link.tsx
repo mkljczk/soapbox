@@ -49,7 +49,7 @@ const TrendingLink: React.FC<ITrendingLink> = ({ trendingLink }) => {
         <HStack alignItems='center' wrap className='divide-x-dot text-gray-700 dark:text-gray-600'>
           <HStack space={1} alignItems='center'>
             <Text tag='span' theme='muted'>
-              <Icon src={require('@tabler/icons/outline/link.svg')} />
+              <Icon src={require('@fluentui/link_24_regular.svg')} />
             </Text>
             <Text tag='span' theme='muted' size='sm' direction={direction}>
               {trendingLink.provider_name}

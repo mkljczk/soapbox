@@ -106,7 +106,7 @@ const Developers: React.FC = () => {
           </DashWidget>
 
           <DashWidget onClick={leaveDevelopers}>
-            <SvgIcon src={require('@tabler/icons/outline/logout.svg')} className='text-gray-700 dark:text-gray-600' />
+            <SvgIcon src={require('@fluentui/sign_out_24_regular.svg')} className='text-gray-700 dark:text-gray-600' />
 
             <Text>
               <FormattedMessage id='developers.navigation.leave_developers_label' defaultMessage='Leave developers' />

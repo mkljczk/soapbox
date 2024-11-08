@@ -160,7 +160,7 @@ const Account = ({
           src={actionIcon}
           title={actionTitle}
           onClick={handleAction}
-          className='bg-transparent text-gray-600 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-500'
+          className='bg-transparent fill-gray-600 hover:fill-gray-700 dark:fill-gray-600 dark:hover:fill-gray-500'
           iconClassName='h-4 w-4'
         />
       );

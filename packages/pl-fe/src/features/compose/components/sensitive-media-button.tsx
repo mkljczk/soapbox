@@ -27,7 +27,7 @@ const SensitiveMediaButton: React.FC<ISensitiveMediaButton> = ({ composeId }) =>
 
   return (
     <ComposeFormButton
-      icon={require('@tabler/icons/outline/alert-triangle.svg')}
+      icon={require('@fluentui/warning_24_regular.svg')}
       title={intl.formatMessage(active ? messages.marked : messages.unmarked)}
       active={active}
       onClick={onClick}

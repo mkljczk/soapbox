@@ -320,7 +320,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
 
                     <SidebarLink
                       to='/timeline/local'
-                      icon={features.federating ? require('@tabler/icons/outline/affiliate.svg') : require('@tabler/icons/outline/world.svg')}
+                      icon={features.federating ? require('@tabler/icons/outline/affiliate.svg') : require('@fluentui/globe_24_regular.svg')}
                       text={features.federating ? <FormattedMessage id='tabs_bar.local' defaultMessage='Local' /> : <FormattedMessage id='tabs_bar.all' defaultMessage='All' />}
                       onClick={closeSidebar}
                     />
@@ -409,7 +409,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                         </Text>
 
                         <Icon
-                          src={require('@tabler/icons/outline/chevron-down.svg')}
+                          src={require('@fluentui/chevron_down_24_regular.svg')}
                           className={clsx('size-4 text-gray-900 transition-transform dark:text-gray-100', {
                             'rotate-180': switcher,
                           })}
@@ -435,7 +435,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                 {features.publicTimeline && !restrictUnauth.timelines.local && <>
                   <SidebarLink
                     to='/timeline/local'
-                    icon={features.federating ? require('@tabler/icons/outline/affiliate.svg') : require('@tabler/icons/outline/world.svg')}
+                    icon={features.federating ? require('@tabler/icons/outline/affiliate.svg') : require('@fluentui/globe_24_regular.svg')}
                     text={features.federating ? <FormattedMessage id='tabs_bar.local' defaultMessage='Local' /> : <FormattedMessage id='tabs_bar.all' defaultMessage='All' />}
                     onClick={closeSidebar}
                   />

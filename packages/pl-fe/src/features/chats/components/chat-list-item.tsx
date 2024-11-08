@@ -68,7 +68,7 @@ const ChatListItem: React.FC<IChatListItemInterface> = ({ chat, onClick }) => {
         },
       });
     },
-    icon: require('@tabler/icons/outline/logout.svg'),
+    icon: require('@fluentui/sign_out_24_regular.svg'),
   }], []);
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (event) => {
@@ -141,7 +141,7 @@ const ChatListItem: React.FC<IChatListItemInterface> = ({ chat, onClick }) => {
                 <IconButton
                   src={require('@fluentui/more_horizontal_24_regular.svg')}
                   title='Settings'
-                  className='text-gray-600 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-500'
+                  className='fill-gray-600 hover:fill-gray-700 dark:fill-gray-600 dark:hover:fill-gray-500'
                   iconClassName='h-4 w-4'
                 />
               </DropdownMenu>

@@ -18,7 +18,7 @@ const VerificationBadge: React.FC<IVerificationBadge> = ({ className }) => {
   const plFeConfig = usePlFeConfig();
 
   // Prefer a custom icon if found
-  const icon = plFeConfig.verifiedIcon || require('@tabler/icons/outline/check.svg');
+  const icon = plFeConfig.verifiedIcon || require('@fluentui/checkmark_24_regular.svg');
 
   // Render component based on file extension
   const Element = icon.endsWith('.svg') ? Icon : 'img';

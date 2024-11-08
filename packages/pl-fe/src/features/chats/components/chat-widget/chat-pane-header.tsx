@@ -68,7 +68,7 @@ const ChatPaneHeader = (props: IChatPaneHeader) => {
 
         <IconButton
           onClick={onToggle}
-          src={isOpen ? require('@tabler/icons/outline/chevron-down.svg') : require('@tabler/icons/outline/chevron-up.svg')}
+          src={isOpen ? require('@fluentui/chevron_down_24_regular.svg') : require('@fluentui/chevron_up_24_regular.svg')}
           iconClassName='h-5 w-5 text-gray-600'
         />
       </HStack>

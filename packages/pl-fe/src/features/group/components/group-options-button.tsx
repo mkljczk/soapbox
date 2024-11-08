@@ -69,7 +69,7 @@ const GroupOptionsButton = ({ group }: IGroupActionButton) => {
       items.push(null);
       items.push({
         text: intl.formatMessage(messages.leave),
-        icon: require('@tabler/icons/outline/logout.svg'),
+        icon: require('@fluentui/sign_out_24_regular.svg'),
         action: handleLeave,
       });
     }

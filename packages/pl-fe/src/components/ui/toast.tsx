@@ -143,7 +143,7 @@ const Toast = (props: IToast) => {
               data-testid='toast-dismiss'
             >
               <span className='sr-only'><FormattedMessage id='lightbox.close' defaultMessage='Close' /></span>
-              <Icon src={require('@tabler/icons/outline/x.svg')} className='size-5' />
+              <Icon src={require('@fluentui/dismiss_24_regular.svg')} className='size-5' />
             </button>
           </div>
         </HStack>

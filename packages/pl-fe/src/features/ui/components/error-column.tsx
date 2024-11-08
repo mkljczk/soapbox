@@ -35,7 +35,7 @@ const ErrorColumn: React.FC<IErrorColumn> = ({ error, onRetry = () => location.r
         <IconButton
           iconClassName='h-10 w-10'
           title={intl.formatMessage(messages.retry)}
-          src={require('@tabler/icons/outline/refresh.svg')}
+          src={require('@fluentui/arrow_clockwise_24_regular.svg')}
           onClick={handleRetry}
         />
 

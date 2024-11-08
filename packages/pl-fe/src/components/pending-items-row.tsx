@@ -26,7 +26,7 @@ const PendingItemsRow: React.FC<IPendingItemsRow> = ({ to, count, size = 'md' })
         })}
         >
           <Icon
-            src={require('@tabler/icons/outline/exclamation-circle.svg')}
+            src={require('@fluentui/error_circle_24_regular.svg')}
             className={clsx({
               'h-5 w-5': size === 'md',
               'h-7 w-7': size === 'lg',
@@ -44,7 +44,7 @@ const PendingItemsRow: React.FC<IPendingItemsRow> = ({ to, count, size = 'md' })
       </HStack>
 
       <Icon
-        src={require('@tabler/icons/outline/chevron-right.svg')}
+        src={require('@fluentui/chevron_right_24_regular.svg')}
         className='size-5 text-gray-600 transition-colors group-hover:text-gray-700 dark:text-gray-600 dark:group-hover:text-gray-500'
       />
     </HStack>

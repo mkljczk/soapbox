@@ -61,7 +61,7 @@ const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
   const button = (
     <button className='w-fit' onClick={handleTranslate}>
       <HStack alignItems='center' space={1} className='text-primary-600 hover:underline dark:text-gray-600'>
-        <Icon src={require('@tabler/icons/outline/language.svg')} className='size-4' />
+        <Icon src={require('@fluentui/translate_24_regular.svg')} className='size-4' />
         <span>
           {status.translation ? (
             <FormattedMessage id='status.show_original' defaultMessage='Show original' />
@@ -72,7 +72,7 @@ const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
           )}
         </span>
         {status.translating && (
-          <Icon src={require('@tabler/icons/outline/loader-2.svg')} className='size-4 animate-spin' />
+          <Icon src={require('@fluentui/spinner_ios_20_regular.svg')} className='size-4 animate-spin' />
         )}
       </HStack>
     </button>

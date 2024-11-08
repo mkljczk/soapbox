@@ -43,12 +43,12 @@ const CryptoAddress: React.FC<ICryptoAddress> = (props): JSX.Element => {
         <Text weight='bold'>{title || ticker.toUpperCase()}</Text>
 
         <HStack alignItems='center' className='ml-auto'>
-          <a className='ml-1 text-gray-500 rtl:ml-0 rtl:mr-1' href='#' onClick={handleModalClick}>
-            <Icon src={require('@tabler/icons/outline/qrcode.svg')} size={20} />
+          <a className='ml-1 fill-gray-500 rtl:ml-0 rtl:mr-1' href='#' onClick={handleModalClick}>
+            <Icon src={require('@fluentui/qr_code_24_regular.svg')} size={20} />
           </a>
 
           {explorerUrl && (
-            <a className='ml-1 text-gray-500 rtl:ml-0 rtl:mr-1' href={explorerUrl} target='_blank'>
+            <a className='ml-1 fill-gray-500 rtl:ml-0 rtl:mr-1' href={explorerUrl} target='_blank'>
               <Icon src={require('@fluentui/open_24_regular.svg')} size={20} />
             </a>
           )}

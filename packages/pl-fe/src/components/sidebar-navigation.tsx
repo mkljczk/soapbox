@@ -170,7 +170,7 @@ const SidebarNavigation = () => {
             <ProfileDropdown account={account}>
               <Account
                 account={account}
-                action={<Icon src={require('@tabler/icons/outline/chevron-down.svg')} className='text-gray-600 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-500' />}
+                action={<Icon src={require('@fluentui/chevron_down_24_regular.svg')} className='fill-gray-600 hover:fill-gray-700 dark:fill-gray-600 dark:hover:fill-gray-500' />}
                 disabled
               />
             </ProfileDropdown>
@@ -264,7 +264,7 @@ const SidebarNavigation = () => {
             {(account || !restrictUnauth.timelines.local) && (
               <SidebarNavigationLink
                 to='/timeline/local'
-                icon={features.federating ? require('@tabler/icons/outline/affiliate.svg') : require('@tabler/icons/outline/world.svg')}
+                icon={features.federating ? require('@tabler/icons/outline/affiliate.svg') : require('@fluentui/globe_24_regular.svg')}
                 activeIcon={features.federating ? require('@tabler/icons/filled/affiliate.svg') : undefined}
                 text={features.federating ? <FormattedMessage id='tabs_bar.local' defaultMessage='Local' /> : <FormattedMessage id='tabs_bar.all' defaultMessage='All' />}
               />

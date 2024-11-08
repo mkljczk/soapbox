@@ -99,7 +99,7 @@ const ChatSettings = () => {
           <HStack alignItems='center' space={2}>
             <button onClick={closeSettings}>
               <Icon
-                src={require('@tabler/icons/outline/arrow-left.svg')}
+                src={require('@fluentui/arrow_left_24_regular.svg')}
                 className='size-6 text-gray-600 dark:text-gray-400 rtl:rotate-180'
               />
             </button>
@@ -128,7 +128,7 @@ const ChatSettings = () => {
 
           {features.chatsDelete && (
             <button onClick={handleLeaveChat} className='flex w-full items-center space-x-2 text-sm font-bold text-danger-600'>
-              <Icon src={require('@tabler/icons/outline/logout.svg')} className='size-5' />
+              <Icon src={require('@fluentui/sign_out_24_regular.svg')} className='size-5' />
               <span>{intl.formatMessage(messages.leaveChat)}</span>
             </button>
           )}

@@ -20,7 +20,7 @@
     flex: 0 1 auto;
 
     .player-button {
-      @apply inline-block outline-0 bg-transparent text-base border-0 text-white/75 active:text-white hover:text-white focus:text-white;
+      @apply inline-block outline-0 bg-transparent text-base border-0 fill-white/75 active:fill-white hover:fill-white focus:fill-white;
       flex: 0 0 auto;
       padding: 5px 6px;
 
@@ -31,7 +31,7 @@
       &:active,
       &:hover,
       &:focus {
-        @apply text-white;
+        @apply fill-white;
       }
     }
   }

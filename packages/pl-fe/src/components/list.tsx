@@ -79,7 +79,7 @@ const ListItem: React.FC<IListItem> = ({ className, label, hint, children, to, h
         <HStack space={1} alignItems='center' className='overflow-hidden text-gray-700 dark:text-gray-600'>
           {children}
 
-          <Icon src={require('@tabler/icons/outline/chevron-right.svg')} className='ml-1 rtl:rotate-180' />
+          <Icon src={require('@fluentui/chevron_right_24_regular.svg')} className='ml-1 rtl:rotate-180' />
         </HStack>
       ) : null}
 
@@ -97,7 +97,7 @@ const ListItem: React.FC<IListItem> = ({ className, label, hint, children, to, h
             }
           >
             <Icon
-              src={require('@tabler/icons/outline/check.svg')}
+              src={require('@fluentui/checkmark_24_regular.svg')}
               className={
                 clsx({
                   'h-4 w-4 text-white dark:text-white transition-all duration-500': true,

@@ -208,15 +208,15 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
             items={[{
               text: intl.formatMessage(messages.restore),
               action: restoreDefaultTheme,
-              icon: require('@tabler/icons/outline/refresh.svg'),
+              icon: require('@fluentui/arrow_reset_24_regular.svg'),
             }, {
               text: intl.formatMessage(messages.import),
               action: importTheme,
-              icon: require('@tabler/icons/outline/upload.svg'),
+              icon: require('@fluentui/arrow_upload_24_regular.svg'),
             }, {
               text: intl.formatMessage(messages.export),
               action: exportTheme,
-              icon: require('@tabler/icons/outline/download.svg'),
+              icon: require('@fluentui/arrow_download_24_regular.svg'),
             }]}
           />
           <Button theme='secondary' onClick={resetTheme}>

@@ -54,7 +54,7 @@ const WhoToFollowPanel = ({ limit }: IWhoToFollowPanel) => {
           <AccountContainer
             key={suggestion.account_id}
             id={suggestion.account_id}
-            actionIcon={require('@tabler/icons/outline/x.svg')}
+            actionIcon={require('@fluentui/dismiss_24_regular.svg')}
             actionTitle={intl.formatMessage(messages.dismissSuggestion)}
             onActionClick={features.suggestionsDismiss ? handleDismiss : undefined}
           />

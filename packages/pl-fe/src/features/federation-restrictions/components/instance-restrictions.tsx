@@ -62,7 +62,7 @@ const InstanceRestrictions: React.FC<IInstanceRestrictions> = ({ remoteInstance 
       ));
     } else if (federated_timeline_removal) {
       items.push((
-        <Restriction key='federatedTimelineRemoval' icon={require('@tabler/icons/outline/lock-open.svg')}>
+        <Restriction key='federatedTimelineRemoval' icon={require('@fluentui/lock_open_24_regular.svg')}>
           <FormattedMessage
             id='federation_restriction.federated_timeline_removal'
             defaultMessage='Fediverse timeline removal'
@@ -93,7 +93,7 @@ const InstanceRestrictions: React.FC<IInstanceRestrictions> = ({ remoteInstance 
 
     if (!fullMediaRemoval && media_nsfw) {
       items.push((
-        <Restriction key='mediaNsfw' icon={require('@tabler/icons/outline/eye-off.svg')}>
+        <Restriction key='mediaNsfw' icon={require('@fluentui/eye_off_24_regular.svg')}>
           <FormattedMessage
             id='federation_restriction.media_nsfw'
             defaultMessage='Attachments marked NSFW'

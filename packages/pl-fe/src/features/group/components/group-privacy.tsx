@@ -23,7 +23,7 @@ const GroupPrivacy = ({ group }: IGroupPolicy) => (
             src={
               group.locked
                 ? require('@fluentui/lock_closed_24_regular.svg')
-                : require('@tabler/icons/outline/world.svg')
+                : require('@fluentui/globe_24_regular.svg')
             }
             className='size-6 text-gray-600 dark:text-gray-600'
           />
@@ -55,7 +55,7 @@ const GroupPrivacy = ({ group }: IGroupPolicy) => (
         src={
           group.locked
             ? require('@fluentui/lock_closed_24_regular.svg')
-            : require('@tabler/icons/outline/world.svg')
+            : require('@fluentui/globe_24_regular.svg')
         }
       />
 

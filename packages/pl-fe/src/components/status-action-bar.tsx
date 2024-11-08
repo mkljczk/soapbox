@@ -802,7 +802,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       menu.push({
         text: intl.formatMessage(messages.copy),
         action: handleCopy,
-        icon: require('@fluentui/copy_24_regular.svg'),
+        icon: require('@fluentui/clipboard_link_24_regular.svg'),
       });
 
       if (features.embeds && account.local) {
@@ -937,7 +937,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       menu.push({
         text: intl.formatMessage(messages.report, { name: username }),
         action: handleReport,
-        icon: require('@tabler/icons/outline/flag.svg'),
+        icon: require('@fluentui/flag_24_regular.svg'),
       });
     }
 
@@ -946,20 +946,20 @@ const MenuButton: React.FC<IMenuButton> = ({
         menu.push({
           text: intl.formatMessage(messages.hideTranslation),
           action: handleTranslate,
-          icon: require('@tabler/icons/outline/language.svg'),
+          icon: require('@fluentui/translate_24_regular.svg'),
         });
       } else {
         menu.push({
           text: intl.formatMessage(messages.translate),
           action: handleTranslate,
-          icon: require('@tabler/icons/outline/language.svg'),
+          icon: require('@fluentui/translate_24_regular.svg'),
         });
       }
 
       menu.push({
         text: intl.formatMessage(messages.addKnownLanguage, { language: languages[status.language as 'en'] || status.language }),
         action: handleIgnoreLanguage,
-        icon: require('@tabler/icons/outline/flag.svg'),
+        icon: require('@fluentui/flag_24_regular.svg'),
       });
     }
 
@@ -1000,7 +1000,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       menu.push({
         text: intl.formatMessage(messages.adminAccount, { name: username }),
         action: onModerate,
-        icon: require('@tabler/icons/outline/gavel.svg'),
+        icon: require('@fluentui/gavel_24_regular.svg'),
       });
 
       if (isAdmin) {
@@ -1014,7 +1014,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       menu.push({
         text: intl.formatMessage(status.sensitive === false ? messages.markStatusSensitive : messages.markStatusNotSensitive),
         action: handleToggleStatusSensitivity,
-        icon: require('@tabler/icons/outline/alert-triangle.svg'),
+        icon: require('@fluentui/warning_24_regular.svg'),
       });
 
       if (!ownAccount) {

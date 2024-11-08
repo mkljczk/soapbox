@@ -249,8 +249,8 @@ const LanguageDropdownButton: React.FC<ILanguageDropdownButton> = ({ composeId }
         theme='muted'
         size='xs'
         text={buttonLabel}
-        icon={require('@tabler/icons/outline/language.svg')}
-        secondaryIcon={require('@tabler/icons/outline/chevron-down.svg')}
+        icon={require('@fluentui/translate_24_regular.svg')}
+        secondaryIcon={require('@fluentui/chevron_down_24_regular.svg')}
         title={intl.formatMessage(messages.languagePrompt)}
       />
     </DropdownMenu>

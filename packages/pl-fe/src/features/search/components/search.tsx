@@ -167,7 +167,7 @@ const Search = (props: ISearch) => {
           />
 
           <SvgIcon
-            src={require('@tabler/icons/outline/x.svg')}
+            src={require('@fluentui/dismiss_24_regular.svg')}
             className={clsx('size-4 text-gray-600', { hidden: !hasValue })}
             aria-label={intl.formatMessage(messages.placeholder)}
           />

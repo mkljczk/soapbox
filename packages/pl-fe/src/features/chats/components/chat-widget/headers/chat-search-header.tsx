@@ -28,7 +28,7 @@ const ChatSearchHeader = () => {
             }}
           >
             <Icon
-              src={require('@tabler/icons/outline/arrow-left.svg')}
+              src={require('@fluentui/arrow_left_24_regular.svg')}
               className='size-6 text-gray-600 dark:text-gray-400 rtl:rotate-180'
             />
           </button>

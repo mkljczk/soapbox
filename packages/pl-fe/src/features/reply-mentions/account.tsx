@@ -42,7 +42,7 @@ const Account: React.FC<IAccount> = ({ composeId, accountId, author }) => {
   let button;
 
   if (added) {
-    button = <IconButton src={require('@tabler/icons/outline/x.svg')} iconClassName='h-5 w-5' title={intl.formatMessage(messages.remove)} onClick={onRemove} />;
+    button = <IconButton src={require('@fluentui/dismiss_24_regular.svg')} iconClassName='h-5 w-5' title={intl.formatMessage(messages.remove)} onClick={onRemove} />;
   } else {
     button = <IconButton src={require('@tabler/icons/outline/plus.svg')} iconClassName='h-5 w-5' title={intl.formatMessage(messages.add)} onClick={onAdd} />;
   }

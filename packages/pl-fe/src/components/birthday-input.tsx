@@ -70,7 +70,7 @@ const BirthdayInput: React.FC<IBirthdayInput> = ({ value, onChange, required }) 
       <div className='flex items-center justify-between'>
         <IconButton
           className='datepicker__button rtl:rotate-180'
-          src={require('@tabler/icons/outline/chevron-left.svg')}
+          src={require('@fluentui/chevron_left_24_regular.svg')}
           onClick={decreaseMonth}
           disabled={prevMonthButtonDisabled}
           aria-label={intl.formatMessage(messages.previousMonth)}
@@ -79,7 +79,7 @@ const BirthdayInput: React.FC<IBirthdayInput> = ({ value, onChange, required }) 
         {intl.formatDate(date, { month: 'long' })}
         <IconButton
           className='datepicker__button rtl:rotate-180'
-          src={require('@tabler/icons/outline/chevron-right.svg')}
+          src={require('@fluentui/chevron_right_24_regular.svg')}
           onClick={increaseMonth}
           disabled={nextMonthButtonDisabled}
           aria-label={intl.formatMessage(messages.nextMonth)}
@@ -89,7 +89,7 @@ const BirthdayInput: React.FC<IBirthdayInput> = ({ value, onChange, required }) 
       <div className='flex items-center justify-between'>
         <IconButton
           className='datepicker__button rtl:rotate-180'
-          src={require('@tabler/icons/outline/chevron-left.svg')}
+          src={require('@fluentui/chevron_left_24_regular.svg')}
           onClick={decreaseYear}
           disabled={prevYearButtonDisabled}
           aria-label={intl.formatMessage(messages.previousYear)}
@@ -98,7 +98,7 @@ const BirthdayInput: React.FC<IBirthdayInput> = ({ value, onChange, required }) 
         {intl.formatDate(date, { year: 'numeric' })}
         <IconButton
           className='datepicker__button rtl:rotate-180'
-          src={require('@tabler/icons/outline/chevron-right.svg')}
+          src={require('@fluentui/chevron_right_24_regular.svg')}
           onClick={increaseYear}
           disabled={nextYearButtonDisabled}
           aria-label={intl.formatMessage(messages.nextYear)}

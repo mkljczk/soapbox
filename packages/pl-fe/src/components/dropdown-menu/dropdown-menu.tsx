@@ -153,7 +153,7 @@ const DropdownMenuContent: React.FC<IDropdownMenuContent> = ({ handleClose, item
                 <HStack className='mx-2 my-1 text-gray-700 dark:text-gray-300' space={3} alignItems='center'>
                   <IconButton
                     theme='transparent'
-                    src={require('@tabler/icons/outline/arrow-left.svg')}
+                    src={require('@fluentui/arrow_left_24_regular.svg')}
                     iconClassName='h-5 w-5'
                     onClick={handleExitSubmenu}
                     autoFocus

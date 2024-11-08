@@ -120,7 +120,7 @@ const ChatPageMain = () => {
   ];
 
   if (features.chatsDelete) menuItems.push({
-    icon: require('@tabler/icons/outline/logout.svg'),
+    icon: require('@fluentui/sign_out_24_regular.svg'),
     text: intl.formatMessage(messages.leaveChat),
     action: handleLeaveChat,
   });
@@ -131,7 +131,7 @@ const ChatPageMain = () => {
         <HStack alignItems='center' space={2} className='overflow-hidden'>
           <HStack alignItems='center'>
             <IconButton
-              src={require('@tabler/icons/outline/arrow-left.svg')}
+              src={require('@fluentui/arrow_left_24_regular.svg')}
               className='mr-2 size-7 sm:mr-0 sm:hidden rtl:rotate-180'
               onClick={() => history.push('/chats')}
             />

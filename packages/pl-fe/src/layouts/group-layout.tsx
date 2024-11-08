@@ -35,7 +35,7 @@ const PrivacyBlankslate = () => (
   <Stack space={4} className='py-10' alignItems='center'>
     <div className='rounded-full bg-gray-200 p-3 dark:bg-gray-800'>
       <Icon
-        src={require('@tabler/icons/outline/eye-off.svg')}
+        src={require('@fluentui/eye_off_24_regular.svg')}
         className='size-6 text-gray-600 dark:text-gray-600'
       />
     </div>

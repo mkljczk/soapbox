@@ -93,7 +93,7 @@ const OtherActionsStep = ({
 
               <div>
                 <Button
-                  icon={require('@tabler/icons/outline/arrows-minimize.svg')}
+                  icon={require('@fluentui/arrow_minimize_24_regular.svg')}
                   theme='tertiary'
                   size='sm'
                   onClick={() => setShowAdditionalStatuses(false)}

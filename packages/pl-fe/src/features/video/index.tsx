@@ -506,7 +506,7 @@ const Video: React.FC<IVideo> = ({
         </div>
 
         <div className='-mx-[5px] my-0 flex justify-between pb-2'>
-          <div className='video-player__buttons left'>
+          <div className='video-playera left'>
             <button
               type='button'
               title={intl.formatMessage(paused ? messages.play : messages.pause)}
@@ -515,7 +515,7 @@ const Video: React.FC<IVideo> = ({
               onClick={togglePlay}
               autoFocus={autoFocus}
             >
-              <Icon src={paused ? require('@tabler/icons/outline/player-play.svg') : require('@tabler/icons/outline/player-pause.svg')} />
+              <Icon src={paused ? require('@fluentui/play_24_regular.svg') : require('@fluentui/pause_24_regular.svg')} />
             </button>
 
             <button
@@ -525,7 +525,7 @@ const Video: React.FC<IVideo> = ({
               className={clsx('player-button', detailed || fullscreen && 'py-2.5')}
               onClick={toggleMute}
             >
-              <Icon src={muted ? require('@fluentui/speaker_mute_24_regular.svg') : require('@tabler/icons/outline/volume.svg')} />
+              <Icon src={muted ? require('@fluentui/speaker_mute_24_regular.svg') : require('@fluentui/speaker_2_24_regular.svg')} />
             </button>
 
             <div className={clsx('video-player__volume', { 'overflow-visible w-12 mr-4': hovered })} onMouseDown={handleVolumeMouseDown} ref={slider}>
@@ -558,7 +558,7 @@ const Video: React.FC<IVideo> = ({
               className={clsx('player-button', detailed || fullscreen && 'py-2.5')}
               onClick={toggleFullscreen}
             >
-              <Icon src={fullscreen ? require('@tabler/icons/outline/arrows-minimize.svg') : require('@tabler/icons/outline/arrows-maximize.svg')} />
+              <Icon src={fullscreen ? require('@fluentui/arrow_minimize_24_regular.svg') : require('@fluentui/arrow_maximize_24_regular.svg')} />
             </button>
           </div>
         </div>

@@ -35,7 +35,7 @@ const ContentTypeButton: React.FC<IContentTypeButton> = ({ composeId }) => {
 
   if (postFormats.includes('text/plain')) {
     options.push({
-      icon: require('@tabler/icons/outline/pilcrow.svg'),
+      icon: require('@fluentui/text_t_24_regular.svg'),
       text: intl.formatMessage(messages.content_type_plaintext),
       value: 'text/plain',
     });
@@ -81,7 +81,7 @@ const ContentTypeButton: React.FC<IContentTypeButton> = ({ composeId }) => {
         size='xs'
         text={option?.text}
         icon={option?.icon}
-        secondaryIcon={require('@tabler/icons/outline/chevron-down.svg')}
+        secondaryIcon={require('@fluentui/chevron_down_24_regular.svg')}
         title={intl.formatMessage(messages.change_content_type)}
       />
     </DropdownMenu>

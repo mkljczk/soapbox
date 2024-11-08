@@ -88,7 +88,7 @@ const EventActionButton: React.FC<IEventAction> = ({ status, theme = 'secondary'
   switch (event.join_state) {
     case 'accept':
       buttonLabel = <FormattedMessage id='event.join_state.accept' defaultMessage='Going' />;
-      buttonIcon = require('@tabler/icons/outline/check.svg');
+      buttonIcon = require('@fluentui/checkmark_24_regular.svg');
       break;
     case 'pending':
       buttonLabel = <FormattedMessage id='event.join_state.pending' defaultMessage='Pending' />;

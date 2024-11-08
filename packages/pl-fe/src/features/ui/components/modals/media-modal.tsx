@@ -238,7 +238,7 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
           >
             <IconButton
               title={intl.formatMessage(messages.close)}
-              src={require('@tabler/icons/outline/x.svg')}
+              src={require('@fluentui/dismiss_24_regular.svg')}
               onClick={() => onClose('MEDIA')}
               theme='dark'
               className='!p-1.5 hover:scale-105 hover:bg-gray-900'
@@ -247,7 +247,7 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
 
             <HStack alignItems='center' space={2}>
               <IconButton
-                src={require('@tabler/icons/outline/download.svg')}
+                src={require('@fluentui/arrow_download_24_regular.svg')}
                 theme='dark'
                 className='!p-1.5 hover:scale-105 hover:bg-gray-900'
                 iconClassName='h-5 w-5'
@@ -256,7 +256,7 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
 
               {status && (
                 <IconButton
-                  src={isFullScreen ? require('@tabler/icons/outline/arrows-minimize.svg') : require('@tabler/icons/outline/arrows-maximize.svg')}
+                  src={isFullScreen ? require('@fluentui/arrow_minimize_24_regular.svg') : require('@fluentui/arrow_maximize_24_regular.svg')}
                   title={intl.formatMessage(isFullScreen ? messages.minimize : messages.expand)}
                   theme='dark'
                   className='hidden !p-1.5 hover:scale-105 hover:bg-gray-900 xl:block'
@@ -279,7 +279,7 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
                   onClick={handlePrevClick}
                   aria-label={intl.formatMessage(messages.previous)}
                 >
-                  <Icon src={require('@tabler/icons/outline/arrow-left.svg')} className='size-5' />
+                  <Icon src={require('@fluentui/arrow_left_24_regular.svg')} className='size-5' />
                 </button>
               </div>
             )}

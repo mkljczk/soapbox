@@ -139,7 +139,7 @@ const StatusReactionsBar: React.FC<IStatusReactionsBar> = ({ status, collapsed }
           >
             <Icon
               className='size-4'
-              src={require('@tabler/icons/outline/mood-plus.svg')}
+              src={require('@fluentui/emoji_add_24_regular.svg')}
             />
           </button>
         </EmojiPickerDropdown>

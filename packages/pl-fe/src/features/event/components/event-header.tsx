@@ -211,12 +211,12 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
       {
         text: intl.formatMessage(messages.exportIcs),
         action: handleExportClick,
-        icon: require('@tabler/icons/outline/calendar-plus.svg'),
+        icon: require('@fluentui/calendar_arrow_down_24_regular.svg'),
       },
       {
         text: intl.formatMessage(messages.copy),
         action: handleCopy,
-        icon: require('@tabler/icons/outline/link.svg'),
+        icon: require('@fluentui/clipboard_link_24_regular.svg'),
       },
     ];
 
@@ -250,7 +250,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
         menu.push({
           text: intl.formatMessage(messages.quotePost),
           action: handleQuoteClick,
-          icon: require('@tabler/icons/outline/quote.svg'),
+          icon: require('@fluentui/text_quote_24_regular.svg'),
         });
       }
     }
@@ -297,7 +297,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
       menu.push({
         text: intl.formatMessage(messages.mute, { name: username }),
         action: handleMuteClick,
-        icon: require('@tabler/icons/outline/circle-x.svg'),
+        icon: require('@fluentui/dismiss_circle_24_regular.svg'),
       });
       menu.push({
         text: intl.formatMessage(messages.block, { name: username }),
@@ -307,7 +307,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
       menu.push({
         text: intl.formatMessage(messages.report, { name: username }),
         action: handleReport,
-        icon: require('@tabler/icons/outline/flag.svg'),
+        icon: require('@fluentui/flag_24_regular.svg'),
       });
     }
 
@@ -317,7 +317,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
       menu.push({
         text: intl.formatMessage(messages.adminAccount, { name: account.username }),
         action: handleModerate,
-        icon: require('@tabler/icons/outline/gavel.svg'),
+        icon: require('@fluentui/gavel_24_regular.svg'),
       });
 
       if (isAdmin) {
@@ -331,7 +331,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
       menu.push({
         text: intl.formatMessage(status.sensitive === false ? messages.markStatusSensitive : messages.markStatusNotSensitive),
         action: handleToggleStatusSensitivity,
-        icon: require('@tabler/icons/outline/alert-triangle.svg'),
+        icon: require('@fluentui/warning_24_regular.svg'),
       });
 
       if (account.id !== ownAccount?.id) {
@@ -399,7 +399,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
 
         <Stack space={1}>
           <HStack alignItems='center' space={2}>
-            <Icon src={require('@tabler/icons/outline/flag-3.svg')} />
+            <Icon src={require('@fluentui/organization_24_regular.svg')} />
             <span>
               <FormattedMessage
                 id='event.organized_by'
@@ -419,7 +419,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
           </HStack>
 
           <HStack alignItems='center' space={2}>
-            <Icon src={require('@tabler/icons/outline/users.svg')} />
+            <Icon src={require('@fluentui/people_24_regular.svg')} />
             <a href='#' className='hover:underline' onClick={handleParticipantsClick}>
               <span>
                 <FormattedMessage
@@ -438,7 +438,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
 
           {event.location && (
             <HStack alignItems='center' space={2}>
-              <Icon src={require('@tabler/icons/outline/map-pin.svg')} />
+              <Icon src={require('@fluentui/location_24_regular.svg')} />
               <span>
                 {event.location.name}
               </span>

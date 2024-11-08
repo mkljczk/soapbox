@@ -26,7 +26,7 @@ const ChatPageNew: React.FC<IChatPageNew> = () => {
       <Stack className='grow px-4 pt-6 sm:px-6'>
         <HStack alignItems='center'>
           <IconButton
-            src={require('@tabler/icons/outline/arrow-left.svg')}
+            src={require('@fluentui/arrow_left_24_regular.svg')}
             className='mr-2 size-7 sm:mr-0 sm:hidden rtl:rotate-180'
             onClick={() => history.push('/chats')}
           />

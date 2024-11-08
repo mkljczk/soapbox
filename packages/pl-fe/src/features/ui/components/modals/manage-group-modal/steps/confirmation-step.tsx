@@ -113,7 +113,7 @@ const ConfirmationStep: React.FC<IConfirmationStep> = ({ group }) => {
           </Button>
         )}
 
-        <Button onClick={handleCopyLink} theme='transparent' icon={require('@tabler/icons/outline/link.svg')} className='text-primary-600'>
+        <Button onClick={handleCopyLink} theme='transparent' icon={require('@fluentui/link_24_regular.svg')} className='text-primary-600'>
           <FormattedMessage id='manage_group.confirmation.copy' defaultMessage='Copy link' />
         </Button>
       </HStack>

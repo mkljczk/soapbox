@@ -53,7 +53,7 @@ const ReadMoreButton: React.FC<IReadMoreButton> = ({ onClick, quote, poll, previ
     {!preview && (
       <button className='flex items-center border-0 bg-transparent p-0 pt-2 text-gray-900 hover:underline active:underline dark:text-gray-300' onClick={onClick}>
         <FormattedMessage id='status.read_more' defaultMessage='Read more' />
-        <Icon className='inline-block size-5' src={require('@tabler/icons/outline/chevron-right.svg')} />
+        <Icon className='inline-block size-5' src={require('@fluentui/chevron_right_24_regular.svg')} />
       </button>
     )}
   </div>
@@ -178,7 +178,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
             theme='muted'
             size='xs'
             onClick={toggleExpanded}
-            icon={expanded ? require('@tabler/icons/outline/chevron-up.svg') : require('@tabler/icons/outline/chevron-down.svg')}
+            icon={expanded ? require('@fluentui/chevron_up_24_regular.svg') : require('@fluentui/chevron_down_24_regular.svg')}
           >
             {expanded
               ? <FormattedMessage id='status.spoiler.collapse' defaultMessage='Collapse' />

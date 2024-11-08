@@ -65,7 +65,7 @@ const CommunityTimeline = () => {
         <Accordion
           headline={<FormattedMessage id='fediverse_tab.explanation_box.title' defaultMessage='What is the Fediverse?' />}
           action={dismissExplanationBox}
-          actionIcon={require('@tabler/icons/outline/x.svg')}
+          actionIcon={require('@fluentui/dismiss_24_regular.svg')}
           actionLabel={intl.formatMessage(messages.dismiss)}
           expanded={explanationBoxExpanded}
           onToggle={toggleExplanationBox}

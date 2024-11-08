@@ -5,7 +5,7 @@ import { MIMETYPE_ICONS } from 'pl-fe/components/upload';
 
 import type { MediaAttachment } from 'pl-api';
 
-const defaultIcon = require('@tabler/icons/outline/paperclip.svg');
+const defaultIcon = require('@fluentui/attach_24_regular.svg');
 
 interface IChatUploadPreview {
   className?: string;

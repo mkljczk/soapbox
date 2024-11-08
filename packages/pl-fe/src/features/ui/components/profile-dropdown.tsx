@@ -93,7 +93,7 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
       text: intl.formatMessage(messages.logout, { acct: account.acct }),
       to: '/logout',
       action: handleLogOut,
-      icon: require('@tabler/icons/outline/logout.svg'),
+      icon: require('@fluentui/sign_out_24_regular.svg'),
     });
 
     return () => (

@@ -86,7 +86,7 @@ const PollOptionText: React.FC<IPollOptionText> = ({ poll, option, index, active
             aria-label={option.title}
           >
             {active && (
-              <Icon src={require('@tabler/icons/outline/check.svg')} className='size-4 text-white dark:text-primary-900' />
+              <Icon src={require('@fluentui/checkmark_24_regular.svg')} className='size-4 text-white dark:text-primary-900' />
             )}
           </span>
         </div>

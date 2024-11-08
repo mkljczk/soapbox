@@ -64,7 +64,7 @@ const ProfileField: React.FC<IProfileField> = ({ field, emojis }) => {
         <HStack space={2} alignItems='center'>
           {field.verified_at && (
             <span className='flex-none' title={intl.formatMessage(messages.linkVerifiedOn, { date: intl.formatDate(field.verified_at, dateFormatOptions) })}>
-              <Icon src={require('@tabler/icons/outline/check.svg')} />
+              <Icon src={require('@fluentui/checkmark_24_regular.svg')} />
             </span>
           )}
 

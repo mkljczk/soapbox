@@ -320,7 +320,7 @@ const ImageComponent = ({
             />
             <IconButton
               onClick={deleteNode}
-              src={require('@tabler/icons/outline/x.svg')}
+              src={require('@fluentui/dismiss_24_regular.svg')}
               theme='dark'
               className='!p-1.5 hover:scale-105 hover:bg-gray-900'
               iconClassName='h-5 w-5'
@@ -355,7 +355,7 @@ const ImageComponent = ({
                 'opacity-100': !active,
               })}
             >
-              <Icon className='size-4' src={require('@tabler/icons/outline/alert-triangle.svg')} />
+              <Icon className='size-4' src={require('@fluentui/warning_24_regular.svg')} />
               <FormattedMessage id='upload_form.description_missing.indicator' defaultMessage='Alt' />
             </span>
           )}

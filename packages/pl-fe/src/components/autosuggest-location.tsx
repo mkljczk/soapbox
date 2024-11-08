@@ -6,9 +6,9 @@ import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
+const mapPinIcon = require('@fluentui/location_24_regular.svg');
 const buildingCommunityIcon = require('@tabler/icons/outline/building-community.svg');
 const homeIcon = require('@tabler/icons/outline/home-2.svg');
-const mapPinIcon = require('@tabler/icons/outline/map-pin.svg');
 const roadIcon = require('@tabler/icons/outline/road.svg');
 
 const ADDRESS_ICONS: Record<string, string> = {

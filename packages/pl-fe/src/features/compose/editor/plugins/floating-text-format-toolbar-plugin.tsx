@@ -190,7 +190,7 @@ const BlockTypeDropdown = ({ editor, anchorElem, blockType, icon }: {
         type='button'
       >
         <Icon src={icon} />
-        <Icon src={require('@tabler/icons/outline/chevron-down.svg')} className='-bottom-2 size-4' />
+        <Icon src={require('@fluentui/chevron_down_24_regular.svg')} className='-bottom-2 size-4' />
         {showDropDown && (
           <div
             className='absolute left-0 top-9 z-10 flex h-[38px] gap-0.5 rounded-lg bg-white p-1 shadow-lg transition-opacity dark:bg-gray-900'
@@ -404,7 +404,7 @@ const TextFormatFloatingToolbar = ({
             onClick={insertLink}
             active={isLink}
             aria-label={intl.formatMessage(messages.insertLink)}
-            icon={require('@tabler/icons/outline/link.svg')}
+            icon={require('@fluentui/link_24_regular.svg')}
           />
         </>
       )}

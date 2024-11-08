@@ -103,7 +103,7 @@ const HeaderPicker = React.forwardRef<HTMLInputElement, IMediaInput>(({
       {onClear && src && (
         <IconButton
           onClick={handleClear}
-          src={require('@tabler/icons/outline/x.svg')}
+          src={require('@fluentui/dismiss_24_regular.svg')}
           theme='dark'
           className='absolute right-2 top-2 z-10 hover:scale-105 hover:bg-gray-900'
           iconClassName='h-5 w-5'

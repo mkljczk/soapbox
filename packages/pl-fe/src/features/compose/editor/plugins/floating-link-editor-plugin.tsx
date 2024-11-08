@@ -193,7 +193,7 @@ const FloatingLinkEditor = ({
                 editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
               }}
             >
-              <Icon className='size-5' src={require('@tabler/icons/outline/x.svg')} />
+              <Icon className='size-5' src={require('@fluentui/dismiss_24_regular.svg')} />
             </div>
           </>
         ) : (

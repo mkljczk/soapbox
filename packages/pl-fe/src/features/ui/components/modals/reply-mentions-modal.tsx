@@ -33,7 +33,7 @@ const ReplyMentionsModal: React.FC<BaseModalProps & ReplyMentionsModalProps> = (
     <Modal
       title={<FormattedMessage id='navigation_bar.in_reply_to' defaultMessage='In reply to' />}
       onClose={onClickClose}
-      closeIcon={require('@tabler/icons/outline/arrow-left.svg')}
+      closeIcon={require('@fluentui/arrow_left_24_regular.svg')}
       closePosition='left'
     >
       <div className='block min-h-[300px] flex-1 flex-row overflow-y-auto'>

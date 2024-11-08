@@ -36,7 +36,7 @@ const Scrobble: React.FC<IScrobble> = ({ scrobble }) => {
   return (
     <HStack alignItems='center' space={0.5}>
       <Icon
-        src={require('@tabler/icons/outline/music.svg')}
+        src={require('@fluentui/headphones_sound_wave_24_regular.svg')}
         className='size-4 text-gray-800 dark:text-gray-200'
       />
 

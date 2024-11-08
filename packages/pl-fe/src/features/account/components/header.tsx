@@ -300,7 +300,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
     if (features.rssFeeds && account.local && (software !== GOTOSOCIAL || account.enable_rss)) {
       menu.push({
         text: intl.formatMessage(messages.subscribeFeed),
-        icon: require('@tabler/icons/outline/rss.svg'),
+        icon: require('@fluentui/rss_24_regular.svg'),
         href: software === MASTODON ? `${account.url}.rss` : `${account.url}/feed.rss`,
         target: '_blank',
       });
@@ -310,7 +310,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
       menu.push({
         text: intl.formatMessage(messages.share, { name: account.username }),
         action: handleShare,
-        icon: require('@tabler/icons/outline/upload.svg'),
+        icon: require('@fluentui/share_24_regular.svg'),
       });
     }
 
@@ -327,7 +327,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
     menu.push({
       text: intl.formatMessage(messages.copy),
       action: handleCopy,
-      icon: require('@fluentui/copy_24_regular.svg'),
+      icon: require('@fluentui/clipboard_link_24_regular.svg'),
     });
 
     if (!ownAccount) return menu;
@@ -359,7 +359,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
       menu.push({
         text: intl.formatMessage(messages.mutes),
         to: '/mutes',
-        icon: require('@tabler/icons/outline/circle-x.svg'),
+        icon: require('@fluentui/dismiss_circle_24_regular.svg'),
       });
       menu.push({
         text: intl.formatMessage(messages.blocks),
@@ -408,7 +408,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
           menu.push({
             text: intl.formatMessage(account.relationship?.endorsed ? messages.unendorse : messages.endorse),
             action: onEndorseToggle,
-            icon: require('@tabler/icons/outline/user-check.svg'),
+            icon: require('@fluentui/person_available_24_regular.svg'),
           });
         }
       } else if (features.lists && features.unrestrictedLists) {
@@ -433,7 +433,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
         menu.push({
           text: intl.formatMessage(messages.removeFromFollowers),
           action: onRemoveFromFollowers,
-          icon: require('@tabler/icons/outline/user-x.svg'),
+          icon: require('@fluentui/person_delete_24_regular.svg'),
         });
       }
 
@@ -441,13 +441,13 @@ const Header: React.FC<IHeader> = ({ account }) => {
         menu.push({
           text: intl.formatMessage(messages.unmute, { name: account.username }),
           action: onMute,
-          icon: require('@tabler/icons/outline/circle-x.svg'),
+          icon: require('@fluentui/dismiss_circle_24_regular.svg'),
         });
       } else {
         menu.push({
           text: intl.formatMessage(messages.mute, { name: account.username }),
           action: onMute,
-          icon: require('@tabler/icons/outline/circle-x.svg'),
+          icon: require('@fluentui/dismiss_circle_24_regular.svg'),
         });
       }
 
@@ -468,7 +468,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
       menu.push({
         text: intl.formatMessage(messages.report, { name: account.username }),
         action: onReport,
-        icon: require('@tabler/icons/outline/flag.svg'),
+        icon: require('@fluentui/flag_24_regular.svg'),
       });
     }
 
@@ -498,7 +498,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
       menu.push({
         text: intl.formatMessage(messages.adminAccount, { name: account.username }),
         action: onModerate,
-        icon: require('@tabler/icons/outline/gavel.svg'),
+        icon: require('@fluentui/gavel_24_regular.svg'),
       });
     }
 
@@ -602,7 +602,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
 
     return (
       <IconButton
-        src={require('@tabler/icons/outline/upload.svg')}
+        src={require('@fluentui/share_24_regular.svg')}
         onClick={handleShare}
         title={intl.formatMessage(messages.share, { name: account.username })}
         theme='outlined'
@@ -621,7 +621,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
 
     return (
       <IconButton
-        src={require('@tabler/icons/outline/rss.svg')}
+        src={require('@fluentui/rss_24_regular.svg')}
         href={href}
         title={intl.formatMessage(messages.subscribeFeed)}
         theme='outlined'

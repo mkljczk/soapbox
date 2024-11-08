@@ -43,13 +43,13 @@ interface Option {
 
 const getItems = (features: Features, lists: ReturnType<typeof getOrderedLists>, intl: IntlShape) => [
   {
-    icon: require('@tabler/icons/outline/world.svg'),
+    icon: require('@fluentui/globe_24_regular.svg'),
     value: 'public',
     text: intl.formatMessage(messages.public_short),
     meta: intl.formatMessage(messages.public_long),
   },
   {
-    icon: require('@tabler/icons/outline/lock-open.svg'),
+    icon: require('@fluentui/lock_open_24_regular.svg'),
     value: 'unlisted',
     text: intl.formatMessage(messages.unlisted_short),
     meta: intl.formatMessage(messages.unlisted_long),
@@ -61,7 +61,7 @@ const getItems = (features: Features, lists: ReturnType<typeof getOrderedLists>,
     meta: intl.formatMessage(messages.private_long),
   },
   features.visibilityMutualsOnly ? {
-    icon: require('@tabler/icons/outline/users-group.svg'),
+    icon: require('@fluentui/people_community_24_regular.svg'),
     value: 'mutuals_only',
     text: intl.formatMessage(messages.mutuals_only_short),
     meta: intl.formatMessage(messages.mutuals_only_long),
@@ -154,7 +154,7 @@ const PrivacyDropdown: React.FC<IPrivacyDropdown> = ({
           privacy: valueOption?.text,
         })}
         icon={valueOption?.icon}
-        secondaryIcon={require('@tabler/icons/outline/chevron-down.svg')}
+        secondaryIcon={require('@fluentui/chevron_down_24_regular.svg')}
         title={intl.formatMessage(messages.change_privacy)}
       />
     </DropdownMenu>

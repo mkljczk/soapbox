@@ -22,7 +22,7 @@ const messages: Record<string, MessageDescriptor> = defineMessages({
 const STATUS_TYPE_ICONS: Record<string, string> = {
   direct: require('@fluentui/mail_24_regular.svg'),
   private: require('@fluentui/lock_closed_24_regular.svg'),
-  mutuals_only: require('@tabler/icons/outline/users-group.svg'),
+  mutuals_only: require('@fluentui/people_community_24_regular.svg'),
   local: require('@tabler/icons/outline/affiliate.svg'),
   list: require('@fluentui/people_24_regular.svg'),
 };

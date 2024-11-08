@@ -504,7 +504,7 @@ const Audio: React.FC<IAudio> = (props) => {
               className='player-button text-current opacity-[75] hover:text-current hover:opacity-100 focus:text-current focus:opacity-100 active:text-current active:opacity-100'
               onClick={togglePlay}
             >
-              <Icon src={paused ? require('@tabler/icons/outline/player-play.svg') : require('@tabler/icons/outline/player-pause.svg')} />
+              <Icon src={paused ? require('@fluentui/play_24_regular.svg') : require('@fluentui/pause_24_regular.svg')} />
             </button>
 
             <button
@@ -514,7 +514,7 @@ const Audio: React.FC<IAudio> = (props) => {
               className='player-button text-current opacity-[75] hover:text-current hover:opacity-100 focus:text-current focus:opacity-100 active:text-current active:opacity-100'
               onClick={toggleMute}
             >
-              <Icon src={muted ? require('@fluentui/speaker_mute_24_regular.svg') : require('@tabler/icons/outline/volume.svg')} />
+              <Icon src={muted ? require('@fluentui/speaker_mute_24_regular.svg') : require('@fluentui/speaker_2_24_regular.svg')} />
             </button>
 
             <div
@@ -555,7 +555,7 @@ const Audio: React.FC<IAudio> = (props) => {
               download
               target='_blank'
             >
-              <Icon src={require('@tabler/icons/outline/download.svg')} />
+              <Icon src={require('@fluentui/arrow_download_24_regular.svg')} />
             </a>
           </div>
         </div>

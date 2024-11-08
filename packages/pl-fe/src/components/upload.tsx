@@ -1,11 +1,11 @@
+import defaultIcon from '@fluentui/attach_24_regular.svg';
+import fileCodeIcon from '@fluentui/code_24_regular.svg';
+import xIcon from '@fluentui/dismiss_24_regular.svg';
+import fileTextIcon from '@fluentui/document_text_24_regular.svg';
+import fileZipIcon from '@fluentui/folder_zip_24_regular.svg';
 import bookIcon from '@tabler/icons/outline/book.svg';
-import fileCodeIcon from '@tabler/icons/outline/file-code.svg';
 import fileSpreadsheetIcon from '@tabler/icons/outline/file-spreadsheet.svg';
-import fileTextIcon from '@tabler/icons/outline/file-text.svg';
-import fileZipIcon from '@tabler/icons/outline/file-zip.svg';
-import defaultIcon from '@tabler/icons/outline/paperclip.svg';
 import presentationIcon from '@tabler/icons/outline/presentation.svg';
-import xIcon from '@tabler/icons/outline/x.svg';
 import zoomInIcon from '@tabler/icons/outline/zoom-in.svg';
 import clsx from 'clsx';
 import React, { useState } from 'react';
