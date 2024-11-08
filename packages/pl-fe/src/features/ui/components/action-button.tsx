@@ -256,7 +256,7 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
           size='sm'
           disabled={blockedBy}
           theme={isFollowing ? 'secondary' : 'primary'}
-          icon={blockedBy ? require('@tabler/icons/outline/ban.svg') : (!isFollowing && require('@tabler/icons/outline/plus.svg'))}
+          icon={blockedBy ? require('@fluentui/presence_blocked_24_regular.svg') : (!isFollowing && require('@tabler/icons/outline/plus.svg'))}
           onClick={handleFollow}
         >
           {isFollowing ? (

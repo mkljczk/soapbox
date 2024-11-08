@@ -158,7 +158,7 @@ const GroupMemberListItem = ({ member, group }: IGroupMemberListItem) => {
 
       items.push({
         text: intl.formatMessage(messages.groupModBlock, { name: account.username }),
-        icon: require('@tabler/icons/outline/ban.svg'),
+        icon: require('@fluentui/presence_blocked_24_regular.svg'),
         action: handleBlockFromGroup,
         destructive: true,
       });

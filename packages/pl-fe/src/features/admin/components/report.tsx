@@ -51,7 +51,7 @@ const Report: React.FC<IReport> = ({ id }) => {
   }, {
     text: intl.formatMessage(messages.deleteUser, { name: targetAccount.username }),
     action: handleDeleteUser,
-    icon: require('@tabler/icons/outline/trash.svg'),
+    icon: require('@fluentui/delete_24_regular.svg'),
     destructive: true,
   }];
 

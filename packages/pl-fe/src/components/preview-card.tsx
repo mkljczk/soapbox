@@ -201,7 +201,7 @@ const PreviewCard: React.FC<IPreviewCard> = ({
                     className='text-gray-700 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100'
                   >
                     <Icon
-                      src={require('@tabler/icons/outline/external-link.svg')}
+                      src={require('@fluentui/open_24_regular.svg')}
                       className='size-6 text-inherit'
                     />
                   </a>

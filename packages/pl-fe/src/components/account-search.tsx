@@ -74,7 +74,7 @@ const AccountSearch: React.FC<IAccountSearch> = ({ onSelected, ...rest }) => {
           onClick={handleClear}
         >
           <SvgIcon
-            src={require('@fluentui/search_24_regular.svg')}
+            src={require('@fluentui/search_regular.svg')}
             className={clsx('size-4 text-gray-400', { hidden: !isEmpty() })}
           />
 

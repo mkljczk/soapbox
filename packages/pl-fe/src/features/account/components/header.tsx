@@ -320,14 +320,14 @@ const Header: React.FC<IHeader> = ({ account }) => {
       menu.push({
         text: intl.formatMessage(messages.profileExternal, { domain }),
         action: () => onProfileExternal(account.url),
-        icon: require('@tabler/icons/outline/external-link.svg'),
+        icon: require('@fluentui/open_24_regular.svg'),
       });
     }
 
     menu.push({
       text: intl.formatMessage(messages.copy),
       action: handleCopy,
-      icon: require('@tabler/icons/outline/clipboard-copy.svg'),
+      icon: require('@fluentui/copy_24_regular.svg'),
     });
 
     if (!ownAccount) return menu;
@@ -364,7 +364,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
       menu.push({
         text: intl.formatMessage(messages.blocks),
         to: '/blocks',
-        icon: require('@tabler/icons/outline/ban.svg'),
+        icon: require('@fluentui/presence_blocked_24_regular.svg'),
       });
     } else {
       menu.push({
@@ -455,13 +455,13 @@ const Header: React.FC<IHeader> = ({ account }) => {
         menu.push({
           text: intl.formatMessage(messages.unblock, { name: account.username }),
           action: onBlock,
-          icon: require('@tabler/icons/outline/ban.svg'),
+          icon: require('@fluentui/presence_blocked_24_regular.svg'),
         });
       } else {
         menu.push({
           text: intl.formatMessage(messages.block, { name: account.username }),
           action: onBlock,
-          icon: require('@tabler/icons/outline/ban.svg'),
+          icon: require('@fluentui/presence_blocked_24_regular.svg'),
         });
       }
 
@@ -481,13 +481,13 @@ const Header: React.FC<IHeader> = ({ account }) => {
         menu.push({
           text: intl.formatMessage(messages.unblockDomain, { domain }),
           action: () => onUnblockDomain(domain),
-          icon: require('@tabler/icons/outline/ban.svg'),
+          icon: require('@fluentui/presence_blocked_24_regular.svg'),
         });
       } else {
         menu.push({
           text: intl.formatMessage(messages.blockDomain, { domain }),
           action: () => onBlockDomain(domain),
-          icon: require('@tabler/icons/outline/ban.svg'),
+          icon: require('@fluentui/presence_blocked_24_regular.svg'),
         });
       }
     }

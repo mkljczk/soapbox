@@ -525,7 +525,7 @@ const Video: React.FC<IVideo> = ({
               className={clsx('player-button', detailed || fullscreen && 'py-2.5')}
               onClick={toggleMute}
             >
-              <Icon src={muted ? require('@tabler/icons/outline/volume-3.svg') : require('@tabler/icons/outline/volume.svg')} />
+              <Icon src={muted ? require('@fluentui/speaker_mute_24_regular.svg') : require('@tabler/icons/outline/volume.svg')} />
             </button>
 
             <div className={clsx('video-player__volume', { 'overflow-visible w-12 mr-4': hovered })} onMouseDown={handleVolumeMouseDown} ref={slider}>

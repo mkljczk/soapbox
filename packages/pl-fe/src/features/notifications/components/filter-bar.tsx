@@ -54,43 +54,43 @@ const NotificationFilterBar = () => {
     });
   } else {
     items.push({
-      text: <Icon className='size-4' src={require('@fluentui/mention_16_regular.svg')} />,
+      text: <Icon className='size-4' src={require('@fluentui/mention_24_regular.svg')} />,
       title: intl.formatMessage(messages.mentions),
       action: onClick('mention'),
       name: 'mention',
     });
     if (features.accountNotifies) items.push({
-      text: <Icon className='size-4' src={require('@fluentui/alert_on_16_regular.svg')} />,
+      text: <Icon className='size-4' src={require('@fluentui/alert_on_24_regular.svg')} />,
       title: intl.formatMessage(messages.statuses),
       action: onClick('status'),
       name: 'status',
     });
     items.push({
-      text: <Icon className='size-4' src={require('@fluentui/star_16_regular.svg')} />,
+      text: <Icon className='size-4' src={require('@fluentui/star_24_regular.svg')} />,
       title: intl.formatMessage(messages.favourites),
       action: onClick('favourite'),
       name: 'favourite',
     });
     items.push({
-      text: <Icon className='size-4' src={require('@fluentui/arrow_repeat_all_16_regular.svg')} />,
+      text: <Icon className='size-4' src={require('@fluentui/arrow_repeat_all_24_regular.svg')} />,
       title: intl.formatMessage(messages.boosts),
       action: onClick('reblog'),
       name: 'reblog',
     });
     if (features.polls) items.push({
-      text: <Icon className='size-4' src={require('@fluentui/poll_16_regular.svg')} />,
+      text: <Icon className='size-4' src={require('@fluentui/poll_24_regular.svg')} />,
       title: intl.formatMessage(messages.polls),
       action: onClick('poll'),
       name: 'poll',
     });
     if (features.events) items.push({
-      text: <Icon className='size-4' src={require('@fluentui/calendar_ltr_16_regular.svg')} />,
+      text: <Icon className='size-4' src={require('@fluentui/calendar_ltr_24_regular.svg')} />,
       title: intl.formatMessage(messages.events),
       action: onClick('events'),
       name: 'events',
     });
     items.push({
-      text: <Icon className='size-4' src={require('@fluentui/person_add_16_regular.svg')} />,
+      text: <Icon className='size-4' src={require('@fluentui/person_add_24_regular.svg')} />,
       title: intl.formatMessage(messages.follows),
       action: onClick('follow'),
       name: 'follow',

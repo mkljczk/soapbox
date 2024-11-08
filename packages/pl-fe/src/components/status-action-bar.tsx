@@ -793,7 +793,7 @@ const MenuButton: React.FC<IMenuButton> = ({
     if (expandable) {
       menu.push({
         text: intl.formatMessage(messages.open),
-        icon: require('@tabler/icons/outline/arrows-vertical.svg'),
+        icon: require('@fluentui/arrow_bidirectional_up_down_24_regular.svg'),
         to: `/@${status.account.acct}/posts/${status.id}`,
       });
     }
@@ -802,14 +802,14 @@ const MenuButton: React.FC<IMenuButton> = ({
       menu.push({
         text: intl.formatMessage(messages.copy),
         action: handleCopy,
-        icon: require('@tabler/icons/outline/clipboard-copy.svg'),
+        icon: require('@fluentui/copy_24_regular.svg'),
       });
 
       if (features.embeds && account.local) {
         menu.push({
           text: intl.formatMessage(messages.embed),
           action: handleEmbed,
-          icon: require('@tabler/icons/outline/share.svg'),
+          icon: require('@fluentui/code_24_regular.svg'),
         });
       }
     }
@@ -822,7 +822,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       menu.push({
         text: intl.formatMessage(messages.viewReactions),
         action: handleOpenReactionsModal,
-        icon: require('@tabler/icons/outline/mood-happy.svg'),
+        icon: require('@fluentui/emoji_laugh_24_regular.svg'),
       });
     }
 
@@ -832,7 +832,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       menu.push({
         text: intl.formatMessage(status.bookmarked ? messages.unbookmark : messages.bookmark),
         action: handleBookmarkClick,
-        icon: status.bookmarked ? require('@tabler/icons/outline/bookmark-off.svg') : require('@fluentui/bookmark_24_regular.svg'),
+        icon: status.bookmarked ? require('@fluentui/bookmark_off_24_regular.svg') : require('@fluentui/bookmark_add_24_regular.svg'),
       });
     }
 
@@ -840,7 +840,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       menu.push({
         text: intl.formatMessage(status.bookmark_folder ? messages.bookmarkChangeFolder : messages.bookmarkSetFolder),
         action: handleBookmarkFolderClick,
-        icon: require('@tabler/icons/outline/folders.svg'),
+        icon: require('@fluentui/bookmark_multiple_24_regular.svg'),
       });
     }
 
@@ -848,7 +848,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       const { hostname: domain } = new URL(status.uri);
       menu.push({
         text: intl.formatMessage(messages.external, { domain }),
-        icon: require('@tabler/icons/outline/external-link.svg'),
+        icon: require('@fluentui/open_24_regular.svg'),
         href: status.uri,
         target: '_blank',
       });
@@ -859,7 +859,7 @@ const MenuButton: React.FC<IMenuButton> = ({
     menu.push({
       text: intl.formatMessage(mutingConversation ? messages.unmuteConversation : messages.muteConversation),
       action: handleConversationMuteClick,
-      icon: mutingConversation ? require('@fluentui/alert_24_regular.svg') : require('@tabler/icons/outline/bell-off.svg'),
+      icon: mutingConversation ? require('@fluentui/alert_24_regular.svg') : require('@fluentui/alert_off_24_regular.svg'),
     });
 
     menu.push(null);
@@ -869,7 +869,7 @@ const MenuButton: React.FC<IMenuButton> = ({
         menu.push({
           text: intl.formatMessage(status.pinned ? messages.unpin : messages.pin),
           action: handlePinClick,
-          icon: status.pinned ? require('@tabler/icons/outline/pinned-off.svg') : require('@tabler/icons/outline/pin.svg'),
+          icon: status.pinned ? require('@fluentui/pin_off_24_regular.svg') : require('@fluentui/pin_24_regular.svg'),
         });
       } else {
         if (status.visibility === 'private' || status.visibility === 'mutuals_only') {
@@ -884,20 +884,20 @@ const MenuButton: React.FC<IMenuButton> = ({
       menu.push({
         text: intl.formatMessage(messages.delete),
         action: handleDeleteClick,
-        icon: require('@tabler/icons/outline/trash.svg'),
+        icon: require('@fluentui/delete_24_regular.svg'),
         destructive: true,
       });
       if (features.editStatuses) {
         menu.push({
           text: intl.formatMessage(messages.edit),
           action: handleEditClick,
-          icon: require('@tabler/icons/outline/edit.svg'),
+          icon: require('@fluentui/edit_24_regular.svg'),
         });
       } else {
         menu.push({
           text: intl.formatMessage(messages.redraft),
           action: handleRedraftClick,
-          icon: require('@tabler/icons/outline/edit.svg'),
+          icon: require('@fluentui/edit_24_regular.svg'),
           destructive: true,
         });
       }
@@ -927,12 +927,12 @@ const MenuButton: React.FC<IMenuButton> = ({
       menu.push({
         text: intl.formatMessage(messages.mute, { name: username }),
         action: handleMuteClick,
-        icon: require('@tabler/icons/outline/volume-3.svg'),
+        icon: require('@fluentui/speaker_mute_24_regular.svg'),
       });
       menu.push({
         text: intl.formatMessage(messages.block, { name: username }),
         action: handleBlockClick,
-        icon: require('@tabler/icons/outline/ban.svg'),
+        icon: require('@fluentui/presence_blocked_24_regular.svg'),
       });
       menu.push({
         text: intl.formatMessage(messages.report, { name: username }),
@@ -979,7 +979,7 @@ const MenuButton: React.FC<IMenuButton> = ({
         menu.push({
           text: 'Ban from Group',
           action: handleBlockFromGroup,
-          icon: require('@tabler/icons/outline/ban.svg'),
+          icon: require('@fluentui/presence_blocked_24_regular.svg'),
           destructive: true,
         });
       }
@@ -988,7 +988,7 @@ const MenuButton: React.FC<IMenuButton> = ({
         menu.push({
           text: intl.formatMessage(messages.groupModDelete),
           action: handleDeleteFromGroup,
-          icon: require('@tabler/icons/outline/trash.svg'),
+          icon: require('@fluentui/delete_24_regular.svg'),
           destructive: true,
         });
       }
@@ -1021,7 +1021,7 @@ const MenuButton: React.FC<IMenuButton> = ({
         menu.push({
           text: intl.formatMessage(messages.deleteStatus),
           action: handleDeleteStatus,
-          icon: require('@tabler/icons/outline/trash.svg'),
+          icon: require('@fluentui/delete_24_regular.svg'),
           destructive: true,
         });
       }

@@ -49,22 +49,22 @@ const buildLink = (account: Pick<Account, 'acct' | 'display_name' | 'emojis' | '
 );
 
 const icons: Partial<Record<NotificationType | 'reply', string>> = {
-  follow: require('@fluentui/person_add_16_regular.svg'),
-  follow_request: require('@fluentui/person_add_16_regular.svg'),
-  mention: require('@fluentui/mention_16_regular.svg'),
-  favourite: require('@fluentui/star_16_regular.svg'),
-  reblog: require('@fluentui/arrow_repeat_all_16_regular.svg'),
-  status: require('@fluentui/alert_on_16_regular.svg'),
-  poll: require('@fluentui/poll_16_regular.svg'),
-  move: require('@fluentui/briefcase_16_regular.svg'),
-  chat_mention: require('@fluentui/chat_16_regular.svg'),
-  emoji_reaction: require('@fluentui/emoji_laugh_16_regular.svg'),
-  update: require('@fluentui/edit_16_regular.svg'),
-  event_reminder: require('@fluentui/calendar_clock_16_regular.svg'),
-  participation_request: require('@fluentui/calendar_ltr_16_regular.svg'),
-  participation_accepted: require('@fluentui/calendar_ltr_16_regular.svg'),
+  follow: require('@fluentui/person_add_24_regular.svg'),
+  follow_request: require('@fluentui/person_add_24_regular.svg'),
+  mention: require('@fluentui/mention_24_regular.svg'),
+  favourite: require('@fluentui/star_24_regular.svg'),
+  reblog: require('@fluentui/arrow_repeat_all_24_regular.svg'),
+  status: require('@fluentui/alert_on_24_regular.svg'),
+  poll: require('@fluentui/poll_24_regular.svg'),
+  move: require('@fluentui/briefcase_24_regular.svg'),
+  chat_mention: require('@fluentui/chat_24_regular.svg'),
+  emoji_reaction: require('@fluentui/emoji_laugh_24_regular.svg'),
+  update: require('@fluentui/edit_24_regular.svg'),
+  event_reminder: require('@fluentui/calendar_clock_24_regular.svg'),
+  participation_request: require('@fluentui/calendar_ltr_24_regular.svg'),
+  participation_accepted: require('@fluentui/calendar_ltr_24_regular.svg'),
   bite: require('@tabler/icons/outline/pacman.svg'),
-  reply: require('@fluentui/arrow_reply_16_regular.svg'),
+  reply: require('@fluentui/arrow_reply_24_regular.svg'),
 };
 
 const messages: Record<NotificationType | 'reply', MessageDescriptor> = defineMessages({

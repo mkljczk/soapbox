@@ -31,7 +31,7 @@ const DetailedCryptoAddress: React.FC<IDetailedCryptoAddress> = ({ address, tick
         <div className='font-bold'>{title || ticker.toUpperCase()}</div>
         <div className='ml-auto flex'>
           {explorerUrl && <a className='ml-2 text-gray-400' href={explorerUrl} target='_blank'>
-            <Icon className='size-4.5' src={require('@tabler/icons/outline/external-link.svg')} />
+            <Icon className='size-4.5' src={require('@fluentui/open_24_regular.svg')} />
           </a>}
         </div>
       </div>

@@ -38,7 +38,7 @@ const ReportStatus: React.FC<IReportStatus> = ({ status }) => {
     }, {
       text: intl.formatMessage(messages.deleteStatus, { acct: `@${acct}` }),
       action: handleDeleteStatus,
-      icon: require('@tabler/icons/outline/trash.svg'),
+      icon: require('@fluentui/delete_24_regular.svg'),
       destructive: true,
     }];
   };

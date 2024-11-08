@@ -36,7 +36,7 @@ const EventActionButton: React.FC<IEventAction> = ({ status, theme = 'secondary'
         className='min-w-max'
         size='sm'
         theme={theme}
-        icon={require('@tabler/icons/outline/external-link.svg')}
+        icon={require('@fluentui/open_24_regular.svg')}
         href={status.url}
       >
         <FormattedMessage id='event.join_state.empty' defaultMessage='Participate' />
@@ -95,7 +95,7 @@ const EventActionButton: React.FC<IEventAction> = ({ status, theme = 'secondary'
       break;
     case 'reject':
       buttonLabel = <FormattedMessage id='event.join_state.rejected' defaultMessage='Going' />;
-      buttonIcon = require('@tabler/icons/outline/ban.svg');
+      buttonIcon = require('@fluentui/presence_blocked_24_regular.svg');
       buttonDisabled = true;
       break;
     default:

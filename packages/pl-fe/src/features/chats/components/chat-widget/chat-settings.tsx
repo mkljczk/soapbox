@@ -122,7 +122,7 @@ const ChatSettings = () => {
 
         <Stack space={5}>
           <button onClick={isBlocking ? handleUnblockUser : handleBlockUser} className='flex w-full items-center space-x-2 text-sm font-bold text-primary-600 dark:text-accent-blue'>
-            <Icon src={require('@tabler/icons/outline/ban.svg')} className='size-5' />
+            <Icon src={require('@fluentui/presence_blocked_24_regular.svg')} className='size-5' />
             <span>{intl.formatMessage(isBlocking ? messages.unblockUser : messages.blockUser, { acct: chat.account.acct })}</span>
           </button>
 

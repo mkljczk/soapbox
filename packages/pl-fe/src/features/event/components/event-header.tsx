@@ -223,7 +223,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
     if (features.federating && !account.local) {
       menu.push({
         text: intl.formatMessage(messages.external, { domain }),
-        icon: require('@tabler/icons/outline/external-link.svg'),
+        icon: require('@fluentui/open_24_regular.svg'),
         href: status.uri,
         target: '_blank',
       });
@@ -235,7 +235,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
       menu.push({
         text: intl.formatMessage(status.bookmarked ? messages.unbookmark : messages.bookmark),
         action: handleBookmarkClick,
-        icon: status.bookmarked ? require('@tabler/icons/outline/bookmark-off.svg') : require('@fluentui/bookmark_24_regular.svg'),
+        icon: status.bookmarked ? require('@fluentui/bookmark_off_24_regular.svg') : require('@fluentui/bookmark_24_regular.svg'),
       });
     }
 
@@ -262,14 +262,14 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
         menu.push({
           text: intl.formatMessage(status.pinned ? messages.unpin : messages.pin),
           action: handlePinClick,
-          icon: status.pinned ? require('@tabler/icons/outline/pinned-off.svg') : require('@tabler/icons/outline/pin.svg'),
+          icon: status.pinned ? require('@fluentui/pin_off_24_regular.svg') : require('@fluentui/pin_24_regular.svg'),
         });
       }
 
       menu.push({
         text: intl.formatMessage(messages.delete),
         action: handleDeleteClick,
-        icon: require('@tabler/icons/outline/trash.svg'),
+        icon: require('@fluentui/delete_24_regular.svg'),
         destructive: true,
       });
     } else {
@@ -302,7 +302,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
       menu.push({
         text: intl.formatMessage(messages.block, { name: username }),
         action: handleBlockClick,
-        icon: require('@tabler/icons/outline/ban.svg'),
+        icon: require('@fluentui/presence_blocked_24_regular.svg'),
       });
       menu.push({
         text: intl.formatMessage(messages.report, { name: username }),
@@ -338,7 +338,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
         menu.push({
           text: intl.formatMessage(messages.deleteStatus),
           action: handleDeleteStatus,
-          icon: require('@tabler/icons/outline/trash.svg'),
+          icon: require('@fluentui/delete_24_regular.svg'),
           destructive: true,
         });
       }

@@ -96,12 +96,12 @@ const Bookmarks: React.FC<IBookmarks> = ({ params }) => {
     {
       text: intl.formatMessage(messages.editFolder),
       action: handleEditFolder,
-      icon: require('@tabler/icons/outline/edit.svg'),
+      icon: require('@fluentui/edit_24_regular.svg'),
     },
     {
       text: intl.formatMessage(messages.deleteFolder),
       action: handleDeleteFolder,
-      icon: require('@tabler/icons/outline/trash.svg'),
+      icon: require('@fluentui/delete_24_regular.svg'),
     },
   ] : [];
 

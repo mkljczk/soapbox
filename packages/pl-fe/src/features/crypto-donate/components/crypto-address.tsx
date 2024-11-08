@@ -49,7 +49,7 @@ const CryptoAddress: React.FC<ICryptoAddress> = (props): JSX.Element => {
 
           {explorerUrl && (
             <a className='ml-1 text-gray-500 rtl:ml-0 rtl:mr-1' href={explorerUrl} target='_blank'>
-              <Icon src={require('@tabler/icons/outline/external-link.svg')} size={20} />
+              <Icon src={require('@fluentui/open_24_regular.svg')} size={20} />
             </a>
           )}
         </HStack>

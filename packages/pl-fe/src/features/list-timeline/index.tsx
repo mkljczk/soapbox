@@ -92,12 +92,12 @@ const ListTimeline: React.FC = () => {
     {
       text: intl.formatMessage(messages.editList),
       action: handleEditClick,
-      icon: require('@tabler/icons/outline/edit.svg'),
+      icon: require('@fluentui/edit_24_regular.svg'),
     },
     {
       text: intl.formatMessage(messages.deleteList),
       action: handleDeleteClick,
-      icon: require('@tabler/icons/outline/trash.svg'),
+      icon: require('@fluentui/delete_24_regular.svg'),
     },
   ];
 
