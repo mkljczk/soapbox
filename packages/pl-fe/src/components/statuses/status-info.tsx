@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { HStack, Text } from '../ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Text from 'pl-fe/components/ui/text';
 
 interface IStatusInfo {
   avatarSize: number;

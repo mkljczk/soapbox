@@ -1,20 +1,23 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
 import { locationSchema } from './location';
 
-/** @see {@link https://docs.joinmastodon.org/entities/StatusSource/} */
-const statusSourceSchema = z.object({
-  id: z.string(),
-  text: z.string().catch(''),
-  spoiler_text: z.string().catch(''),
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/StatusSource/}
+ */
+const statusSourceSchema = v.object({
+  id: v.string(),
+  text: v.fallback(v.string(), ''),
+  spoiler_text: v.fallback(v.string(), ''),
 
-  content_type: z.string().catch('text/plain'),
-  location: locationSchema.nullable().catch(null),
+  content_type: v.fallback(v.string(), 'text/plain'),
+  location: v.fallback(v.nullable(locationSchema), null),
 
-  text_map: z.record(z.string()).nullable().catch(null),
-  spoiler_text_map: z.record(z.string()).nullable().catch(null),
+  text_map: v.fallback(v.nullable(v.record(v.string(), v.string())), null),
+  spoiler_text_map: v.fallback(v.nullable(v.record(v.string(), v.string())), null),
 });
 
-type StatusSource = z.infer<typeof statusSourceSchema>;
+type StatusSource = v.InferOutput<typeof statusSourceSchema>;
 
 export { statusSourceSchema, type StatusSource };

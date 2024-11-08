@@ -1,10 +1,12 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, useHistory } from 'react-router-dom';
 
-import { useAccountLookup } from 'pl-fe/api/hooks';
-import { Column, Layout, Tabs } from 'pl-fe/components/ui';
+import { useAccountLookup } from 'pl-fe/api/hooks/accounts/use-account-lookup';
+import Column from 'pl-fe/components/ui/column';
+import Layout from 'pl-fe/components/ui/layout';
+import Tabs from 'pl-fe/components/ui/tabs';
 import Header from 'pl-fe/features/account/components/header';
 import LinkFooter from 'pl-fe/features/ui/components/link-footer';
 import {
@@ -16,7 +18,9 @@ import {
   PinnedAccountsPanel,
   AccountNotePanel,
 } from 'pl-fe/features/ui/util/async-components';
-import { useAppSelector, useFeatures, usePlFeConfig } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { getAcct } from 'pl-fe/utils/accounts';
 
 interface IProfileLayout {
@@ -95,7 +99,7 @@ const ProfileLayout: React.FC<IProfileLayout> = ({ params, children }) => {
       <Layout.Main>
         <Column size='lg' label={account ? `@${getAcct(account, displayFqn)}` : ''} withHeader={false}>
           <div className='space-y-4'>
-            <Header account={account} />
+            <Header key={`profile-header-${account?.id}`} account={account} />
             <ProfileInfoPanel username={username} account={account} />
 
             {account && showTabs && (

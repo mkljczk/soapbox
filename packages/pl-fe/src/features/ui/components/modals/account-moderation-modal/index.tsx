@@ -4,14 +4,22 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { setBadges as saveBadges } from 'pl-fe/actions/admin';
 import { deactivateUserModal, deleteUserModal } from 'pl-fe/actions/moderation';
-import { useAccount } from 'pl-fe/api/hooks';
-import { useSuggest, useVerify } from 'pl-fe/api/hooks/admin';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import { useSuggest } from 'pl-fe/api/hooks/admin/use-suggest';
+import { useVerify } from 'pl-fe/api/hooks/admin/use-verify';
 import Account from 'pl-fe/components/account';
 import List, { ListItem } from 'pl-fe/components/list';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import OutlineBox from 'pl-fe/components/outline-box';
-import { Button, Text, HStack, Modal, Stack, Toggle } from 'pl-fe/components/ui';
-import { useAppDispatch, useFeatures, useOwnAccount } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import HStack from 'pl-fe/components/ui/hstack';
+import Modal from 'pl-fe/components/ui/modal';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Toggle from 'pl-fe/components/ui/toggle';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import toast from 'pl-fe/toast';
 import { getBadges } from 'pl-fe/utils/badges';
 

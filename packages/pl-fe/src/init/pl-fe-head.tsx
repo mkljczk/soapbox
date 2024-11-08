@@ -1,25 +1,19 @@
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
 
-import {
-  useSettings,
-  usePlFeConfig,
-  useTheme,
-  useLocale,
-} from 'pl-fe/hooks';
-import { normalizePlFeConfig } from 'pl-fe/normalizers';
+import { useLocale } from 'pl-fe/hooks/use-locale';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useTheme } from 'pl-fe/hooks/use-theme';
+import { normalizePlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import { startSentry } from 'pl-fe/sentry';
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import { generateThemeCss } from 'pl-fe/utils/theme';
 
 const Helmet = React.lazy(() => import('pl-fe/components/helmet'));
 
-interface IPlFeHead {
-  children: React.ReactNode;
-}
-
 /** Injects metadata into site head with Helmet. */
-const PlFeHead: React.FC<IPlFeHead> = ({ children }) => {
+const PlFeHead = () => {
   const { locale, direction } = useLocale();
   const { demo, reduceMotion, underlineLinks, demetricator, systemFont } = useSettings();
   const plFeConfig = usePlFeConfig();
@@ -45,17 +39,13 @@ const PlFeHead: React.FC<IPlFeHead> = ({ children }) => {
   }, [dsn]);
 
   return (
-    <>
-      <Helmet>
-        <html lang={locale} className={clsx('h-full', { 'dark': theme === 'dark', 'dark black': theme === 'black' })} />
-        <body className={bodyClass} dir={direction} />
-        {themeCss && <style id='theme' type='text/css'>{`:root{${themeCss}}`}</style>}
-        {['dark', 'black'].includes(theme) && <style type='text/css'>{':root { color-scheme: dark; }'}</style>}
-        <meta name='theme-color' content={plFeConfig.brandColor} />
-      </Helmet>
-
-      {children}
-    </>
+    <Helmet>
+      <html lang={locale} className={clsx('h-full', { 'dark': theme === 'dark', 'dark black': theme === 'black' })} />
+      <body className={bodyClass} dir={direction} />
+      {themeCss && <style id='theme' type='text/css'>{`:root{${themeCss}}`}</style>}
+      {['dark', 'black'].includes(theme) && <style type='text/css'>{':root { color-scheme: dark; }'}</style>}
+      <meta name='theme-color' content={plFeConfig.brandColor} />
+    </Helmet>
   );
 };
 

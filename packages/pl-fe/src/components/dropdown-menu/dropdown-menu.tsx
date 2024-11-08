@@ -4,10 +4,12 @@ import { supportsPassiveEvents } from 'detect-passive-events';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ReactSwipeableViews from 'react-swipeable-views';
 
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Portal from 'pl-fe/components/ui/portal';
 import { userTouching } from 'pl-fe/is-mobile';
-import { useUiStore, useModalsStore } from 'pl-fe/stores';
-
-import { HStack, IconButton, Portal } from '../ui';
+import { useModalsStore } from 'pl-fe/stores/modals';
+import { useUiStore } from 'pl-fe/stores/ui';
 
 import DropdownMenuItem, { MenuItem } from './dropdown-menu-item';
 

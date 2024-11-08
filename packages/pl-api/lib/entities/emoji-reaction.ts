@@ -1,34 +1,41 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
 import { accountSchema } from './account';
 import { emojiSchema, filteredArray } from './utils';
 
-const baseEmojiReactionSchema = z.object({
-  count: z.number().nullable().catch(null),
-  me: z.boolean().catch(false),
+const baseEmojiReactionSchema = v.object({
+  count: v.fallback(v.nullable(v.number()), null),
+  me: v.fallback(v.boolean(), false),
   name: emojiSchema,
-  url: z.literal(undefined).catch(undefined),
-  static_url: z.literal(undefined).catch(undefined),
+  url: v.fallback(v.undefined(), undefined),
+  static_url: v.fallback(v.undefined(), undefined),
   accounts: filteredArray(accountSchema),
-  account_ids: filteredArray(z.string()).catch([]),
+  account_ids: v.fallback(filteredArray(v.string()), []),
 });
 
-const customEmojiReactionSchema = baseEmojiReactionSchema.extend({
-  name: z.string(),
-  url: z.string().url(),
-  static_url: z.string().url(),
+const customEmojiReactionSchema = v.object({
+  ...baseEmojiReactionSchema.entries,
+  name: v.string(),
+  url: v.pipe(v.string(), v.url()),
+  static_url: v.pipe(v.string(), v.url()),
 });
 
 /**
  * Pleroma emoji reaction.
+ *
+ * @category Schemas
  * @see {@link https://docs.pleroma.social/backend/development/API/differences_in_mastoapi_responses/#statuses}
 */
-const emojiReactionSchema = z.preprocess((reaction: any) => reaction ? {
-  static_url: reaction.url,
-  account_ids: reaction.accounts?.map((account: any) => account?.id),
-  ...reaction,
-} : null, baseEmojiReactionSchema.or(customEmojiReactionSchema));
+const emojiReactionSchema = v.pipe(
+  v.any(),
+  v.transform((reaction: any) => reaction ? {
+    static_url: reaction.url,
+    account_ids: reaction.accounts?.map((account: any) => account?.id),
+    ...reaction,
+  } : null),
+  v.union([baseEmojiReactionSchema, customEmojiReactionSchema]),
+);
 
-type EmojiReaction = z.infer<typeof emojiReactionSchema>;
+type EmojiReaction = v.InferOutput<typeof emojiReactionSchema>;
 
 export { emojiReactionSchema, type EmojiReaction };

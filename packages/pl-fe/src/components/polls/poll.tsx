@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { vote } from 'pl-fe/actions/polls';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
-
-import { Stack, Text } from '../ui';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import PollFooter from './poll-footer';
 import PollOption from './poll-option';
 
-import type { Status } from 'pl-fe/normalizers';
+import type { Status } from 'pl-fe/normalizers/status';
 
 type Selected = Record<number, boolean>;
 
@@ -29,7 +30,7 @@ const Poll: React.FC<IPoll> = ({ id, status }): JSX.Element | null => {
   const intl = useIntl();
 
   const isLoggedIn = useAppSelector((state) => state.me);
-  const poll = useAppSelector((state) => state.polls.get(id));
+  const poll = useAppSelector((state) => state.polls[id]);
 
   const [selected, setSelected] = useState({} as Selected);
 

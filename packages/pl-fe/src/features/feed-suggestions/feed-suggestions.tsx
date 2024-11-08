@@ -2,11 +2,15 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { useAccount } from 'pl-fe/api/hooks';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import Card, { CardBody, CardTitle } from 'pl-fe/components/ui/card';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
-import { Card, CardBody, CardTitle, HStack, Stack, Text } from '../../components/ui';
+import Emojify from '../emoji/emojify';
 import ActionButton from '../ui/components/action-button';
 import { HotKeys } from '../ui/components/hotkeys';
 
@@ -38,14 +42,9 @@ const SuggestionItem: React.FC<ISuggestionItem> = ({ accountId }) => {
 
           <Stack>
             <HStack alignItems='center' justifyContent='center' space={1}>
-              <Text
-                weight='semibold'
-                dangerouslySetInnerHTML={{ __html: account.display_name_html }}
-                truncate
-                align='center'
-                size='sm'
-                className='max-w-[95%]'
-              />
+              <Text weight='semibold' truncate align='center' size='sm' className='max-w-[95%]'>
+                <Emojify text={account.display_name} emojis={account.emojis} />
+              </Text>
 
               {account.verified && <VerificationBadge />}
             </HStack>
@@ -73,7 +72,7 @@ const FeedSuggestions: React.FC<IFeedSuggesetions> = ({ statusId, onMoveUp, onMo
   const suggestedProfiles = useAppSelector((state) => state.suggestions.items);
   const isLoading = useAppSelector((state) => state.suggestions.isLoading);
 
-  if (!isLoading && suggestedProfiles.size === 0) return null;
+  if (!isLoading && suggestedProfiles.length === 0) return null;
 
   const handleHotkeyMoveUp = (e?: KeyboardEvent): void => {
     if (onMoveUp) {

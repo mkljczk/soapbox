@@ -1,13 +1,16 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/DomainBlock} */
-const domainBlockSchema = z.object({
-  domain: z.string(),
-  digest: z.string(),
-  severity: z.enum(['silence', 'suspend']),
-  comment: z.string().optional().catch(undefined),
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/DomainBlock}
+ */
+const domainBlockSchema = v.object({
+  domain: v.string(),
+  digest: v.string(),
+  severity: v.picklist(['silence', 'suspend']),
+  comment: v.fallback(v.optional(v.string()), undefined),
 });
 
-type DomainBlock = z.infer<typeof domainBlockSchema>;
+type DomainBlock = v.InferOutput<typeof domainBlockSchema>;
 
 export { domainBlockSchema, type DomainBlock };

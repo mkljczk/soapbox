@@ -21,7 +21,8 @@ import { $createParagraphNode, $createTextNode, $getRoot, type EditorState, type
 import React, { useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { useAppDispatch, useCompose } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 
 import { importImage } from './handlers/image';
 import { useNodes } from './nodes';

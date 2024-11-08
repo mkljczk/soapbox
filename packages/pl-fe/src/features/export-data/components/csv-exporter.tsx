@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { MessageDescriptor, useIntl } from 'react-intl';
 
-import { Button, Form, FormActions, Text } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { AppDispatch, RootState } from 'pl-fe/store';
 
 interface ICSVExporter {

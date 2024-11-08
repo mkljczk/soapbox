@@ -26,10 +26,13 @@ import { mediaAttachmentSchema } from 'pl-api';
 import * as React from 'react';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
+import * as v from 'valibot';
 
-import { HStack, Icon, IconButton } from 'pl-fe/components/ui';
-import { useSettings } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import { $isImageNode } from './image-node';
 
@@ -122,7 +125,7 @@ const ImageComponent = ({
   );
 
   const previewImage = () => {
-    const image = mediaAttachmentSchema.parse({
+    const image = v.parse(mediaAttachmentSchema, {
       id: '',
       type: 'image',
       url: src,

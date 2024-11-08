@@ -4,10 +4,13 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { changeSetting } from 'pl-fe/actions/settings';
 import List, { ListItem } from 'pl-fe/components/list';
-import { Form } from 'pl-fe/components/ui';
+import Form from 'pl-fe/components/ui/form';
 import { Mutliselect, SelectDropdown } from 'pl-fe/features/forms';
 import SettingToggle from 'pl-fe/features/notifications/components/setting-toggle';
-import { useAppDispatch, useFeatures, useSettings } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 import ThemeToggle from '../ui/components/theme-toggle';
 
@@ -96,6 +99,7 @@ const Preferences = () => {
   const dispatch = useAppDispatch();
   const features = useFeatures();
   const settings = useSettings();
+  const instance = useInstance();
 
   const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>, path: string[]) => {
     dispatch(changeSetting(path, event.target.value, { showAlert: true }));
@@ -121,11 +125,17 @@ const Preferences = () => {
     private: intl.formatMessage(messages.privacy_followers_only),
   }), [settings.locale]);
 
-  const defaultContentTypeOptions = React.useMemo(() => ({
-    'text/plain': intl.formatMessage(messages.content_type_plaintext),
-    'text/markdown': intl.formatMessage(messages.content_type_markdown),
-    'text/html': intl.formatMessage(messages.content_type_html),
-  }), [settings.locale]);
+  const defaultContentTypeOptions = React.useMemo(() => {
+    const postFormats = instance.pleroma.metadata.post_formats;
+
+    const options = Object.entries({
+      'text/plain': intl.formatMessage(messages.content_type_plaintext),
+      'text/markdown': intl.formatMessage(messages.content_type_markdown),
+      'text/html': intl.formatMessage(messages.content_type_html),
+    }).filter(([key]) => postFormats.includes(key));
+
+    if (options.length > 1) return Object.fromEntries(options);
+  }, [settings.locale]);
 
   return (
     <Form>
@@ -177,7 +187,7 @@ const Preferences = () => {
           </ListItem>
         )}
 
-        {features.richText && (
+        {features.richText && !!defaultContentTypeOptions && (
           <ListItem label={<FormattedMessage id='preferences.fields.content_type_label' defaultMessage='Default post format' />}>
             <SelectDropdown
               className='max-w-[200px]'
@@ -204,6 +214,12 @@ const Preferences = () => {
         >
           <SettingToggle settings={settings} settingPath={['demetricator']} onChange={onToggleChange} />
         </ListItem>
+
+        {features.emojiReacts && (
+          <ListItem label={<FormattedMessage id='preferences.fields.wrench_label' defaultMessage='Display wrench reaction button' />} >
+            <SettingToggle settings={settings} settingPath={['showWrenchButton']} onChange={onToggleChange} />
+          </ListItem>
+        )}
       </List>
 
       <List>

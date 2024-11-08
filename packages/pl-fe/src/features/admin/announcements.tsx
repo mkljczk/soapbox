@@ -1,12 +1,18 @@
 import React from 'react';
 import { FormattedDate, FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useAnnouncements } from 'pl-fe/api/hooks/admin/useAnnouncements';
+import { useAnnouncements } from 'pl-fe/api/hooks/admin/use-announcements';
+import { ParsedContent } from 'pl-fe/components/parsed-content';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Button, Column, HStack, Stack, Text } from 'pl-fe/components/ui';
-import { AdminAnnouncement } from 'pl-fe/normalizers';
-import { useModalsStore } from 'pl-fe/stores';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
+
+import type { AdminAnnouncement } from 'pl-api';
 
 const messages = defineMessages({
   heading: { id: 'column.admin.announcements', defaultMessage: 'Announcements' },
@@ -43,7 +49,9 @@ const Announcement: React.FC<IAnnouncement> = ({ announcement }) => {
   return (
     <div key={announcement.id} className='rounded-lg bg-gray-100 p-4 dark:bg-primary-800'>
       <Stack space={2}>
-        <Text dangerouslySetInnerHTML={{ __html: announcement.contentHtml }} />
+        <Text>
+          <ParsedContent html={announcement.content} emojis={announcement.emojis} />
+        </Text>
         {(announcement.starts_at || announcement.ends_at || announcement.all_day) && (
           <HStack space={2} wrap>
             {announcement.starts_at && (

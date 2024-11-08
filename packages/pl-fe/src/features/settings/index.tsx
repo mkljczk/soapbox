@@ -3,8 +3,13 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchMfa } from 'pl-fe/actions/mfa';
 import List, { ListItem } from 'pl-fe/components/list';
-import { Card, CardBody, CardHeader, CardTitle, Column, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector, useFeatures, useOwnAccount } from 'pl-fe/hooks';
+import Card, { CardBody, CardHeader, CardTitle } from 'pl-fe/components/ui/card';
+import Column from 'pl-fe/components/ui/column';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 
 import Preferences from '../preferences';
 
@@ -44,7 +49,7 @@ const Settings = () => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
-  const mfa = useAppSelector((state) => state.security.get('mfa'));
+  const mfa = useAppSelector((state) => state.security.mfa);
   const features = useFeatures();
   const { account } = useOwnAccount();
 

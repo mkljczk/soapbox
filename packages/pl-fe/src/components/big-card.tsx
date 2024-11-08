@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { Card, CardBody, Stack, Text } from 'pl-fe/components/ui';
+import Card, { CardBody } from 'pl-fe/components/ui/card';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
 interface IBigCard {
   title: React.ReactNode;

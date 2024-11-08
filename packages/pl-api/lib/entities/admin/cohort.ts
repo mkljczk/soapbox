@@ -1,17 +1,19 @@
-import { z } from 'zod';
+import * as v from 'valibot';
+
+import { datetimeSchema } from '../utils';
 
 /** @see {@link https://docs.joinmastodon.org/entities/Admin_Cohort/} */
-const adminCohortSchema = z.object({
-  period: z.string().datetime({ offset: true }),
-  frequency: z.enum(['day', 'month']),
-  data: z.array(z.object({
-    date: z.string().datetime({ offset: true }),
-    rate: z.number(),
-    value: z.number().int(),
+const adminCohortSchema = v.object({
+  period: datetimeSchema,
+  frequency: v.picklist(['day', 'month']),
+  data: v.array(v.object({
+    date: datetimeSchema,
+    rate: v.number(),
+    value: v.pipe(v.number(), v.integer()),
   })),
 });
 
-type AdminCohort = z.infer<typeof adminCohortSchema>;
+type AdminCohort = v.InferOutput<typeof adminCohortSchema>;
 
 export {
   adminCohortSchema,

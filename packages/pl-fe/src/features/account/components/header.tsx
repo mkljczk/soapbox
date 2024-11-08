@@ -3,6 +3,7 @@ import { GOTOSOCIAL, MASTODON, mediaAttachmentSchema } from 'pl-api';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
+import * as v from 'valibot';
 
 import { biteAccount, blockAccount, pinAccount, removeFromFollowers, unblockAccount, unmuteAccount, unpinAccount } from 'pl-fe/actions/accounts';
 import { mentionCompose, directCompose } from 'pl-fe/actions/compose';
@@ -10,26 +11,31 @@ import { blockDomain, unblockDomain } from 'pl-fe/actions/domain-blocks';
 import { initMuteModal } from 'pl-fe/actions/mutes';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { setSearchAccount } from 'pl-fe/actions/search';
-import { getSettings } from 'pl-fe/actions/settings';
-import { useFollow } from 'pl-fe/api/hooks';
+import { useFollow } from 'pl-fe/api/hooks/accounts/use-follow';
 import Badge from 'pl-fe/components/badge';
 import DropdownMenu, { Menu } from 'pl-fe/components/dropdown-menu';
 import StillImage from 'pl-fe/components/still-image';
-import { Avatar, HStack, IconButton } from 'pl-fe/components/ui';
+import Avatar from 'pl-fe/components/ui/avatar';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import MovedNote from 'pl-fe/features/account-timeline/components/moved-note';
 import ActionButton from 'pl-fe/features/ui/components/action-button';
 import SubscriptionButton from 'pl-fe/features/ui/components/subscription-button';
-import { useAppDispatch, useAppSelector, useFeatures, useOwnAccount } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useChats } from 'pl-fe/queries/chats';
 import { queryClient } from 'pl-fe/queries/client';
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 import toast from 'pl-fe/toast';
 import { isDefaultHeader } from 'pl-fe/utils/accounts';
 import copy from 'pl-fe/utils/copy';
 
 import type { PlfeResponse } from 'pl-fe/api';
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
   edit_profile: { id: 'account.edit_profile', defaultMessage: 'Edit profile' },
@@ -90,6 +96,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
   const { account: ownAccount } = useOwnAccount();
   const { follow } = useFollow();
   const { openModal } = useModalsStore();
+  const { settings } = useSettingsStore();
 
   const { software } = useAppSelector((state) => state.auth.client.features.version);
 
@@ -221,19 +228,17 @@ const Header: React.FC<IHeader> = ({ account }) => {
   };
 
   const onRemoveFromFollowers = () => {
-    dispatch((_, getState) => {
-      const unfollowModal = getSettings(getState()).get('unfollowModal');
-      if (unfollowModal) {
-        openModal('CONFIRM', {
-          heading: <FormattedMessage id='confirmations.remove_from_followers.heading' defaultMessage='Remove {name} from followers' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
-          message: <FormattedMessage id='confirmations.remove_from_followers.message' defaultMessage='Are you sure you want to remove {name} from your followers?' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
-          confirm: intl.formatMessage(messages.removeFromFollowersConfirm),
-          onConfirm: () => dispatch(removeFromFollowers(account.id)),
-        });
-      } else {
-        dispatch(removeFromFollowers(account.id));
-      }
-    });
+    const unfollowModal = settings.unfollowModal;
+    if (unfollowModal) {
+      openModal('CONFIRM', {
+        heading: <FormattedMessage id='confirmations.remove_from_followers.heading' defaultMessage='Remove {name} from followers' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
+        message: <FormattedMessage id='confirmations.remove_from_followers.message' defaultMessage='Are you sure you want to remove {name} from your followers?' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
+        confirm: intl.formatMessage(messages.removeFromFollowersConfirm),
+        onConfirm: () => dispatch(removeFromFollowers(account.id)),
+      });
+    } else {
+      dispatch(removeFromFollowers(account.id));
+    }
   };
 
   const onSearch = () => {
@@ -242,7 +247,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
   };
 
   const onAvatarClick = () => {
-    const avatar = mediaAttachmentSchema.parse({
+    const avatar = v.parse(mediaAttachmentSchema, {
       id: '',
       type: 'image',
       url: account.avatar,
@@ -258,7 +263,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
   };
 
   const onHeaderClick = () => {
-    const header = mediaAttachmentSchema.parse({
+    const header = v.parse(mediaAttachmentSchema, {
       type: 'image',
       url: account.header,
     });
@@ -678,7 +683,6 @@ const Header: React.FC<IHeader> = ({ account }) => {
                     theme='outlined'
                     className='px-2'
                     iconClassName='h-4 w-4'
-                    children={null}
                   />
                 </DropdownMenu>
               )}

@@ -4,8 +4,14 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { fetchAliases, removeFromAliases } from 'pl-fe/actions/aliases';
 import Icon from 'pl-fe/components/icon';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { CardHeader, CardTitle, Column, HStack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector, useFeatures, useOwnAccount } from 'pl-fe/hooks';
+import { CardHeader, CardTitle } from 'pl-fe/components/ui/card';
+import Column from 'pl-fe/components/ui/column';
+import HStack from 'pl-fe/components/ui/hstack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 
 import Account from './components/account';
 import Search from './components/search';

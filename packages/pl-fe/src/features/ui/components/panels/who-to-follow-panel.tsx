@@ -2,13 +2,14 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { Text, Widget } from 'pl-fe/components/ui';
+import Text from 'pl-fe/components/ui/text';
+import Widget from 'pl-fe/components/ui/widget';
 import AccountContainer from 'pl-fe/containers/account-container';
 import PlaceholderSidebarSuggestions from 'pl-fe/features/placeholder/components/placeholder-sidebar-suggestions';
-import { useFeatures } from 'pl-fe/hooks';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useDismissSuggestion, useSuggestions } from 'pl-fe/queries/suggestions';
 
-import type { Account as AccountEntity } from 'pl-fe/normalizers';
+import type { Account as AccountEntity } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
   dismissSuggestion: { id: 'suggestions.dismiss', defaultMessage: 'Dismiss suggestion' },

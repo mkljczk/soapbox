@@ -1,15 +1,18 @@
-import parse, { Element, type HTMLReactParserOptions, domToReact, type DOMNode } from 'html-react-parser';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
 import Badge from 'pl-fe/components/badge';
-import HashtagLink from 'pl-fe/components/hashtag-link';
 import Markup from 'pl-fe/components/markup';
+import { ParsedContent } from 'pl-fe/components/parsed-content';
 import { dateFormatOptions } from 'pl-fe/components/relative-timestamp';
 import Scrobble from 'pl-fe/components/scrobble';
-import StatusMention from 'pl-fe/components/status-mention';
-import { Icon, HStack, Stack, Text } from 'pl-fe/components/ui';
-import { useAppSelector, usePlFeConfig } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Emojify from 'pl-fe/features/emoji/emojify';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { capitalize } from 'pl-fe/utils/strings';
 
 import ProfileFamiliarFollowers from '../profile-familiar-followers';
@@ -17,7 +20,7 @@ import ProfileField from '../profile-field';
 import ProfileStats from '../profile-stats';
 
 import type { Scrobble as ScrobbleEntity } from 'pl-api';
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
   linkVerifiedOn: { id: 'account.link_verified_on', defaultMessage: 'Ownership of this link was checked on {date}' },
@@ -104,54 +107,6 @@ const ProfileInfoPanel: React.FC<IProfileInfoPanel> = ({ account, username }) =>
     );
   };
 
-  const note = useMemo(() => {
-    if (!account) return false;
-
-    const options: HTMLReactParserOptions = {
-      replace(domNode) {
-        if (domNode instanceof Element && ['script', 'iframe'].includes(domNode.name)) {
-          return null;
-        }
-
-        if (domNode instanceof Element && domNode.name === 'a') {
-          const classes = domNode.attribs.class?.split(' ');
-          const id = domNode.attribs['data-user'];
-
-          const fallback = (
-            // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-            <a
-              {...domNode.attribs}
-              onClick={(e) => e.stopPropagation()}
-              rel='nofollow noopener'
-              target='_blank'
-              title={domNode.attribs.href}
-            >
-              {domToReact(domNode.children as DOMNode[], options)}
-            </a>
-          );
-
-          if (classes?.includes('mention') && id) {
-            return (
-              <StatusMention accountId={id} fallback={fallback} />
-            );
-          }
-
-          if (classes?.includes('hashtag')) {
-            const child = domToReact(domNode.children as DOMNode[]);
-            const hashtag = typeof child === 'string' ? child.replace(/^#/, '') : undefined;
-            if (hashtag) {
-              return <HashtagLink hashtag={hashtag} />;
-            }
-          }
-
-          return fallback;
-        }
-      },
-    };
-
-    return !!account.note.length && parse(account.note_emojified, options);
-  }, [account?.note_emojified]);
-
   if (!account) {
     return (
       <div className='mt-6 min-w-0 flex-1 sm:px-2'>
@@ -168,8 +123,6 @@ const ProfileInfoPanel: React.FC<IProfileInfoPanel> = ({ account, username }) =>
     );
   }
 
-  const deactivated = account.deactivated ?? false;
-  const displayNameHtml = deactivated ? { __html: intl.formatMessage(messages.deactivated) } : { __html: account.display_name_html };
   const memberSinceDate = intl.formatDate(account.created_at, { month: 'long', year: 'numeric' });
   const badges = getBadges();
 
@@ -178,7 +131,11 @@ const ProfileInfoPanel: React.FC<IProfileInfoPanel> = ({ account, username }) =>
       <Stack space={2}>
         <Stack>
           <HStack space={1} alignItems='center'>
-            <Text size='lg' weight='bold' dangerouslySetInnerHTML={displayNameHtml} truncate />
+            <Text size='lg' weight='bold' truncate>
+              {account.deactivated
+                ? <FormattedMessage id='account.deactivated' defaultMessage='Deactivated' />
+                : <Emojify text={account.display_name} emojis={account.emojis} />}
+            </Text>
 
             {account.bot && <Badge slug='bot' title={intl.formatMessage(messages.bot)} />}
 
@@ -206,8 +163,10 @@ const ProfileInfoPanel: React.FC<IProfileInfoPanel> = ({ account, username }) =>
 
         <ProfileStats account={account} />
 
-        {note && (
-          <Markup size='sm'>{note}</Markup>
+        {!!account.note && (
+          <Markup size='sm'>
+            <ParsedContent html={account.note} emojis={account.emojis} />
+          </Markup>
         )}
 
         <div className='flex flex-col items-start gap-2 md:flex-row md:flex-wrap md:items-center'>
@@ -252,7 +211,7 @@ const ProfileInfoPanel: React.FC<IProfileInfoPanel> = ({ account, username }) =>
       {account.fields.length > 0 && (
         <Stack space={2} className='mt-4 xl:hidden'>
           {account.fields.map((field, i) => (
-            <ProfileField field={field} key={i} />
+            <ProfileField field={field} key={i} emojis={account.emojis} />
           ))}
         </Stack>
       )}

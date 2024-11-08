@@ -1,19 +1,18 @@
 import clsx from 'clsx';
 import React, { useState } from 'react';
 
-import { useAnnouncements } from 'pl-fe/api/hooks/announcements';
+import { useAnnouncements } from 'pl-fe/api/hooks/announcements/use-announcements';
 import AnimatedNumber from 'pl-fe/components/animated-number';
 import unicodeMapping from 'pl-fe/features/emoji/mapping';
 
 import Emoji from './emoji';
 
-import type { Map as ImmutableMap } from 'immutable';
 import type { AnnouncementReaction, CustomEmoji } from 'pl-api';
 
 interface IReaction {
   announcementId: string;
   reaction: AnnouncementReaction;
-  emojiMap: ImmutableMap<string, CustomEmoji>;
+  emojiMap: Record<string, CustomEmoji>;
   style: React.CSSProperties;
 }
 

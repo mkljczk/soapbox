@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Stack } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
 import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
 import { useStatContext } from 'pl-fe/contexts/stat-context';
 import { useChats } from 'pl-fe/queries/chats';
@@ -12,7 +12,7 @@ import EmptyResultsBlankslate from '../chat-search/empty-results-blankslate';
 import ChatPaneHeader from '../chat-widget/chat-pane-header';
 import ChatWindow from '../chat-widget/chat-window';
 import ChatSearchHeader from '../chat-widget/headers/chat-search-header';
-import { Pane } from '../ui';
+import { Pane } from '../ui/pane';
 
 import Blankslate from './blankslate';
 

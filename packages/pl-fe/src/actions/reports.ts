@@ -1,8 +1,9 @@
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import { getClient } from '../api';
 
-import type { Account, Status } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
+import type { Status } from 'pl-fe/normalizers/status';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const REPORT_SUBMIT_REQUEST = 'REPORT_SUBMIT_REQUEST' as const;

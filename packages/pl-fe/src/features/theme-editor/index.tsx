@@ -6,10 +6,15 @@ import { getHost } from 'pl-fe/actions/instance';
 import { fetchPlFeConfig } from 'pl-fe/actions/pl-fe';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import List, { ListItem } from 'pl-fe/components/list';
-import { Button, Column, Form, FormActions } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
 import ColorPicker from 'pl-fe/features/pl-fe-config/components/color-picker';
-import { useAppDispatch, useAppSelector, usePlFeConfig } from 'pl-fe/hooks';
-import { normalizePlFeConfig } from 'pl-fe/normalizers';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
+import { normalizePlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import toast from 'pl-fe/toast';
 import { download } from 'pl-fe/utils/download';
 

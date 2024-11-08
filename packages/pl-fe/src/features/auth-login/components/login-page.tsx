@@ -5,9 +5,12 @@ import { Redirect } from 'react-router-dom';
 import { logIn, verifyCredentials, switchAccount } from 'pl-fe/actions/auth';
 import { fetchInstance } from 'pl-fe/actions/instance';
 import { BigCard } from 'pl-fe/components/big-card';
-import { Button, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
+import Button from 'pl-fe/components/ui/button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import { getRedirectUrl } from 'pl-fe/utils/redirect';
 import { isStandalone } from 'pl-fe/utils/state';
 

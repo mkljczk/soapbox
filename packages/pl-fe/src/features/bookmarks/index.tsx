@@ -5,14 +5,17 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { fetchBookmarkedStatuses, expandBookmarkedStatuses } from 'pl-fe/actions/bookmarks';
-import { useBookmarkFolder, useDeleteBookmarkFolder } from 'pl-fe/api/hooks';
+import { useBookmarkFolder } from 'pl-fe/api/hooks/statuses/use-bookmark-folder';
+import { useDeleteBookmarkFolder } from 'pl-fe/api/hooks/statuses/use-delete-bookmark-folder';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import StatusList from 'pl-fe/components/status-list';
-import { Column } from 'pl-fe/components/ui';
-import { useAppSelector, useAppDispatch, useTheme } from 'pl-fe/hooks';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
-import { useModalsStore } from 'pl-fe/stores';
+import Column from 'pl-fe/components/ui/column';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useTheme } from 'pl-fe/hooks/use-theme';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({

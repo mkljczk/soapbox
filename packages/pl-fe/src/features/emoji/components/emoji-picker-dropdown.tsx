@@ -1,11 +1,13 @@
-import { Map as ImmutableMap } from 'immutable';
-import React, { useEffect, useState, useLayoutEffect, Suspense } from 'react';
+import React, { useEffect, useState, useLayoutEffect, Suspense, useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { createSelector } from 'reselect';
 
 import { chooseEmoji } from 'pl-fe/actions/emojis';
 import { changeSetting } from 'pl-fe/actions/settings';
-import { useAppDispatch, useAppSelector, useTheme } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 import { RootState } from 'pl-fe/store';
 
 import { buildCustomEmojis } from '../../emoji';
@@ -71,15 +73,11 @@ const DEFAULTS = [
   'ok_hand',
 ];
 
-const getFrequentlyUsedEmojis = createSelector([
-  (state: RootState) => state.settings.get('frequentlyUsedEmojis', ImmutableMap()),
-], (emojiCounters: ImmutableMap<string, number>) => {
-  let emojis = emojiCounters
-    .keySeq()
-    .sort((a, b) => emojiCounters.get(a)! - emojiCounters.get(b)!)
-    .reverse()
-    .slice(0, perLine * lines)
-    .toArray();
+const getFrequentlyUsedEmojis = (emojiCounters: Record<string, number>) => {
+  let emojis = Object.keys(emojiCounters)
+    .toSorted((a, b) => emojiCounters[a] - emojiCounters[b])
+    .toReversed()
+    .slice(0, perLine * lines);
 
   if (emojis.length < DEFAULTS.length) {
     const uniqueDefaults = DEFAULTS.filter(emoji => !emojis.includes(emoji));
@@ -87,7 +85,7 @@ const getFrequentlyUsedEmojis = createSelector([
   }
 
   return emojis;
-});
+};
 
 const getCustomEmojis = createSelector([
   (state: RootState) => state.custom_emojis,
@@ -132,7 +130,9 @@ const EmojiPickerDropdown: React.FC<IEmojiPickerDropdown> = ({
   const theme = useTheme();
 
   const customEmojis = useAppSelector((state) => getCustomEmojis(state));
-  const frequentlyUsedEmojis = useAppSelector((state) => getFrequentlyUsedEmojis(state));
+
+  const settings = useSettings();
+  const frequentlyUsedEmojis = useMemo(() => getFrequentlyUsedEmojis(settings.frequentlyUsedEmojis), [settings.frequentlyUsedEmojis]);
 
   const handlePick = (emoji: any) => {
     setVisible(false);
@@ -236,8 +236,6 @@ const EmojiPickerDropdown: React.FC<IEmojiPickerDropdown> = ({
 };
 
 export {
-  messages,
-  type IEmojiPickerDropdown,
-  getFrequentlyUsedEmojis,
   EmojiPickerDropdown as default,
+  type IEmojiPickerDropdown,
 };

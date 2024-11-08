@@ -4,8 +4,14 @@ import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { setupMfa, confirmMfa } from 'pl-fe/actions/mfa';
-import { Button, Form, FormActions, FormGroup, Input, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Input from 'pl-fe/components/ui/input';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({

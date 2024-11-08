@@ -1,7 +1,7 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Column } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
 import Search from 'pl-fe/features/search/components/search';
 import SearchResults from 'pl-fe/features/search/components/search-results';
 

@@ -3,7 +3,8 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import { changeComposeSpoilerText } from 'pl-fe/actions/compose';
 import AutosuggestInput, { IAutosuggestInput } from 'pl-fe/components/autosuggest-input';
-import { useAppDispatch, useCompose } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 
 const messages = defineMessages({
   placeholder: { id: 'compose_form.spoiler_placeholder', defaultMessage: 'Subject (optional)' },
@@ -36,7 +37,7 @@ const SpoilerInput = React.forwardRef<AutosuggestInput, ISpoilerInput>(({
       placeholder={intl.formatMessage(messages.placeholder)}
       value={value}
       onChange={handleChangeSpoilerText}
-      suggestions={suggestions}
+      suggestions={suggestions.toArray()}
       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
       onSuggestionsClearRequested={onSuggestionsClearRequested}
       onSuggestionSelected={onSuggestionSelected}

@@ -1,22 +1,26 @@
 import clsx from 'clsx';
-import { List as ImmutableList, type OrderedSet as ImmutableOrderedSet } from 'immutable';
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
 import { expandSearch, setFilter, setSearchAccount } from 'pl-fe/actions/search';
 import { fetchTrendingStatuses } from 'pl-fe/actions/trending-statuses';
-import { useAccount, useTrendingLinks } from 'pl-fe/api/hooks';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import { useTrendingLinks } from 'pl-fe/api/hooks/trends/use-trending-links';
 import Hashtag from 'pl-fe/components/hashtag';
 import IconButton from 'pl-fe/components/icon-button';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import TrendingLink from 'pl-fe/components/trending-link';
-import { HStack, Tabs, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Tabs from 'pl-fe/components/ui/tabs';
+import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
 import StatusContainer from 'pl-fe/containers/status-container';
 import PlaceholderAccount from 'pl-fe/features/placeholder/components/placeholder-account';
 import PlaceholderHashtag from 'pl-fe/features/placeholder/components/placeholder-hashtag';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
-import { useAppDispatch, useAppSelector, useFeatures } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 
 import type { SearchFilter } from 'pl-fe/reducers/search';
 
@@ -80,7 +84,7 @@ const SearchResults = () => {
     return <Tabs key={tabKey} items={items} activeItem={selectedFilter} />;
   };
 
-  const getCurrentIndex = (id: string): number => resultsIds?.keySeq().findIndex(key => key === id);
+  const getCurrentIndex = (id: string): number => resultsIds?.findIndex(key => key === id);
 
   const handleMoveUp = (id: string) => {
     if (!resultsIds) return;
@@ -112,16 +116,16 @@ const SearchResults = () => {
   let loaded;
   let noResultsMessage;
   let placeholderComponent = PlaceholderStatus as React.ComponentType;
-  let resultsIds: ImmutableOrderedSet<string>;
+  let resultsIds: Array<string>;
 
   if (selectedFilter === 'accounts') {
     hasMore = results.accountsHasMore;
     loaded = results.accountsLoaded;
     placeholderComponent = PlaceholderAccount;
 
-    if (results.accounts && results.accounts.size > 0) {
+    if (results.accounts && results.accounts.length > 0) {
       searchResults = results.accounts.map(accountId => <AccountContainer key={accountId} id={accountId} />);
-    } else if (!submitted && suggestions && !suggestions.isEmpty()) {
+    } else if (!submitted && suggestions && suggestions.length !== 0) {
       searchResults = suggestions.map(suggestion => <AccountContainer key={suggestion.account_id} id={suggestion.account_id} />);
     } else if (loaded) {
       noResultsMessage = (
@@ -140,7 +144,7 @@ const SearchResults = () => {
     hasMore = results.statusesHasMore;
     loaded = results.statusesLoaded;
 
-    if (results.statuses && results.statuses.size > 0) {
+    if (results.statuses && results.statuses.length > 0) {
       searchResults = results.statuses.map((statusId: string) => (
         // @ts-ignore
         <StatusContainer
@@ -151,7 +155,7 @@ const SearchResults = () => {
         />
       ));
       resultsIds = results.statuses;
-    } else if (!submitted && !filterByAccount && trendingStatuses && !trendingStatuses.isEmpty()) {
+    } else if (!submitted && !filterByAccount && trendingStatuses && trendingStatuses.length !== 0) {
       searchResults = trendingStatuses.map((statusId: string) => (
         // @ts-ignore
         <StatusContainer
@@ -180,9 +184,9 @@ const SearchResults = () => {
     loaded = results.hashtagsLoaded;
     placeholderComponent = PlaceholderHashtag;
 
-    if (results.hashtags && results.hashtags.size > 0) {
+    if (results.hashtags && results.hashtags.length > 0) {
       searchResults = results.hashtags.map(hashtag => <Hashtag key={hashtag.name} hashtag={hashtag} />);
-    } else if (!submitted && suggestions && !suggestions.isEmpty()) {
+    } else if (!submitted && suggestions && suggestions.length !== 0) {
       searchResults = trends.map(hashtag => <Hashtag key={hashtag.name} hashtag={hashtag} />);
     } else if (loaded) {
       noResultsMessage = (
@@ -204,7 +208,7 @@ const SearchResults = () => {
       selectFilter('accounts');
       setTabKey(key => ++key);
     } else if (!submitted && trendingLinks) {
-      searchResults = ImmutableList(trendingLinks.map(trendingLink => <TrendingLink trendingLink={trendingLink} />));
+      searchResults = trendingLinks.map(trendingLink => <TrendingLink trendingLink={trendingLink} />);
     }
   }
 
@@ -228,7 +232,7 @@ const SearchResults = () => {
           id='search-results'
           key={selectedFilter}
           isLoading={submitted && !loaded}
-          showLoading={submitted && !loaded && (!searchResults || searchResults?.isEmpty())}
+          showLoading={submitted && !loaded && (!searchResults || searchResults?.length === 0)}
           hasMore={hasMore}
           onLoadMore={handleLoadMore}
           placeholderComponent={placeholderComponent}

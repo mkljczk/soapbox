@@ -1,6 +1,6 @@
 import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 /** Convert a plain tag into a badge. */
 const tagToBadge = (tag: string) => `badge:${tag}`;

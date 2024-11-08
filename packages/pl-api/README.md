@@ -1,6 +1,31 @@
 # `pl-api`
 
-A library for interacting with Mastodon API-compatible servers, focused on support for projects extending the official Mastodon API.
+[![GitHub License](https://img.shields.io/github/license/mkljczk/pl-fe)](https://github.com/mkljczk/pl-fe?tab=AGPL-3.0-1-ov-file#readme)
+[![NPM Version](https://img.shields.io/npm/v/pl-api)
+![NPM Downloads](https://img.shields.io/npm/dw/pl-api)](https://www.npmjs.com/package/pl-api)
+
+A JavaScript library for interacting with Mastodon API-compatible servers, focused on support for projects extending the official Mastodon API.
+
+`pl-api` attempts to abstract out the implementation details when supporting different backends, implementing the same features in different ways. It uses [Valibot](https://valibot.dev/) to ensure type safety and normalize API responses.
+
+Example:
+```ts
+import { PlApiClient, type CreateApplicationParams } from 'pl-api';
+
+const { ACCESS_TOKEN } = process.env;
+
+const client = new PlApiClient('https://mastodon.example/', ACCESS_TOKEN, {
+  fetchInstance: true,
+  onInstanceFetchSuccess: () => console.log('Instance fetched'),
+});
+
+await client.statuses.createStatus({
+  status: 'Hello, world!',
+  language: 'en',
+});
+```
+
+Some sort of documentation is available on https://pl.mkljczk.pl/pl-api-docs
 
 > This project should be considered unstable before the 1.0.0 release. I will not provide any changelog or information on breaking changes until then.
 

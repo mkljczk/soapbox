@@ -1,6 +1,6 @@
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 import type { AppDispatch } from 'pl-fe/store';
 
 const MUTES_INIT_MODAL = 'MUTES_INIT_MODAL';

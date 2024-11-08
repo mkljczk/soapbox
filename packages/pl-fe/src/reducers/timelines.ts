@@ -7,8 +7,8 @@ import {
 import sample from 'lodash/sample';
 
 import { ACCOUNT_BLOCK_SUCCESS, ACCOUNT_MUTE_SUCCESS } from '../actions/accounts';
-import { PIN_SUCCESS, UNPIN_SUCCESS } from '../actions/interactions';
-import { STATUS_CREATE_REQUEST, STATUS_CREATE_SUCCESS } from '../actions/statuses';
+import { PIN_SUCCESS, UNPIN_SUCCESS, type InteractionsAction } from '../actions/interactions';
+import { STATUS_CREATE_REQUEST, STATUS_CREATE_SUCCESS, type StatusesAction } from '../actions/statuses';
 import {
   TIMELINE_UPDATE,
   TIMELINE_DELETE,
@@ -21,11 +21,12 @@ import {
   MAX_QUEUED_ITEMS,
   TIMELINE_SCROLL_TOP,
   TIMELINE_INSERT,
+  type TimelineAction,
 } from '../actions/timelines';
 
-import type { Status } from '../normalizers';
 import type { PaginatedResponse, Status as BaseStatus, Relationship } from 'pl-api';
 import type { ImportPosition } from 'pl-fe/entity-store/types';
+import type { Status } from 'pl-fe/normalizers/status';
 import type { AnyAction } from 'redux';
 
 const TRUNCATE_LIMIT = 40;
@@ -197,10 +198,10 @@ const buildReferencesTo = (
 //       statuses.getIn([statusId, 'account']) === relationship.id,
 //     ));
 
-const filterTimelines = (state: State, relationship: Relationship, statuses: ImmutableMap<string, Pick<Status, 'id' | 'account' | 'reblog_id'>>) =>
+const filterTimelines = (state: State, relationship: Relationship, statuses: ImmutableMap<string, Pick<Status, 'id' | 'account' | 'account_id' | 'reblog_id'>>) =>
   state.withMutations(state => {
     statuses.forEach(status => {
-      if (status.account.id !== relationship.id) return;
+      if (status.account_id !== relationship.id) return;
       const references = buildReferencesTo(statuses, status);
       deleteStatus(state, status.id, references, relationship.id);
     });
@@ -294,7 +295,7 @@ const handleExpandFail = (state: State, timelineId: string) => state.withMutatio
   setFailed(state, timelineId, true);
 });
 
-const timelines = (state: State = initialState, action: AnyAction) => {
+const timelines = (state: State = initialState, action: AnyAction | InteractionsAction | StatusesAction | TimelineAction) => {
   switch (action.type) {
     case STATUS_CREATE_REQUEST:
       if (action.params.scheduled_at) return state;

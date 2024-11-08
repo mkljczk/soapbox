@@ -26,7 +26,7 @@ const simplePolicyMerge = (simplePolicy: MRFSimple, host: string, restrictions: 
 const updateMrf = (host: string, restrictions: Record<string, any>) =>
   (dispatch: AppDispatch, getState: () => RootState) =>
     dispatch(fetchConfig()).then(() => {
-      const configs = getState().admin.get('configs');
+      const configs = getState().admin.configs;
       const simplePolicy = ConfigDB.toSimplePolicy(configs);
       const merged = simplePolicyMerge(simplePolicy, host, restrictions);
       const config = ConfigDB.fromSimplePolicy(merged);

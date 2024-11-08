@@ -1,4 +1,5 @@
 import { statusSchema, type ScheduledStatus } from 'pl-api';
+import * as v from 'valibot';
 
 import { Entities } from 'pl-fe/entity-store/entities';
 import { normalizeStatus } from 'pl-fe/normalizers/status';
@@ -9,7 +10,7 @@ const buildStatus = (state: RootState, scheduledStatus: ScheduledStatus) => {
   const me = state.me as string;
   const account = state.entities[Entities.ACCOUNTS]?.store[me];
 
-  const status = statusSchema.parse({
+  const status = v.parse(statusSchema, {
     account,
     content: scheduledStatus.params.text?.replace(new RegExp('\n', 'g'), '<br>'), /* eslint-disable-line no-control-regex */
     created_at: scheduledStatus.params.scheduled_at,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { injectIntl, defineMessages, IntlShape, FormatDateOptions } from 'react-intl';
 
-import Text, { IText } from './ui/text/text';
+import Text, { IText } from './ui/text';
 
 const messages = defineMessages({
   just_now: { id: 'relative_time.just_now', defaultMessage: 'now' },
@@ -199,6 +199,5 @@ const RelativeTimestamp = injectIntl(class RelativeTimestamp extends React.Compo
 
 export {
   dateFormatOptions,
-  timeAgoString,
   RelativeTimestamp as default,
 };

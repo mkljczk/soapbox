@@ -1,7 +1,11 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HStack, Icon, ProgressBar, Stack, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import ProgressBar from 'pl-fe/components/ui/progress-bar';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
 interface IUploadProgress {
   /** Number between 0 and 100 to represent the percentage complete. */

@@ -1,6 +1,6 @@
 import { isIntegerId } from 'pl-fe/utils/numbers';
 
-import type { Status } from 'pl-fe/normalizers';
+import type { Status } from 'pl-fe/normalizers/status';
 import type { IntlShape } from 'react-intl';
 
 /** Get the initial visibility of media attachments from user settings. */
@@ -68,7 +68,6 @@ const getStatusIdsFromLinksInContent = (content: string): string[] => {
 
 export {
   defaultMediaVisibility,
-  getFirstExternalLink,
   shouldHaveCard,
   hasIntegerMediaIds,
   textForScreenReader,

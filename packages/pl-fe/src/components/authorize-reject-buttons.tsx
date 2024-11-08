@@ -2,7 +2,9 @@ import clsx from 'clsx';
 import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HStack, IconButton, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Text from 'pl-fe/components/ui/text';
 
 interface IAuthorizeRejectButtons {
   onAuthorize(): Promise<unknown> | unknown;

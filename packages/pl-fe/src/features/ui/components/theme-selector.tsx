@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Icon, Select } from 'pl-fe/components/ui';
+import Icon from 'pl-fe/components/ui/icon';
+import Select from 'pl-fe/components/ui/select';
 
 const messages = defineMessages({
   light: { id: 'theme_toggle.light', defaultMessage: 'Light' },

@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React from 'react';
 
-import { Stack } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
 
 interface IPlaceholderAvatar {
   size: number;

@@ -1,16 +1,21 @@
 import pick from 'lodash.pick';
-import { z } from 'zod';
+import * as v from 'valibot';
 
 import { announcementSchema } from '../announcement';
 
 /** @see {@link https://docs.pleroma.social/backend/development/API/admin_api/#get-apiv1pleromaadminannouncements} */
-const adminAnnouncementSchema = z.preprocess((announcement: any) => ({
-  ...announcement,
-  ...pick(announcement.pleroma, 'raw_content'),
-}), announcementSchema.extend({
-  raw_content: z.string().catch(''),
-}));
+const adminAnnouncementSchema = v.pipe(
+  v.any(),
+  v.transform((announcement: any) => ({
+    ...announcement,
+    ...pick(announcement.pleroma, 'raw_content'),
+  })),
+  v.object({
+    ...announcementSchema.entries,
+    raw_content: v.fallback(v.string(), ''),
+  }),
+);
 
-type AdminAnnouncement = z.infer<typeof adminAnnouncementSchema>;
+type AdminAnnouncement = v.InferOutput<typeof adminAnnouncementSchema>;
 
 export { adminAnnouncementSchema, type AdminAnnouncement };

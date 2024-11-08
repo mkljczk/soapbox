@@ -1,13 +1,16 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/List/} */
-const listSchema = z.object({
-  id: z.coerce.string(),
-  title: z.string(),
-  replies_policy: z.string().optional().catch(undefined),
-  exclusive: z.boolean().optional().catch(undefined),
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/List/}
+ */
+const listSchema = v.object({
+  id: v.pipe(v.unknown(), v.transform(String)),
+  title: v.string(),
+  replies_policy: v.fallback(v.optional(v.string()), undefined),
+  exclusive: v.fallback(v.optional(v.boolean()), undefined),
 });
 
-type List = z.infer<typeof listSchema>;
+type List = v.InferOutput<typeof listSchema>;
 
 export { listSchema, type List };

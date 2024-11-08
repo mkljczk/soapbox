@@ -3,9 +3,13 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Motion, presets, spring } from 'react-motion';
 
-import { HStack, Icon, Text } from '../ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Text from 'pl-fe/components/ui/text';
 
-import type { Poll } from 'pl-fe/normalizers';
+import { ParsedContent } from '../parsed-content';
+
+import type { Poll } from 'pl-api';
 
 const messages = defineMessages({
   voted: { id: 'poll.voted', defaultMessage: 'You voted for this answer' },
@@ -63,8 +67,9 @@ const PollOptionText: React.FC<IPollOptionText> = ({ poll, option, index, active
               theme='inherit'
               weight='medium'
               align='center'
-              dangerouslySetInnerHTML={{ __html: option.title_emojified }}
-            />
+            >
+              <ParsedContent html={option.title} emojis={poll.emojis} />
+            </Text>
           </div>
         </div>
 
@@ -131,9 +136,10 @@ const PollOption: React.FC<IPollOption> = (props): JSX.Element | null => {
               <Text
                 theme='inherit'
                 weight='medium'
-                dangerouslySetInnerHTML={{ __html: (language && option.title_map_emojified) && option.title_map_emojified[language] || option.title_emojified }}
                 className='relative'
-              />
+              >
+                <ParsedContent html={(language && option.title_map) && option.title_map[language] || option.title} emojis={poll.emojis} />
+              </Text>
             </div>
 
             <HStack space={2} alignItems='center' className='relative'>

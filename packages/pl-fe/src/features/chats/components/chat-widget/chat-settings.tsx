@@ -2,13 +2,22 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { blockAccount, unblockAccount } from 'pl-fe/actions/accounts';
-import { Avatar, HStack, Icon, Stack, Text } from 'pl-fe/components/ui';
+import Avatar from 'pl-fe/components/ui/avatar';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
-import { useAppDispatch, useAppSelector, useFeatures } from 'pl-fe/hooks';
+import { Entities } from 'pl-fe/entity-store/entities';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useChatActions } from 'pl-fe/queries/chats';
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import ChatPaneHeader from './chat-pane-header';
+
+import type { Relationship } from 'pl-api';
 
 const messages = defineMessages({
   blockMessage: { id: 'chat_settings.block.message', defaultMessage: 'Blocking will prevent this profile from direct messaging you and viewing your content. You can unblock later.' },
@@ -35,7 +44,7 @@ const ChatSettings = () => {
   const { chat, changeScreen, toggleChatPane } = useChatContext();
   const { deleteChat } = useChatActions(chat?.id as string);
 
-  const isBlocking = useAppSelector((state) => state.getIn(['relationships', chat?.account?.id, 'blocking']));
+  const isBlocking = !!useAppSelector((state) => chat?.account?.id && (state.entities[Entities.RELATIONSHIPS]?.store[chat.account.id] as Relationship)?.blocked_by);
 
   const closeSettings = () => {
     changeScreen(ChatWidgetScreens.CHAT, chat?.id);

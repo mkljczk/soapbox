@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { GroupRoles, type Group } from 'pl-api';
 import React from 'react';
 
-import { Avatar } from '../ui';
+import Avatar from 'pl-fe/components/ui/avatar';
 
 interface IGroupAvatar {
   group: Pick<Group, 'avatar' | 'avatar_description' | 'relationship'>;

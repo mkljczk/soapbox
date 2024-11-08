@@ -13,9 +13,12 @@ import {
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import ScrollTopButton from 'pl-fe/components/scroll-top-button';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, Portal } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import Portal from 'pl-fe/components/ui/portal';
 import PlaceholderNotification from 'pl-fe/features/placeholder/components/placeholder-notification';
-import { useAppDispatch, useAppSelector, useSettings } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 import FilterBar from './components/filter-bar';
 import Notification from './components/notification';
@@ -29,7 +32,7 @@ const messages = defineMessages({
 
 const getNotifications = createSelector([
   (state: RootState) => state.notifications.items.toList(),
-], (notifications) => notifications.filter(item => item !== null && !item.duplicate));
+], (notifications) => notifications.filter(item => item !== null));
 
 const Notifications = () => {
   const dispatch = useAppDispatch();
@@ -44,7 +47,6 @@ const Notifications = () => {
   const hasMore = useAppSelector(state => state.notifications.hasMore);
   const totalQueuedNotificationsCount = useAppSelector(state => state.notifications.totalQueuedNotificationsCount || 0);
 
-  const column = useRef<HTMLDivElement>(null);
   const scrollableContentRef = useRef<ImmutableList<JSX.Element> | null>(null);
 
   // const handleLoadGap = (maxId) => {
@@ -52,8 +54,13 @@ const Notifications = () => {
   // };
 
   const handleLoadOlder = useCallback(debounce(() => {
-    const last = notifications.last();
-    dispatch(expandNotifications({ maxId: last && last.id }));
+    const minId = notifications.reduce<string | undefined>(
+      (minId, notification) => minId && notification.page_min_id && notification.page_min_id > minId
+        ? minId
+        : notification.page_min_id,
+      undefined,
+    );
+    dispatch(expandNotifications({ maxId: minId }));
   }, 300, { leading: true }), [notifications]);
 
   const handleScroll = useCallback(debounce((startIndex?: number) => {
@@ -61,12 +68,12 @@ const Notifications = () => {
   }, 100), []);
 
   const handleMoveUp = (id: string) => {
-    const elementIndex = notifications.findIndex(item => item !== null && item.id === id) - 1;
+    const elementIndex = notifications.findIndex(item => item !== null && item.group_key === id) - 1;
     _selectChild(elementIndex);
   };
 
   const handleMoveDown = (id: string) => {
-    const elementIndex = notifications.findIndex(item => item !== null && item.id === id) + 1;
+    const elementIndex = notifications.findIndex(item => item !== null && item.group_key === id) + 1;
     _selectChild(elementIndex);
   };
 
@@ -109,7 +116,7 @@ const Notifications = () => {
   } else if (notifications.size > 0 || hasMore) {
     scrollableContent = notifications.map((item) => (
       <Notification
-        key={item.id}
+        key={item.group_key}
         notification={item}
         onMoveUp={handleMoveUp}
         onMoveDown={handleMoveDown}
@@ -140,7 +147,7 @@ const Notifications = () => {
   );
 
   return (
-    <Column ref={column} label={intl.formatMessage(messages.title)} withHeader={false}>
+    <Column label={intl.formatMessage(messages.title)} withHeader={false}>
       {filterBarContainer}
 
       <Portal>

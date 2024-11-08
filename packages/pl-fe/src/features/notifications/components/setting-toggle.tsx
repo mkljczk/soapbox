@@ -1,7 +1,7 @@
 import get from 'lodash/get';
 import React from 'react';
 
-import { Toggle } from 'pl-fe/components/ui';
+import Toggle from 'pl-fe/components/ui/toggle';
 import { Settings } from 'pl-fe/schemas/pl-fe/settings';
 
 interface ISettingToggle {

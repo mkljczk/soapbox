@@ -4,13 +4,16 @@ import { useRouteMatch } from 'react-router-dom';
 
 import { groupComposeModal } from 'pl-fe/actions/compose';
 import ThumbNavigationLink from 'pl-fe/components/thumb-navigation-link';
+import Icon from 'pl-fe/components/ui/icon';
 import { useStatContext } from 'pl-fe/contexts/stat-context';
 import { Entities } from 'pl-fe/entity-store/entities';
-import { useAppDispatch, useAppSelector, useFeatures, useOwnAccount } from 'pl-fe/hooks';
-import { useModalsStore, useUiStore } from 'pl-fe/stores';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { useModalsStore } from 'pl-fe/stores/modals';
+import { useUiStore } from 'pl-fe/stores/ui';
 import { isStandalone } from 'pl-fe/utils/state';
-
-import { Icon } from './ui';
 
 const messages = defineMessages({
   home: { id: 'navigation.home', defaultMessage: 'Home' },

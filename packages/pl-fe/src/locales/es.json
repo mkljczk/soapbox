@@ -1200,7 +1200,7 @@
   "navigation_bar.compose": "Escribir un nuevo toot",
   "navigation_bar.compose_direct": "Direct message",
   "navigation_bar.compose_edit": "Edit post",
-  "navigation_bar.compose_event": "Administrar evento",
+  "navigation_bar.manage_event": "Administrar evento",
   "navigation_bar.compose_group": "Redactar para grupo",
   "navigation_bar.compose_group_reply": "Responder al mensaje del grupo",
   "navigation_bar.compose_quote": "Quote post",

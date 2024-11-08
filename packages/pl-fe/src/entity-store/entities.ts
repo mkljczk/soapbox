@@ -1,5 +1,7 @@
 import type { AdminDomain, AdminRelay, AdminRule, BookmarkFolder, GroupMember, GroupRelationship, Relationship, Scrobble, TrendsLink } from 'pl-api';
-import type { Account, Group, Status } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
+import type { Group } from 'pl-fe/normalizers/group';
+import type { Status } from 'pl-fe/normalizers/status';
 
 enum Entities {
   ACCOUNTS = 'Accounts',

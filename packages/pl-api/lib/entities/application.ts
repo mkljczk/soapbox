@@ -1,19 +1,44 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Application/} */
-const applicationSchema = z.object({
-  name: z.string().catch(''),
-  website: z.string().optional().catch(undefined),
-  client_id: z.string().optional().catch(undefined),
-  client_secret: z.string().optional().catch(undefined),
-  redirect_uri: z.string().optional().catch(undefined),
+import { filteredArray } from './utils';
 
-  id: z.string().optional().catch(undefined),
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Application/}
+ */
+const applicationSchema = v.pipe(v.any(), v.transform((application) => ({
+  redirect_uris: [application.redirect_uri],
+  ...application,
+})), v.object({
+  name: v.fallback(v.string(), ''),
+  website: v.fallback(v.optional(v.string()), undefined),
+  redirect_uris: filteredArray(v.string()),
+
+  id: v.fallback(v.optional(v.string()), undefined),
 
   /** @deprecated */
-  vapid_key: z.string().optional().catch(undefined),
-});
+  redirect_uri: v.fallback(v.optional(v.string()), undefined),
+  /** @deprecated */
+  vapid_key: v.fallback(v.optional(v.string()), undefined),
+}));
 
-type Application = z.infer<typeof applicationSchema>;
+type Application = v.InferOutput<typeof applicationSchema>;
 
-export { applicationSchema, type Application };
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Application/#CredentialApplication}
+ */
+const credentialApplicationSchema = v.pipe(
+  applicationSchema.pipe[0],
+  applicationSchema.pipe[1],
+  v.object({
+    ...applicationSchema.pipe[2].entries,
+    client_id: v.string(),
+    client_secret: v.string(),
+    client_secret_expires_at: v.fallback(v.optional(v.string()), undefined),
+  }),
+);
+
+type CredentialApplication = v.InferOutput<typeof credentialApplicationSchema>;
+
+export { applicationSchema, credentialApplicationSchema, type Application, type CredentialApplication };

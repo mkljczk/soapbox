@@ -1,19 +1,25 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-const historySchema = z.object({
-  day: z.coerce.number(),
-  accounts: z.coerce.number(),
-  uses: z.coerce.number(),
+/**
+ * @category Schemas
+ */
+const historySchema = v.array(v.object({
+  day: v.pipe(v.unknown(), v.transform(Number)),
+  accounts: v.pipe(v.unknown(), v.transform(Number)),
+  uses: v.pipe(v.unknown(), v.transform(Number)),
+}));
+
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/tag}
+ */
+const tagSchema = v.object({
+  name: v.pipe(v.string(), v.minLength(1)),
+  url: v.fallback(v.pipe(v.string(), v.url()), ''),
+  history: v.fallback(v.nullable(historySchema), null),
+  following: v.fallback(v.optional(v.boolean()), undefined),
 });
 
-/** @see {@link https://docs.joinmastodon.org/entities/tag} */
-const tagSchema = z.object({
-  name: z.string().min(1),
-  url: z.string().url().catch(''),
-  history: z.array(historySchema).nullable().catch(null),
-  following: z.boolean().optional().catch(undefined),
-});
-
-type Tag = z.infer<typeof tagSchema>;
+type Tag = v.InferOutput<typeof tagSchema>;
 
 export { historySchema, tagSchema, type Tag };

@@ -3,6 +3,8 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
+import pkg from './package.json';
+
 export default defineConfig({
   plugins: [dts({ include: ['lib'], insertTypesEntry: true })],
   build: {
@@ -15,5 +17,8 @@ export default defineConfig({
     },
     target: 'esnext',
     sourcemap: true,
+    rollupOptions: {
+      external: Object.keys(pkg.dependencies),
+    },
   },
 });

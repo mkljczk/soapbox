@@ -1,5 +1,5 @@
-import { produce } from 'immer';
 import { create } from 'zustand';
+import { mutative } from 'zustand-mutative';
 
 import type { ICryptoAddress } from 'pl-fe/features/crypto-donate/components/crypto-address';
 import type { ModalType } from 'pl-fe/features/ui/components/modal-root';
@@ -7,7 +7,6 @@ import type { AccountModerationModalProps } from 'pl-fe/features/ui/components/m
 import type { BoostModalProps } from 'pl-fe/features/ui/components/modals/boost-modal';
 import type { CompareHistoryModalProps } from 'pl-fe/features/ui/components/modals/compare-history-modal';
 import type { ComponentModalProps } from 'pl-fe/features/ui/components/modals/component-modal';
-import type { ComposeEventModalProps } from 'pl-fe/features/ui/components/modals/compose-event-modal';
 import type { ComposeModalProps } from 'pl-fe/features/ui/components/modals/compose-modal';
 import type { ConfirmationModalProps } from 'pl-fe/features/ui/components/modals/confirmation-modal';
 import type { DislikesModalProps } from 'pl-fe/features/ui/components/modals/dislikes-modal';
@@ -44,7 +43,6 @@ type OpenModalProps =
   | [type: 'COMPARE_HISTORY', props: CompareHistoryModalProps]
   | [type: 'COMPONENT', props: ComponentModalProps]
   | [type: 'COMPOSE', props?: ComposeModalProps]
-  | [type: 'COMPOSE_EVENT', props?: ComposeEventModalProps]
   | [type: 'CONFIRM', props: ConfirmationModalProps]
   | [type: 'CRYPTO_DONATE', props: ICryptoAddress]
   | [type: 'DISLIKES', props: DislikesModalProps]
@@ -88,12 +86,12 @@ type State = {
   closeModal: (modalType?: ModalType) => void;
 };
 
-const useModalsStore = create<State>((set) => ({
+const useModalsStore = create<State>()(mutative((set) => ({
   modals: [],
-  openModal: (...[modalType, modalProps]) => set(produce((state: State) => {
+  openModal: (...[modalType, modalProps]) => set((state: State) => {
     state.modals.push({ modalType, modalProps });
-  })),
-  closeModal: (modalType) => set(produce((state: State) => {
+  }),
+  closeModal: (modalType) => set((state: State) => {
     if (state.modals.length === 0) {
       return;
     }
@@ -102,7 +100,7 @@ const useModalsStore = create<State>((set) => ({
     } else if (state.modals.some((modal) => modalType === modal.modalType)) {
       state.modals = state.modals.slice(0, state.modals.findLastIndex((modal) => modalType === modal.modalType));
     }
-  })),
-}));
+  }),
+}), { enableAutoFreeze: true }));
 
-export { useModalsStore, type OpenModalProps };
+export { useModalsStore };

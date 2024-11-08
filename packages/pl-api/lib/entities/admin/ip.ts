@@ -1,14 +1,14 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-import { dateSchema } from '../utils';
+import { datetimeSchema } from '../utils';
 
 /** @see {@link https://docs.joinmastodon.org/entities/Admin_Ip/} */
-const adminIpSchema = z.object({
-  ip: z.string().ip(),
-  used_at: dateSchema,
+const adminIpSchema = v.object({
+  ip: v.pipe(v.string(), v.ip()),
+  used_at: datetimeSchema,
 });
 
-type AdminIp = z.infer<typeof adminIpSchema>;
+type AdminIp = v.InferOutput<typeof adminIpSchema>;
 
 export {
   adminIpSchema,

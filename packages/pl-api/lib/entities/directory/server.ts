@@ -1,21 +1,21 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-const directoryServerSchema = z.object({
-  domain: z.string(),
-  version: z.string(),
-  description: z.string(),
-  languages: z.array(z.string()),
-  region: z.string(),
-  categories: z.array(z.string()),
-  proxied_thumbnail: z.string().url().nullable().catch(null),
-  blurhash: z.string().nullable().catch(null),
-  total_users: z.coerce.number(),
-  last_week_users: z.coerce.number(),
-  approval_required: z.boolean(),
-  language: z.string(),
-  category: z.string(),
+const directoryServerSchema = v.object({
+  domain: v.string(),
+  version: v.string(),
+  description: v.string(),
+  languages: v.array(v.string()),
+  region: v.string(),
+  categories: v.array(v.string()),
+  proxied_thumbnail: v.fallback(v.nullable(v.pipe(v.string(), v.url())), null),
+  blurhash: v.fallback(v.nullable(v.string()), null),
+  total_users: v.pipe(v.unknown(), v.transform(Number)),
+  last_week_users: v.pipe(v.unknown(), v.transform(Number)),
+  approval_required: v.boolean(),
+  language: v.string(),
+  category: v.string(),
 });
 
-type DirectoryServer = z.infer<typeof directoryServerSchema>;
+type DirectoryServer = v.InferOutput<typeof directoryServerSchema>;
 
 export { directoryServerSchema, type DirectoryServer };

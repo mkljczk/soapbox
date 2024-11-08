@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-const directoryCategorySchema = z.object({
-  category: z.string(),
-  servers_count: z.coerce.number().nullable().catch(null),
+const directoryCategorySchema = v.object({
+  category: v.string(),
+  servers_count: v.fallback(v.nullable(v.pipe(v.unknown(), v.transform(Number))), null),
 });
 
-type DirectoryCategory = z.infer<typeof directoryCategorySchema>;
+type DirectoryCategory = v.InferOutput<typeof directoryCategorySchema>;
 
 export { directoryCategorySchema, type DirectoryCategory };

@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { resetCompose } from 'pl-fe/actions/compose';
 import { FOCUS_EDITOR_COMMAND } from 'pl-fe/features/compose/editor/plugins/focus-plugin';
-import { useAppSelector, useAppDispatch, useOwnAccount } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import { HotKeys } from '../components/hotkeys';
 
@@ -46,111 +47,119 @@ const GlobalHotkeys: React.FC<IGlobalHotkeys> = ({ children, node }) => {
 
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const me = useAppSelector(state => state.me);
   const { account } = useOwnAccount();
   const { openModal } = useModalsStore();
-
-  const handleHotkeyNew = (e?: KeyboardEvent) => {
-    e?.preventDefault();
-
-    const element = node.current?.querySelector('div[data-lexical-editor="true"]') as HTMLTextAreaElement;
-
-    if (element) {
-      ((element as any).__lexicalEditor as LexicalEditor).dispatchCommand(FOCUS_EDITOR_COMMAND, undefined);
-    } else {
-      openModal('COMPOSE');
-    }
-  };
-
-  const handleHotkeySearch = (e?: KeyboardEvent) => {
-    e?.preventDefault();
-    if (!node.current) return;
-
-    const element = node.current.querySelector('input#search') as HTMLInputElement;
-
-    if (element?.checkVisibility()) {
-      element.focus();
-    } else {
-      history.push('/search');
-    }
-  };
-
-  const handleHotkeyForceNew = (e?: KeyboardEvent) => {
-    handleHotkeyNew(e);
-    dispatch(resetCompose());
-  };
-
-  const handleHotkeyBack = () => {
-    if (window.history && window.history.length === 1) {
-      history.push('/');
-    } else {
-      history.goBack();
-    }
-  };
 
   const setHotkeysRef: React.LegacyRef<typeof HotKeys> = (c: any) => {
     hotkeys.current = c;
 
-    if (!me || !hotkeys.current) return;
+    if (!account || !hotkeys.current) return;
 
     // @ts-ignore
     hotkeys.current.__mousetrap__.stopCallback = (_e, element) =>
       ['TEXTAREA', 'SELECT', 'INPUT', 'EM-EMOJI-PICKER'].includes(element.tagName) || !!element.closest('[contenteditable]');
   };
 
-  const handleHotkeyToggleHelp = () => {
-    openModal('HOTKEYS');
-  };
+  const handlers = useMemo(() => {
+    const handleHotkeyNew = (e?: KeyboardEvent) => {
+      e?.preventDefault();
 
-  const handleHotkeyGoToHome = () => {
-    history.push('/');
-  };
+      const element = node.current?.querySelector('div[data-lexical-editor="true"]') as HTMLTextAreaElement;
 
-  const handleHotkeyGoToNotifications = () => {
-    history.push('/notifications');
-  };
+      if (element) {
+        ((element as any).__lexicalEditor as LexicalEditor).dispatchCommand(FOCUS_EDITOR_COMMAND, undefined);
+      } else {
+        openModal('COMPOSE');
+      }
+    };
 
-  const handleHotkeyGoToFavourites = () => {
-    if (!account) return;
-    history.push(`/@${account.username}/favorites`);
-  };
+    const handleHotkeySearch = (e?: KeyboardEvent) => {
+      e?.preventDefault();
+      if (!node.current) return;
 
-  const handleHotkeyGoToProfile = () => {
-    if (!account) return;
-    history.push(`/@${account.username}`);
-  };
+      const element = node.current.querySelector('input#search') as HTMLInputElement;
 
-  const handleHotkeyGoToBlocked = () => {
-    history.push('/blocks');
-  };
+      if (element?.checkVisibility()) {
+        element.focus();
+      } else {
+        history.push('/search');
+      }
+    };
 
-  const handleHotkeyGoToMuted = () => {
-    history.push('/mutes');
-  };
+    const handleHotkeyForceNew = (e?: KeyboardEvent) => {
+      handleHotkeyNew(e);
+      dispatch(resetCompose());
+    };
 
-  const handleHotkeyGoToRequests = () => {
-    history.push('/follow_requests');
-  };
+    const handleHotkeyBack = () => {
+      if (window.history && window.history.length === 1) {
+        history.push('/');
+      } else {
+        history.goBack();
+      }
+    };
 
-  type HotkeyHandlers = { [key: string]: (keyEvent?: KeyboardEvent) => void };
+    const handleHotkeyToggleHelp = () => {
+      openModal('HOTKEYS');
+    };
 
-  const handlers: HotkeyHandlers = {
-    help: handleHotkeyToggleHelp,
-    new: handleHotkeyNew,
-    search: handleHotkeySearch,
-    forceNew: handleHotkeyForceNew,
-    back: handleHotkeyBack,
-    goToHome: handleHotkeyGoToHome,
-    goToNotifications: handleHotkeyGoToNotifications,
-    goToFavourites: handleHotkeyGoToFavourites,
-    goToProfile: handleHotkeyGoToProfile,
-    goToBlocked: handleHotkeyGoToBlocked,
-    goToMuted: handleHotkeyGoToMuted,
-    goToRequests: handleHotkeyGoToRequests,
-  };
+    const handleHotkeyGoToHome = () => {
+      history.push('/');
+    };
+
+    const handleHotkeyGoToNotifications = () => {
+      history.push('/notifications');
+    };
+
+    const handleHotkeyGoToFavourites = () => {
+      if (!account) return;
+      history.push(`/@${account.username}/favorites`);
+    };
+
+    const handleHotkeyGoToProfile = () => {
+      if (!account) return;
+      history.push(`/@${account.username}`);
+    };
+
+    const handleHotkeyGoToBlocked = () => {
+      history.push('/blocks');
+    };
+
+    const handleHotkeyGoToMuted = () => {
+      history.push('/mutes');
+    };
+
+    const handleHotkeyGoToRequests = () => {
+      history.push('/follow_requests');
+    };
+
+    type HotkeyHandlers = { [key: string]: (keyEvent?: KeyboardEvent) => void };
+
+    let handlers: HotkeyHandlers = {
+      help: handleHotkeyToggleHelp,
+      search: handleHotkeySearch,
+      back: handleHotkeyBack,
+    };
+
+    if (account) {
+      handlers = {
+        ...handlers,
+        new: handleHotkeyNew,
+        forceNew: handleHotkeyForceNew,
+        goToHome: handleHotkeyGoToHome,
+        goToNotifications: handleHotkeyGoToNotifications,
+        goToFavourites: handleHotkeyGoToFavourites,
+        goToProfile: handleHotkeyGoToProfile,
+        goToBlocked: handleHotkeyGoToBlocked,
+        goToMuted: handleHotkeyGoToMuted,
+        goToRequests: handleHotkeyGoToRequests,
+      };
+    }
+    return handlers;
+  }, [account?.id]);
 
   return (
-    <HotKeys keyMap={keyMap} handlers={me ? handlers : undefined} ref={setHotkeysRef} attach={window} focused>
+    <HotKeys keyMap={keyMap} handlers={handlers} ref={setHotkeysRef} attach={window} focused>
       {children}
     </HotKeys>
   );

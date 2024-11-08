@@ -1,68 +1,69 @@
 import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
-import { List as ImmutableList, OrderedSet as ImmutableOrderedSet } from 'immutable';
-import React, { useEffect, useRef } from 'react';
-import { Helmet } from 'react-helmet';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { type ComposeReplyAction, mentionCompose, replyCompose } from 'pl-fe/actions/compose';
 import { reblog, toggleFavourite, unreblog } from 'pl-fe/actions/interactions';
-import { getSettings } from 'pl-fe/actions/settings';
 import { toggleStatusMediaHidden } from 'pl-fe/actions/statuses';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import StatusActionBar from 'pl-fe/components/status-action-bar';
 import Tombstone from 'pl-fe/components/tombstone';
-import { Stack } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import PendingStatus from 'pl-fe/features/ui/components/pending-status';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { RootState } from 'pl-fe/store';
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 import { textForScreenReader } from 'pl-fe/utils/status';
 
 import DetailedStatus from './detailed-status';
 import ThreadStatus from './thread-status';
 
 import type { Virtualizer } from '@tanstack/react-virtual';
-import type { Account, Status } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
+import type { Status } from 'pl-fe/normalizers/status';
 import type { SelectedStatus } from 'pl-fe/selectors';
 
-const getAncestorsIds = createSelector([
+const makeGetAncestorsIds = () => createSelector([
   (_: RootState, statusId: string | undefined) => statusId,
   (state: RootState) => state.contexts.inReplyTos,
 ], (statusId, inReplyTos) => {
-  let ancestorsIds = ImmutableOrderedSet<string>();
+  let ancestorsIds: Array<string> = [];
   let id: string | undefined = statusId;
 
   while (id && !ancestorsIds.includes(id)) {
-    ancestorsIds = ImmutableOrderedSet([id]).union(ancestorsIds);
-    id = inReplyTos.get(id);
+    ancestorsIds = [id, ...ancestorsIds];
+    id = inReplyTos[id];
   }
 
-  return ancestorsIds;
+  return [...new Set(ancestorsIds)];
 });
 
-const getDescendantsIds = createSelector([
+const makeGetDescendantsIds = () => createSelector([
   (_: RootState, statusId: string) => statusId,
   (state: RootState) => state.contexts.replies,
 ], (statusId, contextReplies) => {
-  let descendantsIds = ImmutableOrderedSet<string>();
+  let descendantsIds: Array<string> = [];
   const ids = [statusId];
 
   while (ids.length > 0) {
     const id = ids.shift();
     if (!id) break;
 
-    const replies = contextReplies.get(id);
+    const replies = contextReplies[id];
 
     if (descendantsIds.includes(id)) {
       break;
     }
 
     if (statusId !== id) {
-      descendantsIds = descendantsIds.union([id]);
+      descendantsIds = [...descendantsIds, id];
     }
 
     if (replies) {
@@ -72,8 +73,28 @@ const getDescendantsIds = createSelector([
     }
   }
 
-  return descendantsIds;
+  return [...new Set(descendantsIds)];
 });
+
+const makeGetThread = () => {
+  const getAncestorsIds = makeGetAncestorsIds();
+  const getDescendantsIds = makeGetDescendantsIds();
+
+  return createSelector([
+    (state: RootState, statusId: string) => getAncestorsIds(state, statusId),
+    (state: RootState, statusId: string) => getDescendantsIds(state, statusId),
+    (_, statusId: string) => statusId,
+  ],
+  (ancestorsIds, descendantsIds, statusId) => {
+    ancestorsIds = ancestorsIds.filter(id => id !== statusId && !descendantsIds.includes(id));
+    descendantsIds = descendantsIds.filter(id => id !== statusId && !ancestorsIds.includes(id));
+
+    return {
+      ancestorsIds,
+      descendantsIds,
+    };
+  });
+};
 
 interface IThread {
   status: SelectedStatus;
@@ -93,28 +114,14 @@ const Thread: React.FC<IThread> = ({
   const intl = useIntl();
 
   const { openModal } = useModalsStore();
+  const { settings } = useSettingsStore();
 
-  const { ancestorsIds, descendantsIds } = useAppSelector((state) => {
-    let ancestorsIds = ImmutableOrderedSet<string>();
-    let descendantsIds = ImmutableOrderedSet<string>();
+  const getThread = useCallback(makeGetThread(), []);
 
-    if (status) {
-      const statusId = status.id;
-      ancestorsIds = getAncestorsIds(state, state.contexts.inReplyTos.get(statusId));
-      descendantsIds = getDescendantsIds(state, statusId);
-      ancestorsIds = ancestorsIds.delete(statusId).subtract(descendantsIds);
-      descendantsIds = descendantsIds.delete(statusId).subtract(ancestorsIds);
-    }
+  const { ancestorsIds, descendantsIds } = useAppSelector((state) => getThread(state, status.id));
 
-    return {
-      status,
-      ancestorsIds,
-      descendantsIds,
-    };
-  });
-
-  let initialIndex = ancestorsIds.size;
-  if (isModal && initialIndex !== 0) initialIndex = ancestorsIds.size + 1;
+  let initialIndex = ancestorsIds.length;
+  if (isModal && initialIndex !== 0) initialIndex = ancestorsIds.length + 1;
 
   const node = useRef<HTMLDivElement>(null);
   const statusRef = useRef<HTMLDivElement>(null);
@@ -136,7 +143,7 @@ const Thread: React.FC<IThread> = ({
 
   const handleReblogClick = (status: SelectedStatus, e?: React.MouseEvent) => {
     dispatch((_, getState) => {
-      const boostModal = getSettings(getState()).get('boostModal');
+      const boostModal = settings.boostModal;
       if (status.reblogged) {
         dispatch(unreblog(status));
       } else {
@@ -205,13 +212,13 @@ const Thread: React.FC<IThread> = ({
 
   const handleMoveUp = (id: string) => {
     if (id === status?.id) {
-      _selectChild(ancestorsIds.size - 1);
+      _selectChild(ancestorsIds.length - 1);
     } else {
-      let index = ImmutableList(ancestorsIds).indexOf(id);
+      let index = ancestorsIds.indexOf(id);
 
       if (index === -1) {
-        index = ImmutableList(descendantsIds).indexOf(id);
-        _selectChild(ancestorsIds.size + index);
+        index = descendantsIds.indexOf(id);
+        _selectChild(ancestorsIds.length + index);
       } else {
         _selectChild(index - 1);
       }
@@ -220,13 +227,13 @@ const Thread: React.FC<IThread> = ({
 
   const handleMoveDown = (id: string) => {
     if (id === status?.id) {
-      _selectChild(ancestorsIds.size + 1);
+      _selectChild(ancestorsIds.length + 1);
     } else {
-      let index = ImmutableList(ancestorsIds).indexOf(id);
+      let index = ancestorsIds.indexOf(id);
 
       if (index === -1) {
-        index = ImmutableList(descendantsIds).indexOf(id);
-        _selectChild(ancestorsIds.size + index + 2);
+        index = descendantsIds.indexOf(id);
+        _selectChild(ancestorsIds.length + index + 2);
       } else {
         _selectChild(index + 1);
       }
@@ -281,7 +288,7 @@ const Thread: React.FC<IThread> = ({
     );
   };
 
-  const renderChildren = (list: ImmutableOrderedSet<string>) => list.map(id => {
+  const renderChildren = (list: Array<string>) => list.map(id => {
     if (id.endsWith('-tombstone')) {
       return renderTombstone(id);
     } else if (id.startsWith('末pending-')) {
@@ -293,8 +300,8 @@ const Thread: React.FC<IThread> = ({
 
   // Scroll focused status into view when thread updates.
   useEffect(() => {
-    virtualizer.current?.scrollToIndex(ancestorsIds.size);
-  }, [status.id, ancestorsIds.size]);
+    virtualizer.current?.scrollToIndex(ancestorsIds.length);
+  }, [status.id, ancestorsIds.length]);
 
   const handleOpenCompareHistoryModal = (status: Pick<Status, 'id'>) => {
     openModal('COMPARE_HISTORY', {
@@ -302,8 +309,8 @@ const Thread: React.FC<IThread> = ({
     });
   };
 
-  const hasAncestors = ancestorsIds.size > 0;
-  const hasDescendants = descendantsIds.size > 0;
+  const hasAncestors = ancestorsIds.length > 0;
+  const hasDescendants = descendantsIds.length > 0;
 
   type HotkeyHandlers = { [key: string]: (keyEvent?: KeyboardEvent) => void };
 
@@ -362,13 +369,13 @@ const Thread: React.FC<IThread> = ({
   }
 
   if (hasAncestors) {
-    children.push(...renderChildren(ancestorsIds).toArray());
+    children.push(...renderChildren(ancestorsIds));
   }
 
   children.push(focusedStatus);
 
   if (hasDescendants) {
-    children.push(...renderChildren(descendantsIds).toArray());
+    children.push(...renderChildren(descendantsIds));
   }
 
   return (
@@ -415,4 +422,4 @@ const Thread: React.FC<IThread> = ({
   );
 };
 
-export { getDescendantsIds, Thread as default };
+export { makeGetDescendantsIds, Thread as default };

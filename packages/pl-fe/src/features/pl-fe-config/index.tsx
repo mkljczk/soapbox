@@ -5,24 +5,23 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { updatePlFeConfig } from 'pl-fe/actions/admin';
 import { uploadMedia } from 'pl-fe/actions/media';
 import List, { ListItem } from 'pl-fe/components/list';
-import {
-  Accordion,
-  Button,
-  Column,
-  CardHeader,
-  CardTitle,
-  FileInput,
-  Form,
-  FormActions,
-  FormGroup,
-  Input,
-  Streamfield,
-  Textarea,
-  Toggle,
-} from 'pl-fe/components/ui';
+import Accordion from 'pl-fe/components/ui/accordion';
+import Button from 'pl-fe/components/ui/button';
+import { CardHeader, CardTitle } from 'pl-fe/components/ui/card';
+import Column from 'pl-fe/components/ui/column';
+import FileInput from 'pl-fe/components/ui/file-input';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Input from 'pl-fe/components/ui/input';
+import Streamfield from 'pl-fe/components/ui/streamfield';
+import Textarea from 'pl-fe/components/ui/textarea';
+import Toggle from 'pl-fe/components/ui/toggle';
 import ThemeSelector from 'pl-fe/features/ui/components/theme-selector';
-import { useAppSelector, useAppDispatch, useFeatures } from 'pl-fe/hooks';
-import { normalizePlFeConfig } from 'pl-fe/normalizers';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { normalizePlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import toast from 'pl-fe/toast';
 
 import CryptoAddressInput from './components/crypto-address-input';
@@ -129,7 +128,8 @@ const PlFeConfig: React.FC = () => {
   };
 
   const addStreamItem = (path: ConfigPath, template: Template) => () => {
-    const items = data.getIn(path) || ImmutableList();
+    let items = data;
+    path.forEach(key => items = items?.[key] || []);
     setConfig(path, items.push(template));
   };
 
@@ -258,7 +258,7 @@ const PlFeConfig: React.FC = () => {
               <Input
                 type='text'
                 placeholder='/timeline/local'
-                value={String(data.get('redirectRootNoLogin', ''))}
+                value={String(data.redirectRootNoLogin || '')}
                 onChange={handleChange(['redirectRootNoLogin'], (e) => e.target.value)}
               />
             </ListItem>
@@ -270,7 +270,7 @@ const PlFeConfig: React.FC = () => {
               <Input
                 type='text'
                 placeholder='https://01234abcdef@glitch.tip.tld/5678'
-                value={String(data.get('sentryDsn', ''))}
+                value={String(data.sentryDsn ||  '')}
                 onChange={handleChange(['sentryDsn'], (e) => e.target.value)}
               />
             </ListItem>

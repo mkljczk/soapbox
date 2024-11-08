@@ -7,7 +7,10 @@ const fetchTrendsSuccess = (tags: Array<Tag>) => ({
   tags,
 });
 
+type TrendsAction = ReturnType<typeof fetchTrendsSuccess>;
+
 export {
   TRENDS_FETCH_SUCCESS,
   fetchTrendsSuccess,
+  type TrendsAction,
 };

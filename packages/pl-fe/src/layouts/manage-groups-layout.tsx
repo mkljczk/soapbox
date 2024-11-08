@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Layout } from 'pl-fe/components/ui';
+import Layout from 'pl-fe/components/ui/layout';
 import LinkFooter from 'pl-fe/features/ui/components/link-footer';
 import { MyGroupsPanel, NewGroupPanel } from 'pl-fe/features/ui/util/async-components';
 

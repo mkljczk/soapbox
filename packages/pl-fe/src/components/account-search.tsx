@@ -4,7 +4,7 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import AutosuggestAccountInput from 'pl-fe/components/autosuggest-account-input';
 
-import SvgIcon from './ui/icon/svg-icon';
+import SvgIcon from './ui/svg-icon';
 
 const messages = defineMessages({
   placeholder: { id: 'account_search.placeholder', defaultMessage: 'Search for an account' },

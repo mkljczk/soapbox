@@ -2,11 +2,13 @@ import React, { useEffect } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchPublicTimeline } from 'pl-fe/actions/timelines';
-import { useCommunityStream } from 'pl-fe/api/hooks';
+import { useCommunityStream } from 'pl-fe/api/hooks/streaming/use-community-stream';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
-import { Column } from 'pl-fe/components/ui';
-import { useAppDispatch, useSettings, useTheme } from 'pl-fe/hooks';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
+import Column from 'pl-fe/components/ui/column';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 
 import Timeline from '../ui/components/timeline';
 
@@ -20,7 +22,7 @@ const CommunityTimeline = () => {
   const theme = useTheme();
 
   const settings = useSettings();
-  const onlyMedia = settings['public:local'].other.onlyMedia;
+  const onlyMedia = settings.timelines['public:local']?.other.onlyMedia ?? false;
 
   const timelineId = 'public:local';
   const isMobile = useIsMobile();

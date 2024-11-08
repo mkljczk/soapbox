@@ -1,16 +1,18 @@
-import { List as ImmutableList } from 'immutable';
 import React, { useState, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { fetchAccountTimeline } from 'pl-fe/actions/timelines';
-import { Spinner, Text, Widget } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import Spinner from 'pl-fe/components/ui/spinner';
+import Text from 'pl-fe/components/ui/text';
+import Widget from 'pl-fe/components/ui/widget';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { type AccountGalleryAttachment, getAccountGallery } from 'pl-fe/selectors';
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import MediaItem from '../../../account-gallery/components/media-item';
 
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 interface IProfileMediaPanel {
   account?: Account;
@@ -22,7 +24,7 @@ const ProfileMediaPanel: React.FC<IProfileMediaPanel> = ({ account }) => {
 
   const [loading, setLoading] = useState(true);
 
-  const attachments: ImmutableList<AccountGalleryAttachment> = useAppSelector((state) => account ? getAccountGallery(state, account?.id) : ImmutableList());
+  const attachments: Array<AccountGalleryAttachment> = useAppSelector((state) => account ? getAccountGallery(state, account?.id) : []);
 
   const handleOpenMedia = (attachment: AccountGalleryAttachment): void => {
     if (attachment.type === 'video') {
@@ -50,7 +52,7 @@ const ProfileMediaPanel: React.FC<IProfileMediaPanel> = ({ account }) => {
     const publicAttachments = attachments.filter(attachment => attachment.status.visibility === 'public');
     const nineAttachments = publicAttachments.slice(0, 9);
 
-    if (!nineAttachments.isEmpty()) {
+    if (nineAttachments.length) {
       return (
         <div className='grid grid-cols-3 gap-0.5 overflow-hidden rounded-md'>
           {nineAttachments.map((attachment, index) => (
@@ -58,7 +60,7 @@ const ProfileMediaPanel: React.FC<IProfileMediaPanel> = ({ account }) => {
               key={`${attachment.status.id}+${attachment.id}`}
               attachment={attachment}
               onOpenMedia={handleOpenMedia}
-              isLast={index === nineAttachments.size - 1}
+              isLast={index === nineAttachments.length - 1}
             />
           ))}
         </div>

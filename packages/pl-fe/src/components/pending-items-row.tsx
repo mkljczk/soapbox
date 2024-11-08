@@ -3,7 +3,9 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { HStack, Icon, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Text from 'pl-fe/components/ui/text';
 
 interface IPendingItemsRow {
   /** Path to navigate the user when clicked. */

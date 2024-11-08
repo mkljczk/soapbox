@@ -3,10 +3,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
 import { submitAccountNote } from 'pl-fe/actions/account-notes';
-import { HStack, Text, Textarea, Widget } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Text from 'pl-fe/components/ui/text';
+import Textarea from 'pl-fe/components/ui/textarea';
+import Widget from 'pl-fe/components/ui/widget';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
-import type { Account as AccountEntity } from 'pl-fe/normalizers';
+import type { Account as AccountEntity } from 'pl-fe/normalizers/account';
 import type { AppDispatch } from 'pl-fe/store';
 
 const onSave = debounce(

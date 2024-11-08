@@ -3,8 +3,10 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import { changeComposeContentType } from 'pl-fe/actions/compose';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
-import { Button } from 'pl-fe/components/ui';
-import { useAppDispatch, useCompose, useInstance } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 const messages = defineMessages({
   content_type_plaintext: { id: 'preferences.options.content_type_plaintext', defaultMessage: 'Plain text' },
@@ -27,19 +29,27 @@ const ContentTypeButton: React.FC<IContentTypeButton> = ({ composeId }) => {
 
   const handleChange = (contentType: string) => () => dispatch(changeComposeContentType(composeId, contentType));
 
-  const options = [
-    {
+  const postFormats = instance.pleroma.metadata.post_formats;
+
+  const options = [];
+
+  if (postFormats.includes('text/plain')) {
+    options.push({
       icon: require('@tabler/icons/outline/pilcrow.svg'),
       text: intl.formatMessage(messages.content_type_plaintext),
       value: 'text/plain',
-    },
-    { icon: require('@tabler/icons/outline/markdown.svg'),
+    });
+  }
+
+  if (postFormats.includes('text/markdown')) {
+    options.push({
+      icon: require('@tabler/icons/outline/markdown.svg'),
       text: intl.formatMessage(messages.content_type_markdown),
       value: 'text/markdown',
-    },
-  ];
+    });
+  }
 
-  if (instance.pleroma.metadata.post_formats?.includes('text/html')) {
+  if (postFormats.includes('text/html')) {
     options.push({
       icon: require('@tabler/icons/outline/html.svg'),
       text: intl.formatMessage(messages.content_type_html),
@@ -47,11 +57,13 @@ const ContentTypeButton: React.FC<IContentTypeButton> = ({ composeId }) => {
     });
   }
 
-  options.push({
-    icon: require('@tabler/icons/outline/text-caption.svg'),
-    text: intl.formatMessage(messages.content_type_wysiwyg),
-    value: 'wysiwyg',
-  });
+  if (postFormats.includes('text/markdown')) {
+    options.push({
+      icon: require('@tabler/icons/outline/text-caption.svg'),
+      text: intl.formatMessage(messages.content_type_wysiwyg),
+      value: 'wysiwyg',
+    });
+  }
 
   const option = options.find(({ value }) => value === contentType);
 

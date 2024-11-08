@@ -3,11 +3,15 @@ import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { fetchPublicTimeline } from 'pl-fe/actions/timelines';
-import { useRemoteStream } from 'pl-fe/api/hooks';
+import { useRemoteStream } from 'pl-fe/api/hooks/streaming/use-remote-stream';
 import IconButton from 'pl-fe/components/icon-button';
-import { Column, HStack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useSettings, useTheme } from 'pl-fe/hooks';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
+import Column from 'pl-fe/components/ui/column';
+import HStack from 'pl-fe/components/ui/hstack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 
 import Timeline from '../ui/components/timeline';
 
@@ -29,7 +33,7 @@ const RemoteTimeline: React.FC<IRemoteTimeline> = ({ params }) => {
   const settings = useSettings();
 
   const timelineId = 'remote';
-  const onlyMedia = settings.remote.other.onlyMedia;
+  const onlyMedia = settings.timelines.remote?.other.onlyMedia ?? false;
 
   const pinned = settings.remote_timeline.pinnedHosts.includes(instance);
   const isMobile = useIsMobile();

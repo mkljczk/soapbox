@@ -2,8 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
 
 import { externalLogin, loginWithCode } from 'pl-fe/actions/external-auth';
-import { Button, Form, FormActions, FormGroup, Input, Spinner } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Input from 'pl-fe/components/ui/input';
+import Spinner from 'pl-fe/components/ui/spinner';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({

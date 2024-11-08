@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
 
-import { HStack, Icon, Text } from 'pl-fe/components/ui';
-import { useAppSelector } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Text from 'pl-fe/components/ui/text';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 interface IQuotedStatusIndicator {

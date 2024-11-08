@@ -3,9 +3,11 @@ import React, { useRef } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import AltIndicator from 'pl-fe/components/alt-indicator';
-import { Avatar, Icon, HStack } from 'pl-fe/components/ui';
-import { useDraggedFiles } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
+import Avatar from 'pl-fe/components/ui/avatar';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 const messages = defineMessages({
   changeDescriptionHeading: { id: 'group.upload_avatar.alt.heading', defaultMessage: 'Change avatar description' },

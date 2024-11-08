@@ -1,5 +1,8 @@
 import type { PaginationParams } from './common';
 
+/**
+ * @category Request params
+ */
 interface AdminGetAccountsParams extends PaginationParams {
   /** String. Filter for `local` or `remote` accounts. */
   origin?: 'local' | 'remote';
@@ -23,8 +26,14 @@ interface AdminGetAccountsParams extends PaginationParams {
   ip?: string;
 }
 
+/**
+ * @category Request params
+ */
 type AdminAccountAction = 'none' | 'sensitive' | 'disable' | 'silence' | 'suspend';
 
+/**
+ * @category Request params
+ */
 interface AdminPerformAccountActionParams {
   /** String. The ID of an associated report that caused this action to be taken. */
   report_id?: string;
@@ -36,8 +45,14 @@ interface AdminPerformAccountActionParams {
   send_email_notification?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 type AdminGetDomainBlocksParams = PaginationParams;
 
+/**
+ * @category Request params
+ */
 interface AdminCreateDomainBlockParams {
   /** String. Whether to apply a `silence`, `suspend`, or `noop` to the domain. Defaults to `silence` */
   severity?: 'silence' | 'suspend' | 'noop';
@@ -53,8 +68,14 @@ interface AdminCreateDomainBlockParams {
   obfuscate?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 type AdminUpdateDomainBlockParams = AdminCreateDomainBlockParams;
 
+/**
+ * @category Request params
+ */
 interface AdminGetReportsParams extends PaginationParams {
   /** Boolean. Filter for resolved reports? */
   resolved?: boolean;
@@ -64,6 +85,9 @@ interface AdminGetReportsParams extends PaginationParams {
   target_account_id?: string;
 }
 
+/**
+ * @category Request params
+ */
 interface AdminUpdateReportParams {
   /** String. Change the classification of the report to `spam`, `violation`, or `other`. */
   category?: 'spam' | 'violation' | 'other';
@@ -71,6 +95,9 @@ interface AdminUpdateReportParams {
   rule_ids?: string[];
 }
 
+/**
+ * @category Request params
+ */
 interface AdminGetStatusesParams {
   limit?: number;
   local_only?: boolean;
@@ -78,15 +105,27 @@ interface AdminGetStatusesParams {
   with_private?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 interface AdminUpdateStatusParams {
   sensitive?: boolean;
   visibility?: 'public' | 'private' | 'unlisted';
 }
 
+/**
+ * @category Request params
+ */
 type AdminGetCanonicalEmailBlocks = PaginationParams;
 
+/**
+ * @category Request params
+ */
 type AdminDimensionKey = 'languages' | 'sources' | 'servers' | 'space_usage' | 'software_versions' | 'tag_servers' | 'tag_languages' | 'instance_accounts' | 'instance_languages';
 
+/**
+ * @category Request params
+ */
 interface AdminGetDimensionsParams {
   /** String (ISO 8601 Datetime). The start date for the time period. If a time is provided, it will be ignored. */
   start_at?: string;
@@ -112,12 +151,24 @@ interface AdminGetDimensionsParams {
   };
 }
 
+/**
+ * @category Request params
+ */
 type AdminGetDomainAllowsParams = PaginationParams;
 
+/**
+ * @category Request params
+ */
 type AdminGetEmailDomainBlocksParams = PaginationParams;
 
+/**
+ * @category Request params
+ */
 type AdminGetIpBlocksParams = PaginationParams;
 
+/**
+ * @category Request params
+ */
 interface AdminCreateIpBlockParams {
   /** String. The IP address and prefix to block. Defaults to 0.0.0.0/32 */
   ip?: string;
@@ -129,10 +180,19 @@ interface AdminCreateIpBlockParams {
   expires_in?: number;
 }
 
+/**
+ * @category Request params
+ */
 type AdminUpdateIpBlockParams = Partial<AdminCreateIpBlockParams>;
 
+/**
+ * @category Request params
+ */
 type AdminMeasureKey = 'active_users' | 'new_users' | 'interactions' | 'opened_reports' | 'resolved_reports' | 'tag_accounts' | 'tag_uses' | 'tag_servers' | 'instance_accounts' | 'instance_media_attachments' | 'instance_reports' | 'instance_statuses' | 'instance_follows' | 'instance_followers';
 
+/**
+ * @category Request params
+ */
 interface AdminGetMeasuresParams {
   tag_accounts?: {
     /** String. When `tag_accounts` is one of the requested keys, you must provide a tag ID to obtain the measure of how many accounts used that hashtag in at least one status within the given time period. */
@@ -172,11 +232,17 @@ interface AdminGetMeasuresParams {
   };
 }
 
+/**
+ * @category Request params
+ */
 interface AdminGetAnnouncementsParams {
   offset?: number;
   limit?: number;
 }
 
+/**
+ * @category Request params
+ */
 interface AdminCreateAnnouncementParams {
   /** announcement content */
   content: string;
@@ -188,8 +254,14 @@ interface AdminCreateAnnouncementParams {
   all_day?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 type AdminUpdateAnnouncementParams = Partial<AdminCreateAnnouncementParams>;
 
+/**
+ * @category Request params
+ */
 interface AdminCreateDomainParams {
   /** domain name */
   domain: string;
@@ -197,6 +269,9 @@ interface AdminCreateDomainParams {
   public?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 interface AdminGetModerationLogParams extends Pick<PaginationParams, 'limit'> {
   /** page number */
   page?: number;
@@ -210,14 +285,23 @@ interface AdminGetModerationLogParams extends Pick<PaginationParams, 'limit'> {
   search?: string;
 }
 
+/**
+ * @category Request params
+ */
 interface AdminCreateRuleParams {
   text: string;
   hint?: string;
   priority?: number;
 }
 
+/**
+ * @category Request params
+ */
 type AdminUpdateRuleParams = Partial<AdminCreateRuleParams>;
 
+/**
+ * @category Request params
+ */
 interface AdminGetGroupsParams {
 }
 

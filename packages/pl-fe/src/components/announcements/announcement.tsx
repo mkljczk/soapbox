@@ -1,20 +1,19 @@
 import React from 'react';
 import { FormattedDate } from 'react-intl';
 
-import { Stack, Text } from 'pl-fe/components/ui';
-import { useFeatures } from 'pl-fe/hooks';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { getTextDirection } from 'pl-fe/utils/rtl';
 
 import AnnouncementContent from './announcement-content';
 import ReactionsBar from './reactions-bar';
 
-import type { Map as ImmutableMap } from 'immutable';
-import type { CustomEmoji } from 'pl-api';
-import type { Announcement as AnnouncementEntity } from 'pl-fe/normalizers';
+import type { Announcement as AnnouncementEntity, CustomEmoji } from 'pl-api';
 
 interface IAnnouncement {
   announcement: AnnouncementEntity;
-  emojiMap: ImmutableMap<string, CustomEmoji>;
+  emojiMap: Record<string, CustomEmoji>;
 }
 
 const Announcement: React.FC<IAnnouncement> = ({ announcement, emojiMap }) => {

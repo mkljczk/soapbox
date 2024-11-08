@@ -1,13 +1,13 @@
 import React from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
-import { importFetchedStatuses } from 'pl-fe/actions/importer';
+import { importEntities } from 'pl-fe/actions/importer';
 import { expandTimelineSuccess } from 'pl-fe/actions/timelines';
-import { useAppDispatch, useTheme } from 'pl-fe/hooks';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
-
-import { Column } from '../../components/ui';
-import Timeline from '../ui/components/timeline';
+import Column from 'pl-fe/components/ui/column';
+import Timeline from 'pl-fe/features/ui/components/timeline';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 
 const messages = defineMessages({
   title: { id: 'column.test', defaultMessage: 'Test timeline' },
@@ -35,7 +35,7 @@ const TestTimeline: React.FC = () => {
   const isMobile = useIsMobile();
 
   React.useEffect(() => {
-    dispatch(importFetchedStatuses(MOCK_STATUSES));
+    dispatch(importEntities({ statuses: MOCK_STATUSES }));
     dispatch(expandTimelineSuccess(timelineId, MOCK_STATUSES, null, null, false, false));
   }, []);
 

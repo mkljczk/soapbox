@@ -3,8 +3,15 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { addPollOption, changePollOption, changePollSettings, clearComposeSuggestions, fetchComposeSuggestions, removePoll, removePollOption, selectComposeSuggestion } from 'pl-fe/actions/compose';
 import AutosuggestInput from 'pl-fe/components/autosuggest-input';
-import { Button, Divider, HStack, Stack, Text, Toggle } from 'pl-fe/components/ui';
-import { useAppDispatch, useCompose, useInstance } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Divider from 'pl-fe/components/ui/divider';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Toggle from 'pl-fe/components/ui/toggle';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import DurationSelector from './duration-selector';
 
@@ -83,7 +90,7 @@ const Option: React.FC<IOption> = ({
           maxLength={maxChars}
           value={title}
           onChange={handleOptionTitleChange}
-          suggestions={suggestions}
+          suggestions={suggestions.toArray()}
           onSuggestionsFetchRequested={onSuggestionsFetchRequested}
           onSuggestionsClearRequested={onSuggestionsClearRequested}
           onSuggestionSelected={onSuggestionSelected}

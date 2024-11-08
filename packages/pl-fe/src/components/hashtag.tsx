@@ -3,9 +3,11 @@ import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { Sparklines, SparklinesCurve } from 'react-sparklines';
 
-import { shortNumberFormat } from '../utils/numbers';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
-import { HStack, Stack, Text } from './ui';
+import { shortNumberFormat } from '../utils/numbers';
 
 import type { Tag } from 'pl-api';
 

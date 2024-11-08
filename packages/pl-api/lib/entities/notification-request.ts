@@ -1,19 +1,22 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-import { dateSchema } from './utils';
+import { accountSchema } from './account';
+import { statusSchema } from './status';
+import { datetimeSchema } from './utils';
 
-import { accountSchema, statusSchema } from '.';
-
-/** @see {@link https://docs.joinmastodon.org/entities/NotificationRequest} */
-const notificationRequestSchema = z.object({
-  id: z.string(),
-  created_at: dateSchema,
-  updated_at: dateSchema,
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/NotificationRequest}
+ */
+const notificationRequestSchema = v.object({
+  id: v.string(),
+  created_at: datetimeSchema,
+  updated_at: datetimeSchema,
   account: accountSchema,
-  notifications_count: z.coerce.string(),
-  last_status: statusSchema.optional().catch(undefined),
+  notifications_count: v.pipe(v.unknown(), v.transform(String)),
+  last_status: v.fallback(v.optional(statusSchema), undefined),
 });
 
-type NotificationRequest = z.infer<typeof notificationRequestSchema>;
+type NotificationRequest = v.InferOutput<typeof notificationRequestSchema>;
 
 export { notificationRequestSchema, type NotificationRequest };

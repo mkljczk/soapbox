@@ -1,26 +1,38 @@
-import z from 'zod';
+import * as v from 'valibot';
 
 /** Validate to Mastodon's date format, or use the current date. */
-const dateSchema = z.string().datetime({ offset: true }).catch(new Date().toUTCString());
+const datetimeSchema = v.pipe(
+  v.string(),
+  // Adapted from Zod
+  // https://github.com/colinhacks/zod/blob/main/src/types.ts#L619
+  // at least it's not chatgpt
+  v.regex(/^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):[0-5]\d:[0-5]\d(\.\d+)?(([+-]\d{2}:?\d{2})|(Z)?)$/),
+);
 
 /** Validates individual items in an array, dropping any that aren't valid. */
-const filteredArray = <T extends z.ZodTypeAny>(schema: T) =>
-  z.any().array().catch([])
-    .transform((arr) => (
+const filteredArray = <T>(schema: v.BaseSchema<any, T, v.BaseIssue<unknown>>) =>
+  v.pipe(
+    v.fallback(v.array(v.any()), []),
+    v.transform((arr) => (
       arr.map((item) => {
-        const parsed = schema.safeParse(item);
-        return parsed.success ? parsed.data : undefined;
-      }).filter((item): item is z.infer<T> => Boolean(item))
-    ));
+        const parsed = v.safeParse(schema, item);
+        return parsed.success ? parsed.output : undefined;
+      }).filter((item): item is T => Boolean(item))
+    )),
+  );
 
 /** Validates the string as an emoji. */
-const emojiSchema = z.string().refine((v) => /\p{Extended_Pictographic}|[\u{1F1E6}-\u{1F1FF}]{2}/u.test(v));
+const emojiSchema = v.pipe(v.string(), v.emoji());
 
 /** MIME schema, eg `image/png`. */
-const mimeSchema = z.string().regex(/^\w+\/[-+.\w]+$/);
+const mimeSchema = v.pipe(v.string(), v.regex(/^\w+\/[-+.\w]+$/));
 
-/** zod schema to force the value into an object, if it isn't already. */
-const coerceObject = <T extends z.ZodRawShape>(shape: T) =>
-  z.object({}).passthrough().catch({}).pipe(z.object(shape));
+/** valibot schema to force the value into an object, if it isn't already. */
+const coerceObject = <T extends v.ObjectEntries>(shape: T) =>
+  v.pipe(
+    v.any(),
+    v.transform((input) => typeof input === 'object' && input !== null ? input : {}),
+    v.object(shape),
+  );
 
-export { filteredArray, emojiSchema, dateSchema, mimeSchema, coerceObject };
+export { filteredArray, emojiSchema, datetimeSchema, mimeSchema, coerceObject };

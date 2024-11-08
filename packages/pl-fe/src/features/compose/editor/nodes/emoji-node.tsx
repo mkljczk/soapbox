@@ -1,7 +1,7 @@
 import { $applyNodeReplacement, DecoratorNode } from 'lexical';
 import React from 'react';
 
-import { Emoji as Component } from 'pl-fe/components/ui';
+import Component from 'pl-fe/components/ui/emoji';
 import { isNativeEmoji, type Emoji } from 'pl-fe/features/emoji';
 
 import type {

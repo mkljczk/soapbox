@@ -3,17 +3,27 @@ import { defineMessages, useIntl } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
 
 import { blockAccount, unblockAccount } from 'pl-fe/actions/accounts';
-import { Avatar, HStack, Icon, IconButton, Menu, MenuButton, MenuItem, MenuList, Stack, Text } from 'pl-fe/components/ui';
+import DropdownMenu, { type Menu } from 'pl-fe/components/dropdown-menu';
+import Avatar from 'pl-fe/components/ui/avatar';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import { useChatContext } from 'pl-fe/contexts/chat-context';
-import { useAppDispatch, useAppSelector, useFeatures } from 'pl-fe/hooks';
+import { Entities } from 'pl-fe/entity-store/entities';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useChat, useChatActions, useChats } from 'pl-fe/queries/chats';
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import Chat from '../../chat';
 
 import BlankslateEmpty from './blankslate-empty';
 import BlankslateWithChats from './blankslate-with-chats';
+
+import type { Relationship } from 'pl-api';
 
 const messages = defineMessages({
   blockMessage: { id: 'chat_settings.block.message', defaultMessage: 'Blocking will prevent this profile from direct messaging you and viewing your content. You can unblock later.' },
@@ -47,7 +57,7 @@ const ChatPageMain = () => {
 
   const { deleteChat } = useChatActions(chat?.id as string);
 
-  const isBlocking = useAppSelector((state) => state.getIn(['relationships', chat?.account?.id, 'blocking']));
+  const isBlocking = !!useAppSelector((state) => chat?.account?.id && (state.entities[Entities.RELATIONSHIPS]?.store[chat.account.id] as Relationship)?.blocked_by);
 
   const handleBlockUser = () => {
     openModal('CONFIRM', {
@@ -101,6 +111,20 @@ const ChatPageMain = () => {
     return null;
   }
 
+  const menuItems: Menu = [
+    {
+      icon: require('@tabler/icons/outline/ban.svg'),
+      text: intl.formatMessage(isBlocking ? messages.unblockUser : messages.blockUser, { acct: chat.account.acct }),
+      action: isBlocking ? handleUnblockUser : handleBlockUser,
+    },
+  ];
+
+  if (features.chatsDelete) menuItems.push({
+    icon: require('@tabler/icons/outline/logout.svg'),
+    text: intl.formatMessage(messages.leaveChat),
+    action: handleLeaveChat,
+  });
+
   return (
     <Stack className='h-full overflow-hidden'>
       <HStack alignItems='center' justifyContent='between' space={2} className='w-full p-4'>
@@ -129,52 +153,19 @@ const ChatPageMain = () => {
           </Stack>
         </HStack>
 
-        <Menu>
-          <MenuButton
-            as={IconButton}
-            src={require('@tabler/icons/outline/info-circle.svg')}
-            iconClassName='h-5 w-5 text-gray-600'
-            children={null}
-          />
-
-          <MenuList className='w-80'>
-            <Stack space={4} className='px-6 py-5'>
-              <HStack alignItems='center' space={3}>
-                <Avatar src={chat.account.avatar_static} alt={chat.account.avatar_description} size={50} />
-                <Stack>
-                  <Text weight='semibold'>{chat.account.display_name}</Text>
-                  <Text size='sm' theme='primary'>@{chat.account.acct}</Text>
-                </Stack>
-              </HStack>
-
-              <Stack space={2}>
-                <MenuItem
-                  as='button'
-                  onSelect={isBlocking ? handleUnblockUser : handleBlockUser}
-                  className='!px-0 hover:!bg-transparent'
-                >
-                  <div className='flex w-full items-center space-x-2 text-sm font-bold text-primary-500 dark:text-accent-blue'>
-                    <Icon src={require('@tabler/icons/outline/ban.svg')} className='size-5' />
-                    <span>{intl.formatMessage(isBlocking ? messages.unblockUser : messages.blockUser, { acct: chat.account.acct })}</span>
-                  </div>
-                </MenuItem>
-
-                {features.chatsDelete && (
-                  <MenuItem
-                    as='button'
-                    onSelect={handleLeaveChat}
-                    className='!px-0 hover:!bg-transparent'
-                  >
-                    <div className='flex w-full items-center space-x-2 text-sm font-bold text-danger-600 dark:text-danger-500'>
-                      <Icon src={require('@tabler/icons/outline/logout.svg')} className='size-5' />
-                      <span>{intl.formatMessage(messages.leaveChat)}</span>
-                    </div>
-                  </MenuItem>
-                )}
+        <DropdownMenu
+          src={require('@tabler/icons/outline/info-circle.svg')}
+          component={() => (
+            <HStack className='px-4 py-2' alignItems='center' space={3}>
+              <Avatar src={chat.account.avatar_static} alt={chat.account.avatar_description} size={50} />
+              <Stack>
+                <Text weight='semibold'>{chat.account.display_name}</Text>
+                <Text size='sm' theme='primary'>@{chat.account.acct}</Text>
               </Stack>
-            </Stack>
-          </MenuList>
-        </Menu>
+            </HStack>
+          )}
+          items={menuItems}
+        />
       </HStack>
 
       <div className='h-full overflow-hidden'>

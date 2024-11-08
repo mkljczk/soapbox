@@ -1,45 +1,58 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-import { filteredArray } from './utils';
+import { datetimeSchema, filteredArray } from './utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/FilterKeyword/} */
-const filterKeywordSchema = z.object({
-  id: z.string(),
-  keyword: z.string(),
-  whole_word: z.boolean(),
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/FilterKeyword/}
+ */
+const filterKeywordSchema = v.object({
+  id: v.string(),
+  keyword: v.string(),
+  whole_word: v.boolean(),
 });
 
-/** @see {@link https://docs.joinmastodon.org/entities/FilterStatus/} */
-const filterStatusSchema = z.object({
-  id: z.string(),
-  status_id: z.string(),
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/FilterStatus/}
+ */
+const filterStatusSchema = v.object({
+  id: v.string(),
+  status_id: v.string(),
 });
 
-/** @see {@link https://docs.joinmastodon.org/entities/Filter/} */
-const filterSchema = z.preprocess((filter: any) => {
-  if (filter.phrase) {
-    return {
-      ...filter,
-      title: filter.phrase,
-      keywords: [{
-        id: '1',
-        keyword: filter.phrase,
-        whole_word: filter.whole_word,
-      }],
-      filter_action: filter.irreversible ? 'hide' : 'warn',
-    };
-  }
-  return filter;
-}, z.object({
-  id: z.string(),
-  title: z.string(),
-  context: z.array(z.enum(['home', 'notifications', 'public', 'thread', 'account'])),
-  expires_at: z.string().datetime({ offset: true }).nullable().catch(null),
-  filter_action: z.enum(['warn', 'hide']).catch('warn'),
-  keywords: filteredArray(filterKeywordSchema),
-  statuses: filteredArray(filterStatusSchema),
-}));
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Filter/}
+ */
+const filterSchema = v.pipe(
+  v.any(),
+  v.transform((filter: any) => {
+    if (filter.phrase) {
+      return {
+        ...filter,
+        title: filter.phrase,
+        keywords: [{
+          id: '1',
+          keyword: filter.phrase,
+          whole_word: filter.whole_word,
+        }],
+        filter_action: filter.irreversible ? 'hide' : 'warn',
+      };
+    }
+    return filter;
+  }),
+  v.object({
+    id: v.string(),
+    title: v.string(),
+    context: v.array(v.picklist(['home', 'notifications', 'public', 'thread', 'account'])),
+    expires_at: v.fallback(v.nullable(datetimeSchema), null),
+    filter_action: v.fallback(v.picklist(['warn', 'hide']), 'warn'),
+    keywords: filteredArray(filterKeywordSchema),
+    statuses: filteredArray(filterStatusSchema),
+  }),
+);
 
-type Filter = z.infer<typeof filterSchema>;
+type Filter = v.InferOutput<typeof filterSchema>;
 
 export { filterKeywordSchema, filterStatusSchema, filterSchema, type Filter };

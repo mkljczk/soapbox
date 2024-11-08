@@ -1,18 +1,18 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
 /** @see {@link https://docs.joinmastodon.org/entities/Admin_Dimension/} */
-const adminDimensionSchema = z.object({
-  key: z.string(),
-  data: z.object({
-    key: z.string(),
-    human_key: z.string(),
-    value: z.string(),
-    unit: z.string().optional().catch(undefined),
-    human_value: z.string().optional().catch(undefined),
+const adminDimensionSchema = v.object({
+  key: v.string(),
+  data: v.object({
+    key: v.string(),
+    human_key: v.string(),
+    value: v.string(),
+    unit: v.fallback(v.optional(v.string()), undefined),
+    human_value: v.fallback(v.optional(v.string()), undefined),
   }),
 });
 
-type AdminDimension = z.infer<typeof adminDimensionSchema>;
+type AdminDimension = v.InferOutput<typeof adminDimensionSchema>;
 
 export {
   adminDimensionSchema,

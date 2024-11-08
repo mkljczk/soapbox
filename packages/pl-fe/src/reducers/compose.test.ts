@@ -4,7 +4,6 @@ import * as actions from 'pl-fe/actions/compose';
 import { ME_FETCH_SUCCESS, ME_PATCH_SUCCESS } from 'pl-fe/actions/me';
 import { SETTING_CHANGE } from 'pl-fe/actions/settings';
 import { TIMELINE_DELETE } from 'pl-fe/actions/timelines';
-import { TagRecord } from 'pl-fe/normalizers';
 import { normalizeStatus } from 'pl-fe/normalizers/status';
 
 import reducer, { initialState, ReducerCompose } from './compose';
@@ -382,7 +381,7 @@ describe('compose reducer', () => {
       id: 'home',
       token: 'aaadken3',
       tags: ImmutableList([
-        TagRecord({ name: 'hashtag' }),
+        { name: 'hashtag', url: '', history: null },
       ]),
     };
     expect(reducer(state, action).toJS().home).toMatchObject({

@@ -2,7 +2,7 @@ import { Map as ImmutableMap } from 'immutable';
 import React from 'react';
 
 import { fireEvent, render, rootState, screen } from 'pl-fe/jest/test-helpers';
-import { normalizeStatus } from 'pl-fe/normalizers';
+import { normalizeStatus } from 'pl-fe/normalizers/status';
 import { ReducerStatus } from 'pl-fe/reducers/statuses';
 
 import SensitiveContentOverlay from './sensitive-content-overlay';

@@ -1,14 +1,17 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-const pleromaConfigSchema = z.object({
-  configs: z.array(z.object({
-    value: z.any(),
-    group: z.string(),
-    key: z.string(),
+/**
+ * @category Schemas
+ */
+const pleromaConfigSchema = v.object({
+  configs: v.array(v.object({
+    value: v.any(),
+    group: v.string(),
+    key: v.string(),
   })),
-  need_reboot: z.boolean(),
+  need_reboot: v.boolean(),
 });
 
-type PleromaConfig = z.infer<typeof pleromaConfigSchema>
+type PleromaConfig = v.InferOutput<typeof pleromaConfigSchema>
 
 export { pleromaConfigSchema, type PleromaConfig };

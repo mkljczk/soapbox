@@ -4,13 +4,19 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { emojiReact, unEmojiReact } from 'pl-fe/actions/emoji-reacts';
+import Emoji from 'pl-fe/components/ui/emoji';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Text from 'pl-fe/components/ui/text';
 import EmojiPickerDropdown from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
 import unicodeMapping from 'pl-fe/features/emoji/mapping';
-import { useAppDispatch, useFeatures, useLoggedIn, useSettings } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import AnimatedNumber from './animated-number';
-import { Emoji, HStack, Icon, Text } from './ui';
 
 import type { EmojiReaction } from 'pl-api';
 import type { Emoji as EmojiType } from 'pl-fe/features/emoji';

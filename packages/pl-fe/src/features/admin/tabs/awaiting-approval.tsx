@@ -3,7 +3,8 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import { fetchUsers } from 'pl-fe/actions/admin';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { useAppSelector, useAppDispatch } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import UnapprovedAccount from '../components/unapproved-account';
 
@@ -28,7 +29,7 @@ const AwaitingApproval: React.FC = () => {
       .catch(() => {});
   }, []);
 
-  const showLoading = isLoading && accountIds.count() === 0;
+  const showLoading = isLoading && accountIds.length === 0;
 
   return (
     <ScrollableList

@@ -2,10 +2,13 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { type FilterType, setFilter } from 'pl-fe/actions/notifications';
-import { Icon, Tabs } from 'pl-fe/components/ui';
-import { useAppDispatch, useFeatures, useSettings } from 'pl-fe/hooks';
+import Icon from 'pl-fe/components/ui/icon';
+import Tabs from 'pl-fe/components/ui/tabs';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
-import type { Item } from 'pl-fe/components/ui/tabs/tabs';
+import type { Item } from 'pl-fe/components/ui/tabs';
 
 const messages = defineMessages({
   all: { id: 'notifications.filter.all', defaultMessage: 'All' },
@@ -63,7 +66,7 @@ const NotificationFilterBar = () => {
       name: 'status',
     });
     items.push({
-      text: <Icon className='size-4' src={require('@tabler/icons/outline/heart.svg')} />,
+      text: <Icon className='size-4' src={require('@tabler/icons/outline/star.svg')} />,
       title: intl.formatMessage(messages.favourites),
       action: onClick('favourite'),
       name: 'favourite',

@@ -4,8 +4,10 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
 import { fetchFollowRequests, expandFollowRequests } from 'pl-fe/actions/accounts';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, Spinner } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import Column from 'pl-fe/components/ui/column';
+import Spinner from 'pl-fe/components/ui/spinner';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import AccountAuthorize from './components/account-authorize';
 

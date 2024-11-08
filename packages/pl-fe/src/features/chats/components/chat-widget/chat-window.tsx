@@ -1,7 +1,11 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Avatar, HStack, Icon, Stack, Text } from 'pl-fe/components/ui';
+import Avatar from 'pl-fe/components/ui/avatar';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
 

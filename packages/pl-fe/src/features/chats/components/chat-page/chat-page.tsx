@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { matchPath, Route, Switch, useHistory } from 'react-router-dom';
 
-import { Stack } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
 
 import ChatPageMain from './components/chat-page-main';
 import ChatPageNew from './components/chat-page-new';

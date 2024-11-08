@@ -3,8 +3,12 @@ import { useIntl, defineMessages, FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { fetchBackupCodes } from 'pl-fe/actions/mfa';
-import { Button, FormActions, Spinner, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import Spinner from 'pl-fe/components/ui/spinner';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({

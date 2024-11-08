@@ -7,10 +7,10 @@ import {
   FOLLOWED_HASHTAGS_EXPAND_REQUEST,
   FOLLOWED_HASHTAGS_EXPAND_SUCCESS,
   FOLLOWED_HASHTAGS_EXPAND_FAIL,
+  TagsAction,
 } from 'pl-fe/actions/tags';
 
 import type { PaginatedResponse, Tag } from 'pl-api';
-import type { AnyAction } from 'redux';
 
 const ReducerRecord = ImmutableRecord({
   items: ImmutableList<Tag>(),
@@ -18,7 +18,7 @@ const ReducerRecord = ImmutableRecord({
   next: null as (() => Promise<PaginatedResponse<Tag>>) | null,
 });
 
-const followed_tags = (state = ReducerRecord(), action: AnyAction) => {
+const followed_tags = (state = ReducerRecord(), action: TagsAction) => {
   switch (action.type) {
     case FOLLOWED_HASHTAGS_FETCH_REQUEST:
       return state.set('isLoading', true);

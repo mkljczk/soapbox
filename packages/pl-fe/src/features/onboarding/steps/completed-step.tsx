@@ -1,7 +1,11 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Button, Card, CardBody, Icon, Stack, Text } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import Card, { CardBody } from 'pl-fe/components/ui/card';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
 const CompletedStep = ({ onComplete }: { onComplete: () => void }) => (
   <Card variant='rounded' size='xl'>

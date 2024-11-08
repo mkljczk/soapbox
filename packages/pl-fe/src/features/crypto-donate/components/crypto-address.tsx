@@ -1,8 +1,11 @@
 import React from 'react';
 
 import CopyableInput from 'pl-fe/components/copyable-input';
-import { Text, Icon, Stack, HStack } from 'pl-fe/components/ui';
-import { useModalsStore } from 'pl-fe/stores';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import { getExplorerUrl } from '../utils/block-explorer';
 import { getTitle } from '../utils/coin-db';

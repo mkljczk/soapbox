@@ -4,8 +4,13 @@ import { Redirect } from 'react-router-dom';
 
 import { resetPassword } from 'pl-fe/actions/security';
 import { BigCard } from 'pl-fe/components/big-card';
-import { Button, Form, FormActions, FormGroup, Input } from 'pl-fe/components/ui';
-import { useAppDispatch, useFeatures } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Input from 'pl-fe/components/ui/input';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({

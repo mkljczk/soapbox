@@ -5,8 +5,14 @@ import { useHistory } from 'react-router-dom';
 import { fetchFilters, deleteFilter } from 'pl-fe/actions/filters';
 import RelativeTimestamp from 'pl-fe/components/relative-timestamp';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Button, Column, HStack, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector, useFeatures } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({

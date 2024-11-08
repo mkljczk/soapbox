@@ -1,19 +1,18 @@
 import clsx from 'clsx';
+import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import debounce from 'lodash/debounce';
 import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import LoadGap from 'pl-fe/components/load-gap';
 import ScrollableList, { type IScrollableListWithContainer } from 'pl-fe/components/scrollable-list';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import StatusContainer from 'pl-fe/containers/status-container';
 import FeedSuggestions from 'pl-fe/features/feed-suggestions/feed-suggestions';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import PendingStatus from 'pl-fe/features/ui/components/pending-status';
-import { usePlFeConfig } from 'pl-fe/hooks';
-
-import { Stack, Text } from './ui';
-
-import type { OrderedSet as ImmutableOrderedSet } from 'immutable';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
 interface IStatusList extends Omit<IScrollableListWithContainer, 'onLoadMore' | 'children'> {
   /** Unique key to preserve the scroll position when navigating back. */

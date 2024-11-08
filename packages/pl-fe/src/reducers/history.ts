@@ -1,9 +1,8 @@
 import { Map as ImmutableMap, Record as ImmutableRecord } from 'immutable';
 
 import { HISTORY_FETCH_REQUEST, HISTORY_FETCH_SUCCESS, HISTORY_FETCH_FAIL, type HistoryAction } from 'pl-fe/actions/history';
-import { normalizeStatusEdit } from 'pl-fe/normalizers';
 
-import type { StatusEdit as BaseStatusEdit } from 'pl-api';
+import type { StatusEdit } from 'pl-api';
 
 const HistoryRecord = ImmutableRecord({
   loading: false,
@@ -14,8 +13,8 @@ type State = ImmutableMap<string, ReturnType<typeof HistoryRecord>>;
 
 const initialState: State = ImmutableMap();
 
-const minifyStatusEdit = (statusEdit: BaseStatusEdit, i: number) => ({
-  ...normalizeStatusEdit(statusEdit), account: statusEdit.account.id, original: i === 0,
+const minifyStatusEdit = ({ account, ...statusEdit }: StatusEdit, i: number) => ({
+  ...statusEdit, account_id: account.id, original: i === 0,
 });
 
 const history = (state: State = initialState, action: HistoryAction) => {

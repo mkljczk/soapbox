@@ -4,10 +4,11 @@ import { defineMessages, IntlShape } from 'react-intl';
 import { fetchAccountByUsername } from 'pl-fe/actions/accounts';
 import { deactivateUser, deleteUser, deleteStatus, toggleStatusSensitivity } from 'pl-fe/actions/admin';
 import OutlineBox from 'pl-fe/components/outline-box';
-import { Stack, Text } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
 import { selectAccount } from 'pl-fe/selectors';
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -113,7 +114,7 @@ const deleteUserModal = (intl: IntlShape, accountId: string, afterConfirm = () =
 const toggleStatusSensitivityModal = (intl: IntlShape, statusId: string, sensitive: boolean, afterConfirm = () => {}) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const acct = state.statuses.get(statusId)!.account.acct;
+    const acct = state.statuses[statusId]!.account.acct;
 
     useModalsStore.getState().openModal('CONFIRM', {
       heading: intl.formatMessage(sensitive === false ? messages.markStatusSensitiveHeading : messages.markStatusNotSensitiveHeading),
@@ -132,7 +133,7 @@ const toggleStatusSensitivityModal = (intl: IntlShape, statusId: string, sensiti
 const deleteStatusModal = (intl: IntlShape, statusId: string, afterConfirm = () => {}) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const acct = state.statuses.get(statusId)!.account.acct;
+    const acct = state.statuses[statusId]!.account.acct;
 
     useModalsStore.getState().openModal('CONFIRM', {
       heading: intl.formatMessage(messages.deleteStatusHeading),

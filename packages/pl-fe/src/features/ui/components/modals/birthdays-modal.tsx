@@ -2,14 +2,15 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Modal, Spinner } from 'pl-fe/components/ui';
+import Modal from 'pl-fe/components/ui/modal';
+import Spinner from 'pl-fe/components/ui/spinner';
 import Account from 'pl-fe/features/birthdays/account';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import type { BaseModalProps } from '../modal-root';
 
 const BirthdaysModal = ({ onClose }: BaseModalProps) => {
-  const accountIds = useAppSelector(state => state.user_lists.birthday_reminders.get(state.me as string)?.items);
+  const accountIds = useAppSelector(state => state.user_lists.birthday_reminders[state.me as string]?.items);
 
   const onClickClose = () => {
     onClose('BIRTHDAYS');

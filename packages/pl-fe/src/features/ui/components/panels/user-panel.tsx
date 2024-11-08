@@ -2,11 +2,16 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { useAccount } from 'pl-fe/api/hooks';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import StillImage from 'pl-fe/components/still-image';
-import { Avatar, HStack, Stack, Text } from 'pl-fe/components/ui';
+import Avatar from 'pl-fe/components/ui/avatar';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
-import { useAppSelector, useSettings } from 'pl-fe/hooks';
+import Emojify from 'pl-fe/features/emoji/emojify';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { getAcct } from 'pl-fe/utils/accounts';
 import { shortNumberFormat } from 'pl-fe/utils/numbers';
 import { displayFqn } from 'pl-fe/utils/state';
@@ -25,7 +30,6 @@ const UserPanel: React.FC<IUserPanel> = ({ accountId, action, badges, domain }) 
   const fqn = useAppSelector((state) => displayFqn(state));
 
   if (!account) return null;
-  const displayNameHtml = { __html: account.display_name_html };
   const acct = !account.acct.includes('@') && domain ? `${account.acct}@${domain}` : account.acct;
   const header = account.header;
   const verified = account.verified;
@@ -63,7 +67,9 @@ const UserPanel: React.FC<IUserPanel> = ({ accountId, action, badges, domain }) 
         <Stack>
           <Link to={`/@${account.acct}`}>
             <HStack space={1} alignItems='center'>
-              <Text size='lg' weight='bold' dangerouslySetInnerHTML={displayNameHtml} truncate />
+              <Text size='lg' weight='bold' truncate>
+                <Emojify text={account.display_name} emojis={account.emojis} />
+              </Text>
 
               {verified && <VerificationBadge />}
 

@@ -2,10 +2,10 @@ import clsx from 'clsx';
 import React, { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { defaultSettings } from 'pl-fe/actions/settings';
 import BackgroundShapes from 'pl-fe/features/ui/components/background-shapes';
-import { useSystemTheme } from 'pl-fe/hooks';
-import { normalizePlFeConfig } from 'pl-fe/normalizers';
+import { useSystemTheme } from 'pl-fe/hooks/use-system-theme';
+import { normalizePlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 import { generateThemeCss } from 'pl-fe/utils/theme';
 
 interface ISitePreview {
@@ -16,9 +16,9 @@ interface ISitePreview {
 /** Renders a preview of the website's style with the configuration applied. */
 const SitePreview: React.FC<ISitePreview> = ({ plFe }) => {
   const plFeConfig = useMemo(() => normalizePlFeConfig(plFe), [plFe]);
-  const settings = defaultSettings.mergeDeep(plFeConfig.defaultSettings);
+  const { defaultSettings } = useSettingsStore();
 
-  const userTheme = settings.get('themeMode');
+  const userTheme = defaultSettings.themeMode;
   const systemTheme = useSystemTheme();
 
   const dark = ['dark', 'black'].includes(userTheme as string) || (userTheme === 'system' && systemTheme === 'black');

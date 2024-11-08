@@ -1,14 +1,17 @@
 import React from 'react';
 
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Emojify from 'pl-fe/features/emoji/emojify';
 import GroupHeaderImage from 'pl-fe/features/group/components/group-header-image';
 import GroupMemberCount from 'pl-fe/features/group/components/group-member-count';
 import GroupPrivacy from 'pl-fe/features/group/components/group-privacy';
 import GroupRelationship from 'pl-fe/features/group/components/group-relationship';
 
 import GroupAvatar from './groups/group-avatar';
-import { HStack, Stack, Text } from './ui';
 
-import type { Group as GroupEntity } from 'pl-fe/normalizers';
+import type { Group as GroupEntity } from 'pl-fe/normalizers/group';
 
 interface IGroupCard {
   group: GroupEntity;
@@ -35,7 +38,9 @@ const GroupCard: React.FC<IGroupCard> = ({ group }) => (
     {/* Group Info */}
     <Stack alignItems='center' justifyContent='end' grow className='basis-1/2 py-4' space={0.5}>
       <HStack alignItems='center' space={1.5}>
-        <Text size='lg' weight='bold' dangerouslySetInnerHTML={{ __html: group.display_name_html }} />
+        <Text size='lg' weight='bold'>
+          <Emojify text={group.display_name} emojis={group.emojis} />
+        </Text>
       </HStack>
 
       <HStack className='text-gray-700 dark:text-gray-600' space={2} wrap>

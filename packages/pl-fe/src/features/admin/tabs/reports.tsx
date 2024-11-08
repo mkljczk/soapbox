@@ -3,7 +3,8 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import { fetchReports } from 'pl-fe/actions/admin';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { useAppSelector, useAppDispatch } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import Report from '../components/report';
 
@@ -19,7 +20,7 @@ const Reports: React.FC = () => {
 
   const [isLoading, setLoading] = useState(true);
 
-  const reports = useAppSelector(state => state.admin.openReports.toList());
+  const reports = useAppSelector(state => state.admin.openReports);
 
   useEffect(() => {
     dispatch(fetchReports())
@@ -27,7 +28,7 @@ const Reports: React.FC = () => {
       .catch(() => {});
   }, []);
 
-  const showLoading = isLoading && reports.count() === 0;
+  const showLoading = isLoading && reports.length === 0;
 
   return (
     <ScrollableList

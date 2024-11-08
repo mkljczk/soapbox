@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { HStack, Stack, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
 import { generateText, randomIntFromInterval } from '../utils';
 

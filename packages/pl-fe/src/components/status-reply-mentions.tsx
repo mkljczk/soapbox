@@ -2,11 +2,11 @@ import React from 'react';
 import { FormattedList, FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import HoverRefWrapper from 'pl-fe/components/hover-ref-wrapper';
+import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
 import HoverStatusWrapper from 'pl-fe/components/hover-status-wrapper';
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
-import type { Status } from 'pl-fe/normalizers';
+import type { Status } from 'pl-fe/normalizers/status';
 
 interface IStatusReplyMentions {
   status: Pick<Status, 'in_reply_to_id' | 'id' | 'mentions'>;
@@ -56,9 +56,9 @@ const StatusReplyMentions: React.FC<IStatusReplyMentions> = ({ status, hoverable
 
     if (hoverable) {
       return (
-        <HoverRefWrapper key={account.id} accountId={account.id} inline>
+        <HoverAccountWrapper key={account.id} accountId={account.id} element='span'>
           {link}
-        </HoverRefWrapper>
+        </HoverAccountWrapper>
       );
     } else {
       return link;
@@ -82,7 +82,7 @@ const StatusReplyMentions: React.FC<IStatusReplyMentions> = ({ status, hoverable
           accounts: <FormattedList type='conjunction' value={accounts} />,
           // @ts-ignore wtf?
           hover: (children: React.ReactNode) => {
-            if (hoverable) {
+            if (hoverable && status.in_reply_to_id) {
               return (
                 <HoverStatusWrapper statusId={status.in_reply_to_id} inline>
                   <span

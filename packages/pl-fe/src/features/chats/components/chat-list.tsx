@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Stack } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
 import PlaceholderChat from 'pl-fe/features/placeholder/components/placeholder-chat';
 import { useChats } from 'pl-fe/queries/chats';
 

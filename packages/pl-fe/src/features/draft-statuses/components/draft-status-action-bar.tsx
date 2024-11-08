@@ -3,12 +3,13 @@ import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
 import { setComposeToStatus } from 'pl-fe/actions/compose';
 import { cancelDraftStatus } from 'pl-fe/actions/draft-statuses';
-import { getSettings } from 'pl-fe/actions/settings';
-import { Button, HStack } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
+import Button from 'pl-fe/components/ui/button';
+import HStack from 'pl-fe/components/ui/hstack';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useModalsStore } from 'pl-fe/stores/modals';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 
-import type { Status as StatusEntity } from 'pl-fe/normalizers';
+import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
 import type { DraftStatus } from 'pl-fe/reducers/draft-statuses';
 
 const messages = defineMessages({
@@ -26,12 +27,13 @@ const DraftStatusActionBar: React.FC<IDraftStatusActionBar> = ({ source, status 
   const intl = useIntl();
 
   const { openModal } = useModalsStore();
+  const { settings } = useSettingsStore();
   const dispatch = useAppDispatch();
 
   const handleCancelClick = () => {
     dispatch((_, getState) => {
 
-      const deleteModal = getSettings(getState()).get('deleteModal');
+      const deleteModal = settings.deleteModal;
       if (!deleteModal) {
         dispatch(cancelDraftStatus(source.draft_id));
       } else {

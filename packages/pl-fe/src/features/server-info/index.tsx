@@ -1,8 +1,11 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Column, Divider, Stack, Text } from 'pl-fe/components/ui';
-import { useInstance } from 'pl-fe/hooks';
+import Column from 'pl-fe/components/ui/column';
+import Divider from 'pl-fe/components/ui/divider';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import LinkFooter from '../ui/components/link-footer';
 import PromoPanel from '../ui/components/panels/promo-panel';

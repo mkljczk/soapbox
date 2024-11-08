@@ -1183,7 +1183,7 @@
   "navigation_bar.compose": "投稿の新規作成",
   "navigation_bar.compose_direct": "ダイレクトメッセージ",
   "navigation_bar.compose_edit": "投稿を編集",
-  "navigation_bar.compose_event": "イベントを管理する",
+  "navigation_bar.manage_event": "イベントを管理する",
   "navigation_bar.compose_group": "グループに投稿する",
   "navigation_bar.compose_group_reply": "グループの投稿に返信",
   "navigation_bar.compose_quote": "投稿を引用",

@@ -1,9 +1,10 @@
 import React from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
-import { useMutes } from 'pl-fe/api/hooks';
+import { useMutes } from 'pl-fe/api/hooks/accounts/use-account-list';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, Stack } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import Stack from 'pl-fe/components/ui/stack';
 import AccountContainer from 'pl-fe/containers/account-container';
 
 const messages = defineMessages({

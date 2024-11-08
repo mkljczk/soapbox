@@ -2,15 +2,21 @@ import React, { useMemo } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
-import { useGroup, useGroupMembershipRequests } from 'pl-fe/api/hooks';
-import { Column, Icon, Layout, Stack, Text, Tabs } from 'pl-fe/components/ui';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
+import { useGroupMembershipRequests } from 'pl-fe/api/hooks/groups/use-group-membership-requests';
+import Column from 'pl-fe/components/ui/column';
+import Icon from 'pl-fe/components/ui/icon';
+import Layout from 'pl-fe/components/ui/layout';
+import Stack from 'pl-fe/components/ui/stack';
+import Tabs from 'pl-fe/components/ui/tabs';
+import Text from 'pl-fe/components/ui/text';
 import GroupHeader from 'pl-fe/features/group/components/group-header';
 import LinkFooter from 'pl-fe/features/ui/components/link-footer';
 import {
   GroupMediaPanel,
   SignUpPanel,
 } from 'pl-fe/features/ui/util/async-components';
-import { useOwnAccount } from 'pl-fe/hooks';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 
 const messages = defineMessages({
   all: { id: 'group.tabs.all', defaultMessage: 'All' },
@@ -94,7 +100,7 @@ const GroupLayout: React.FC<IGroupLayout> = ({ params, children }) => {
     <>
       <Layout.Main>
         <Column size='lg' label={group ? group.display_name : ''} withHeader={false}>
-          <GroupHeader group={group} />
+          <GroupHeader key={`group-header-${groupId}`} group={group} />
 
           <Tabs
             key={`group-tabs-${groupId}`}

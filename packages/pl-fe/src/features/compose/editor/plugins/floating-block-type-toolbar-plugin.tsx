@@ -23,7 +23,8 @@ import { createPortal } from 'react-dom';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { uploadFile } from 'pl-fe/actions/compose';
-import { useAppDispatch, useInstance } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import { $createImageNode } from '../nodes/image-node';
 import { setFloatingElemPosition } from '../utils/set-floating-elem-position';
@@ -36,7 +37,7 @@ const messages = defineMessages({
 });
 
 interface IUploadButton {
-  onSelectFile: (src: string) =>  void;
+  onSelectFile: (src: string) => void;
 }
 
 const UploadButton: React.FC<IUploadButton> = ({ onSelectFile }) => {

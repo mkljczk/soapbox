@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Modal } from 'pl-fe/components/ui';
+import Modal from 'pl-fe/components/ui/modal';
 import DetailedCryptoAddress from 'pl-fe/features/crypto-donate/components/detailed-crypto-address';
 
 import { BaseModalProps } from '../modal-root';

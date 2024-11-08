@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Icon } from 'pl-fe/components/ui';
+import Icon from 'pl-fe/components/ui/icon';
 import { MIMETYPE_ICONS } from 'pl-fe/components/upload';
 
 import type { MediaAttachment } from 'pl-api';

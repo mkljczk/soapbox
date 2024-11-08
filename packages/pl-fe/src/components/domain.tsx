@@ -2,9 +2,10 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { unblockDomain } from 'pl-fe/actions/domain-blocks';
-import { useAppDispatch } from 'pl-fe/hooks';
-
-import { HStack, IconButton, Text } from './ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
 const messages = defineMessages({
   blockDomainConfirm: { id: 'confirmations.domain_block.confirm', defaultMessage: 'Hide entire domain' },

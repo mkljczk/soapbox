@@ -5,7 +5,7 @@ import { __stub } from 'pl-fe/api';
 import { ChatContext } from 'pl-fe/contexts/chat-context';
 import { buildAccount, buildInstance } from 'pl-fe/jest/factory';
 import { queryClient, render, rootState, screen, waitFor } from 'pl-fe/jest/test-helpers';
-import { normalizeChatMessage } from 'pl-fe/normalizers';
+import { normalizeChatMessage } from 'pl-fe/normalizers/chat-message';
 import { IChat } from 'pl-fe/queries/chats';
 import { ChatMessage } from 'pl-fe/types/entities';
 
@@ -56,9 +56,11 @@ Object.assign(navigator, {
   },
 });
 
-const store = rootState
-  .set('me', '1')
-  .set('instance', buildInstance({ version: '3.4.1 (compatible; TruthSocial 1.0.0+unreleased)' }));
+const store = {
+  ...rootState,
+  me: '1',
+  instance: buildInstance({ version: '3.4.1 (compatible; TruthSocial 1.0.0+unreleased)' }),
+};
 
 const renderComponentWithChatContext = () => render(
   <ChatContext.Provider value={{ chat }}>

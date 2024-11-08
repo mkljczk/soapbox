@@ -3,7 +3,9 @@ import { FormattedMessage } from 'react-intl';
 
 import { BigCard } from 'pl-fe/components/big-card';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Button, Stack, Text } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
 import { useOnboardingSuggestions } from 'pl-fe/queries/suggestions';
 

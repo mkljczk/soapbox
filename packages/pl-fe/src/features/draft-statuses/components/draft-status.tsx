@@ -6,16 +6,17 @@ import Account from 'pl-fe/components/account';
 import AttachmentThumbs from 'pl-fe/components/attachment-thumbs';
 import StatusContent from 'pl-fe/components/status-content';
 import StatusReplyMentions from 'pl-fe/components/status-reply-mentions';
-import { HStack, Stack } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
 import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
 import PollPreview from 'pl-fe/features/ui/components/poll-preview';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import { buildStatus } from '../builder';
 
 import DraftStatusActionBar from './draft-status-action-bar';
 
-import type { Status as StatusEntity } from 'pl-fe/normalizers';
+import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
 import type { DraftStatus as DraftStatusType } from 'pl-fe/reducers/draft-statuses';
 
 interface IDraftStatus {

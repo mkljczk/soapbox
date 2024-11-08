@@ -5,12 +5,12 @@ import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { fetchStatus } from 'pl-fe/actions/statuses';
+import { showStatusHoverCard } from 'pl-fe/components/hover-status-wrapper';
+import Card, { CardBody } from 'pl-fe/components/ui/card';
 import StatusContainer from 'pl-fe/containers/status-container';
-import { useAppSelector, useAppDispatch } from 'pl-fe/hooks';
-import { useStatusHoverCardStore } from 'pl-fe/stores';
-
-import { showStatusHoverCard } from './hover-status-wrapper';
-import { Card, CardBody } from './ui';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useStatusHoverCardStore } from 'pl-fe/stores/status-hover-card';
 
 interface IStatusHoverCard {
   visible?: boolean;
@@ -24,7 +24,7 @@ const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
 
   const { statusId, ref, closeStatusHoverCard, updateStatusHoverCard } = useStatusHoverCardStore();
 
-  const status = useAppSelector(state => state.statuses.get(statusId!));
+  const status = useAppSelector(state => state.statuses[statusId!]);
 
   useEffect(() => {
     if (statusId && !status) {

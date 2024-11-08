@@ -11,6 +11,7 @@ import {
   STATUS_QUOTES_FETCH_FAIL,
   STATUS_QUOTES_FETCH_REQUEST,
   STATUS_QUOTES_FETCH_SUCCESS,
+  type StatusQuotesAction,
 } from 'pl-fe/actions/status-quotes';
 import { STATUS_CREATE_SUCCESS } from 'pl-fe/actions/statuses';
 
@@ -21,6 +22,7 @@ import {
   BOOKMARKED_STATUSES_EXPAND_REQUEST,
   BOOKMARKED_STATUSES_EXPAND_SUCCESS,
   BOOKMARKED_STATUSES_EXPAND_FAIL,
+  type BookmarksAction,
 } from '../actions/bookmarks';
 import {
   RECENT_EVENTS_FETCH_REQUEST,
@@ -29,6 +31,7 @@ import {
   JOINED_EVENTS_FETCH_REQUEST,
   JOINED_EVENTS_FETCH_SUCCESS,
   JOINED_EVENTS_FETCH_FAIL,
+  type EventsAction,
 } from '../actions/events';
 import {
   FAVOURITED_STATUSES_FETCH_REQUEST,
@@ -150,7 +153,7 @@ const removeBookmarkFromLists = (state: State, status: Pick<Status, 'id' | 'book
   return state;
 };
 
-const statusLists = (state = initialState, action: AnyAction | FavouritesAction | InteractionsAction | PinStatusesAction) => {
+const statusLists = (state = initialState, action: AnyAction | BookmarksAction | EventsAction | FavouritesAction | InteractionsAction | PinStatusesAction | StatusQuotesAction) => {
   switch (action.type) {
     case FAVOURITED_STATUSES_FETCH_REQUEST:
     case FAVOURITED_STATUSES_EXPAND_REQUEST:

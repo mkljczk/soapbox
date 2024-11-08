@@ -3,7 +3,8 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import IconButton from 'pl-fe/components/icon-button';
 import { DatePicker } from 'pl-fe/features/ui/util/async-components';
-import { useInstance, useFeatures } from 'pl-fe/hooks';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 const messages = defineMessages({
   birthdayPlaceholder: { id: 'edit_profile.fields.birthday_placeholder', defaultMessage: 'Your birthday' },
@@ -28,7 +29,7 @@ const BirthdayInput: React.FC<IBirthdayInput> = ({ value, onChange, required }) 
   const minAge = instance.pleroma.metadata.birthday_min_age;
 
   const maxDate = useMemo(() => {
-    if (!supportsBirthdays) return null;
+    if (!supportsBirthdays) return undefined;
 
     let maxDate = new Date();
     maxDate = new Date(maxDate.getTime() - minAge * 1000 * 60 * 60 * 24 + maxDate.getTimezoneOffset() * 1000 * 60);
@@ -107,13 +108,13 @@ const BirthdayInput: React.FC<IBirthdayInput> = ({ value, onChange, required }) 
     </div>
   );
 
-  const handleChange = (date: Date) => onChange(date ? new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, 10) : '');
+  const handleChange = (date: Date | null) => onChange(date ? new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, 10) : '');
 
   return (
     <div className='relative mt-1 rounded-md shadow-sm'>
       <DatePicker
         selected={selected}
-        wrapperClassName='react-datepicker-wrapper'
+        wrapperClassName='w-fit'
         onChange={handleChange}
         placeholderText={intl.formatMessage(messages.birthdayPlaceholder)}
         minDate={new Date('1900-01-01')}

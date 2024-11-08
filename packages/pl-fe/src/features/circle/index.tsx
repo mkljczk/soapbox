@@ -5,9 +5,19 @@ import { Link } from 'react-router-dom';
 import { processCircle } from 'pl-fe/actions/circle';
 import { resetCompose, uploadComposeSuccess, uploadFile } from 'pl-fe/actions/compose';
 import Account from 'pl-fe/components/account';
-import { Accordion, Avatar, Button, Column, Form, FormActions, HStack, ProgressBar, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useOwnAccount } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
+import Accordion from 'pl-fe/components/ui/accordion';
+import Avatar from 'pl-fe/components/ui/avatar';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import HStack from 'pl-fe/components/ui/hstack';
+import ProgressBar from 'pl-fe/components/ui/progress-bar';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 const toRad = (x: number) => x * (Math.PI / 180);
 

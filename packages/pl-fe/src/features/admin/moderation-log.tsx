@@ -1,9 +1,11 @@
 import React from 'react';
 import { defineMessages, FormattedDate, useIntl } from 'react-intl';
 
-import { useModerationLog } from 'pl-fe/api/hooks/admin';
+import { useModerationLog } from 'pl-fe/api/hooks/admin/use-moderation-log';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, Stack, Text } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
 import type { AdminModerationLogEntry } from 'pl-api';
 

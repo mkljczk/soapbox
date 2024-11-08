@@ -1,6 +1,6 @@
 import { Map as ImmutableMap, Record as ImmutableRecord } from 'immutable';
 
-import { SET_BROWSER_SUPPORT, SET_SUBSCRIPTION, CLEAR_SUBSCRIPTION, SET_ALERTS } from '../actions/push-notifications';
+import { SET_BROWSER_SUPPORT, SET_SUBSCRIPTION, CLEAR_SUBSCRIPTION } from '../actions/push-notifications';
 
 import type { SetterAction } from 'pl-fe/actions/push-notifications/setter';
 
@@ -39,8 +39,6 @@ const push_subscriptions = (state = ReducerRecord(), action: SetterAction) => {
       return state.set('browserSupport', action.value);
     case CLEAR_SUBSCRIPTION:
       return ReducerRecord();
-    case SET_ALERTS:
-      return state.setIn(action.path, action.value);
     default:
       return state;
   }

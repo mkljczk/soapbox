@@ -2,7 +2,10 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { CardTitle, HStack, IconButton, Stack } from 'pl-fe/components/ui';
+import { CardTitle } from 'pl-fe/components/ui/card';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Stack from 'pl-fe/components/ui/stack';
 
 import ChatSearch from '../../chat-search/chat-search';
 

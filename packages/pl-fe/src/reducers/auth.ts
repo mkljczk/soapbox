@@ -1,8 +1,9 @@
 import { List as ImmutableList, Map as ImmutableMap, Record as ImmutableRecord, fromJS } from 'immutable';
 import trim from 'lodash/trim';
-import { applicationSchema, PlApiClient, tokenSchema, type Application, type CredentialAccount, type Token } from 'pl-api';
+import { applicationSchema, PlApiClient, tokenSchema, type CredentialAccount, type CredentialApplication, type Token } from 'pl-api';
+import * as v from 'valibot';
 
-import { MASTODON_PRELOAD_IMPORT } from 'pl-fe/actions/preload';
+import { MASTODON_PRELOAD_IMPORT, type PreloadAction } from 'pl-fe/actions/preload';
 import * as BuildConfig from 'pl-fe/build-config';
 import KVStore from 'pl-fe/storage/kv-store';
 import { validId, isURL, parseBaseURL } from 'pl-fe/utils/auth';
@@ -15,11 +16,12 @@ import {
   SWITCH_ACCOUNT,
   VERIFY_CREDENTIALS_SUCCESS,
   VERIFY_CREDENTIALS_FAIL,
+  type AuthAction,
 } from '../actions/auth';
-import { ME_FETCH_SKIP } from '../actions/me';
+import { ME_FETCH_SKIP, type MeAction } from '../actions/me';
 
 import type { PlfeResponse } from 'pl-fe/api';
-import type { Account as AccountEntity } from 'pl-fe/normalizers';
+import type { Account as AccountEntity } from 'pl-fe/normalizers/account';
 import type { AnyAction } from 'redux';
 
 const backendUrl = (isURL(BuildConfig.BACKEND_URL) ? BuildConfig.BACKEND_URL : '');
@@ -31,7 +33,7 @@ const AuthUserRecord = ImmutableRecord({
 });
 
 const ReducerRecord = ImmutableRecord({
-  app: null as Application | null,
+  app: null as CredentialApplication | null,
   tokens: ImmutableMap<string, Token>(),
   users: ImmutableMap<string, AuthUser>(),
   me: null as string | null,
@@ -60,8 +62,8 @@ const getLocalState = () => {
   if (!state) return undefined;
 
   return ReducerRecord({
-    app: state.app && applicationSchema.parse(state.app),
-    tokens: ImmutableMap(Object.entries(state.tokens).map(([key, value]) => [key, tokenSchema.parse(value)])),
+    app: state.app && v.parse(applicationSchema, state.app),
+    tokens: ImmutableMap(Object.entries(state.tokens).map(([key, value]) => [key, v.parse(tokenSchema, value)])),
     users: ImmutableMap(Object.entries(state.users).map(([key, value]) => [key, AuthUserRecord(value as any)])),
     me: state.me,
     client: new PlApiClient(parseBaseURL(state.me) || backendUrl, state.users[state.me]?.access_token),
@@ -143,7 +145,10 @@ const sanitizeState = (state: State) => {
   });
 };
 
-const persistAuth = (state: State) => localStorage.setItem(STORAGE_KEY, JSON.stringify(state.toJS()));
+const persistAuth = (state: State) => {
+  const { client, ...data } = state.toJS();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+};
 
 const persistSession = (state: State) => {
   const me = state.me;
@@ -237,7 +242,7 @@ const importMastodonPreload = (state: State, data: ImmutableMap<string, any>) =>
     const accessToken = data.getIn(['meta', 'access_token']) as string;
 
     if (validId(accessToken) && validId(accountId) && isURL(accountUrl)) {
-      state.setIn(['tokens', accessToken], tokenSchema.parse({
+      state.setIn(['tokens', accessToken], v.parse(tokenSchema, {
         access_token: accessToken,
         account: accountId,
         me: accountUrl,
@@ -256,17 +261,19 @@ const importMastodonPreload = (state: State, data: ImmutableMap<string, any>) =>
   });
 
 const persistAuthAccount = (account: CredentialAccount) => {
-  if (account && account.url) {
-    const key = `authAccount:${account.url}`;
-    KVStore.getItem(key).then((oldAccount: any) => {
-      const settings = oldAccount?.settings_store || {};
-      if (!account.settings_store) {
-        account.settings_store = settings;
-      }
-      KVStore.setItem(key, account);
-    })
-      .catch(console.error);
-  }
+  const persistedAccount = { ...account };
+  const key = `authAccount:${account.url}`;
+
+  KVStore.getItem(key).then((oldAccount: any) => {
+    const settings = oldAccount?.settings_store || {};
+    if (!persistedAccount.settings_store) {
+      persistedAccount.settings_store = settings;
+    }
+    KVStore.setItem(key, persistedAccount);
+  })
+    .catch(console.error);
+
+  return persistedAccount;
 };
 
 const deleteForbiddenToken = (state: State, error: { response: PlfeResponse }, token: string) => {
@@ -277,7 +284,7 @@ const deleteForbiddenToken = (state: State, error: { response: PlfeResponse }, t
   }
 };
 
-const reducer = (state: State, action: AnyAction) => {
+const reducer = (state: State, action: AnyAction | AuthAction | MeAction | PreloadAction) => {
   switch (action.type) {
     case AUTH_APP_CREATED:
       return state.set('app', action.app);
@@ -288,8 +295,7 @@ const reducer = (state: State, action: AnyAction) => {
     case AUTH_LOGGED_OUT:
       return deleteUser(state, action.account);
     case VERIFY_CREDENTIALS_SUCCESS:
-      persistAuthAccount(action.account);
-      return importCredentials(state, action.token, action.account);
+      return importCredentials(state, action.token, persistAuthAccount(action.account));
     case VERIFY_CREDENTIALS_FAIL:
       return deleteForbiddenToken(state, action.error, action.token);
     case SWITCH_ACCOUNT:
@@ -364,6 +370,5 @@ const auth = (oldState: State = initialState, action: AnyAction) => {
 export {
   AuthUserRecord,
   ReducerRecord,
-  localState,
   auth as default,
 };

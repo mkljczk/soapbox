@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { Text } from 'pl-fe/components/ui';
+import Text from 'pl-fe/components/ui/text';
 
 const messages = defineMessages({
   emoji: { id: 'icon_button.label', defaultMessage: 'Select icon' },

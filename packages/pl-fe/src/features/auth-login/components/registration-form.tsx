@@ -7,10 +7,20 @@ import { Link, useHistory } from 'react-router-dom';
 import { accountLookup } from 'pl-fe/actions/accounts';
 import { register, verifyCredentials } from 'pl-fe/actions/auth';
 import BirthdayInput from 'pl-fe/components/birthday-input';
-import { Checkbox, Form, FormGroup, FormActions, Button, Input, Textarea, Select } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import Checkbox from 'pl-fe/components/ui/checkbox';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Input from 'pl-fe/components/ui/input';
+import Select from 'pl-fe/components/ui/select';
+import Textarea from 'pl-fe/components/ui/textarea';
 import CaptchaField from 'pl-fe/features/auth-login/components/captcha';
-import { useAppDispatch, useSettings, useFeatures, useInstance } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import type { CreateAccountParams } from 'pl-api';
 
@@ -48,7 +58,6 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
 
   const needsConfirmation = instance.pleroma.metadata.account_activation_required;
   const needsApproval = instance.registrations.approval_required;
-  const supportsEmailList = features.emailList;
   const supportsAccountLookup = features.accountLookup;
   const birthdayRequired = instance.pleroma.metadata.birthday_required;
   const domains = instance.pleroma.metadata.multitenancy.enabled ? instance.pleroma.metadata.multitenancy.domains!.filter((domain) => domain.public) : undefined;
@@ -353,16 +362,6 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
               required
             />
           </FormGroup>
-
-          {supportsEmailList && (
-            <FormGroup labelText={intl.formatMessage(messages.newsletter)}>
-              <Checkbox
-                name='accepts_email_list'
-                onChange={onCheckboxChange}
-                checked={params.accepts_email_list}
-              />
-            </FormGroup>
-          )}
 
           <FormActions>
             <Button type='submit'>

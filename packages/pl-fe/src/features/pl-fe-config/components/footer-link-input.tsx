@@ -1,9 +1,10 @@
 import React from 'react';
 import { useIntl, defineMessages } from 'react-intl';
 
-import { HStack, Input } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Input from 'pl-fe/components/ui/input';
 
-import type { StreamfieldComponent } from 'pl-fe/components/ui/streamfield/streamfield';
+import type { StreamfieldComponent } from 'pl-fe/components/ui/streamfield';
 import type { FooterItem } from 'pl-fe/types/pl-fe';
 
 const messages = defineMessages({

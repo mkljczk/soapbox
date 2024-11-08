@@ -1141,7 +1141,7 @@
   "navigation_bar.compose": "Neuen Beitrag verfassen",
   "navigation_bar.compose_direct": "Direktnachricht",
   "navigation_bar.compose_edit": "Beitrag bearbeiten",
-  "navigation_bar.compose_event": "Veranstaltung verwalten",
+  "navigation_bar.manage_event": "Veranstaltung verwalten",
   "navigation_bar.compose_group": "",
   "navigation_bar.compose_group_reply": "",
   "navigation_bar.compose_quote": "Beitrag zitieren",

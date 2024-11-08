@@ -4,7 +4,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import StatusMedia from 'pl-fe/components/status-media';
-import { Stack } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
 import AccountContainer from 'pl-fe/containers/account-container';
 
 import EventPreview from './event-preview';
@@ -100,7 +100,7 @@ const QuotedStatus: React.FC<IQuotedStatus> = ({ status, onCancel, compose }) =>
               <StatusContent
                 status={status}
                 collapsable
-                quote
+                isQuote
               />
 
               {status.quote_id && <QuotedStatusIndicator statusId={status.quote_id} />}

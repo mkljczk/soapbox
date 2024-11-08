@@ -41,6 +41,7 @@ export * from './filter';
 export * from './group';
 export * from './group-member';
 export * from './group-relationship';
+export * from './grouped-notifications-results';
 export * from './instance';
 export * from './interaction-policy';
 export * from './interaction-request';

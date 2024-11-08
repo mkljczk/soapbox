@@ -2,8 +2,13 @@ import clsx from 'clsx';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Banner, Button, HStack, Stack, Text } from 'pl-fe/components/ui';
-import { useInstance, usePlFeConfig } from 'pl-fe/hooks';
+import Banner from 'pl-fe/components/ui/banner';
+import Button from 'pl-fe/components/ui/button';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
 const acceptedGdpr = !!localStorage.getItem('plfe:gdpr');
 

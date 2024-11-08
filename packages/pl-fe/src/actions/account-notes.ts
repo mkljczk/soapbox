@@ -1,14 +1,12 @@
-import { importEntities } from 'pl-fe/entity-store/actions';
-import { Entities } from 'pl-fe/entity-store/entities';
+import { importEntities } from 'pl-fe/actions/importer';
 
 import { getClient } from '../api';
 
-import type { RootState } from 'pl-fe/store';
-import type { AnyAction } from 'redux';
+import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const submitAccountNote = (accountId: string, value: string) =>
-  (dispatch: React.Dispatch<AnyAction>, getState: () => RootState) =>
+  (dispatch: AppDispatch, getState: () => RootState) =>
     getClient(getState).accounts.updateAccountNote(accountId, value)
-      .then(response => dispatch(importEntities([response], Entities.RELATIONSHIPS)));
+      .then(response => dispatch(importEntities({ relationships: [response] })));
 
 export { submitAccountNote };

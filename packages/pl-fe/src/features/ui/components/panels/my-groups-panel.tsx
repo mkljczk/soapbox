@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { useGroups } from 'pl-fe/api/hooks';
-import { Widget } from 'pl-fe/components/ui';
+import { useGroups } from 'pl-fe/api/hooks/groups/use-groups';
+import Widget from 'pl-fe/components/ui/widget';
 import GroupListItem from 'pl-fe/features/groups/components/discover/group-list-item';
 import PlaceholderGroupSearch from 'pl-fe/features/placeholder/components/placeholder-group-search';
 

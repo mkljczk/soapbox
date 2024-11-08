@@ -2,8 +2,9 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { getPlFeConfig } from 'pl-fe/actions/pl-fe';
-import { Stack, Text } from 'pl-fe/components/ui';
-import { useAppSelector } from 'pl-fe/hooks';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 const messages = defineMessages({
   accountEntity: { id: 'report.confirmation.entity.account', defaultMessage: 'account' },

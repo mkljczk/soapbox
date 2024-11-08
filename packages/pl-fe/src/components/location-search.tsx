@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import throttle from 'lodash/throttle';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
@@ -7,7 +6,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { locationSearch } from 'pl-fe/actions/events';
 import AutosuggestInput, { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import Icon from 'pl-fe/components/icon';
-import { useAppDispatch } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
 import AutosuggestLocation from './autosuggest-location';
 
@@ -24,7 +23,7 @@ interface ILocationSearch {
 const LocationSearch: React.FC<ILocationSearch> = ({ onSelected }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const [locationIds, setLocationIds] = useState(ImmutableOrderedSet<string>());
+  const [locationIds, setLocationIds] = useState<Array<string>>([]);
   const controller = useRef(new AbortController());
 
   const [value, setValue] = useState('');
@@ -63,14 +62,14 @@ const LocationSearch: React.FC<ILocationSearch> = ({ onSelected }) => {
   };
 
   const clearResults = () => {
-    setLocationIds(ImmutableOrderedSet());
+    setLocationIds([]);
   };
 
   const handleLocationSearch = useCallback(throttle(q => {
     dispatch(locationSearch(q, controller.current.signal))
       .then((locations: { origin_id: string }[]) => {
         const locationIds = locations.map(location => location.origin_id);
-        setLocationIds(ImmutableOrderedSet(locationIds));
+        setLocationIds(locationIds);
       })
       .catch(noOp);
   }, 900, { leading: true, trailing: true }), []);
@@ -88,7 +87,7 @@ const LocationSearch: React.FC<ILocationSearch> = ({ onSelected }) => {
         placeholder={intl.formatMessage(messages.placeholder)}
         value={value}
         onChange={handleChange}
-        suggestions={locationIds.toList()}
+        suggestions={locationIds}
         onSuggestionsFetchRequested={noOp}
         onSuggestionsClearRequested={noOp}
         onSuggestionSelected={handleSelected}

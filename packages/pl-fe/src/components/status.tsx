@@ -6,26 +6,28 @@ import { Link, useHistory } from 'react-router-dom';
 import { mentionCompose, replyCompose } from 'pl-fe/actions/compose';
 import { toggleFavourite, toggleReblog } from 'pl-fe/actions/interactions';
 import { toggleStatusMediaHidden, unfilterStatus } from 'pl-fe/actions/statuses';
-import TranslateButton from 'pl-fe/components/translate-button';
+import Card from 'pl-fe/components/ui/card';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
+import Emojify from 'pl-fe/features/emoji/emojify';
 import StatusTypeIcon from 'pl-fe/features/status/components/status-type-icon';
-import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
-import { useAppDispatch, useAppSelector, useSettings } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { makeGetStatus, type SelectedStatus } from 'pl-fe/selectors';
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import { textForScreenReader } from 'pl-fe/utils/status';
 
 import EventPreview from './event-preview';
 import StatusActionBar from './status-action-bar';
 import StatusContent from './status-content';
 import StatusLanguagePicker from './status-language-picker';
-import StatusMedia from './status-media';
 import StatusReactionsBar from './status-reactions-bar';
 import StatusReplyMentions from './status-reply-mentions';
-import SensitiveContentOverlay from './statuses/sensitive-content-overlay';
 import StatusInfo from './statuses/status-info';
-import { Card, Icon, Stack, Text } from './ui';
 
 const messages = defineMessages({
   reblogged_by: { id: 'status.reblogged_by', defaultMessage: '{name} reposted' },
@@ -199,23 +201,17 @@ const Status: React.FC<IStatus> = (props) => {
                     className='hover:underline'
                   >
                     <bdi className='truncate'>
-                      <strong
-                        className='text-gray-800 dark:text-gray-200'
-                        dangerouslySetInnerHTML={{
-                          __html: status.account.display_name_html,
-                        }}
-                      />
+                      <strong className='text-gray-800 dark:text-gray-200'>
+                        <Emojify text={status.account.display_name} emojis={status.account.emojis} />
+                      </strong>
                     </bdi>
                   </Link>
                 ),
                 group: (
                   <Link to={`/groups/${group.id}`} className='hover:underline'>
-                    <strong
-                      className='text-gray-800 dark:text-gray-200'
-                      dangerouslySetInnerHTML={{
-                        __html: group.display_name_html,
-                      }}
-                    />
+                    <strong className='text-gray-800 dark:text-gray-200'>
+                      <Emojify text={group.display_name} emojis={group.emojis} />
+                    </strong>
                   </Link>
                 ),
               }}
@@ -229,12 +225,9 @@ const Status: React.FC<IStatus> = (props) => {
       const renderedAccounts = accounts.slice(0, 2).map(account => !!account && (
         <Link key={account.acct} to={`/@${account.acct}`} className='hover:underline'>
           <bdi className='truncate'>
-            <strong
-              className='text-gray-800 dark:text-gray-200'
-              dangerouslySetInnerHTML={{
-                __html: account.display_name_html,
-              }}
-            />
+            <strong className='text-gray-800 dark:text-gray-200'>
+              <Emojify text={account.display_name} emojis={account.emojis} />
+            </strong>
           </bdi>
         </Link>
       ));
@@ -289,7 +282,7 @@ const Status: React.FC<IStatus> = (props) => {
                   <Link to={`/groups/${group.id}`} className='hover:underline'>
                     <bdi className='truncate'>
                       <strong className='text-gray-800 dark:text-gray-200'>
-                        <span dangerouslySetInnerHTML={{ __html: group.display_name_html }} />
+                        <Emojify text={group.display_name} emojis={group.emojis} />
                       </strong>
                     </bdi>
                   </Link>
@@ -344,20 +337,6 @@ const Status: React.FC<IStatus> = (props) => {
     );
   }
 
-  let quote;
-
-  if (actualStatus.quote_id) {
-    if ((actualStatus.quote_visible ?? true) === false) {
-      quote = (
-        <div className='quoted-status-tombstone'>
-          <p><FormattedMessage id='statuses.quote_tombstone' defaultMessage='Post is unavailable.' /></p>
-        </div>
-      );
-    } else {
-      quote = <QuotedStatus statusId={actualStatus.quote_id} />;
-    }
-  }
-
   const handlers = muted ? undefined : {
     reply: handleHotkeyReply,
     favourite: handleHotkeyFavourite,
@@ -396,8 +375,8 @@ const Status: React.FC<IStatus> = (props) => {
           {renderStatusInfo()}
 
           <AccountContainer
-            key={actualStatus.account.id}
-            id={actualStatus.account.id}
+            key={actualStatus.account_id}
+            id={actualStatus.account_id}
             timestamp={actualStatus.created_at}
             timestampUrl={statusUrl}
             action={accountAction}
@@ -409,8 +388,8 @@ const Status: React.FC<IStatus> = (props) => {
             avatarSize={avatarSize}
             items={(
               <>
-                <StatusTypeIcon status={status} />
-                <StatusLanguagePicker status={status} />
+                <StatusTypeIcon status={actualStatus} />
+                <StatusLanguagePicker status={actualStatus} />
               </>
             )}
           />
@@ -420,33 +399,13 @@ const Status: React.FC<IStatus> = (props) => {
 
             <Stack className='relative z-0'>
               {actualStatus.event ? <EventPreview className='shadow-xl' status={actualStatus} /> : (
-                <Stack space={4}>
-                  <StatusContent
-                    status={actualStatus}
-                    onClick={handleClick}
-                    collapsable
-                    translatable
-                  />
-
-                  <TranslateButton status={actualStatus} />
-
-                  {(quote || actualStatus.card || actualStatus.media_attachments.length > 0) && (
-                    <Stack space={4}>
-                      {(actualStatus.media_attachments.length > 0 || (actualStatus.card && !quote)) && (
-                        <div className='relative'>
-                          <SensitiveContentOverlay status={actualStatus} />
-                          <StatusMedia
-                            status={actualStatus}
-                            muted={muted}
-                            onClick={handleClick}
-                          />
-                        </div>
-                      )}
-
-                      {quote}
-                    </Stack>
-                  )}
-                </Stack>
+                <StatusContent
+                  status={actualStatus}
+                  onClick={handleClick}
+                  collapsable
+                  translatable
+                  withMedia
+                />
               )}
             </Stack>
 
@@ -459,7 +418,12 @@ const Status: React.FC<IStatus> = (props) => {
                   'pt-4': !actualStatus.emoji_reactions.length,
                 })}
               >
-                <StatusActionBar status={actualStatus} rebloggedBy={isReblog ? status.account : undefined} fromBookmarks={fromBookmarks} />
+                <StatusActionBar
+                  status={actualStatus}
+                  rebloggedBy={isReblog ? status.account : undefined}
+                  fromBookmarks={fromBookmarks}
+                  expandable
+                />
               </div>
             )}
           </div>

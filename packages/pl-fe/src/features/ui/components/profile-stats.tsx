@@ -2,11 +2,12 @@ import React from 'react';
 import { useIntl, defineMessages } from 'react-intl';
 import { NavLink } from 'react-router-dom';
 
-import { HStack, Text } from 'pl-fe/components/ui';
-import { useSettings } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Text from 'pl-fe/components/ui/text';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { shortNumberFormat } from 'pl-fe/utils/numbers';
 
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
   followers: { id: 'account.followers', defaultMessage: 'Followers' },

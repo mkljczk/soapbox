@@ -1,4 +1,9 @@
-import { directoryCategorySchema, directoryLanguageSchema, directoryServerSchema, directoryStatisticsPeriodSchema } from './entities';
+import * as v from 'valibot';
+
+import { directoryCategorySchema } from './entities/directory/category';
+import { directoryLanguageSchema } from './entities/directory/language';
+import { directoryServerSchema } from './entities/directory/server';
+import { directoryStatisticsPeriodSchema } from './entities/directory/statistics-period';
 import { filteredArray } from './entities/utils';
 import request from './request';
 
@@ -10,6 +15,9 @@ interface Params {
   registrations?: 'instant' | 'manual';
 }
 
+/**
+ * @category Clients
+ */
 class PlApiDirectoryClient {
 
   accessToken = undefined;
@@ -23,25 +31,25 @@ class PlApiDirectoryClient {
   async getStatistics() {
     const response = await this.request('/statistics');
 
-    return filteredArray(directoryStatisticsPeriodSchema).parse(response.json);
+    return v.parse(filteredArray(directoryStatisticsPeriodSchema), response.json);
   }
 
   async getCategories(params?: Params) {
     const response = await this.request('/categories', { params });
 
-    return filteredArray(directoryCategorySchema).parse(response.json);
+    return v.parse(filteredArray(directoryCategorySchema), response.json);
   }
 
   async getLanguages(params?: Params) {
     const response = await this.request('/categories', { params });
 
-    return filteredArray(directoryLanguageSchema).parse(response.json);
+    return v.parse(filteredArray(directoryLanguageSchema), response.json);
   }
 
   async getServers(params?: Params) {
     const response = await this.request('/servers', { params });
 
-    return filteredArray(directoryServerSchema).parse(response.json);
+    return v.parse(filteredArray(directoryServerSchema), response.json);
   }
 
 }

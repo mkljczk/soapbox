@@ -1,5 +1,6 @@
 import { List as ImmutableList, fromJS } from 'immutable';
 import { emojiReactionSchema } from 'pl-api';
+import * as v from 'valibot';
 
 import {
   simulateEmojiReact,
@@ -11,7 +12,7 @@ describe('simulateEmojiReact', () => {
     const emojiReacts = ImmutableList([
       { 'count': 2, 'me': false, 'name': '👍', 'url': undefined },
       { 'count': 2, 'me': false, 'name': '❤', 'url': undefined },
-    ].map((react) => emojiReactionSchema.parse(react)));
+    ].map((react) => v.parse(emojiReactionSchema, react)));
     expect(simulateEmojiReact(emojiReacts, '❤')).toEqual(fromJS([
       { 'count': 2, 'me': false, 'name': '👍', 'url': undefined },
       { 'count': 3, 'me': true, 'name': '❤', 'url': undefined },
@@ -22,7 +23,7 @@ describe('simulateEmojiReact', () => {
     const emojiReacts = ImmutableList([
       { 'count': 2, 'me': false, 'name': '👍', 'url': undefined },
       { 'count': 2, 'me': false, 'name': '❤', 'url': undefined },
-    ].map((react) => emojiReactionSchema.parse(react)));
+    ].map((react) => v.parse(emojiReactionSchema, react)));
     expect(simulateEmojiReact(emojiReacts, '😯')).toEqual(fromJS([
       { 'count': 2, 'me': false, 'name': '👍', 'url': undefined },
       { 'count': 2, 'me': false, 'name': '❤', 'url': undefined },
@@ -34,7 +35,7 @@ describe('simulateEmojiReact', () => {
     const emojiReacts = ImmutableList([
       { 'count': 2, 'me': false, 'name': '👍', 'url': undefined },
       { 'count': 2, 'me': false, 'name': '❤', 'url': undefined },
-    ].map((react) => emojiReactionSchema.parse(react)));
+    ].map((react) => v.parse(emojiReactionSchema, react)));
     expect(simulateEmojiReact(emojiReacts, 'soapbox', 'https://gleasonator.com/emoji/Gleasonator/soapbox.png')).toEqual(fromJS([
       { 'count': 2, 'me': false, 'name': '👍', 'url': undefined },
       { 'count': 2, 'me': false, 'name': '❤', 'url': undefined },
@@ -48,7 +49,7 @@ describe('simulateUnEmojiReact', () => {
     const emojiReacts = ImmutableList([
       { 'count': 2, 'me': false, 'name': '👍' },
       { 'count': 3, 'me': true, 'name': '❤' },
-    ].map((react) => emojiReactionSchema.parse(react)));
+    ].map((react) => v.parse(emojiReactionSchema, react)));
     expect(simulateUnEmojiReact(emojiReacts, '❤')).toEqual(fromJS([
       { 'count': 2, 'me': false, 'name': '👍' },
       { 'count': 2, 'me': false, 'name': '❤' },
@@ -60,7 +61,7 @@ describe('simulateUnEmojiReact', () => {
       { 'count': 2, 'me': false, 'name': '👍' },
       { 'count': 2, 'me': false, 'name': '❤' },
       { 'count': 1, 'me': true, 'name': '😯' },
-    ].map((react) => emojiReactionSchema.parse(react)));
+    ].map((react) => v.parse(emojiReactionSchema, react)));
     expect(simulateUnEmojiReact(emojiReacts, '😯')).toEqual(fromJS([
       { 'count': 2, 'me': false, 'name': '👍' },
       { 'count': 2, 'me': false, 'name': '❤' },
@@ -72,7 +73,7 @@ describe('simulateUnEmojiReact', () => {
       { 'count': 2, 'me': false, 'name': '👍' },
       { 'count': 2, 'me': false, 'name': '❤' },
       { 'count': 1, 'me': true, 'name': 'soapbox', 'url': 'https://gleasonator.com/emoji/Gleasonator/soapbox.png' },
-    ].map((react) => emojiReactionSchema.parse(react)));
+    ].map((react) => v.parse(emojiReactionSchema, react)));
     expect(simulateUnEmojiReact(emojiReacts, 'soapbox')).toEqual(fromJS([
       { 'count': 2, 'me': false, 'name': '👍' },
       { 'count': 2, 'me': false, 'name': '❤' },

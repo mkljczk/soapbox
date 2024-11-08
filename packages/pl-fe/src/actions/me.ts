@@ -1,12 +1,14 @@
 import { selectAccount } from 'pl-fe/selectors';
 import { setSentryAccount } from 'pl-fe/sentry';
 import KVStore from 'pl-fe/storage/kv-store';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 import { getAuthUserId, getAuthUserUrl } from 'pl-fe/utils/auth';
 
 import { getClient } from '../api';
 
 import { loadCredentials } from './auth';
-import { importFetchedAccount } from './importer';
+import { importEntities } from './importer';
+import { FE_NAME } from './settings';
 
 import type { CredentialAccount, UpdateCredentialsParams } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -37,6 +39,10 @@ const getMeToken = (state: RootState) => {
   return state.auth.users.get(accountUrl!)?.access_token;
 };
 
+interface MeFetchSkipAction {
+  type: typeof ME_FETCH_SKIP;
+}
+
 const fetchMe = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
@@ -44,7 +50,7 @@ const fetchMe = () =>
     const accountUrl = getMeUrl(state);
 
     if (!token) {
-      dispatch({ type: ME_FETCH_SKIP });
+      dispatch<MeFetchSkipAction>({ type: ME_FETCH_SKIP });
       return noOp();
     }
 
@@ -95,6 +101,8 @@ const fetchMeRequest = () => ({
 const fetchMeSuccess = (account: CredentialAccount) => {
   setSentryAccount(account);
 
+  useSettingsStore.getState().loadUserSettings(account.settings_store?.[FE_NAME]);
+
   return {
     type: ME_FETCH_SUCCESS,
     me: account,
@@ -118,13 +126,11 @@ interface MePatchSuccessAction {
 
 const patchMeSuccess = (me: CredentialAccount) =>
   (dispatch: AppDispatch) => {
-    const action: MePatchSuccessAction = {
+    dispatch(importEntities({ accounts: [me] }));
+    dispatch<MePatchSuccessAction>({
       type: ME_PATCH_SUCCESS,
       me,
-    };
-
-    dispatch(importFetchedAccount(me));
-    dispatch(action);
+    });
   };
 
 const patchMeFail = (error: unknown) => ({
@@ -137,6 +143,7 @@ type MeAction =
   | ReturnType<typeof fetchMeRequest>
   | ReturnType<typeof fetchMeSuccess>
   | ReturnType<typeof fetchMeFail>
+  | MeFetchSkipAction
   | ReturnType<typeof patchMeRequest>
   | MePatchSuccessAction
   | ReturnType<typeof patchMeFail>;

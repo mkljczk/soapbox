@@ -2,8 +2,10 @@ import React, { useState, useCallback } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, Accordion } from 'pl-fe/components/ui';
-import { useAppSelector, useInstance } from 'pl-fe/hooks';
+import Accordion from 'pl-fe/components/ui/accordion';
+import Column from 'pl-fe/components/ui/column';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { makeGetHosts } from 'pl-fe/selectors';
 import { federationRestrictionsDisclosed } from 'pl-fe/utils/state';
 

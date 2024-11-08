@@ -2,9 +2,10 @@ import clsx from 'clsx';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { useSettings } from 'pl-fe/hooks';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
-import { Icon, Text } from './ui';
+import Icon from './ui/icon';
+import Text from './ui/text';
 
 interface ISidebarNavigationLink {
   /** Notification count, if any. */

@@ -1,20 +1,25 @@
 import FlexSearch from 'flexsearch';
 
-import data from './data';
-
+import type { EmojiData } from './data';
 import type { Emoji } from './index';
 import type { CustomEmoji } from 'pl-api';
+
+let emojis: EmojiData['emojis'] = {};
+
+import('./data').then(data => {
+  emojis = data.emojis;
+
+  const sortedEmojis = Object.entries(emojis).sort((a, b) => a[0].localeCompare(b[0]));
+  for (const [key, emoji] of sortedEmojis) {
+    index.add('n' + key, `${emoji.id} ${emoji.name} ${emoji.keywords.join(' ')}`);
+  }
+}).catch(() => { });
 
 const index = new FlexSearch.Index({
   tokenize: 'full',
   optimize: true,
   context: true,
 });
-
-const sortedEmojis = Object.entries(data.emojis).sort((a, b) => a[0].localeCompare(b[0]));
-for (const [key, emoji] of sortedEmojis) {
-  index.add('n' + key, `${emoji.id} ${emoji.name} ${emoji.keywords.join(' ')}`);
-}
 
 interface searchOptions {
   maxResults?: number;
@@ -58,7 +63,7 @@ const search = (
       }
     }
 
-    const skins = data.emojis[id.slice(1)]?.skins;
+    const skins = emojis[id.slice(1)]?.skins;
 
     if (skins) {
       return {
@@ -70,8 +75,4 @@ const search = (
     }
   }).filter(Boolean) as Emoji[];
 
-export {
-  type searchOptions,
-  addCustomToPool,
-  search as default,
-};
+export { search as default, addCustomToPool };

@@ -1,15 +1,17 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useGroup, useGroupMedia } from 'pl-fe/api/hooks';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
+import { useGroupMedia } from 'pl-fe/api/hooks/groups/use-group-media';
 import LoadMore from 'pl-fe/components/load-more';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
-import { Column, Spinner } from 'pl-fe/components/ui';
-import { useModalsStore } from 'pl-fe/stores';
+import Column from 'pl-fe/components/ui/column';
+import Spinner from 'pl-fe/components/ui/spinner';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import MediaItem from '../account-gallery/components/media-item';
 
-import type { Status } from 'pl-fe/normalizers';
+import type { Status } from 'pl-fe/normalizers/status';
 import type { AccountGalleryAttachment } from 'pl-fe/selectors';
 
 interface IGroupGallery {
@@ -32,13 +34,13 @@ const GroupGallery: React.FC<IGroupGallery> = (props) => {
   } = useGroupMedia(groupId);
 
   const attachments = statuses.reduce<AccountGalleryAttachment[]>((result, status) => {
-    result.push(...status.media_attachments.map((a) => ({ ...a, status: status as any, account: status.account })));
+    result.push(...status.media_attachments.map((a) => ({ ...a, status, account: status.account })));
     return result;
   }, []);
 
   const handleOpenMedia = (attachment: AccountGalleryAttachment) => {
     if (attachment.type === 'video') {
-      openModal('VIDEO', { media: attachment, statusId: attachment.status.id, account: attachment.account });
+      openModal('VIDEO', { media: attachment, statusId: attachment.status.id });
     } else {
       const media = (attachment.status as Status).media_attachments;
       const index = media.findIndex((x) => x.id === attachment.id);

@@ -10,13 +10,16 @@ import {
   rejectFollowRequest,
   biteAccount,
 } from 'pl-fe/actions/accounts';
-import { useFollow } from 'pl-fe/api/hooks';
-import { Button, HStack } from 'pl-fe/components/ui';
-import { useAppDispatch, useFeatures, useLoggedIn } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
+import { useFollow } from 'pl-fe/api/hooks/accounts/use-follow';
+import Button from 'pl-fe/components/ui/button';
+import HStack from 'pl-fe/components/ui/hstack';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
   block: { id: 'account.block', defaultMessage: 'Block @{name}' },

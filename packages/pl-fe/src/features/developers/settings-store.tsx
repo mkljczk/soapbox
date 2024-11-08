@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
 
-import { SETTINGS_UPDATE, changeSetting, updateSettingsStore } from 'pl-fe/actions/settings';
+import { changeSetting, updateSettingsStore } from 'pl-fe/actions/settings';
 import List, { ListItem } from 'pl-fe/components/list';
-import {
-  CardHeader,
-  CardTitle,
-  Column,
-  Button,
-  Form,
-  FormActions,
-  FormGroup,
-  Textarea,
-} from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import { CardHeader, CardTitle } from 'pl-fe/components/ui/card';
+import Column from 'pl-fe/components/ui/column';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Textarea from 'pl-fe/components/ui/textarea';
 import SettingToggle from 'pl-fe/features/notifications/components/setting-toggle';
-import { useAppSelector, useAppDispatch, useSettings } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 import toast from 'pl-fe/toast';
 
 const isJSONValid = (text: any): boolean => {
@@ -35,10 +33,9 @@ const messages = defineMessages({
 const SettingsStore: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const settings = useSettings();
-  const settingsStore = useAppSelector(state => state.settings);
+  const { settings, userSettings, loadUserSettings } = useSettingsStore();
 
-  const [rawJSON, setRawJSON] = useState<string>(JSON.stringify(settingsStore, null, 2));
+  const [rawJSON, setRawJSON] = useState<string>(JSON.stringify(userSettings, null, 2));
   const [jsonValid, setJsonValid] = useState(true);
   const [isLoading, setLoading] = useState(false);
 
@@ -57,7 +54,7 @@ const SettingsStore: React.FC = () => {
 
     setLoading(true);
     dispatch(updateSettingsStore(settings)).then(() => {
-      dispatch({ type: SETTINGS_UPDATE, settings });
+      loadUserSettings(settings);
       setLoading(false);
     }).catch(error => {
       toast.showAlertForError(error);
@@ -66,9 +63,9 @@ const SettingsStore: React.FC = () => {
   };
 
   useEffect(() => {
-    setRawJSON(JSON.stringify(settingsStore, null, 2));
+    setRawJSON(JSON.stringify(userSettings, null, 2));
     setJsonValid(true);
-  }, [settingsStore]);
+  }, [userSettings]);
 
   return (
     <Column label={intl.formatMessage(messages.heading)} backHref='/developers'>

@@ -1,13 +1,13 @@
 import { defineMessages } from 'react-intl';
 
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast, { type IToastOptions } from 'pl-fe/toast';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 
 import { getClient } from '../api';
 
 import { fetchRelationships } from './accounts';
-import { importFetchedAccounts, importFetchedStatus } from './importer';
+import { importEntities } from './importer';
 
 import type { Account, EmojiReaction, PaginatedResponse, Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -78,6 +78,8 @@ const FAVOURITES_EXPAND_FAIL = 'FAVOURITES_EXPAND_FAIL' as const;
 const REBLOGS_EXPAND_SUCCESS = 'REBLOGS_EXPAND_SUCCESS' as const;
 const REBLOGS_EXPAND_FAIL = 'REBLOGS_EXPAND_FAIL' as const;
 
+const noOp = () => new Promise(f => f(undefined));
+
 type AccountListLink = () => Promise<PaginatedResponse<Account>>;
 
 const messages = defineMessages({
@@ -90,14 +92,14 @@ const messages = defineMessages({
 
 const reblog = (status: Pick<Status, 'id'>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
+    if (!isLoggedIn(getState)) return noOp();
 
     dispatch(reblogRequest(status.id));
 
     return getClient(getState()).statuses.reblogStatus(status.id).then((response) => {
       // The reblog API method returns a new status wrapped around the original. In this case we are only
       // interested in how the original is modified, hence passing it skipping the wrapper
-      if (response.reblog) dispatch(importFetchedStatus(response.reblog as Status));
+      if (response.reblog) dispatch(importEntities({ statuses: [response.reblog] }));
       dispatch(reblogSuccess(response));
     }).catch(error => {
       dispatch(reblogFail(status.id, error));
@@ -106,7 +108,7 @@ const reblog = (status: Pick<Status, 'id'>) =>
 
 const unreblog = (status: Pick<Status, 'id'>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
+    if (!isLoggedIn(getState)) return noOp();
 
     dispatch(unreblogRequest(status.id));
 
@@ -117,14 +119,13 @@ const unreblog = (status: Pick<Status, 'id'>) =>
     });
   };
 
-const toggleReblog = (status: Pick<Status, 'id' | 'reblogged'>) =>
-  (dispatch: AppDispatch) => {
-    if (status.reblogged) {
-      dispatch(unreblog(status));
-    } else {
-      dispatch(reblog(status));
-    }
-  };
+const toggleReblog = (status: Pick<Status, 'id' | 'reblogged'>) => {
+  if (status.reblogged) {
+    return unreblog(status);
+  } else {
+    return reblog(status);
+  }
+};
 
 const reblogRequest = (statusId: string) => ({
   type: REBLOG_REQUEST,
@@ -162,7 +163,7 @@ const unreblogFail = (statusId: string, error: unknown) => ({
 
 const favourite = (status: Pick<Status, 'id'>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
+    if (!isLoggedIn(getState)) return noOp();
 
     dispatch(favouriteRequest(status.id));
 
@@ -175,7 +176,7 @@ const favourite = (status: Pick<Status, 'id'>) =>
 
 const unfavourite = (status: Pick<Status, 'id'>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
+    if (!isLoggedIn(getState)) return noOp();
 
     dispatch(unfavouriteRequest(status.id));
 
@@ -186,14 +187,13 @@ const unfavourite = (status: Pick<Status, 'id'>) =>
     });
   };
 
-const toggleFavourite = (status: Pick<Status, 'id' | 'favourited'>) =>
-  (dispatch: AppDispatch) => {
-    if (status.favourited) {
-      dispatch(unfavourite(status));
-    } else {
-      dispatch(favourite(status));
-    }
-  };
+const toggleFavourite = (status: Pick<Status, 'id' | 'favourited'>) => {
+  if (status.favourited) {
+    return unfavourite(status);
+  } else {
+    return favourite(status);
+  }
+};
 
 const favouriteRequest = (statusId: string) => ({
   type: FAVOURITE_REQUEST,
@@ -307,7 +307,7 @@ const bookmark = (status: Pick<Status, 'id'>, folderId?: string) =>
     dispatch(bookmarkRequest(status.id));
 
     return getClient(getState()).statuses.bookmarkStatus(status.id, folderId).then((response) => {
-      dispatch(importFetchedStatus(response));
+      dispatch(importEntities({ statuses: [response] }));
       dispatch(bookmarkSuccess(response));
 
       let opts: IToastOptions = {
@@ -335,7 +335,7 @@ const unbookmark = (status: Pick<Status, 'id'>) =>
     dispatch(unbookmarkRequest(status.id));
 
     return getClient(getState()).statuses.unbookmarkStatus(status.id).then(response => {
-      dispatch(importFetchedStatus(response));
+      dispatch(importEntities({ statuses: [response] }));
       dispatch(unbookmarkSuccess(response));
       toast.success(messages.bookmarkRemoved);
     }).catch(error => {
@@ -391,7 +391,7 @@ const fetchReblogs = (statusId: string) =>
     dispatch(fetchReblogsRequest(statusId));
 
     return getClient(getState()).statuses.getRebloggedBy(statusId).then(response => {
-      dispatch(importFetchedAccounts(response.items));
+      dispatch(importEntities({ accounts: response.items }));
       dispatch(fetchRelationships(response.items.map((item) => item.id)));
       dispatch(fetchReblogsSuccess(statusId, response.items, response.next));
     }).catch(error => {
@@ -420,7 +420,7 @@ const fetchReblogsFail = (statusId: string, error: unknown) => ({
 const expandReblogs = (statusId: string, next: AccountListLink) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     next().then(response => {
-      dispatch(importFetchedAccounts(response.items));
+      dispatch(importEntities({ accounts: response.items }));
       dispatch(fetchRelationships(response.items.map((item) => item.id)));
       dispatch(expandReblogsSuccess(statusId, response.items, response.next));
     }).catch(error => {
@@ -446,7 +446,7 @@ const fetchFavourites = (statusId: string) =>
     dispatch(fetchFavouritesRequest(statusId));
 
     return getClient(getState()).statuses.getFavouritedBy(statusId).then(response => {
-      dispatch(importFetchedAccounts(response.items));
+      dispatch(importEntities({ accounts: response.items }));
       dispatch(fetchRelationships(response.items.map((item) => item.id)));
       dispatch(fetchFavouritesSuccess(statusId, response.items, response.next));
     }).catch(error => {
@@ -475,7 +475,7 @@ const fetchFavouritesFail = (statusId: string, error: unknown) => ({
 const expandFavourites = (statusId: string, next: AccountListLink) =>
   (dispatch: AppDispatch) => {
     next().then(response => {
-      dispatch(importFetchedAccounts(response.items));
+      dispatch(importEntities({ accounts: response.items }));
       dispatch(fetchRelationships(response.items.map((item) => item.id)));
       dispatch(expandFavouritesSuccess(statusId, response.items, response.next));
     }).catch(error => {
@@ -501,7 +501,7 @@ const fetchDislikes = (statusId: string) =>
     dispatch(fetchDislikesRequest(statusId));
 
     return getClient(getState).statuses.getDislikedBy(statusId).then(response => {
-      dispatch(importFetchedAccounts(response));
+      dispatch(importEntities({ accounts: response }));
       dispatch(fetchRelationships(response.map((item) => item.id)));
       dispatch(fetchDislikesSuccess(statusId, response));
     }).catch(error => {
@@ -531,7 +531,7 @@ const fetchReactions = (statusId: string) =>
     dispatch(fetchReactionsRequest(statusId));
 
     return getClient(getState).statuses.getStatusReactions(statusId).then(response => {
-      dispatch(importFetchedAccounts((response).map(({ accounts }) => accounts).flat()));
+      dispatch(importEntities({ accounts: (response).map(({ accounts }) => accounts).flat() }));
       dispatch(fetchReactionsSuccess(statusId, response));
     }).catch(error => {
       dispatch(fetchReactionsFail(statusId, error));
@@ -562,7 +562,7 @@ const pin = (status: Pick<Status, 'id'>, accountId: string) =>
     dispatch(pinRequest(status.id, accountId));
 
     return getClient(getState()).statuses.pinStatus(status.id).then(response => {
-      dispatch(importFetchedStatus(response));
+      dispatch(importEntities({ statuses: [response] }));
       dispatch(pinSuccess(response, accountId));
     }).catch(error => {
       dispatch(pinFail(status.id, error, accountId));
@@ -596,7 +596,7 @@ const unpin = (status: Pick<Status, 'id'>, accountId: string) =>
     dispatch(unpinRequest(status.id, accountId));
 
     return getClient(getState()).statuses.unpinStatus(status.id).then(response => {
-      dispatch(importFetchedStatus(response));
+      dispatch(importEntities({ statuses: [response] }));
       dispatch(unpinSuccess(response, accountId));
     }).catch(error => {
       dispatch(unpinFail(status.id, error, accountId));

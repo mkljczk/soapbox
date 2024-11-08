@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { useIntl, defineMessages, FormattedMessage } from 'react-intl';
 
 import { fetchCaptcha } from 'pl-fe/actions/auth';
-import { Stack, Text, Input } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Input from 'pl-fe/components/ui/input';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
 const noOp = () => {};
 

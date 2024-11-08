@@ -4,7 +4,8 @@ import { FormattedMessage } from 'react-intl';
 
 import { expandConversations } from 'pl-fe/actions/conversations';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import Conversation from './conversation';
 

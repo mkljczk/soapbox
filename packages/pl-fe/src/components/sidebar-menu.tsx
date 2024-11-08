@@ -5,18 +5,26 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { Link, NavLink } from 'react-router-dom';
 
 import { fetchOwnAccounts, logOut, switchAccount } from 'pl-fe/actions/auth';
-import { getSettings } from 'pl-fe/actions/settings';
-import { useAccount } from 'pl-fe/api/hooks';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import Account from 'pl-fe/components/account';
-import { Stack, Divider, HStack, Icon, Text } from 'pl-fe/components/ui';
+import Divider from 'pl-fe/components/ui/divider';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import ProfileStats from 'pl-fe/features/ui/components/profile-stats';
-import { useAppDispatch, useAppSelector, useFeatures, useInstance, useRegistrationStatus } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
 import { makeGetOtherAccounts } from 'pl-fe/selectors';
-import { useUiStore } from 'pl-fe/stores';
+import { useSettingsStore } from 'pl-fe/stores/settings';
+import { useUiStore } from 'pl-fe/stores/ui';
 import sourceCode from 'pl-fe/utils/code';
 
-import type { List as ImmutableList } from 'immutable';
-import type { Account as AccountEntity } from 'pl-fe/normalizers';
+import type { Account as AccountEntity } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
   profile: { id: 'account.profile', defaultMessage: 'Profile' },
@@ -34,6 +42,7 @@ const messages = defineMessages({
   drafts: { id: 'navigation.drafts', defaultMessage: 'Drafts' },
   addAccount: { id: 'profile_dropdown.add_account', defaultMessage: 'Add an existing account' },
   followRequests: { id: 'navigation_bar.follow_requests', defaultMessage: 'Follow requests' },
+  interactionRequests: { id: 'navigation.interaction_requests', defaultMessage: 'Interaction requests' },
   close: { id: 'lightbox.close', defaultMessage: 'Close' },
   login: { id: 'account.login', defaultMessage: 'Log in' },
   register: { id: 'account.register', defaultMessage: 'Sign up' },
@@ -85,9 +94,10 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const features = useFeatures();
   const me = useAppSelector((state) => state.me);
   const { account } = useAccount(me || undefined);
-  const otherAccounts: ImmutableList<AccountEntity> = useAppSelector((state) => getOtherAccounts(state));
-  const settings = useAppSelector((state) => getSettings(state));
-  const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.count());
+  const otherAccounts = useAppSelector((state) => getOtherAccounts(state));
+  const { settings } = useSettingsStore();
+  const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.length);
+  const interactionRequestsCount = useInteractionRequestsCount().data || 0;
   const scheduledStatusCount = useAppSelector((state) => state.scheduled_statuses.size);
   const draftCount = useAppSelector((state) => state.draft_statuses.size);
   // const dashboardCount = useAppSelector((state) => state.admin.openReports.count() + state.admin.awaitingApproval.count());
@@ -224,6 +234,15 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                     />
                   )}
 
+                  {(interactionRequestsCount > 0) && (
+                    <SidebarLink
+                      to='/interaction_requests'
+                      icon={require('@tabler/icons/outline/flag-question.svg')}
+                      text={intl.formatMessage(messages.interactionRequests)}
+                      onClick={closeSidebar}
+                    />
+                  )}
+
                   {features.conversations && (
                     <SidebarLink
                       to='/conversations'
@@ -343,7 +362,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                     />
                   )}
 
-                  {settings.get('isDeveloper') && (
+                  {settings.isDeveloper && (
                     <SidebarLink
                       to='/developers'
                       icon={require('@tabler/icons/outline/code.svg')}

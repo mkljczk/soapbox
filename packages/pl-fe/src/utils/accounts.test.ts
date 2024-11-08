@@ -1,4 +1,4 @@
-import { AccountRecord } from 'pl-fe/normalizers';
+import { AccountRecord } from 'pl-fe/normalizers/account';
 
 import {
   getDomain,

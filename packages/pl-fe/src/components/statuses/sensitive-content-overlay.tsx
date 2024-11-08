@@ -3,11 +3,13 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { hideStatusMedia, revealStatusMedia } from 'pl-fe/actions/statuses';
-import { useAppDispatch, useSettings } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import HStack from 'pl-fe/components/ui/hstack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
-import { Button, HStack, Text } from '../ui';
-
-import type { Status } from 'pl-fe/normalizers';
+import type { Status } from 'pl-fe/normalizers/status';
 
 const isMediaVisible = (status: Pick<Status, 'media_attachments' | 'sensitive' | 'spoiler_text'> & { hidden?: boolean | null }, displayMedia: 'default' | 'show_all' | 'hide_all') => {
   let visible = !(status.sensitive || status.spoiler_text);
@@ -108,4 +110,4 @@ const SensitiveContentOverlay = React.forwardRef<HTMLDivElement, ISensitiveConte
   );
 });
 
-export { SensitiveContentOverlay as default, isMediaVisible, showOverlay };
+export { SensitiveContentOverlay as default, isMediaVisible };

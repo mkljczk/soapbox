@@ -1,9 +1,13 @@
 import clsx from 'clsx';
 import { type MediaAttachment, type PreviewCard as CardEntity, mediaAttachmentSchema } from 'pl-api';
 import React, { useState, useEffect } from 'react';
+import * as v from 'valibot';
 
 import Blurhash from 'pl-fe/components/blurhash';
-import { HStack, Stack, Text, Icon } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import { addAutoPlay } from 'pl-fe/utils/media';
 import { getTextDirection } from 'pl-fe/utils/rtl';
 
@@ -43,7 +47,7 @@ const PreviewCard: React.FC<IPreviewCard> = ({
   const trimmedDescription = trim(card.description, maxDescription);
 
   const handlePhotoClick = () => {
-    const attachment = mediaAttachmentSchema.parse({
+    const attachment = v.parse(mediaAttachmentSchema, {
       id: '',
       type: 'image',
       url: card.embed_url,

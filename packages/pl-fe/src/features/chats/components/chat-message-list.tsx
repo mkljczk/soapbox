@@ -2,15 +2,20 @@ import React, { useEffect, useRef } from 'react';
 import { useIntl, defineMessages } from 'react-intl';
 
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Avatar, Button, Divider, Stack, Text } from 'pl-fe/components/ui';
+import Avatar from 'pl-fe/components/ui/avatar';
+import Button from 'pl-fe/components/ui/button';
+import Divider from 'pl-fe/components/ui/divider';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { Entities } from 'pl-fe/entity-store/entities';
 import PlaceholderChatMessage from 'pl-fe/features/placeholder/components/placeholder-chat-message';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useChatActions, useChatMessages } from 'pl-fe/queries/chats';
 
 import ChatMessage from './chat-message';
 
-import type { Chat } from 'pl-api';
-import type { ChatMessage as ChatMessageEntity } from 'pl-fe/normalizers';
+import type { Chat, Relationship } from 'pl-api';
+import type { ChatMessage as ChatMessageEntity } from 'pl-fe/normalizers/chat-message';
 
 const messages = defineMessages({
   today: { id: 'chats.dividers.today', defaultMessage: 'Today' },
@@ -59,7 +64,7 @@ const ChatMessageList: React.FC<IChatMessageList> = ({ chat }) => {
 
   const formattedChatMessages = chatMessages || [];
 
-  const isBlocked = useAppSelector((state) => state.getIn(['relationships', chat.account.id, 'blocked_by']));
+  const isBlocked = !!useAppSelector((state) => (state.entities[Entities.RELATIONSHIPS]?.store[chat.account.id] as Relationship)?.blocked_by);
 
   const buildCachedMessages = (): Array<ChatMessageEntity | { type: 'divider'; text: string }> => {
     if (!chatMessages) {

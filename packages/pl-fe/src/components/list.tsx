@@ -2,9 +2,10 @@ import clsx from 'clsx';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { SelectDropdown } from '../features/forms';
-
-import { Icon, HStack, Select } from './ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Select from 'pl-fe/components/ui/select';
+import { SelectDropdown } from 'pl-fe/features/forms';
 
 interface IList {
   children: React.ReactNode;

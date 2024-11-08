@@ -4,9 +4,11 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import { expandUserIndex, fetchUserIndex, setUserIndexQuery } from 'pl-fe/actions/admin';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, Input } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import Input from 'pl-fe/components/ui/input';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 const messages = defineMessages({
   heading: { id: 'column.admin.users', defaultMessage: 'Users' },
@@ -37,9 +39,9 @@ const UserIndex: React.FC = () => {
     updateQuery();
   }, []);
 
-  const hasMore = items.count() < total && !!next;
+  const hasMore = items.length < total && !!next;
 
-  const showLoading = isLoading && items.isEmpty();
+  const showLoading = isLoading && !items.length;
 
   return (
     <Column label={intl.formatMessage(messages.heading)}>

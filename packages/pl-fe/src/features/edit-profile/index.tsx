@@ -7,28 +7,30 @@ import { updateNotificationSettings } from 'pl-fe/actions/accounts';
 import { patchMe } from 'pl-fe/actions/me';
 import BirthdayInput from 'pl-fe/components/birthday-input';
 import List, { ListItem } from 'pl-fe/components/list';
-import {
-  Button,
-  Column,
-  Form,
-  FormActions,
-  FormGroup,
-  HStack,
-  Input,
-  Streamfield,
-  Textarea,
-  Toggle,
-} from 'pl-fe/components/ui';
-import { useAppDispatch, useOwnAccount, useFeatures, useInstance, useAppSelector } from 'pl-fe/hooks';
-import { useImageField } from 'pl-fe/hooks/forms';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import HStack from 'pl-fe/components/ui/hstack';
+import Input from 'pl-fe/components/ui/input';
+import Streamfield from 'pl-fe/components/ui/streamfield';
+import Textarea from 'pl-fe/components/ui/textarea';
+import Toggle from 'pl-fe/components/ui/toggle';
+import { useImageField } from 'pl-fe/hooks/forms/use-image-field';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import toast from 'pl-fe/toast';
 import { isDefaultAvatar, isDefaultHeader } from 'pl-fe/utils/accounts';
 
 import AvatarPicker from './components/avatar-picker';
 import HeaderPicker from './components/header-picker';
 
-import type { StreamfieldComponent } from 'pl-fe/components/ui/streamfield/streamfield';
-import type { Account } from 'pl-fe/normalizers';
+import type { StreamfieldComponent } from 'pl-fe/components/ui/streamfield';
+import type { Account } from 'pl-fe/normalizers/account';
 
 const nonDefaultAvatar = (url: string | undefined) => url && isDefaultAvatar(url) ? undefined : url;
 const nonDefaultHeader = (url: string | undefined) => url && isDefaultHeader(url) ? undefined : url;
@@ -101,8 +103,6 @@ interface AccountCredentials {
   // Non-Mastodon fields
   /** Pleroma: whether to accept notifications from people you don't follow. */
   stranger_notifications?: boolean;
-  /** Rebased: whether the user opts-in to email communications. */
-  accepts_email_list?: boolean;
   /** Pleroma: whether to publicly display followers. */
   hide_followers?: boolean;
   /** Pleroma: whether to publicly display follows. */
@@ -134,7 +134,6 @@ const accountToCredentials = (account: Account): AccountCredentials => {
     note: account.__meta.source?.note ?? '',
     fields_attributes: [...account.__meta.source?.fields ?? []],
     stranger_notifications: account.__meta.pleroma?.notification_settings?.block_from_strangers === true,
-    accepts_email_list: account.__meta.pleroma?.accepts_email_list === true,
     hide_followers: hideNetwork,
     hide_follows: hideNetwork,
     hide_followers_count: hideNetwork,
@@ -414,18 +413,6 @@ const EditProfile: React.FC = () => {
               <Toggle
                 checked={data.discoverable}
                 onChange={handleCheckboxChange('discoverable')}
-              />
-            </ListItem>
-          )}
-
-          {features.emailList && (
-            <ListItem
-              label={<FormattedMessage id='edit_profile.fields.accepts_email_list_label' defaultMessage='Subscribe to newsletter' />}
-              hint={<FormattedMessage id='edit_profile.hints.accepts_email_list' defaultMessage='Opt-in to news and marketing updates.' />}
-            >
-              <Toggle
-                checked={data.accepts_email_list}
-                onChange={handleCheckboxChange('accepts_email_list')}
               />
             </ListItem>
           )}

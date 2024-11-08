@@ -1,4 +1,3 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import debounce from 'lodash/debounce';
 import React, { useCallback } from 'react';
 import { defineMessages } from 'react-intl';
@@ -6,8 +5,9 @@ import { defineMessages } from 'react-intl';
 import { dequeueTimeline, scrollTopTimeline } from 'pl-fe/actions/timelines';
 import ScrollTopButton from 'pl-fe/components/scroll-top-button';
 import StatusList, { IStatusList } from 'pl-fe/components/status-list';
-import { Portal } from 'pl-fe/components/ui';
-import { useAppSelector, useAppDispatch } from 'pl-fe/hooks';
+import Portal from 'pl-fe/components/ui/portal';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetStatusIds } from 'pl-fe/selectors';
 
 const messages = defineMessages({
@@ -33,8 +33,8 @@ const Timeline: React.FC<ITimeline> = ({
   const dispatch = useAppDispatch();
   const getStatusIds = useCallback(makeGetStatusIds(), []);
 
-  const lastStatusId = useAppSelector(state => (state.timelines.get(timelineId)?.items || ImmutableOrderedSet()).last() as string | undefined);
   const statusIds = useAppSelector(state => getStatusIds(state, { type: timelineId, prefix }));
+  const lastStatusId = statusIds.last();
   const isLoading = useAppSelector(state => (state.timelines.get(timelineId) || { isLoading: true }).isLoading === true);
   const isPartial = useAppSelector(state => (state.timelines.get(timelineId)?.isPartial || false) === true);
   const hasMore = useAppSelector(state => state.timelines.get(timelineId)?.hasMore === true);

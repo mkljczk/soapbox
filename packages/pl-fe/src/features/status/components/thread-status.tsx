@@ -1,10 +1,9 @@
 import clsx from 'clsx';
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import React from 'react';
 
 import StatusContainer from 'pl-fe/containers/status-container';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 interface IThreadStatus {
   id: string;
@@ -18,9 +17,9 @@ interface IThreadStatus {
 const ThreadStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
   const { id, focusedStatusId } = props;
 
-  const replyToId = useAppSelector(state => state.contexts.inReplyTos.get(id));
-  const replyCount = useAppSelector(state => state.contexts.replies.get(id, ImmutableOrderedSet()).size);
-  const isLoaded = useAppSelector(state => Boolean(state.statuses.get(id)));
+  const replyToId = useAppSelector(state => state.contexts.inReplyTos[id]);
+  const replyCount = useAppSelector(state => (state.contexts.replies[id] || []).length);
+  const isLoaded = useAppSelector(state => Boolean(state.statuses[id]));
 
   const renderConnector = (): JSX.Element | null => {
     const isConnectedTop = replyToId && replyToId !== focusedStatusId;

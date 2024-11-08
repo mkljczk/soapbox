@@ -2,11 +2,13 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { addToAliases } from 'pl-fe/actions/aliases';
-import { useAccount } from 'pl-fe/api/hooks';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import AccountComponent from 'pl-fe/components/account';
 import IconButton from 'pl-fe/components/icon-button';
-import { HStack } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector, useFeatures } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 
 const messages = defineMessages({
   add: { id: 'aliases.account.add', defaultMessage: 'Create alias' },

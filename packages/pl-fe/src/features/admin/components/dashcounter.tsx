@@ -2,7 +2,7 @@ import React from 'react';
 import { FormattedNumber } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { Text } from 'pl-fe/components/ui';
+import Text from 'pl-fe/components/ui/text';
 import { isNumber } from 'pl-fe/utils/numbers';
 
 interface IDashCounter {

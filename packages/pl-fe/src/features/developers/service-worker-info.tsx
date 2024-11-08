@@ -2,7 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import List, { ListItem } from 'pl-fe/components/list';
-import { HStack, Text, Column, FormActions, Button, Stack, Icon } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import { unregisterSW } from 'pl-fe/utils/sw';
 
 import Indicator from './components/indicator';

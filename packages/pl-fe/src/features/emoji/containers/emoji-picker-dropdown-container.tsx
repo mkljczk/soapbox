@@ -3,8 +3,9 @@ import clsx from 'clsx';
 import React, { KeyboardEvent, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { IconButton, Portal } from 'pl-fe/components/ui';
-import { useClickOutside } from 'pl-fe/hooks';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Portal from 'pl-fe/components/ui/portal';
+import { useClickOutside } from 'pl-fe/hooks/use-click-outside';
 
 import EmojiPickerDropdown, { IEmojiPickerDropdown } from '../components/emoji-picker-dropdown';
 
@@ -55,8 +56,9 @@ const EmojiPickerDropdownContainer: React.FC<IEmojiPickerDropdownContainer> = ({
         })
       ) : (
         <IconButton
-          className={clsx('emoji-picker-dropdown', {
-            'text-gray-600 hover:text-gray-700 dark:hover:text-gray-500': theme === 'default',
+          theme='transparent'
+          className={clsx('emoji-picker-dropdown -m-1 p-2', {
+            'text-gray-600 hover:text-gray-800 dark:hover:text-white bg-transparent hover:bg-primary-100 dark:hover:bg-primary-800 black:hover:bg-gray-800': theme === 'default',
             'text-white/80 hover:text-white bg-transparent dark:bg-transparent': theme === 'inverse',
           })}
           ref={refs.setReference}

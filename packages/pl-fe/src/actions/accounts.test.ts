@@ -3,7 +3,7 @@ import { Map as ImmutableMap } from 'immutable';
 import { __stub } from 'pl-fe/api';
 import { buildInstance, buildRelationship } from 'pl-fe/jest/factory';
 import { mockStore, rootState } from 'pl-fe/jest/test-helpers';
-import { normalizeAccount } from 'pl-fe/normalizers';
+import { normalizeAccount } from 'pl-fe/normalizers/account';
 import { ListRecord, ReducerRecord } from 'pl-fe/reducers/user-lists';
 
 import {
@@ -69,15 +69,17 @@ describe('fetchAccount()', () => {
         avatar: 'test.jpg',
       });
 
-      const state = rootState
-        .set('entities', {
+      const state = {
+        ...rootState,
+        entities: {
           'ACCOUNTS': {
             store: {
               [id]: account,
             },
             lists: {},
           },
-        });
+        },
+      };
 
       store = mockStore(state);
 
@@ -166,15 +168,17 @@ describe('fetchAccountByUsername()', () => {
       birthday: undefined,
     });
 
-    state = rootState
-      .set('entities', {
+    state = {
+      ...rootState,
+      entities: {
         'ACCOUNTS': {
           store: {
             [id]: account,
           },
           lists: {},
         },
-      });
+      },
+    };
 
     store = mockStore(state);
 
@@ -185,16 +189,19 @@ describe('fetchAccountByUsername()', () => {
 
   describe('when "accountByUsername" feature is enabled', () => {
     beforeEach(() => {
-      const state = rootState
-        .set('instance', buildInstance({
+      const state = {
+        ...rootState,
+        me: '123',
+        instance: buildInstance({
           version: '2.7.2 (compatible; Pleroma 2.4.52-1337-g4779199e.gleasonator+soapbox)',
           pleroma: {
             metadata: {
               features: [],
             },
           },
-        }))
-        .set('me', '123');
+        }),
+      };
+
       store = mockStore(state);
     });
 
@@ -247,16 +254,19 @@ describe('fetchAccountByUsername()', () => {
 
   describe('when "accountLookup" feature is enabled', () => {
     beforeEach(() => {
-      const state = rootState
-        .set('instance', buildInstance({
+      const state = {
+        ...rootState,
+        me: '123',
+        instance: buildInstance({
           version: '3.4.1 (compatible; TruthSocial 1.0.0)',
           pleroma: {
             metadata: {
               features: [],
             },
           },
-        }))
-        .set('me', '123');
+        }),
+      };
+
       store = mockStore(state);
     });
 
@@ -312,7 +322,7 @@ describe('fetchAccountByUsername()', () => {
 
   describe('when using the accountSearch function', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -378,7 +388,7 @@ describe('blockAccount()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -392,7 +402,7 @@ describe('blockAccount()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -445,7 +455,7 @@ describe('unblockAccount()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -459,7 +469,7 @@ describe('unblockAccount()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -511,7 +521,7 @@ describe('muteAccount()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -525,7 +535,7 @@ describe('muteAccount()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -578,7 +588,7 @@ describe('unmuteAccount()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -592,7 +602,7 @@ describe('unmuteAccount()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -644,7 +654,7 @@ describe('subscribeAccount()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -658,7 +668,7 @@ describe('subscribeAccount()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -710,7 +720,7 @@ describe('unsubscribeAccount()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -724,7 +734,7 @@ describe('unsubscribeAccount()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -776,7 +786,7 @@ describe('removeFromFollowers()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -790,7 +800,7 @@ describe('removeFromFollowers()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -842,7 +852,7 @@ describe('fetchRelationships()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -856,16 +866,18 @@ describe('fetchRelationships()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState
-        .set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
     describe('without newAccountIds', () => {
       beforeEach(() => {
-        const state = rootState
-          .set('relationships', ImmutableMap({ [id]: buildRelationship() }))
-          .set('me', '123');
+        const state = {
+          ...rootState,
+          me: '123',
+          relationships: ImmutableMap({ [id]: buildRelationship() }),
+        };
+
         store = mockStore(state);
       });
 
@@ -879,9 +891,12 @@ describe('fetchRelationships()', () => {
 
     describe('with a successful API request', () => {
       beforeEach(() => {
-        const state = rootState
-          .set('relationships', ImmutableMap({}))
-          .set('me', '123');
+        const state = {
+          ...rootState,
+          me: '123',
+          relationships: ImmutableMap(),
+        };
+
         store = mockStore(state);
 
         __stub((mock) => {
@@ -929,7 +944,7 @@ describe('fetchRelationships()', () => {
 describe('fetchFollowRequests()', () => {
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -943,16 +958,18 @@ describe('fetchFollowRequests()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState
-        .set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
     describe('with a successful API request', () => {
       beforeEach(() => {
-        const state = rootState
-          .set('relationships', ImmutableMap({}))
-          .set('me', '123');
+        const state = {
+          ...rootState,
+          me: '123',
+          relationships: ImmutableMap(),
+        };
+
         store = mockStore(state);
 
         __stub((mock) => {
@@ -1003,7 +1020,7 @@ describe('fetchFollowRequests()', () => {
 describe('expandFollowRequests()', () => {
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -1017,25 +1034,29 @@ describe('expandFollowRequests()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState
-        .set('user_lists', ReducerRecord({
+      const state = {
+        ...rootState,
+        me: '123',
+        user_lists: ReducerRecord({
           follow_requests: ListRecord({
             next: 'next_url',
           }),
-        }))
-        .set('me', '123');
+        }),
+      };
       store = mockStore(state);
     });
 
     describe('when the url is null', () => {
       beforeEach(() => {
-        const state = rootState
-          .set('user_lists', ReducerRecord({
+        const state = {
+          ...rootState,
+          me: '123',
+          user_lists: ReducerRecord({
             follow_requests: ListRecord({
               next: null,
             }),
-          }))
-          .set('me', '123');
+          }),
+        };
         store = mockStore(state);
       });
 
@@ -1099,7 +1120,7 @@ describe('authorizeFollowRequest()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -1113,7 +1134,7 @@ describe('authorizeFollowRequest()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 

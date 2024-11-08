@@ -4,8 +4,10 @@ import { useParams } from 'react-router-dom';
 
 import { fetchAboutPage } from 'pl-fe/actions/about';
 import { Navlinks } from 'pl-fe/components/navlinks';
-import { Card } from 'pl-fe/components/ui';
-import { usePlFeConfig, useSettings, useAppDispatch } from 'pl-fe/hooks';
+import Card from 'pl-fe/components/ui/card';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 import { languages } from '../preferences';
 

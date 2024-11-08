@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import React, { Suspense, lazy, useEffect, useRef } from 'react';
-import { Switch, useHistory, useLocation, Redirect } from 'react-router-dom';
+import { Redirect, Switch, useHistory, useLocation } from 'react-router-dom';
 
 import { fetchFollowRequests } from 'pl-fe/actions/accounts';
-import { fetchReports, fetchUsers, fetchConfig } from 'pl-fe/actions/admin';
+import { fetchConfig, fetchReports, fetchUsers } from 'pl-fe/actions/admin';
 import { fetchCustomEmojis } from 'pl-fe/actions/custom-emojis';
 import { fetchDraftStatuses } from 'pl-fe/actions/draft-statuses';
 import { fetchFilters } from 'pl-fe/actions/filters';
@@ -13,11 +13,18 @@ import { register as registerPushNotifications } from 'pl-fe/actions/push-notifi
 import { fetchScheduledStatuses } from 'pl-fe/actions/scheduled-statuses';
 import { fetchSuggestionsForTimeline } from 'pl-fe/actions/suggestions';
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
-import { useUserStream } from 'pl-fe/api/hooks';
+import { useUserStream } from 'pl-fe/api/hooks/streaming/use-user-stream';
 import SidebarNavigation from 'pl-fe/components/sidebar-navigation';
 import ThumbNavigation from 'pl-fe/components/thumb-navigation';
-import { Layout } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector, useOwnAccount, usePlFeConfig, useFeatures, useDraggedFiles, useInstance, useLoggedIn } from 'pl-fe/hooks';
+import Layout from 'pl-fe/components/ui/layout';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import AdminLayout from 'pl-fe/layouts/admin-layout';
 import ChatsLayout from 'pl-fe/layouts/chats-layout';
 import DefaultLayout from 'pl-fe/layouts/default-layout';
@@ -34,103 +41,105 @@ import ProfileLayout from 'pl-fe/layouts/profile-layout';
 import RemoteInstanceLayout from 'pl-fe/layouts/remote-instance-layout';
 import SearchLayout from 'pl-fe/layouts/search-layout';
 import StatusLayout from 'pl-fe/layouts/status-layout';
-import { useUiStore } from 'pl-fe/stores';
+import { useUiStore } from 'pl-fe/stores/ui';
 import { getVapidKey } from 'pl-fe/utils/auth';
 import { isStandalone } from 'pl-fe/utils/state';
 
 import BackgroundShapes from './components/background-shapes';
 import {
-  Status,
-  CommunityTimeline,
-  PublicTimeline,
-  RemoteTimeline,
-  AccountTimeline,
+  AboutPage,
   AccountGallery,
-  HomeTimeline,
-  Followers,
-  Following,
-  Conversations,
-  HashtagTimeline,
-  Notifications,
-  FollowRequests,
-  GenericNotFound,
-  FavouritedStatuses,
-  Blocks,
-  DomainBlocks,
-  Mutes,
-  Filters,
-  EditFilter,
-  PinnedStatuses,
-  Search,
-  ListTimeline,
-  Lists,
-  Bookmarks,
-  Settings,
-  EditProfile,
-  EditEmail,
-  EditPassword,
-  DeleteAccount,
-  PlFeConfig,
-  ExportData,
-  ImportData,
+  AccountHoverCard,
+  AccountTimeline,
+  Aliases,
+  Announcements,
+  AuthTokenList,
   Backups,
-  MfaForm,
+  Blocks,
+  BookmarkFolders,
+  Bookmarks,
+  BubbleTimeline,
   ChatIndex,
   ChatWidget,
-  ServerInfo,
-  Dashboard,
-  ModerationLog,
-  CryptoDonate,
-  ScheduledStatuses,
-  UserIndex,
-  FederationRestrictions,
-  Aliases,
-  Migration,
-  FollowRecommendations,
-  Directory,
-  SidebarMenu,
-  AccountHoverCard,
-  StatusHoverCard,
-  Share,
-  NewStatus,
-  IntentionalError,
-  Developers,
-  CreateApp,
-  SettingsStore,
-  TestTimeline,
-  LogoutPage,
-  AuthTokenList,
-  ThemeEditor,
-  Quotes,
-  ServiceWorkerInfo,
-  EventInformation,
-  EventDiscussion,
-  Events,
-  GroupGallery,
-  Groups,
-  GroupMembers,
-  GroupTimeline,
-  ManageGroup,
-  GroupBlockedMembers,
-  GroupMembershipRequests,
-  Announcements,
-  EditGroup,
-  FollowedTags,
-  AboutPage,
-  RegistrationPage,
-  LoginPage,
-  PasswordReset,
-  RegisterInvite,
-  ExternalLogin,
-  LandingTimeline,
-  BookmarkFolders,
-  Domains,
-  Relays,
-  Rules,
-  DraftStatuses,
   Circle,
-  BubbleTimeline,
+  CommunityTimeline,
+  ComposeEvent,
+  Conversations,
+  CreateApp,
+  CryptoDonate,
+  Dashboard,
+  DeleteAccount,
+  Developers,
+  Directory,
+  DomainBlocks,
+  Domains,
+  DraftStatuses,
+  EditEmail,
+  EditFilter,
+  EditGroup,
+  EditPassword,
+  EditProfile,
+  EventDiscussion,
+  EventInformation,
+  Events,
+  ExportData,
+  ExternalLogin,
+  FavouritedStatuses,
+  FederationRestrictions,
+  Filters,
+  FollowRecommendations,
+  FollowRequests,
+  FollowedTags,
+  Followers,
+  Following,
+  GenericNotFound,
+  GroupBlockedMembers,
+  GroupGallery,
+  GroupMembers,
+  GroupMembershipRequests,
+  GroupTimeline,
+  Groups,
+  HashtagTimeline,
+  HomeTimeline,
+  ImportData,
+  IntentionalError,
   InteractionPolicies,
+  InteractionRequests,
+  LandingTimeline,
+  ListTimeline,
+  Lists,
+  LoginPage,
+  LogoutPage,
+  ManageGroup,
+  MfaForm,
+  Migration,
+  ModerationLog,
+  Mutes,
+  NewStatus,
+  Notifications,
+  PasswordReset,
+  PinnedStatuses,
+  PlFeConfig,
+  PublicTimeline,
+  Quotes,
+  RegisterInvite,
+  RegistrationPage,
+  Relays,
+  RemoteTimeline,
+  Rules,
+  ScheduledStatuses,
+  Search,
+  ServerInfo,
+  ServiceWorkerInfo,
+  Settings,
+  SettingsStore,
+  Share,
+  SidebarMenu,
+  Status,
+  StatusHoverCard,
+  TestTimeline,
+  ThemeEditor,
+  UserIndex,
 } from './util/async-components';
 import GlobalHotkeys from './util/global-hotkeys';
 import { WrappedRoute } from './util/react-router-helpers';
@@ -233,6 +242,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
       <WrappedRoute path='/search' layout={SearchLayout} component={Search} content={children} publicRoute />
       {features.suggestions && <WrappedRoute path='/suggestions' publicRoute layout={DefaultLayout} component={FollowRecommendations} content={children} />}
       {features.profileDirectory && <WrappedRoute path='/directory' publicRoute layout={DefaultLayout} component={Directory} content={children} />}
+      {features.events && <WrappedRoute path='/events/new' layout={EventsLayout} component={ComposeEvent} content={children} />}
       {features.events && <WrappedRoute path='/events' layout={EventsLayout} component={Events} content={children} />}
 
       {features.chats && <WrappedRoute path='/chats' exact layout={ChatsLayout} component={ChatIndex} content={children} />}
@@ -248,6 +258,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
       {(features.filters || features.filtersV2) && <WrappedRoute path='/filters/:id' layout={DefaultLayout} component={EditFilter} content={children} />}
       {(features.filters || features.filtersV2) && <WrappedRoute path='/filters' layout={DefaultLayout} component={Filters} content={children} />}
       {(features.followedHashtagsList) && <WrappedRoute path='/followed_tags' layout={DefaultLayout} component={FollowedTags} content={children} />}
+      {features.interactionRequests && <WrappedRoute path='/interaction_requests' layout={DefaultLayout} component={InteractionRequests} content={children} />}
       <WrappedRoute path='/@:username' publicRoute exact layout={ProfileLayout} component={AccountTimeline} content={children} />
       <WrappedRoute path='/@:username/with_replies' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={AccountTimeline} content={children} componentParams={{ withReplies: true }} />
       <WrappedRoute path='/@:username/followers' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={Followers} content={children} />
@@ -259,6 +270,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
       <WrappedRoute path='/@:username/posts/:statusId' publicRoute exact layout={StatusLayout} component={Status} content={children} />
       <WrappedRoute path='/@:username/posts/:statusId/quotes' publicRoute layout={StatusLayout} component={Quotes} content={children} />
       {features.events && <WrappedRoute path='/@:username/events/:statusId' publicRoute exact layout={EventLayout} component={EventInformation} content={children} />}
+      {features.events && <WrappedRoute path='/@:username/events/:statusId/edit' publicRoute exact layout={EventsLayout} component={ComposeEvent} content={children} />}
       {features.events && <WrappedRoute path='/@:username/events/:statusId/discussion' publicRoute exact layout={EventLayout} component={EventDiscussion} content={children} />}
       <Redirect from='/@:username/:statusId' to='/@:username/posts/:statusId' />
       <WrappedRoute path='/posts/:statusId' publicRoute exact layout={DefaultLayout} component={Status} content={children} />

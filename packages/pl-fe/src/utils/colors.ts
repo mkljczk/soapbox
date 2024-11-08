@@ -51,19 +51,6 @@ const rgbToHex = (r: number, g: number, b: number): string => {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 };
 
-const getTextColor = (color: string): '#FFF' | '#333' => {
-  const rgbColor = hexToRgb(color);
-
-  if (!rgbColor) {
-    return '#333';
-  }
-
-  const { r, g, b } = rgbColor;
-  const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-
-  return luma < 120 ? '#FFF' : '#333';
-};
-
 const lighten = (hex: string, intensity: number): string => {
   const color = hexToRgb(`#${hex}`);
 
@@ -124,6 +111,5 @@ const colors = (baseColor: string): TailwindColorObject => {
 
 export {
   hexToRgb,
-  getTextColor,
   colors as default,
 };

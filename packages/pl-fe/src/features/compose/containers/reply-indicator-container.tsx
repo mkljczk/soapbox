@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
 
 import { cancelReplyCompose } from 'pl-fe/actions/compose';
-import { useAppDispatch, useAppSelector, useCompose } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 import ReplyIndicator from '../components/reply-indicator';

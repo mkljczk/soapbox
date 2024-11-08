@@ -3,9 +3,11 @@ import { FormattedMessage } from 'react-intl';
 
 import { fetchFavourites, expandFavourites } from 'pl-fe/actions/interactions';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Modal, Spinner } from 'pl-fe/components/ui';
+import Modal from 'pl-fe/components/ui/modal';
+import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -17,8 +19,8 @@ const FavouritesModal: React.FC<BaseModalProps & FavouritesModalProps> = ({ onCl
   const modalRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
 
-  const accountIds = useAppSelector((state) => state.user_lists.favourited_by.get(statusId)?.items);
-  const next = useAppSelector((state) => state.user_lists.favourited_by.get(statusId)?.next);
+  const accountIds = useAppSelector((state) => state.user_lists.favourited_by[statusId]?.items);
+  const next = useAppSelector((state) => state.user_lists.favourited_by[statusId]?.next);
 
   const fetchData = () => {
     dispatch(fetchFavourites(statusId));

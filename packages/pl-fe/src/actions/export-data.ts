@@ -1,7 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 import { getClient } from 'pl-fe/api';
-import { normalizeAccount } from 'pl-fe/normalizers';
+import { normalizeAccount } from 'pl-fe/normalizers/account';
 import toast from 'pl-fe/toast';
 
 import type { Account, PaginatedResponse } from 'pl-api';
@@ -57,7 +57,7 @@ const listAccounts = async (response: PaginatedResponse<Account>) => {
     Array.prototype.push.apply(followings, response.items);
   }
 
-  accounts = followings.map((account: any) => normalizeAccount(account).fqn);
+  accounts = followings.map((account) => normalizeAccount(account).fqn);
   return Array.from(new Set(accounts));
 };
 

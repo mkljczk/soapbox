@@ -3,9 +3,11 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchBubbleTimeline } from 'pl-fe/actions/timelines';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
-import { Column } from 'pl-fe/components/ui';
-import { useAppDispatch, useSettings, useTheme } from 'pl-fe/hooks';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
+import Column from 'pl-fe/components/ui/column';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 
 import Timeline from '../ui/components/timeline';
 
@@ -19,7 +21,7 @@ const BubbleTimeline = () => {
   const theme = useTheme();
 
   const settings = useSettings();
-  const onlyMedia = settings.bubble.other.onlyMedia;
+  const onlyMedia = settings.timelines.bubble?.other.onlyMedia ?? false;
 
   const timelineId = 'bubble';
   const isMobile = useIsMobile();

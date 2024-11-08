@@ -1,12 +1,12 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import React, { useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { fetchUsers } from 'pl-fe/actions/admin';
-import { Widget } from 'pl-fe/components/ui';
+import Widget from 'pl-fe/components/ui/widget';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 const messages = defineMessages({
   title: { id: 'admin.latest_accounts_panel.title', defaultMessage: 'Latest Accounts' },
@@ -21,9 +21,9 @@ const LatestAccountsPanel: React.FC<ILatestAccountsPanel> = ({ limit = 5 }) => {
   const intl = useIntl();
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const accountIds = useAppSelector<ImmutableOrderedSet<string>>((state) => state.admin.get('latestUsers').take(limit));
+  const accountIds = useAppSelector<Array<string>>((state) => state.admin.latestUsers.slice(0, limit));
 
-  const [total, setTotal] = useState<number | undefined>(accountIds.size);
+  const [total, setTotal] = useState<number | undefined>(accountIds.length);
 
   useEffect(() => {
     dispatch(fetchUsers({
@@ -45,7 +45,7 @@ const LatestAccountsPanel: React.FC<ILatestAccountsPanel> = ({ limit = 5 }) => {
       onActionClick={handleAction}
       actionTitle={intl.formatMessage(messages.expand, { count: total })}
     >
-      {accountIds.take(limit).map((account) => (
+      {accountIds.slice(0, limit).map((account) => (
         <AccountContainer key={account} id={account} withRelationship={false} withDate />
       ))}
     </Widget>

@@ -3,17 +3,20 @@ import throttle from 'lodash/throttle';
 import React, { useEffect, useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
+import { createSelector } from 'reselect';
 
 import { fetchOwnAccounts, logOut, switchAccount } from 'pl-fe/actions/auth';
 import Account from 'pl-fe/components/account';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
-import { MenuDivider } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector, useFeatures } from 'pl-fe/hooks';
-import { makeGetAccount } from 'pl-fe/selectors';
+import { Entities } from 'pl-fe/entity-store/entities';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { RootState } from 'pl-fe/store';
 
 import ThemeToggle from './theme-toggle';
 
-import type { Account as AccountEntity } from 'pl-fe/normalizers';
+import type { Account as AccountEntity } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
   add: { id: 'profile_dropdown.add_account', defaultMessage: 'Add an existing account' },
@@ -34,15 +37,17 @@ type IMenuItem = {
   action?: (event: React.MouseEvent) => void;
 }
 
-const getAccount = makeGetAccount();
+const getOtherAccounts = createSelector([
+  (state: RootState) => state.auth.users,
+  (state: RootState) => state.entities[Entities.ACCOUNTS]?.store,
+], (signedAccounts, accountEntities) => signedAccounts.toArray().map(([_, { id }]) => accountEntities?.[id] as AccountEntity).filter(account => account));
 
 const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
   const dispatch = useAppDispatch();
   const features = useFeatures();
   const intl = useIntl();
 
-  const authUsers = useAppSelector((state) => state.auth.users);
-  const otherAccounts = useAppSelector((state) => authUsers.map((authUser: any) => getAccount(state, authUser.id)!));
+  const otherAccounts = useAppSelector(getOtherAccounts);
 
   const handleLogOut = () => {
     dispatch(logOut());
@@ -65,7 +70,7 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
 
     menu.push({ text: renderAccount(account), to: `/@${account.acct}` });
 
-    otherAccounts.forEach((otherAccount: AccountEntity) => {
+    otherAccounts.forEach((otherAccount?: AccountEntity) => {
       if (otherAccount && otherAccount.id !== account.id) {
         menu.push({
           text: renderAccount(otherAccount),
@@ -98,11 +103,11 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
         ))}
       </>
     );
-  }, [account, authUsers, features]);
+  }, [account, otherAccounts.length, features]);
 
   useEffect(() => {
     fetchOwnAccountThrottled();
-  }, [account, authUsers]);
+  }, [account.id, otherAccounts.length]);
 
   return (
     <DropdownMenu
@@ -135,7 +140,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ className, menuItem }) => {
       </div>
     );
   } else if (!menuItem.text) {
-    return <MenuDivider />;
+    return <hr className='mx-2 my-1 border-t-2 border-gray-100 black:border-t dark:border-gray-800' />;
   } else if (menuItem.action) {
     return (
       <button

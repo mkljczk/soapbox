@@ -1,9 +1,11 @@
 import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Modal } from 'pl-fe/components/ui';
+import Modal from 'pl-fe/components/ui/modal';
 import Account from 'pl-fe/features/reply-mentions/account';
-import { useAppSelector, useCompose, useOwnAccount } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { statusToMentionsAccountIdsArray } from 'pl-fe/reducers/compose';
 import { makeGetStatus } from 'pl-fe/selectors';
 
@@ -21,7 +23,7 @@ const ReplyMentionsModal: React.FC<BaseModalProps & ReplyMentionsModalProps> = (
   const { account } = useOwnAccount();
 
   const mentions = statusToMentionsAccountIdsArray(status!, account!, compose.parent_reblogged_by);
-  const author = status?.account.id;
+  const author = status?.account_id;
 
   const onClickClose = () => {
     onClose('REPLY_MENTIONS');

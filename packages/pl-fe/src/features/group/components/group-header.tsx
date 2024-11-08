@@ -1,11 +1,17 @@
 import { mediaAttachmentSchema } from 'pl-api';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
+import * as v from 'valibot';
 
 import GroupAvatar from 'pl-fe/components/groups/group-avatar';
+import { ParsedContent } from 'pl-fe/components/parsed-content';
 import StillImage from 'pl-fe/components/still-image';
-import { HStack, Icon, Stack, Text } from 'pl-fe/components/ui';
-import { useModalsStore } from 'pl-fe/stores';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Emojify from 'pl-fe/features/emoji/emojify';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import { isDefaultHeader } from 'pl-fe/utils/accounts';
 
 import GroupActionButton from './group-action-button';
@@ -14,7 +20,7 @@ import GroupOptionsButton from './group-options-button';
 import GroupPrivacy from './group-privacy';
 import GroupRelationship from './group-relationship';
 
-import type { Group } from 'pl-fe/normalizers';
+import type { Group } from 'pl-fe/normalizers/group';
 
 const messages = defineMessages({
   header: { id: 'group.header.alt', defaultMessage: 'Group header' },
@@ -51,7 +57,7 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
   }
 
   const onAvatarClick = () => {
-    const avatar = mediaAttachmentSchema.parse({
+    const avatar = v.parse(mediaAttachmentSchema, {
       id: '',
       type: 'image',
       url: group.avatar,
@@ -67,7 +73,7 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
   };
 
   const onHeaderClick = () => {
-    const header = mediaAttachmentSchema.parse({
+    const header = v.parse(mediaAttachmentSchema, {
       id: '',
       type: 'image',
       url: group.header,
@@ -136,9 +142,10 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
         <Text
           size='xl'
           weight='bold'
-          dangerouslySetInnerHTML={{ __html: group.display_name_html }}
           data-testid='group-name'
-        />
+        >
+          <Emojify text={group.display_name} emojis={group.emojis} />
+        </Text>
 
         <Stack data-testid='group-meta' space={1} alignItems='center'>
           <HStack className='text-gray-700 dark:text-gray-600' space={2} wrap>
@@ -150,9 +157,10 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
           <Text
             theme='muted'
             align='center'
-            dangerouslySetInnerHTML={{ __html: group.note_emojified }}
             className='[&_a]:text-primary-600 [&_a]:hover:underline [&_a]:dark:text-accent-blue'
-          />
+          >
+            <ParsedContent html={group.note} emojis={group.emojis} />
+          </Text>
         </Stack>
 
         <HStack alignItems='center' space={2} data-testid='group-actions'>

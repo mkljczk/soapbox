@@ -1,12 +1,24 @@
 import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useGroup, useUpdateGroup } from 'pl-fe/api/hooks';
-import { Button, Column, Form, FormActions, FormGroup, Icon, Input, Spinner, Textarea } from 'pl-fe/components/ui';
-import { useAppSelector, useInstance } from 'pl-fe/hooks';
-import { useImageField, useTextField } from 'pl-fe/hooks/forms';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
+import { useUpdateGroup } from 'pl-fe/api/hooks/groups/use-update-group';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Icon from 'pl-fe/components/ui/icon';
+import Input from 'pl-fe/components/ui/input';
+import Spinner from 'pl-fe/components/ui/spinner';
+import Textarea from 'pl-fe/components/ui/textarea';
+import { useImageField } from 'pl-fe/hooks/forms/use-image-field';
+import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import toast from 'pl-fe/toast';
 import { isDefaultAvatar, isDefaultHeader } from 'pl-fe/utils/accounts';
+import { unescapeHTML } from 'pl-fe/utils/html';
 
 import AvatarPicker from '../edit-profile/components/avatar-picker';
 import HeaderPicker from '../edit-profile/components/header-picker';
@@ -40,7 +52,7 @@ const EditGroup: React.FC<IEditGroup> = ({ params: { groupId } }) => {
   const header = useImageField({ maxPixels: 1920 * 1080, preview: nonDefaultHeader(group?.header) });
 
   const displayName = useTextField(group?.display_name);
-  const note = useTextField(group?.note_plain);
+  const note = useTextField(unescapeHTML(group?.note));
 
   const maxName = Number(instance.configuration.groups.max_characters_name);
   const maxNote = Number(instance.configuration.groups.max_characters_description);

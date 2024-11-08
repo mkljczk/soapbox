@@ -1,16 +1,16 @@
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 import { shouldHaveCard } from 'pl-fe/utils/status';
 
 import { getClient } from '../api';
 
 import { setComposeToStatus } from './compose';
-import { importFetchedStatus, importFetchedStatuses } from './importer';
-import { getSettings } from './settings';
+import { importEntities } from './importer';
 import { deleteFromTimelines } from './timelines';
 
 import type { CreateStatusParams, Status as BaseStatus } from 'pl-api';
-import type { Status } from 'pl-fe/normalizers';
+import type { Status } from 'pl-fe/normalizers/status';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 import type { IntlShape } from 'react-intl';
 
@@ -66,7 +66,7 @@ const createStatus = (params: CreateStatusParams, idempotencyKey: string, status
         // The backend might still be processing the rich media attachment
         const expectsCard = status.scheduled_at === null && !status.card && shouldHaveCard(status);
 
-        if (status.scheduled_at === null) dispatch(importFetchedStatus({ ...status, expectsCard }, idempotencyKey));
+        if (status.scheduled_at === null) dispatch(importEntities({ statuses: [{ ...status, expectsCard }] }, { idempotencyKey, withParents: true }));
         dispatch({ type: STATUS_CREATE_SUCCESS, status, params, idempotencyKey, editing: !!statusId });
 
         // Poll the backend for the updated card
@@ -76,7 +76,7 @@ const createStatus = (params: CreateStatusParams, idempotencyKey: string, status
           const poll = (retries = 5) => {
             return getClient(getState()).statuses.getStatus(status.id).then(response => {
               if (response.card) {
-                dispatch(importFetchedStatus(response));
+                dispatch(importEntities({ statuses: [response] }));
               } else if (retries > 0 && response) {
                 setTimeout(() => poll(retries - 1), delay);
               }
@@ -96,8 +96,8 @@ const createStatus = (params: CreateStatusParams, idempotencyKey: string, status
 const editStatus = (statusId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
   const state = getState();
 
-  const status = state.statuses.get(statusId)!;
-  const poll = status.poll_id ? state.polls.get(status.poll_id) : undefined;
+  const status = state.statuses[statusId]!;
+  const poll = status.poll_id ? state.polls[status.poll_id] : undefined;
 
   dispatch({ type: STATUS_FETCH_SOURCE_REQUEST });
 
@@ -114,12 +114,12 @@ const fetchStatus = (statusId: string, intl?: IntlShape) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: STATUS_FETCH_REQUEST, statusId });
 
-    const params = intl && getSettings(getState()).get('autoTranslate') ? {
+    const params = intl && useSettingsStore.getState().settings.autoTranslate ? {
       language: intl.locale,
     } : undefined;
 
     return getClient(getState()).statuses.getStatus(statusId, params).then(status => {
-      dispatch(importFetchedStatus(status));
+      dispatch(importEntities({ statuses: [status] }));
       dispatch({ type: STATUS_FETCH_SUCCESS, status });
       return status;
     }).catch(error => {
@@ -133,8 +133,8 @@ const deleteStatus = (statusId: string, withRedraft = false) =>
 
     const state = getState();
 
-    const status = state.statuses.get(statusId)!;
-    const poll = status.poll_id ? state.polls.get(status.poll_id) : undefined;
+    const status = state.statuses[statusId]!;
+    const poll = status.poll_id ? state.polls[status.poll_id] : undefined;
 
     dispatch({ type: STATUS_DELETE_REQUEST, params: status });
 
@@ -153,25 +153,21 @@ const deleteStatus = (statusId: string, withRedraft = false) =>
   };
 
 const updateStatus = (status: BaseStatus) => (dispatch: AppDispatch) =>
-  dispatch(importFetchedStatus(status));
+  dispatch(importEntities({ statuses: [status] }));
 
 const fetchContext = (statusId: string, intl?: IntlShape) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: CONTEXT_FETCH_REQUEST, statusId });
 
-    const params = intl && getSettings(getState()).get('autoTranslate') ? {
+    const params = intl && useSettingsStore.getState().settings.autoTranslate ? {
       language: intl.locale,
     } : undefined;
 
     return getClient(getState()).statuses.getContext(statusId, params).then(context => {
-      if (typeof context === 'object') {
-        const { ancestors, descendants } = context;
-        const statuses = ancestors.concat(descendants);
-        dispatch(importFetchedStatuses(statuses));
-        dispatch({ type: CONTEXT_FETCH_SUCCESS, statusId, ancestors, descendants });
-      } else {
-        throw context;
-      }
+      const { ancestors, descendants } = context;
+      const statuses = ancestors.concat(descendants);
+      dispatch(importEntities({ statuses }));
+      dispatch({ type: CONTEXT_FETCH_SUCCESS, statusId, ancestors, descendants });
       return context;
     }).catch(error => {
       if (error.response?.status === 404) {
@@ -271,14 +267,6 @@ const expandStatusSpoiler = (statusIds: string[] | string) => {
     type: STATUS_EXPAND_SPOILER,
     statusIds,
   };
-};
-
-const toggleStatusSpoilerExpanded = (status: Pick<Status, 'id' | 'expanded'>) => {
-  if (status.expanded) {
-    return collapseStatusSpoiler(status.id);
-  } else {
-    return expandStatusSpoiler(status.id);
-  }
 };
 
 let TRANSLATIONS_QUEUE: Set<string> = new Set();
@@ -414,7 +402,6 @@ export {
   toggleStatusMediaHidden,
   expandStatusSpoiler,
   collapseStatusSpoiler,
-  toggleStatusSpoilerExpanded,
   translateStatus,
   undoStatusTranslation,
   unfilterStatus,

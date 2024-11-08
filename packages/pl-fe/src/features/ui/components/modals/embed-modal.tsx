@@ -3,7 +3,10 @@ import { FormattedMessage } from 'react-intl';
 
 import CopyableInput from 'pl-fe/components/copyable-input';
 import SafeEmbed from 'pl-fe/components/safe-embed';
-import { Modal, Stack, Text, Divider } from 'pl-fe/components/ui';
+import Divider from 'pl-fe/components/ui/divider';
+import Modal from 'pl-fe/components/ui/modal';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import useEmbed from 'pl-fe/queries/embed';
 
 import type { BaseModalProps } from '../modal-root';

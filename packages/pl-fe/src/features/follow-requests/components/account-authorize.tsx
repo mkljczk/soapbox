@@ -1,10 +1,10 @@
 import React from 'react';
 
 import { authorizeFollowRequest, rejectFollowRequest } from 'pl-fe/actions/accounts';
-import { useAccount } from 'pl-fe/api/hooks';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import Account from 'pl-fe/components/account';
 import { AuthorizeRejectButtons } from 'pl-fe/components/authorize-reject-buttons';
-import { useAppDispatch } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
 interface IAccountAuthorize {
   id: string;

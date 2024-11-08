@@ -1,8 +1,9 @@
 import { createSelector } from 'reselect';
 
 import { getHost } from 'pl-fe/actions/instance';
-import { normalizePlFeConfig } from 'pl-fe/normalizers';
+import { normalizePlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import KVStore from 'pl-fe/storage/kv-store';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 
 import { getClient, staticFetch } from '../api';
 
@@ -16,8 +17,7 @@ const PLFE_CONFIG_REMEMBER_SUCCESS = 'PLFE_CONFIG_REMEMBER_SUCCESS' as const;
 
 const getPlFeConfig = createSelector([
   (state: RootState) => state.plfe,
-  (state: RootState) => state.auth.client.features,
-], (plfe, features) => {
+], (plfe) => {
   // Do some additional normalization with the state
   return normalizePlFeConfig(plfe);
 });
@@ -77,6 +77,9 @@ const importPlFeConfig = (plFeConfig: APIEntity, host: string | null) => {
   if (!plFeConfig.brandColor) {
     plFeConfig.brandColor = '#d80482';
   }
+
+  useSettingsStore.getState().loadDefaultSettings(plFeConfig?.defaultSettings);
+
   return {
     type: PLFE_CONFIG_REQUEST_SUCCESS,
     plFeConfig,

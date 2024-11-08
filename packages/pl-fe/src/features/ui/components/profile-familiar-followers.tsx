@@ -1,18 +1,21 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import React, { useEffect } from 'react';
 import { FormattedList, FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { fetchAccountFamiliarFollowers } from 'pl-fe/actions/familiar-followers';
 import AvatarStack from 'pl-fe/components/avatar-stack';
-import HoverRefWrapper from 'pl-fe/components/hover-ref-wrapper';
-import { HStack, Text } from 'pl-fe/components/ui';
+import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
+import HStack from 'pl-fe/components/ui/hstack';
+import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
-import { useAppDispatch, useAppSelector, useFeatures } from 'pl-fe/hooks';
+import Emojify from 'pl-fe/features/emoji/emojify';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { makeGetAccount } from 'pl-fe/selectors';
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 const getAccount = makeGetAccount();
 
@@ -25,8 +28,8 @@ const ProfileFamiliarFollowers: React.FC<IProfileFamiliarFollowers> = ({ account
   const dispatch = useAppDispatch();
   const me = useAppSelector((state) => state.me);
   const features = useFeatures();
-  const familiarFollowerIds = useAppSelector(state => state.user_lists.familiar_followers.get(account.id)?.items || ImmutableOrderedSet<string>());
-  const familiarFollowers: ImmutableOrderedSet<Account | null> = useAppSelector(state => familiarFollowerIds.slice(0, 2).map(accountId => getAccount(state, accountId)));
+  const familiarFollowerIds = useAppSelector(state => state.user_lists.familiar_followers[account.id]?.items || []);
+  const familiarFollowers = useAppSelector(state => familiarFollowerIds.slice(0, 2).map(accountId => getAccount(state, accountId)));
 
   useEffect(() => {
     if (me && features.familiarFollowers) {
@@ -40,34 +43,31 @@ const ProfileFamiliarFollowers: React.FC<IProfileFamiliarFollowers> = ({ account
     });
   };
 
-  if (familiarFollowerIds.size === 0) {
+  if (familiarFollowerIds.length === 0) {
     return null;
   }
 
   const accounts: Array<React.ReactNode> = familiarFollowers.map(account => !!account && (
-    <HoverRefWrapper accountId={account.id} key={account.id} inline>
+    <HoverAccountWrapper accountId={account.id} key={account.id} element='span'>
       <Link className='mention inline-block' to={`/@${account.acct}`}>
         <HStack space={1} alignItems='center' grow>
-          <Text
-            size='sm'
-            theme='primary'
-            truncate
-            dangerouslySetInnerHTML={{ __html: account.display_name_html }}
-          />
+          <Text size='sm' theme='primary' truncate>
+            <Emojify text={account.display_name} emojis={account.emojis} />
+          </Text>
 
           {account.verified && <VerificationBadge />}
         </HStack>
       </Link>
-    </HoverRefWrapper>
-  )).toArray().filter(Boolean);
+    </HoverAccountWrapper>
+  )).filter(Boolean);
 
-  if (familiarFollowerIds.size > 2) {
+  if (familiarFollowerIds.length > 2) {
     accounts.push(
       <span key='_' className='cursor-pointer hover:underline' role='presentation' onClick={openFamiliarFollowersModal}>
         <FormattedMessage
           id='account.familiar_followers.more'
           defaultMessage='{count, plural, one {# other} other {# others}} you follow'
-          values={{ count: familiarFollowerIds.size - familiarFollowers.size }}
+          values={{ count: familiarFollowerIds.length - familiarFollowers.length }}
         />
       </span>,
     );

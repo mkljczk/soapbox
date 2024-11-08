@@ -1,21 +1,29 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
 import { accountSchema } from './account';
+import { datetimeSchema } from './utils';
 
-const scrobbleSchema = z.preprocess((scrobble: any) => scrobble ? {
-  external_link: scrobble.externalLink,
-  ...scrobble,
-} : null, z.object({
-  id: z.coerce.string(),
-  account: accountSchema,
-  created_at: z.string().datetime({ offset: true }),
-  title: z.string(),
-  artist: z.string().catch(''),
-  album: z.string().catch(''),
-  external_link: z.string().nullable().catch(null),
-  length: z.number().nullable().catch(null),
-}));
+/**
+ * @category Schemas
+ */
+const scrobbleSchema = v.pipe(
+  v.any(),
+  v.transform((scrobble: any) => scrobble ? {
+    external_link: scrobble.externalLink,
+    ...scrobble,
+  } : null),
+  v.object({
+    id: v.pipe(v.unknown(), v.transform(String)),
+    account: accountSchema,
+    created_at: datetimeSchema,
+    title: v.string(),
+    artist: v.fallback(v.string(), ''),
+    album: v.fallback(v.string(), ''),
+    external_link: v.fallback(v.nullable(v.string()), null),
+    length: v.fallback(v.nullable(v.number()), null),
+  }),
+);
 
-type Scrobble = z.infer<typeof scrobbleSchema>;
+type Scrobble = v.InferOutput<typeof scrobbleSchema>;
 
 export { scrobbleSchema, type Scrobble };

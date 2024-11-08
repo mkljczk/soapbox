@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useDomains } from 'pl-fe/api/hooks/admin';
-import { Form, FormGroup, HStack, Input, Modal, Stack, Text, Toggle } from 'pl-fe/components/ui';
+import { useDomains } from 'pl-fe/api/hooks/admin/use-domains';
+import Form from 'pl-fe/components/ui/form';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import HStack from 'pl-fe/components/ui/hstack';
+import Input from 'pl-fe/components/ui/input';
+import Modal from 'pl-fe/components/ui/modal';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Toggle from 'pl-fe/components/ui/toggle';
 import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';

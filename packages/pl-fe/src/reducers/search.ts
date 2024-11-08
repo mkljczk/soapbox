@@ -1,4 +1,4 @@
-import { OrderedSet as ImmutableOrderedSet, Record as ImmutableRecord } from 'immutable';
+import { Record as ImmutableRecord } from 'immutable';
 
 import {
   COMPOSE_MENTION,
@@ -23,10 +23,10 @@ import {
 import type { Search, Tag } from 'pl-api';
 
 const ResultsRecord = ImmutableRecord({
-  accounts: ImmutableOrderedSet<string>(),
-  statuses: ImmutableOrderedSet<string>(),
-  groups: ImmutableOrderedSet<string>(),
-  hashtags: ImmutableOrderedSet<Tag>(), // it's a list of maps
+  accounts: Array<string>(),
+  statuses: Array<string>(),
+  groups: Array<string>(),
+  hashtags: Array<Tag>(), // it's a list of maps
   accountsHasMore: false,
   statusesHasMore: false,
   groupsHasMore: false,
@@ -49,7 +49,7 @@ const ReducerRecord = ImmutableRecord({
 type State = ReturnType<typeof ReducerRecord>;
 type SearchFilter = 'accounts' | 'statuses' | 'groups' | 'hashtags' | 'links';
 
-const toIds = (items: Array<{ id: string }> = []) => ImmutableOrderedSet(items.map(item => item.id));
+const toIds = (items: Array<{ id: string }> = []) => items.map(item => item.id);
 
 const importResults = (state: State, results: Search, searchTerm: string, searchType: SearchFilter) =>
   state.withMutations(state => {
@@ -58,7 +58,7 @@ const importResults = (state: State, results: Search, searchTerm: string, search
         accounts: toIds(results.accounts),
         statuses: toIds(results.statuses),
         groups: toIds(results.groups),
-        hashtags: ImmutableOrderedSet(results.hashtags), // it's a list of records
+        hashtags: results.hashtags, // it's a list of records
         accountsHasMore: results.accounts.length !== 0,
         statusesHasMore: results.statuses.length !== 0,
         groupsHasMore: results.groups?.length !== 0,
@@ -82,9 +82,9 @@ const paginateResults = (state: State, searchType: Exclude<SearchFilter, 'links'
         const data = results[searchType];
         // Hashtags are a list of maps. Others are IDs.
         if (searchType === 'hashtags') {
-          return (items as ImmutableOrderedSet<Tag>).concat(data as Search['hashtags']);
+          return (items as Array<Tag>).concat(data as Search['hashtags']);
         } else {
-          return (items as ImmutableOrderedSet<string>).concat(toIds(data as Search['accounts']));
+          return (items as Array<string>).concat(toIds(data as Search['accounts']));
         }
       });
     }

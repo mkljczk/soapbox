@@ -4,7 +4,7 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose } from 'pl-fe/actions/compose';
-import { editEvent, fetchEventIcs } from 'pl-fe/actions/events';
+import { fetchEventIcs } from 'pl-fe/actions/events';
 import { toggleBookmark, togglePin, toggleReblog } from 'pl-fe/actions/interactions';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initMuteModal } from 'pl-fe/actions/mutes';
@@ -13,11 +13,19 @@ import { deleteStatus } from 'pl-fe/actions/statuses';
 import DropdownMenu, { type Menu as MenuType } from 'pl-fe/components/dropdown-menu';
 import Icon from 'pl-fe/components/icon';
 import StillImage from 'pl-fe/components/still-image';
-import { Button, HStack, IconButton, Stack, Text } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
-import { useAppDispatch, useFeatures, useOwnAccount, useSettings } from 'pl-fe/hooks';
+import Emojify from 'pl-fe/features/emoji/emojify';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
-import { useModalsStore } from 'pl-fe/stores';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import copy from 'pl-fe/utils/copy';
 import { download } from 'pl-fe/utils/download';
 import { shortNumberFormat } from 'pl-fe/utils/numbers';
@@ -26,7 +34,7 @@ import PlaceholderEventHeader from '../../placeholder/components/placeholder-eve
 import EventActionButton from '../components/event-action-button';
 import EventDate from '../components/event-date';
 
-import type { Status } from 'pl-fe/normalizers';
+import type { Status } from 'pl-fe/normalizers/status';
 
 const messages = defineMessages({
   bannerHeader: { id: 'event.banner', defaultMessage: 'Event banner' },
@@ -339,12 +347,6 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
     return menu;
   };
 
-  const handleManageClick: React.MouseEventHandler = e => {
-    e.stopPropagation();
-
-    dispatch(editEvent(status.id));
-  };
-
   const handleParticipantsClick: React.MouseEventHandler = e => {
     e.preventDefault();
     e.stopPropagation();
@@ -381,7 +383,6 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
               theme='outlined'
               className='h-[30px] px-2'
               iconClassName='h-4 w-4'
-              children={null}
             />
           </DropdownMenu>
 
@@ -389,7 +390,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
             <Button
               size='sm'
               theme='secondary'
-              onClick={handleManageClick}
+              to={`/@${account.acct}/events/${status.id}/edit`}
             >
               <FormattedMessage id='event.manage' defaultMessage='Manage' />
             </Button>
@@ -407,7 +408,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
                   name: (
                     <Link className='mention inline-block' to={`/@${account.acct}`}>
                       <HStack space={1} alignItems='center' grow>
-                        <span dangerouslySetInnerHTML={{ __html: account.display_name_html }} />
+                        <span><Emojify text={account.display_name} emojis={account.emojis} /></span>
                         {account.verified && <VerificationBadge />}
                       </HStack>
                     </Link>

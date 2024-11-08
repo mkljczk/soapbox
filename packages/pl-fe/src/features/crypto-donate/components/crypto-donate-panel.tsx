@@ -2,8 +2,10 @@ import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { Text, Widget } from 'pl-fe/components/ui';
-import { useInstance, usePlFeConfig } from 'pl-fe/hooks';
+import Text from 'pl-fe/components/ui/text';
+import Widget from 'pl-fe/components/ui/widget';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
 import SiteWallet from './site-wallet';
 

@@ -1,4 +1,4 @@
-import z from 'zod';
+import * as v from 'valibot';
 
 import { accountSchema } from './account';
 
@@ -10,12 +10,15 @@ enum GroupRoles {
 
 type GroupRole =`${GroupRoles}`;
 
-const groupMemberSchema = z.object({
-  id: z.string(),
+/**
+ * @category Schemas
+ */
+const groupMemberSchema = v.object({
+  id: v.string(),
   account: accountSchema,
-  role: z.nativeEnum(GroupRoles),
+  role: v.enum(GroupRoles),
 });
 
-type GroupMember = z.infer<typeof groupMemberSchema>;
+type GroupMember = v.InferOutput<typeof groupMemberSchema>;
 
 export { groupMemberSchema, type GroupMember, GroupRoles, type GroupRole };

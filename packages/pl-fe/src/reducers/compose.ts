@@ -1,6 +1,7 @@
 import { Map as ImmutableMap, List as ImmutableList, OrderedSet as ImmutableOrderedSet, Record as ImmutableRecord, fromJS } from 'immutable';
-import { PLEROMA, type CredentialAccount, type MediaAttachment, type Tag } from 'pl-api';
+import { Instance, PLEROMA, type CredentialAccount, type MediaAttachment, type Tag } from 'pl-api';
 
+import { INSTANCE_FETCH_SUCCESS, InstanceAction } from 'pl-fe/actions/instance';
 import { isNativeEmoji } from 'pl-fe/features/emoji';
 import { tagHistory } from 'pl-fe/settings';
 import { hasIntegerMediaIds } from 'pl-fe/utils/status';
@@ -62,13 +63,14 @@ import {
 } from '../actions/compose';
 import { EVENT_COMPOSE_CANCEL, EVENT_FORM_SET, type EventsAction } from '../actions/events';
 import { ME_FETCH_SUCCESS, ME_PATCH_SUCCESS, MeAction } from '../actions/me';
-import { SETTING_CHANGE, FE_NAME, SettingsAction } from '../actions/settings';
-import { TIMELINE_DELETE, TimelineAction } from '../actions/timelines';
+import { FE_NAME } from '../actions/settings';
+import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 import { unescapeHTML } from '../utils/html';
 
 import type { Emoji } from 'pl-fe/features/emoji';
 import type { Language } from 'pl-fe/features/preferences';
-import type { Account, Status } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
+import type { Status } from 'pl-fe/normalizers/status';
 import type { APIEntity } from 'pl-fe/types/entities';
 
 const getResetFileKey = () => Math.floor((Math.random() * 0x10000));
@@ -118,6 +120,7 @@ const ReducerCompose = ImmutableRecord({
   modified_language: null as Language | null,
   suggested_language: null as string | null,
   federated: true,
+  approvalRequired: false,
 });
 
 type State = ImmutableMap<string, Compose>;
@@ -263,16 +266,22 @@ const importAccount = (compose: Compose, account: CredentialAccount) => {
   });
 };
 
-const updateSetting = (compose: Compose, path: string[], value: string) => {
-  const pathString = path.join(',');
-  switch (pathString) {
-    case 'defaultPrivacy':
-      return compose.set('privacy', value);
-    case 'defaultContentType':
-      return compose.set('content_type', value);
-    default:
-      return compose;
-  }
+// const updateSetting = (compose: Compose, path: string[], value: string) => {
+//   const pathString = path.join(',');
+//   switch (pathString) {
+//     case 'defaultPrivacy':
+//       return compose.set('privacy', value);
+//     case 'defaultContentType':
+//       return compose.set('content_type', value);
+//     default:
+//       return compose;
+//   }
+// };
+
+const updateDefaultContentType = (compose: Compose, instance: Instance) => {
+  const postFormats = instance.pleroma.metadata.post_formats;
+
+  return compose.update('content_type', type => postFormats.includes(type) ? type : postFormats.includes('text/markdown') ? 'text/markdown' : postFormats[0]);
 };
 
 const updateCompose = (state: State, key: string, updater: (compose: Compose) => Compose) =>
@@ -282,7 +291,7 @@ const initialState: State = ImmutableMap({
   default: ReducerCompose({ idempotencyKey: crypto.randomUUID(), resetFileKey: getResetFileKey() }),
 });
 
-const compose = (state = initialState, action: ComposeAction | EventsAction | MeAction | SettingsAction | TimelineAction) => {
+const compose = (state = initialState, action: ComposeAction | EventsAction | InstanceAction | MeAction | TimelineAction) => {
   switch (action.type) {
     case COMPOSE_TYPE_CHANGE:
       return updateCompose(state, action.composeId, compose => compose.withMutations(map => {
@@ -337,6 +346,7 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | Me
         map.set('caretPosition', null);
         map.set('idempotencyKey', crypto.randomUUID());
         map.set('content_type', defaultCompose.content_type);
+        map.set('approvalRequired', action.approvalRequired || false);
         if (action.preserveSpoilers && action.status.spoiler_text) {
           map.set('sensitive', true);
           map.set('spoiler_text', action.status.spoiler_text);
@@ -544,8 +554,8 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | Me
     case ME_FETCH_SUCCESS:
     case ME_PATCH_SUCCESS:
       return updateCompose(state, 'default', compose => importAccount(compose, action.me));
-    case SETTING_CHANGE:
-      return updateCompose(state, 'default', compose => updateSetting(compose, action.path, action.value));
+    // case SETTING_CHANGE:
+    //   return updateCompose(state, 'default', compose => updateSetting(compose, action.path, action.value));
     case COMPOSE_EDITOR_STATE_SET:
       return updateCompose(state, action.composeId, compose => compose
         .setIn(!compose.modified_language || compose.modified_language === compose.language ? ['editorState'] : ['editorStateMap', compose.modified_language], action.editorState as string)
@@ -588,6 +598,8 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | Me
         .set('quote', null));
     case COMPOSE_FEDERATED_CHANGE:
       return updateCompose(state, action.composeId, compose => compose.update('federated', value => !value));
+    case INSTANCE_FETCH_SUCCESS:
+      return updateCompose(state, 'default', (compose) => updateDefaultContentType(compose, action.instance));
     default:
       return state;
   }
@@ -595,8 +607,6 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | Me
 
 export {
   ReducerCompose,
-  type Compose,
-  statusToMentionsArray,
   statusToMentionsAccountIdsArray,
   initialState,
   compose as default,

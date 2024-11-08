@@ -2,15 +2,21 @@ import React, { useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { translateStatus, undoStatusTranslation } from 'pl-fe/actions/statuses';
-import { useTranslationLanguages } from 'pl-fe/api/hooks';
-import { useAppDispatch, useAppSelector, useFeatures, useInstance, useSettings } from 'pl-fe/hooks';
+import { useTranslationLanguages } from 'pl-fe/api/hooks/instance/use-translation-languages';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
-import { HStack, Icon, Stack, Text } from './ui';
-
-import type { Status } from 'pl-fe/normalizers';
+import type { Status } from 'pl-fe/normalizers/status';
 
 interface ITranslateButton {
-  status: Pick<Status, 'id' | 'account' | 'contentHtml' | 'contentMapHtml' | 'language' | 'translating' | 'translation' | 'visibility'>;
+  status: Pick<Status, 'id' | 'account' | 'content' | 'content_map' | 'language' | 'translating' | 'translation' | 'visibility'>;
 }
 
 const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
@@ -30,7 +36,7 @@ const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
     allow_unauthenticated: allowUnauthenticated,
   } = instance.pleroma.metadata.translation;
 
-  const renderTranslate = (me || allowUnauthenticated) && (allowRemote || status.account.local) && ['public', 'unlisted'].includes(status.visibility) && status.contentHtml.length > 0 && status.language !== null && intl.locale !== status.language && !status.contentMapHtml?.[intl.locale];
+  const renderTranslate = (me || allowUnauthenticated) && (allowRemote || status.account.local) && ['public', 'unlisted'].includes(status.visibility) && status.content.length > 0 && status.language !== null && intl.locale !== status.language && !status.content_map?.[intl.locale];
 
   const supportsLanguages = (translationLanguages[status.language!]?.includes(intl.locale));
 
@@ -81,7 +87,14 @@ const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
       <Stack space={3} alignItems='start'>
         {button}
         <Text theme='muted'>
-          <FormattedMessage id='status.translated_from_with' defaultMessage='Translated from {lang} using {provider}' values={{ lang: languageName, provider }} />
+          <FormattedMessage
+            id='status.translated_from_with'
+            defaultMessage='Translated from {lang} {provider}'
+            values={{
+              lang: languageName,
+              provider: provider ? <FormattedMessage id='status.translated_from_with.provider' defaultMessage='with {provider}' values={{ provider }} /> : undefined,
+            }}
+          />
         </Text>
       </Stack>
     );

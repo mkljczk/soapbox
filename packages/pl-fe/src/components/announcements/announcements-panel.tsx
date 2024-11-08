@@ -1,20 +1,21 @@
 import clsx from 'clsx';
-import { Map as ImmutableMap } from 'immutable';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import ReactSwipeableViews from 'react-swipeable-views';
 import { createSelector } from 'reselect';
 
-import { useAnnouncements } from 'pl-fe/api/hooks/announcements';
-import { Card, HStack, Widget } from 'pl-fe/components/ui';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAnnouncements } from 'pl-fe/api/hooks/announcements/use-announcements';
+import Card from 'pl-fe/components/ui/card';
+import HStack from 'pl-fe/components/ui/hstack';
+import Widget from 'pl-fe/components/ui/widget';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import Announcement from './announcement';
 
 import type { CustomEmoji } from 'pl-api';
 import type { RootState } from 'pl-fe/store';
 
-const customEmojiMap = createSelector([(state: RootState) => state.custom_emojis], items => items.reduce((map, emoji) => map.set(emoji.shortcode, emoji), ImmutableMap<string, CustomEmoji>()));
+const customEmojiMap = createSelector([(state: RootState) => state.custom_emojis], items => items.reduce<Record<string, CustomEmoji>>((map, emoji) => (map[emoji.shortcode] = emoji, map), {}));
 
 const AnnouncementsPanel = () => {
   const emojiMap = useAppSelector(state => customEmojiMap(state));

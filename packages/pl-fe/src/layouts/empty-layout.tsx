@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Layout } from '../components/ui';
+import Layout from 'pl-fe/components/ui/layout';
 
 interface IEmptyLayout {
   children: React.ReactNode;

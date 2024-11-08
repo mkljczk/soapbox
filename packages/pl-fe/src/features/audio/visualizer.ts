@@ -129,7 +129,7 @@ class Visualizer {
   draw(cx: number, cy: number, color: string, radius: number, coefficient: number) {
     this.context!.save();
 
-    const ticks = this.getTicks(parseInt(360 * coefficient as any), this.tickSize, radius, coefficient);
+    const ticks = this.getTicks(parseInt(String(360 * coefficient)), this.tickSize, radius, coefficient);
 
     ticks.forEach(tick => {
       this.drawTick(cx, cy, color, tick.x1, tick.y1, tick.x2, tick.y2);

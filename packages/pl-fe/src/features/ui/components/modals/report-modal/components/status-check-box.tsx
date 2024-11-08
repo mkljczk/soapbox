@@ -2,9 +2,10 @@ import noop from 'lodash/noop';
 import React, { Suspense } from 'react';
 
 import StatusContent from 'pl-fe/components/status-content';
-import { Stack, Toggle } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
+import Toggle from 'pl-fe/components/ui/toggle';
 import { MediaGallery, Video, Audio } from 'pl-fe/features/ui/util/async-components';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 interface IStatusCheckBox {
   id: string;
@@ -14,7 +15,7 @@ interface IStatusCheckBox {
 }
 
 const StatusCheckBox: React.FC<IStatusCheckBox> = ({ id, disabled, checked, toggleStatusReport }) => {
-  const status = useAppSelector((state) => state.statuses.get(id));
+  const status = useAppSelector((state) => state.statuses[id]);
 
   const onToggle: React.ChangeEventHandler<HTMLInputElement> = (e) => toggleStatusReport(e.target.checked);
 

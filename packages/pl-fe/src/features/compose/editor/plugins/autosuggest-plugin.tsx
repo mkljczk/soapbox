@@ -35,7 +35,8 @@ import ReactDOM from 'react-dom';
 import { clearComposeSuggestions, fetchComposeSuggestions } from 'pl-fe/actions/compose';
 import { chooseEmoji } from 'pl-fe/actions/emojis';
 import AutosuggestEmoji from 'pl-fe/components/autosuggest-emoji';
-import { useAppDispatch, useCompose } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 import { selectAccount } from 'pl-fe/selectors';
 import { textAtCursorMatchesToken } from 'pl-fe/utils/suggestions';
 
@@ -378,8 +379,9 @@ const AutosuggestPlugin = ({
         key={key}
         data-index={i}
         className={clsx({
-          'snap-start snap-always px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-primary-800 group black:hover:bg-gray-900 black:focus:bg-gray-900': true,
-          'snap-start snap-always bg-gray-100 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 black:bg-gray-900 black:hover:bg-gray-900': i === selectedSuggestion,
+          'snap-start snap-always px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 focus:bg-gray-100 dark:focus:bg-primary-800 group': true,
+          'hover:bg-gray-100 dark:hover:bg-gray-800': i !== selectedSuggestion,
+          'bg-gray-100 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800': i === selectedSuggestion,
         })}
         onMouseDown={handleSelectSuggestion}
       >

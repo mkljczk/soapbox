@@ -1,87 +1,90 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
 import { locales } from 'pl-fe/messages';
 
 import { coerceObject } from '../utils';
 
-const skinToneSchema = z.union([
-  z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5), z.literal(6),
-]);
+const skinToneSchema = v.picklist([1, 2, 3, 4, 5, 6]);
 
-const settingsSchema = z.object({
-  onboarded: z.boolean().catch(false),
-  skinTone: skinToneSchema.catch(1),
-  reduceMotion: z.boolean().catch(false),
-  underlineLinks: z.boolean().catch(false),
-  autoPlayGif: z.boolean().catch(true),
-  displayMedia: z.enum(['default', 'hide_all', 'show_all']).catch('default'),
-  displaySpoilers: z.boolean().catch(false),
-  preserveSpoilers: z.boolean().catch(false),
-  unfollowModal: z.boolean().catch(false),
-  boostModal: z.boolean().catch(false),
-  deleteModal: z.boolean().catch(true),
-  missingDescriptionModal: z.boolean().catch(false),
-  defaultPrivacy: z.enum(['public', 'unlisted', 'private', 'direct']).catch('public'),
-  defaultContentType: z.enum(['text/plain', 'text/markdown']).catch('text/plain'),
-  themeMode: z.enum(['system', 'light', 'dark', 'black']).catch('system'),
-  locale: z.string().catch(navigator.language).pipe(z.enum(locales)).catch('en'),
-  showExplanationBox: z.boolean().catch(true),
-  explanationBox: z.boolean().catch(true),
-  autoloadTimelines: z.boolean().catch(true),
-  autoloadMore: z.boolean().catch(true),
-  systemFont: z.boolean().catch(false),
-  demetricator: z.boolean().catch(false),
-  isDeveloper: z.boolean().catch(false),
-  demo: z.boolean().catch(false),
+const settingsSchema = v.object({
+  onboarded: v.fallback(v.boolean(), false),
+  skinTone: v.fallback(skinToneSchema, 1),
+  reduceMotion: v.fallback(v.boolean(), false),
+  underlineLinks: v.fallback(v.boolean(), false),
+  autoPlayGif: v.fallback(v.boolean(), true),
+  displayMedia: v.fallback(v.picklist(['default', 'hide_all', 'show_all']), 'default'),
+  displaySpoilers: v.fallback(v.boolean(), false),
+  unfollowModal: v.fallback(v.boolean(), true),
+  boostModal: v.fallback(v.boolean(), false),
+  deleteModal: v.fallback(v.boolean(), true),
+  missingDescriptionModal: v.fallback(v.boolean(), true),
+  defaultPrivacy: v.fallback(v.picklist(['public', 'unlisted', 'private', 'direct']), 'public'),
+  defaultContentType: v.fallback(v.picklist(['text/plain', 'text/markdown', 'text/html']), 'text/plain'),
+  themeMode: v.fallback(v.picklist(['system', 'light', 'dark', 'black']), 'system'),
+  locale: v.fallback(
+    v.pipe(
+      v.fallback(v.string(), navigator.language),
+      v.picklist(locales),
+    ),
+    'en',
+  ),
+  showExplanationBox: v.fallback(v.boolean(), true),
+  explanationBox: v.fallback(v.boolean(), true),
+  autoloadTimelines: v.fallback(v.boolean(), true),
+  autoloadMore: v.fallback(v.boolean(), true),
+  preserveSpoilers: v.fallback(v.boolean(), false),
+  autoTranslate: v.fallback(v.boolean(), false),
+  knownLanguages: v.fallback(v.array(v.string()), []),
+  showWrenchButton: v.fallback(v.boolean(), false),
+
+  systemFont: v.fallback(v.boolean(), false),
+  demetricator: v.fallback(v.boolean(), false),
+
+  isDeveloper: v.fallback(v.boolean(), false),
+
   chats: coerceObject({
-    mainWindow: z.enum(['minimized', 'open']).catch('minimized'),
-    sound: z.boolean().catch(true),
+    mainWindow: v.fallback(v.picklist(['minimized', 'open']), 'minimized'),
+    sound: v.fallback(v.boolean(), true),
   }),
-  home: coerceObject({
+
+  timelines: v.fallback(v.record(v.string(), coerceObject({
     shows: coerceObject({
-      reblog: z.boolean().catch(true),
-      reply: z.boolean().catch(true),
+      reblog: v.fallback(v.boolean(), true),
+      reply: v.fallback(v.boolean(), true),
+      direct: v.fallback(v.boolean(), false),
     }),
-  }),
+    other: coerceObject({
+      onlyMedia: v.fallback(v.boolean(), false),
+    }),
+  })), {}),
+
   account_timeline: coerceObject({
     shows: coerceObject({
-      pinned: z.boolean().catch(true),
+      pinned: v.fallback(v.boolean(), true),
     }),
   }),
+
   remote_timeline: coerceObject({
-    pinnedHosts: z.string().array().catch([]),
+    pinnedHosts: v.fallback(v.array(v.string()), []),
   }),
-  public: coerceObject({
-    other: coerceObject({
-      onlyMedia: z.boolean().catch(false),
-    }),
-  }),
-  'public:local': coerceObject({
-    other: coerceObject({
-      onlyMedia: z.boolean().catch(false),
-    }),
-  }),
-  remote: coerceObject({
-    other: coerceObject({
-      onlyMedia: z.boolean().catch(false),
-    }),
-  }),
-  bubble: coerceObject({
-    other: coerceObject({
-      onlyMedia: z.boolean().catch(false),
-    }),
-  }),
+
   notifications: coerceObject({
     quickFilter: coerceObject({
-      active: z.string().catch('all'),
-      advanced: z.boolean().catch(false),
-      show: z.boolean().catch(true),
+      active: v.fallback(v.string(), 'all'),
+      advanced: v.fallback(v.boolean(), false),
+      show: v.fallback(v.boolean(), true),
     }),
+    sounds: v.fallback(v.record(v.string(), v.boolean()), {}),
   }),
-  autoTranslate: z.boolean().catch(false),
-  knownLanguages: z.array(z.string()).catch([]),
+
+  frequentlyUsedEmojis: v.fallback(v.record(v.string(), v.number()), {}),
+  frequentlyUsedLanguages: v.fallback(v.record(v.string(), v.number()), {}),
+
+  saved: v.fallback(v.boolean(), true),
+
+  demo: v.fallback(v.boolean(), false),
 });
 
-type Settings = z.infer<typeof settingsSchema>;
+type Settings = v.InferOutput<typeof settingsSchema>;
 
 export { settingsSchema, type Settings };

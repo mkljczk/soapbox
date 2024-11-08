@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { HStack, Textarea } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Textarea from 'pl-fe/components/ui/textarea';
 
 import ChatPendingUpload from './chat-pending-upload';
 import ChatUpload from './chat-upload';

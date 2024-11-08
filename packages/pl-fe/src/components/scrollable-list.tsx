@@ -3,10 +3,10 @@ import { useVirtualizer, useWindowVirtualizer, type Virtualizer } from '@tanstac
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef } from 'react';
 
-import { useSettings } from 'pl-fe/hooks';
-
-import LoadMore from './load-more';
-import { Card, Spinner } from './ui';
+import LoadMore from 'pl-fe/components/load-more';
+import Card from 'pl-fe/components/ui/card';
+import Spinner from 'pl-fe/components/ui/spinner';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 interface IScrollableListBase {
   /** Pagination callback when the end of the list is reached. */
@@ -175,7 +175,7 @@ const ScrollableList = React.forwardRef<Virtualizer<any, any>, IScrollableList>(
       id={'parentRef' in props ? id : undefined}
       className={listClassName}
       style={{
-        height: !showLoading && data.length ? virtualizer.getTotalSize() : undefined,
+        height: (!showLoading || showPlaceholder) && data.length ? virtualizer.getTotalSize() : undefined,
         width: '100%',
         position: 'relative',
       }}

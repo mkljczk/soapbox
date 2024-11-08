@@ -1,4 +1,4 @@
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import type { EntitiesPath } from './hooks/types';
 import type { Entity, EntityListState } from './types';
@@ -62,7 +62,6 @@ const findEntity = <TEntity extends Entity>(
 
 export {
   selectCache,
-  selectList,
   selectListState,
   useListState,
   selectEntities,

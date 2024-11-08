@@ -2,11 +2,16 @@ import React, { useEffect } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
 import { fetchGroupBlocks, groupUnblock } from 'pl-fe/actions/groups';
-import { useAccount, useGroup } from 'pl-fe/api/hooks';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import Account from 'pl-fe/components/account';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Button, Column, HStack, Spinner } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import HStack from 'pl-fe/components/ui/hstack';
+import Spinner from 'pl-fe/components/ui/spinner';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import toast from 'pl-fe/toast';
 
 import ColumnForbidden from '../ui/components/column-forbidden';
@@ -61,7 +66,7 @@ const GroupBlockedMembers: React.FC<IGroupBlockedMembers> = ({ params }) => {
   const groupId = params?.groupId;
 
   const { group } = useGroup(groupId);
-  const accountIds = useAppSelector((state) => state.user_lists.group_blocks.get(groupId)?.items);
+  const accountIds = useAppSelector((state) => state.user_lists.group_blocks[groupId]?.items);
 
   useEffect(() => {
     dispatch(fetchGroupBlocks(groupId));

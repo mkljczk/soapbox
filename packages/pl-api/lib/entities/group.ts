@@ -1,33 +1,36 @@
-import z from 'zod';
+import * as v from 'valibot';
 
 import { customEmojiSchema } from './custom-emoji';
 import { groupRelationshipSchema } from './group-relationship';
-import { filteredArray } from './utils';
+import { datetimeSchema, filteredArray } from './utils';
 
-const groupSchema = z.object({
-  avatar: z.string().catch(''),
-  avatar_static: z.string().catch(''),
-  created_at: z.string().datetime().catch(new Date().toUTCString()),
-  display_name: z.string().catch(''),
-  domain: z.string().catch(''),
+/**
+ * @category Schemas
+ */
+const groupSchema = v.object({
+  avatar: v.fallback(v.string(), ''),
+  avatar_static: v.fallback(v.string(), ''),
+  created_at: v.fallback(datetimeSchema, new Date().toISOString()),
+  display_name: v.fallback(v.string(), ''),
+  domain: v.fallback(v.string(), ''),
   emojis: filteredArray(customEmojiSchema),
-  header: z.string().catch(''),
-  header_static: z.string().catch(''),
-  id: z.coerce.string(),
-  locked: z.boolean().catch(false),
-  membership_required: z.boolean().catch(false),
-  members_count: z.number().catch(0),
-  owner: z.object({ id: z.string() }).nullable().catch(null),
-  note: z.string().transform(note => note === '<p></p>' ? '' : note).catch(''),
-  relationship: groupRelationshipSchema.nullable().catch(null), // Dummy field to be overwritten later
-  statuses_visibility: z.string().catch('public'),
-  uri: z.string().catch(''),
-  url: z.string().catch(''),
+  header: v.fallback(v.string(), ''),
+  header_static: v.fallback(v.string(), ''),
+  id: v.pipe(v.unknown(), v.transform(String)),
+  locked: v.fallback(v.boolean(), false),
+  membership_required: v.fallback(v.boolean(), false),
+  members_count: v.fallback(v.number(), 0),
+  owner: v.fallback(v.nullable(v.object({ id: v.string() })), null),
+  note: v.fallback(v.pipe(v.string(), v.transform(note => note === '<p></p>' ? '' : note)), ''),
+  relationship: v.fallback(v.nullable(groupRelationshipSchema), null), // Dummy field to be overwritten later
+  statuses_visibility: v.fallback(v.string(), 'public'),
+  uri: v.fallback(v.string(), ''),
+  url: v.fallback(v.string(), ''),
 
-  avatar_description: z.string().catch(''),
-  header_description: z.string().catch(''),
+  avatar_description: v.fallback(v.string(), ''),
+  header_description: v.fallback(v.string(), ''),
 });
 
-type Group = z.infer<typeof groupSchema>;
+type Group = v.InferOutput<typeof groupSchema>;
 
 export { groupSchema, type Group };

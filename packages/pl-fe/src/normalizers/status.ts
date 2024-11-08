@@ -3,17 +3,13 @@
  * Converts API statuses into our internal format.
  * @see {@link https://docs.joinmastodon.org/entities/status/}
  */
-import escapeTextContentForBrowser from 'escape-html';
-import DOMPurify from 'isomorphic-dompurify';
 import { type Account as BaseAccount, type Status as BaseStatus, type MediaAttachment, mentionSchema, type Translation } from 'pl-api';
+import * as v from 'valibot';
 
-import emojify from 'pl-fe/features/emoji';
 import { unescapeHTML } from 'pl-fe/utils/html';
-import { makeEmojiMap } from 'pl-fe/utils/normalizers';
 
 import { normalizeAccount } from './account';
 import { normalizeGroup } from './group';
-import { normalizePoll } from './poll';
 
 const domParser = new DOMParser();
 
@@ -22,10 +18,6 @@ type StatusVisibility = 'public' | 'unlisted' | 'private' | 'direct' | 'group' |
 
 type CalculatedValues = {
   search_index: string;
-  contentHtml: string;
-  spoilerHtml: string;
-  contentMapHtml?: Record<string, string>;
-  spoilerMapHtml?: Record<string, string>;
   expanded?: boolean | null;
   hidden?: boolean | null;
   translation?: Translation | null | false;
@@ -62,32 +54,20 @@ const buildSearchContent = (status: Pick<BaseStatus, 'poll' | 'mentions' | 'spoi
   return unescapeHTML(fields.join('\n\n')) || '';
 };
 
-const calculateContent = (text: string, emojiMap: any) => emojify(text, emojiMap);
-const calculateSpoiler = (text: string, emojiMap: any) => DOMPurify.sanitize(emojify(escapeTextContentForBrowser(text), emojiMap), { USE_PROFILES: { html: true } });
-
 const calculateStatus = (status: BaseStatus, oldStatus?: OldStatus): CalculatedValues => {
   if (oldStatus && oldStatus.content === status.content && oldStatus.spoiler_text === status.spoiler_text) {
     const {
-      search_index, contentHtml, spoilerHtml, contentMapHtml, spoilerMapHtml, hidden, expanded, translation, currentLanguage,
+      search_index, hidden, expanded, translation, currentLanguage,
     } = oldStatus;
 
     return {
-      search_index, contentHtml, spoilerHtml, contentMapHtml, spoilerMapHtml, hidden, expanded, translation, currentLanguage,
+      search_index, hidden, expanded, translation, currentLanguage,
     };
   } else {
     const searchContent = buildSearchContent(status);
-    const emojiMap = makeEmojiMap(status.emojis);
 
     return {
       search_index: domParser.parseFromString(searchContent, 'text/html').documentElement.textContent || '',
-      contentHtml: calculateContent(status.content, emojiMap),
-      spoilerHtml: calculateSpoiler(status.spoiler_text, emojiMap),
-      contentMapHtml: status.content_map
-        ? Object.fromEntries(Object.entries(status.content_map)?.map(([key, value]) => [key, calculateContent(value, emojiMap)]))
-        : undefined,
-      spoilerMapHtml: status.spoiler_text_map
-        ? Object.fromEntries(Object.entries(status.spoiler_text_map).map(([key, value]) => [key, calculateSpoiler(value, emojiMap)]))
-        : undefined,
     };
   }
 };
@@ -111,7 +91,7 @@ const normalizeStatus = (status: BaseStatus & {
   const hasSelfMention = status.mentions.some(mention => status.account.id === mention.id);
 
   if (isSelfReply && !hasSelfMention) {
-    const selfMention = mentionSchema.parse(status.account);
+    const selfMention = v.parse(mentionSchema, status.account);
     mentions = [selfMention, ...mentions];
   }
 
@@ -121,9 +101,6 @@ const normalizeStatus = (status: BaseStatus & {
     links: Array<MediaAttachment>;
   } | null) = null;
   let media_attachments = status.media_attachments;
-
-  // Normalize poll
-  const poll = status.poll ? normalizePoll(status.poll) : null;
 
   if (status.event) {
     const firstAttachment = status.media_attachments[0];
@@ -162,16 +139,12 @@ const normalizeStatus = (status: BaseStatus & {
     mentions,
     expanded: null,
     hidden: null,
-    /** Rewrite `<p></p>` to empty string. */
-    content: status.content === '<p></p>' ? '' : status.content,
     filtered: status.filtered?.map(result => result.filter.title),
     event,
-    poll,
     group,
     media_attachments,
     ...calculated,
     translation: (status.translation || calculated.translation || null) as Translation | null | false,
-    // quote: status.quote ? normalizeStatus(status.quote as any) : null,
   };
 };
 

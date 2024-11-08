@@ -20,7 +20,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 
-import { Icon } from 'pl-fe/components/ui';
+import Icon from 'pl-fe/components/ui/icon';
 
 import { getSelectedNode } from '../utils/get-selected-node';
 import { setFloatingElemPosition } from '../utils/set-floating-elem-position';

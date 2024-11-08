@@ -14,10 +14,12 @@ import { spring } from 'react-motion';
 
 import AltIndicator from 'pl-fe/components/alt-indicator';
 import Blurhash from 'pl-fe/components/blurhash';
-import { HStack, Icon, IconButton } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import IconButton from 'pl-fe/components/ui/icon-button';
 import Motion from 'pl-fe/features/ui/util/optional-motion';
-import { useSettings } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import type { MediaAttachment } from 'pl-api';
 

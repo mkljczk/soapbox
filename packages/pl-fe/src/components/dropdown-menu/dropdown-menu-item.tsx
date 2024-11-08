@@ -2,9 +2,10 @@ import clsx from 'clsx';
 import React, { useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import Counter from 'pl-fe/components/ui/counter';
+import Icon from 'pl-fe/components/ui/icon';
+import Toggle from 'pl-fe/components/ui/toggle';
 import { userTouching } from 'pl-fe/is-mobile';
-
-import { Counter, Icon, Toggle } from '../ui';
 
 interface MenuItem {
   action?: React.EventHandler<React.KeyboardEvent | React.MouseEvent>;

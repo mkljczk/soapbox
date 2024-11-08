@@ -1,8 +1,11 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Card, HStack, Stack, Text } from 'pl-fe/components/ui';
-import { useInstance } from 'pl-fe/hooks';
+import Card from 'pl-fe/components/ui/card';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import ConsumerButton from './consumer-button';
 

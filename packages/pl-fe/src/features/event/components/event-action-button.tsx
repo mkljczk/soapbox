@@ -2,12 +2,13 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { joinEvent, leaveEvent } from 'pl-fe/actions/events';
-import { Button } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
+import Button from 'pl-fe/components/ui/button';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import type { ButtonThemes } from 'pl-fe/components/ui/button/useButtonStyles';
-import type { Status as StatusEntity } from 'pl-fe/normalizers';
+import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
 
 const messages = defineMessages({
   leaveHeading: { id: 'confirmations.leave_event.heading', defaultMessage: 'Leave event' },
@@ -28,6 +29,20 @@ const EventActionButton: React.FC<IEventAction> = ({ status, theme = 'secondary'
   const me = useAppSelector((state) => state.me);
 
   const event = status.event!;
+
+  if (event.join_mode === 'external') {
+    return (
+      <Button
+        className='min-w-max'
+        size='sm'
+        theme={theme}
+        icon={require('@tabler/icons/outline/external-link.svg')}
+        href={status.url}
+      >
+        <FormattedMessage id='event.join_state.empty' defaultMessage='Participate' />
+      </Button>
+    );
+  }
 
   const handleJoin: React.EventHandler<React.MouseEvent> = (e) => {
     e.preventDefault();

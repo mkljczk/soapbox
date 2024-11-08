@@ -1,8 +1,13 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HStack, Icon, Popover, Stack, Text } from 'pl-fe/components/ui';
-import { Group } from 'pl-fe/normalizers';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Popover from 'pl-fe/components/ui/popover';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+
+import type { Group } from 'pl-fe/normalizers/group';
 
 interface IGroupPolicy {
   group: Pick<Group, 'locked'>;

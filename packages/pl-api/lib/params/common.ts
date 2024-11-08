@@ -13,7 +13,7 @@ interface WithMutedParam {
   /**
    * Boolean. Also show statuses from muted users. Default to false.
    *
-   * Requires `features.timelinesWithMuted`.
+   * Requires features{@link Features['timelinesWithMuted']}.
    */
   with_muted?: boolean;
 }
@@ -35,7 +35,7 @@ interface OnlyEventsParam {
   /**
    * Boolean. Filter out statuses without events.
    *
-   * Requires `features.events`.
+   * Requires features{@link Features['events']}.
    */
   only_events?: boolean;
 }
@@ -44,7 +44,7 @@ interface LanguageParam {
   /**
    * Fetch a translation in given language
    *
-   * Requires `features.fetchStatusesWithTranslation`.
+   * Requires features{@link Features['fetchStatusesWithTranslation']}.
    */
   language?: string;
 }

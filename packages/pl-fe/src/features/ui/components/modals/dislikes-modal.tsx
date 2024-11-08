@@ -3,9 +3,11 @@ import { FormattedMessage } from 'react-intl';
 
 import { fetchDislikes } from 'pl-fe/actions/interactions';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Modal, Spinner } from 'pl-fe/components/ui';
+import Modal from 'pl-fe/components/ui/modal';
+import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -16,7 +18,7 @@ interface DislikesModalProps {
 const DislikesModal: React.FC<BaseModalProps & DislikesModalProps> = ({ onClose, statusId }) => {
   const dispatch = useAppDispatch();
 
-  const accountIds = useAppSelector((state) => state.user_lists.disliked_by.get(statusId)?.items);
+  const accountIds = useAppSelector((state) => state.user_lists.disliked_by[statusId]?.items);
 
   const fetchData = () => {
     dispatch(fetchDislikes(statusId));

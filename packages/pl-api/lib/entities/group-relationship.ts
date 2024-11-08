@@ -1,14 +1,17 @@
-import z from 'zod';
+import * as v from 'valibot';
 
 import { GroupRoles } from './group-member';
 
-const groupRelationshipSchema = z.object({
-  id: z.string(),
-  member: z.boolean().catch(false),
-  role: z.nativeEnum(GroupRoles).catch(GroupRoles.USER),
-  requested: z.boolean().catch(false),
+/**
+ * @category Schemas
+ */
+const groupRelationshipSchema = v.object({
+  id: v.string(),
+  member: v.fallback(v.boolean(), false),
+  role: v.fallback(v.enum(GroupRoles), GroupRoles.USER),
+  requested: v.fallback(v.boolean(), false),
 });
 
-type GroupRelationship = z.infer<typeof groupRelationshipSchema>;
+type GroupRelationship = v.InferOutput<typeof groupRelationshipSchema>;
 
 export { groupRelationshipSchema, type GroupRelationship };

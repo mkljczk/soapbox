@@ -1,18 +1,21 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Token/} */
-const tokenSchema = z.object({
-  access_token: z.string(),
-  token_type: z.string(),
-  scope: z.string(),
-  created_at: z.number().optional().catch(undefined),
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Token/}
+ */
+const tokenSchema = v.object({
+  access_token: v.string(),
+  token_type: v.string(),
+  scope: v.string(),
+  created_at: v.fallback(v.optional(v.number()), undefined),
 
-  id: z.number().optional().catch(undefined),
-  refresh_token: z.string().optional().catch(undefined),
-  expires_in: z.number().optional().catch(undefined),
-  me: z.string().optional().catch(undefined),
+  id: v.fallback(v.optional(v.number()), undefined),
+  refresh_token: v.fallback(v.optional(v.string()), undefined),
+  expires_in: v.fallback(v.optional(v.number()), undefined),
+  me: v.fallback(v.optional(v.string()), undefined),
 });
 
-type Token = z.infer<typeof tokenSchema>;
+type Token = v.InferOutput<typeof tokenSchema>;
 
 export { tokenSchema, type Token };

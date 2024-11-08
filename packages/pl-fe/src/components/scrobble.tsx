@@ -2,7 +2,9 @@ import clsx from 'clsx';
 import React, { useMemo, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HStack, Icon, Text } from './ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Text from 'pl-fe/components/ui/text';
 
 import type { Scrobble as ScrobbleEntity } from 'pl-api';
 

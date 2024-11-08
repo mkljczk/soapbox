@@ -5,8 +5,10 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { fetchDomainBlocks, expandDomainBlocks } from 'pl-fe/actions/domain-blocks';
 import Domain from 'pl-fe/components/domain';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, Spinner } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import Column from 'pl-fe/components/ui/column';
+import Spinner from 'pl-fe/components/ui/spinner';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 const messages = defineMessages({
   heading: { id: 'column.domain_blocks', defaultMessage: 'Hidden domains' },

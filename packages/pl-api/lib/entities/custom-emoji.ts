@@ -1,17 +1,19 @@
-import z from 'zod';
+import * as v from 'valibot';
 
 /**
  * Represents a custom emoji.
+ *
+ * @category Schemas
  * @see {@link https://docs.joinmastodon.org/entities/CustomEmoji/}
  */
-const customEmojiSchema = z.object({
-  shortcode: z.string(),
-  url: z.string(),
-  static_url: z.string().catch(''),
-  visible_in_picker: z.boolean().catch(true),
-  category: z.string().nullable().catch(null),
+const customEmojiSchema = v.object({
+  shortcode: v.string(),
+  url: v.string(),
+  static_url: v.fallback(v.string(), ''),
+  visible_in_picker: v.fallback(v.boolean(), true),
+  category: v.fallback(v.nullable(v.string()), null),
 });
 
-type CustomEmoji = z.infer<typeof customEmojiSchema>;
+type CustomEmoji = v.InferOutput<typeof customEmojiSchema>;
 
 export { customEmojiSchema, type CustomEmoji };

@@ -1,11 +1,15 @@
-import z from 'zod';
+import * as v from 'valibot';
 
-const adminRelaySchema = z.preprocess((data: any) => ({ id: data.actor, ...data }), z.object({
-  actor: z.string().catch(''),
-  id: z.string(),
-  followed_back: z.boolean().catch(false),
-}));
+const adminRelaySchema = v.pipe(
+  v.any(),
+  v.transform((data: any) => ({ id: data.actor, ...data })),
+  v.object({
+    actor: v.fallback(v.string(), ''),
+    id: v.string(),
+    followed_back: v.fallback(v.boolean(), false),
+  }),
+);
 
-type AdminRelay = z.infer<typeof adminRelaySchema>
+type AdminRelay = v.InferOutput<typeof adminRelaySchema>
 
 export { adminRelaySchema, type AdminRelay };

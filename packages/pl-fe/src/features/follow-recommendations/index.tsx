@@ -2,7 +2,9 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, Stack, Text } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
 import { useSuggestions } from 'pl-fe/queries/suggestions';
 

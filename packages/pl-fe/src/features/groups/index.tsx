@@ -2,11 +2,13 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { useGroups } from 'pl-fe/api/hooks';
+import { useGroups } from 'pl-fe/api/hooks/groups/use-groups';
 import GroupCard from 'pl-fe/components/group-card';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Button, Stack, Text } from 'pl-fe/components/ui';
-import { useModalsStore } from 'pl-fe/stores';
+import Button from 'pl-fe/components/ui/button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import PlaceholderGroupCard from '../placeholder/components/placeholder-group-card';
 

@@ -4,9 +4,13 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { setSchedule, removeSchedule } from 'pl-fe/actions/compose';
 import IconButton from 'pl-fe/components/icon-button';
-import { HStack, Input, Stack, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Input from 'pl-fe/components/ui/input';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import { DatePicker } from 'pl-fe/features/ui/util/async-components';
-import { useAppDispatch, useCompose } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 
 const isCurrentOrFutureDate = (date: Date) =>
   date && new Date().setHours(0, 0, 0, 0) <= new Date(date).setHours(0, 0, 0, 0);
@@ -34,8 +38,9 @@ const ScheduleForm: React.FC<IScheduleForm> = ({ composeId }) => {
   const scheduledAt = useCompose(composeId).schedule;
   const active = !!scheduledAt;
 
-  const onSchedule = (date: Date) => {
-    dispatch(setSchedule(composeId, date));
+  const onSchedule = (date: Date | null) => {
+    if (date === null) dispatch(removeSchedule(composeId));
+    else dispatch(setSchedule(composeId, date));
   };
 
   const handleRemove = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -81,8 +86,4 @@ const ScheduleForm: React.FC<IScheduleForm> = ({ composeId }) => {
   );
 };
 
-export {
-  isCurrentOrFutureDate,
-  type IScheduleForm,
-  ScheduleForm as default,
-};
+export { ScheduleForm as default, isCurrentOrFutureDate };

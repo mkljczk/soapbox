@@ -3,8 +3,9 @@ import { useHistory } from 'react-router-dom';
 
 import { getTextDirection } from 'pl-fe/utils/rtl';
 
-import type { Mention as MentionEntity } from 'pl-api';
-import type { Announcement } from 'pl-fe/normalizers';
+import { ParsedContent } from '../parsed-content';
+
+import type { Announcement, Mention as MentionEntity } from 'pl-api';
 
 interface IAnnouncementContent {
   announcement: Announcement;
@@ -83,8 +84,9 @@ const AnnouncementContent: React.FC<IAnnouncementContent> = ({ announcement }) =
       dir={direction}
       className='text-sm ltr:ml-0 rtl:mr-0'
       ref={node}
-      dangerouslySetInnerHTML={{ __html: announcement.contentHtml }}
-    />
+    >
+      <ParsedContent html={announcement.content} emojis={announcement.emojis} />
+    </div>
   );
 };
 

@@ -5,9 +5,11 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { cancelReplyCompose, uploadCompose } from 'pl-fe/actions/compose';
 import { saveDraftStatus } from 'pl-fe/actions/draft-statuses';
 import { checkComposeContent } from 'pl-fe/components/modal-root';
-import { Modal } from 'pl-fe/components/ui';
-import { useAppDispatch, useCompose, useDraggedFiles } from 'pl-fe/hooks';
-import { useModalsStore } from 'pl-fe/stores';
+import Modal from 'pl-fe/components/ui/modal';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import ComposeForm from '../../../compose/components/compose-form';
 
