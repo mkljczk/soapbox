@@ -86,7 +86,7 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
     menu.push({
       text: intl.formatMessage(messages.add),
       to: '/login/add',
-      icon: require('@tabler/icons/outline/plus.svg'),
+      icon: require('@fluentui/add_24_regular.svg'),
     });
 
     menu.push({

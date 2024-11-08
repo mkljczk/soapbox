@@ -78,7 +78,7 @@ const AvatarPicker = React.forwardRef<HTMLInputElement, IMediaInput>(({
         })}
       >
         <Icon
-          src={require('@tabler/icons/outline/camera-plus.svg')}
+          src={require('@fluentui/camera_add_24_regular.svg')}
           className='size-5 text-white'
         />
       </HStack>

@@ -70,7 +70,7 @@ const UploadButton: React.FC<IUploadButton> = ({ onSelectFile }) => {
     fileElement.current?.click();
   };
 
-  const src = require('@tabler/icons/outline/photo.svg');
+  const src = require('@fluentui/image_24_regular.svg');
 
   return (
     <label>
@@ -206,7 +206,7 @@ const BlockTypeFloatingToolbar = ({
           <ToolbarButton
             onClick={createHorizontalLine}
             aria-label={intl.formatMessage(messages.createHorizontalLine)}
-            icon={require('@tabler/icons/outline/line-dashed.svg')}
+            icon={require('@fluentui/line_horizontal_1_dashes_24_regular.svg')}
           />
         </>
       )}

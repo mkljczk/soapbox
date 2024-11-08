@@ -42,7 +42,7 @@ const Toast = (props: IToast) => {
       case 'success':
         return (
           <Icon
-            src={require('@tabler/icons/outline/circle-check.svg')}
+            src={require('@fluentui/checkmark_circle_24_regular.svg')}
             className='size-6 text-success-500 dark:text-success-400'
             aria-hidden
           />
@@ -50,7 +50,7 @@ const Toast = (props: IToast) => {
       case 'info':
         return (
           <Icon
-            src={require('@tabler/icons/outline/info-circle.svg')}
+            src={require('@fluentui/info_24_regular.svg')}
             className='size-6 text-primary-600 dark:text-accent-blue'
             aria-hidden
           />
@@ -58,7 +58,7 @@ const Toast = (props: IToast) => {
       case 'error':
         return (
           <Icon
-            src={require('@tabler/icons/outline/alert-circle.svg')}
+            src={require('@fluentui/error_circle_24_regular.svg')}
             className='size-6 text-danger-600'
             aria-hidden
           />

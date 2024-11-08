@@ -154,7 +154,7 @@ const ChatPageMain = () => {
         </HStack>
 
         <DropdownMenu
-          src={require('@tabler/icons/outline/info-circle.svg')}
+          src={require('@fluentui/info_24_regular.svg')}
           component={() => (
             <HStack className='px-4 py-2' alignItems='center' space={3}>
               <Avatar src={chat.account.avatar_static} alt={chat.account.avatar_description} size={50} />

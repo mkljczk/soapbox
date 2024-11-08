@@ -86,7 +86,7 @@ const ChatWindow = () => {
           </HStack>
         }
         secondaryAction={secondaryAction()}
-        secondaryActionIcon={isOpen ? require('@tabler/icons/outline/info-circle.svg') : require('@fluentui/edit_24_regular.svg')}
+        secondaryActionIcon={isOpen ? require('@fluentui/info_24_regular.svg') : require('@fluentui/edit_24_regular.svg')}
         isToggleable={!isOpen}
         isOpen={isOpen}
         onToggle={toggleChatPane}

@@ -60,7 +60,7 @@ const Accordion: React.FC<IAccordion> = ({ headline, children, menu, expanded = 
           {menu && (
             <DropdownMenu
               items={menu}
-              src={require('@tabler/icons/outline/dots-vertical.svg')}
+              src={require('@fluentui/more_vertical_24_regular.svg')}
             />
           )}
           {action && actionIcon && (

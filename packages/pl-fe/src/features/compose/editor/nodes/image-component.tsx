@@ -313,7 +313,7 @@ const ImageComponent = ({
           <HStack className='absolute right-2 top-2 z-10' space={2}>
             <IconButton
               onClick={previewImage}
-              src={require('@tabler/icons/outline/zoom-in.svg')}
+              src={require('@fluentui/zoom_in_24_regular.svg')}
               theme='dark'
               className='!p-1.5 hover:scale-105 hover:bg-gray-900'
               iconClassName='h-5 w-5'

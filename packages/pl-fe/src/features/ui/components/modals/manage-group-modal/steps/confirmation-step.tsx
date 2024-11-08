@@ -108,7 +108,7 @@ const ConfirmationStep: React.FC<IConfirmationStep> = ({ group }) => {
 
       <HStack space={2} justifyContent='center'>
         {('share' in navigator) && (
-          <Button onClick={handleShare} theme='transparent' icon={require('@tabler/icons/outline/share.svg')} className='text-primary-600'>
+          <Button onClick={handleShare} theme='transparent' icon={require('@fluentui/share_24_regular.svg')} className='text-primary-600'>
             <FormattedMessage id='manage_group.confirmation.share' defaultMessage='Share this group' />
           </Button>
         )}

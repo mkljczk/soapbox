@@ -108,7 +108,7 @@ const Bookmarks: React.FC<IBookmarks> = ({ params }) => {
   return (
     <Column
       label={folder ? folder.name : intl.formatMessage(messages.heading)}
-      action={<DropdownMenu items={items} src={require('@tabler/icons/outline/dots-vertical.svg')} />}
+      action={<DropdownMenu items={items} src={require('@fluentui/more_vertical_24_regular.svg')} />}
       transparent={!isMobile}
     >
       <PullToRefresh onRefresh={handleRefresh}>

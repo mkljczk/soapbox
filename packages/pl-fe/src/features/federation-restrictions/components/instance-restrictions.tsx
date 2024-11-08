@@ -73,7 +73,7 @@ const InstanceRestrictions: React.FC<IInstanceRestrictions> = ({ remoteInstance 
 
     if (fullMediaRemoval) {
       items.push((
-        <Restriction key='fullMediaRemoval' icon={require('@tabler/icons/outline/photo-off.svg')}>
+        <Restriction key='fullMediaRemoval' icon={require('@fluentui/image_off_24_regular.svg')}>
           <FormattedMessage
             id='federation_restriction.full_media_removal'
             defaultMessage='Full media removal'
@@ -82,7 +82,7 @@ const InstanceRestrictions: React.FC<IInstanceRestrictions> = ({ remoteInstance 
       ));
     } else if (partialMediaRemoval) {
       items.push((
-        <Restriction key='partialMediaRemoval' icon={require('@tabler/icons/outline/photo-off.svg')}>
+        <Restriction key='partialMediaRemoval' icon={require('@fluentui/image_off_24_regular.svg')}>
           <FormattedMessage
             id='federation_restriction.partial_media_removal'
             defaultMessage='Partial media removal'

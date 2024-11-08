@@ -97,7 +97,7 @@ const SensitiveContentOverlay = React.forwardRef<HTMLDivElement, ISensitiveConte
                 type='button'
                 theme='outline'
                 size='sm'
-                icon={require('@tabler/icons/outline/eye.svg')}
+                icon={require('@fluentui/eye_24_regular.svg')}
                 onClick={toggleVisibility}
               >
                 {intl.formatMessage(messages.show)}

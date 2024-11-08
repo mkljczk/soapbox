@@ -82,7 +82,7 @@ const HeaderPicker = React.forwardRef<HTMLInputElement, IMediaInput>(({
         justifyContent='center'
       >
         <Icon
-          src={require('@tabler/icons/outline/photo-plus.svg')}
+          src={require('@fluentui/image_add_24_regular.svg')}
           className='size-4.5'
         />
 

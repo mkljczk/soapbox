@@ -56,7 +56,7 @@ const UploadButton: React.FC<IUploadButton> = ({
 
   const src = icon || (
     onlyImages(attachmentTypes)
-      ? require('@tabler/icons/outline/photo.svg')
+      ? require('@fluentui/image_24_regular.svg')
       : require('@fluentui/attach_24_regular.svg')
   );
 

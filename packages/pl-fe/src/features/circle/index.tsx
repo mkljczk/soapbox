@@ -207,7 +207,7 @@ const Circle: React.FC = () => {
           <Button onClick={onSave} icon={require('@fluentui/arrow_download_24_regular.svg')}>
             <FormattedMessage id='interactions_circle.download' defaultMessage='Download' />
           </Button>
-          <Button onClick={onCompose} icon={require('@tabler/icons/outline/pencil-plus.svg')}>
+          <Button onClick={onCompose} icon={require('@fluentui/compose_24_regular.svg')}>
             <FormattedMessage id='interactions_circle.compose' defaultMessage='Share' />
           </Button>
         </HStack>

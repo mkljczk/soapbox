@@ -301,7 +301,7 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
                   onClick={handleNextClick}
                   aria-label={intl.formatMessage(messages.next)}
                 >
-                  <Icon src={require('@tabler/icons/outline/arrow-right.svg')} className='size-5' />
+                  <Icon src={require('@fluentui/arrow_right_24_regular.svg')} className='size-5' />
                 </button>
               </div>
             )}

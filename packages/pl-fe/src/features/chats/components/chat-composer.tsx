@@ -233,7 +233,7 @@ const ChatComposer = React.forwardRef<HTMLTextAreaElement | null, IChatComposer>
           ) : null}
 
           <IconButton
-            src={require('@tabler/icons/outline/send.svg')}
+            src={require('@fluentui/send_24_regular.svg')}
             iconClassName='h-5 w-5'
             className='text-primary-500'
             disabled={isSubmitDisabled}

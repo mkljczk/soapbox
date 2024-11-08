@@ -30,7 +30,7 @@ const ConsumerButton: React.FC<IConsumerButton> = ({ provider }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
-  const icon = BRAND_ICONS[provider] || require('@tabler/icons/outline/key.svg');
+  const icon = BRAND_ICONS[provider] || require('@fluentui/key_24_regular.svg');
 
   const handleClick = () => {
     dispatch(prepareRequest(provider));

@@ -104,7 +104,7 @@ const OtherActionsStep = ({
             </Stack>
           ) : (
             <Button
-              icon={require('@tabler/icons/outline/plus.svg')}
+              icon={require('@fluentui/add_24_regular.svg')}
               theme='tertiary'
               size='sm'
               onClick={() => setShowAdditionalStatuses(true)}

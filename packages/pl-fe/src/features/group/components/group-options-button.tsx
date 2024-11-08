@@ -60,7 +60,7 @@ const GroupOptionsButton = ({ group }: IGroupActionButton) => {
     if (canShare) {
       items.push({
         text: intl.formatMessage(messages.share),
-        icon: require('@tabler/icons/outline/share.svg'),
+        icon: require('@fluentui/share_24_regular.svg'),
         action: handleShare,
       });
     }

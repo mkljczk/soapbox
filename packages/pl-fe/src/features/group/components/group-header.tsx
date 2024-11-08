@@ -116,7 +116,7 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
         className='flex h-32 w-full items-center justify-center bg-gray-200 dark:bg-gray-800/30 md:rounded-t-xl lg:h-52'
       >
         {isHeaderMissing ? (
-          <Icon src={require('@tabler/icons/outline/photo-off.svg')} className='size-6 text-gray-500 dark:text-gray-700' />
+          <Icon src={require('@fluentui/image_off_24_regular.svg')} className='size-6 text-gray-500 dark:text-gray-700' />
         ) : header}
       </div>
     );

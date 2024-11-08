@@ -47,7 +47,7 @@ const Report: React.FC<IReport> = ({ id }) => {
   const makeMenu = () => [{
     text: intl.formatMessage(messages.deactivateUser, { name: targetAccount.username }),
     action: handleDeactivateUser,
-    icon: require('@tabler/icons/outline/hourglass-empty.svg'),
+    icon: require('@fluentui/hourglass_24_regular.svg'),
   }, {
     text: intl.formatMessage(messages.deleteUser, { name: targetAccount.username }),
     action: handleDeleteUser,
@@ -155,7 +155,7 @@ const Report: React.FC<IReport> = ({ id }) => {
           <FormattedMessage id='admin.reports.actions.close' defaultMessage='Close' />
         </Button>
 
-        <DropdownMenu items={menu} src={require('@tabler/icons/outline/dots-vertical.svg')} />
+        <DropdownMenu items={menu} src={require('@fluentui/more_vertical_24_regular.svg')} />
       </HStack>
     </HStack>
   );

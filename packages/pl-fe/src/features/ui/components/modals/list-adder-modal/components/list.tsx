@@ -33,7 +33,7 @@ const List: React.FC<IList> = ({ listId }) => {
   if (added) {
     button = <IconButton iconClassName='h-5 w-5' src={require('@fluentui/dismiss_24_regular.svg')} title={intl.formatMessage(messages.remove)} onClick={onRemove} />;
   } else {
-    button = <IconButton iconClassName='h-5 w-5' src={require('@tabler/icons/outline/plus.svg')} title={intl.formatMessage(messages.add)} onClick={onAdd} />;
+    button = <IconButton iconClassName='h-5 w-5' src={require('@fluentui/add_24_regular.svg')} title={intl.formatMessage(messages.add)} onClick={onAdd} />;
   }
 
   return (

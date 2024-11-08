@@ -48,7 +48,7 @@ const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseM
       key='all'
       label={
         <HStack alignItems='center' space={2}>
-          <Icon src={require('@tabler/icons/outline/bookmarks.svg')} size={20} />
+          <Icon src={require('@fluentui/bookmark_multiple_24_regular.svg')} size={20} />
           <span><FormattedMessage id='bookmark_folders.all_bookmarks' defaultMessage='All bookmarks' /></span>
         </HStack>
       }
@@ -69,7 +69,7 @@ const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseM
                 src={folder.emoji_url || undefined}
                 className='size-5 flex-none'
               />
-            ) : <Icon src={require('@tabler/icons/outline/folder.svg')} size={20} />}
+            ) : <Icon src={require('@fluentui/folder_24_regular.svg')} size={20} />}
             <span>{folder.name}</span>
           </HStack>
         }

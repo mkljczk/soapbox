@@ -42,7 +42,7 @@ const Widget: React.FC<IWidget> = ({
   title,
   children,
   onActionClick,
-  actionIcon = require('@tabler/icons/outline/arrow-right.svg'),
+  actionIcon = require('@fluentui/arrow_right_24_regular.svg'),
   actionTitle,
   action,
 }): JSX.Element => (

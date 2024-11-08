@@ -30,7 +30,7 @@ const GroupHeaderImage: React.FC<IGroupHeaderImage> = ({ className, group }) => 
         className={clsx(className, 'flex items-center justify-center bg-gray-200 dark:bg-gray-800/30')}
       >
         <Icon
-          src={require('@tabler/icons/outline/photo-off.svg')}
+          src={require('@fluentui/image_off_24_regular.svg')}
           className='size-6 text-gray-500 dark:text-gray-700'
         />
       </div>

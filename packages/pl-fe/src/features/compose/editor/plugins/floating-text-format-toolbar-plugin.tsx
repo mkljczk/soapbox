@@ -56,18 +56,18 @@ const messages = defineMessages({
 });
 
 const blockTypeToIcon = {
-  bullet: require('@tabler/icons/outline/list.svg'),
-  check: require('@tabler/icons/outline/list-check.svg'),
+  bullet: require('@fluentui/text_bullet_list_24_regular.svg'),
+  check: require('@fluentui/task_list_ltr_24_regular.svg'),
   code: require('@fluentui/code_24_regular.svg'),
-  h1: require('@tabler/icons/outline/h-1.svg'),
-  h2: require('@tabler/icons/outline/h-2.svg'),
-  h3: require('@tabler/icons/outline/h-3.svg'),
+  h1: require('@fluentui/text_header_1_24_regular.svg'),
+  h2: require('@fluentui/text_header_2_24_regular.svg'),
+  h3: require('@fluentui/text_header_3_24_regular.svg'),
   h4: require('@tabler/icons/outline/h-4.svg'),
   h5: require('@tabler/icons/outline/h-5.svg'),
   h6: require('@tabler/icons/outline/h-6.svg'),
-  number: require('@tabler/icons/outline/list-numbers.svg'),
-  paragraph: require('@tabler/icons/outline/align-left.svg'),
-  quote: require('@tabler/icons/outline/blockquote.svg'),
+  number: require('@fluentui/text_number_list_ltr_24_regular.svg'),
+  paragraph: require('@fluentui/text_align_left_24_regular.svg'),
+  quote: require('@fluentui/text_quote_24_regular.svg'),
 };
 
 const blockTypeToBlockName = {
@@ -366,7 +366,7 @@ const TextFormatFloatingToolbar = ({
             }}
             active={isBold}
             aria-label={intl.formatMessage(messages.formatBold)}
-            icon={require('@tabler/icons/outline/bold.svg')}
+            icon={require('@fluentui/text_bold_24_regular.svg')}
           />
           <ToolbarButton
             onClick={() => {
@@ -374,7 +374,7 @@ const TextFormatFloatingToolbar = ({
             }}
             active={isItalic}
             aria-label={intl.formatMessage(messages.formatItalic)}
-            icon={require('@tabler/icons/outline/italic.svg')}
+            icon={require('@fluentui/text_italic_24_regular.svg')}
           />
           <ToolbarButton
             onClick={() => {
@@ -382,7 +382,7 @@ const TextFormatFloatingToolbar = ({
             }}
             active={isUnderline}
             aria-label={intl.formatMessage(messages.formatUnderline)}
-            icon={require('@tabler/icons/outline/underline.svg')}
+            icon={require('@fluentui/text_underline_24_regular.svg')}
           />
           <ToolbarButton
             onClick={() => {
@@ -390,7 +390,7 @@ const TextFormatFloatingToolbar = ({
             }}
             active={isStrikethrough}
             aria-label={intl.formatMessage(messages.formatStrikethrough)}
-            icon={require('@tabler/icons/outline/strikethrough.svg')}
+            icon={require('@fluentui/text_strikethrough_24_regular.svg')}
           />
           <ToolbarButton
             onClick={() => {

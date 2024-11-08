@@ -42,7 +42,7 @@ const Avatar = (props: IAvatar) => {
         className={clsx('flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-900', className)}
       >
         <Icon
-          src={require('@tabler/icons/outline/photo-off.svg')}
+          src={require('@fluentui/image_off_24_regular.svg')}
           className='size-4 text-gray-500 dark:text-gray-700'
         />
       </div>

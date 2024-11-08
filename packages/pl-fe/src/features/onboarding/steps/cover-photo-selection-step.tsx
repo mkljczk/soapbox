@@ -107,7 +107,7 @@ const CoverPhotoSelectionStep = ({ onNext }: { onNext: () => void }) => {
               })}
               disabled={isSubmitting}
             >
-              <Icon src={require('@tabler/icons/outline/plus.svg')} className='size-5 text-white' />
+              <Icon src={require('@fluentui/add_24_regular.svg')} className='size-5 text-white' />
             </button>
 
             <input type='file' className='hidden' ref={fileInput} onChange={handleFileChange} />
