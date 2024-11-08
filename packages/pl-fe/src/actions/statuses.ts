@@ -91,8 +91,8 @@ const createStatus = (params: CreateStatusParams, idempotencyKey: string, status
 const editStatus = (statusId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
   const state = getState();
 
-  const status = state.statuses.get(statusId)!;
-  const poll = status.poll_id ? state.polls.get(status.poll_id) : undefined;
+  const status = state.statuses[statusId]!;
+  const poll = status.poll_id ? state.polls[status.poll_id] : undefined;
 
   dispatch({ type: STATUS_FETCH_SOURCE_REQUEST });
 
@@ -128,8 +128,8 @@ const deleteStatus = (statusId: string, withRedraft = false) =>
 
     const state = getState();
 
-    const status = state.statuses.get(statusId)!;
-    const poll = status.poll_id ? state.polls.get(status.poll_id) : undefined;
+    const status = state.statuses[statusId]!;
+    const poll = status.poll_id ? state.polls[status.poll_id] : undefined;
 
     dispatch({ type: STATUS_DELETE_REQUEST, params: status });
 

@@ -128,7 +128,8 @@ const PlFeConfig: React.FC = () => {
   };
 
   const addStreamItem = (path: ConfigPath, template: Template) => () => {
-    const items = data.getIn(path) || ImmutableList();
+    let items = data;
+    path.forEach(key => items = items?.[key] || []);
     setConfig(path, items.push(template));
   };
 
@@ -257,7 +258,7 @@ const PlFeConfig: React.FC = () => {
               <Input
                 type='text'
                 placeholder='/timeline/local'
-                value={String(data.get('redirectRootNoLogin', ''))}
+                value={String(data.redirectRootNoLogin || '')}
                 onChange={handleChange(['redirectRootNoLogin'], (e) => e.target.value)}
               />
             </ListItem>
@@ -269,7 +270,7 @@ const PlFeConfig: React.FC = () => {
               <Input
                 type='text'
                 placeholder='https://01234abcdef@glitch.tip.tld/5678'
-                value={String(data.get('sentryDsn', ''))}
+                value={String(data.sentryDsn ||  '')}
                 onChange={handleChange(['sentryDsn'], (e) => e.target.value)}
               />
             </ListItem>

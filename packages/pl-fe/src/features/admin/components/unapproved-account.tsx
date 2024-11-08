@@ -18,7 +18,7 @@ const UnapprovedAccount: React.FC<IUnapprovedAccount> = ({ accountId }) => {
   const dispatch = useAppDispatch();
 
   const { account } = useAccount(accountId);
-  const adminAccount = useAppSelector(state => state.admin.users.get(accountId));
+  const adminAccount = useAppSelector(state => state.admin.users[accountId]);
 
   if (!account) return null;
 

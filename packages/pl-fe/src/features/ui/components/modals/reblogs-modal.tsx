@@ -19,8 +19,8 @@ interface ReblogsModalProps {
 const ReblogsModal: React.FC<BaseModalProps & ReblogsModalProps> = ({ onClose, statusId }) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
-  const accountIds = useAppSelector((state) => state.user_lists.reblogged_by.get(statusId)?.items);
-  const next = useAppSelector((state) => state.user_lists.reblogged_by.get(statusId)?.next);
+  const accountIds = useAppSelector((state) => state.user_lists.reblogged_by[statusId]?.items);
+  const next = useAppSelector((state) => state.user_lists.reblogged_by[statusId]?.next);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const fetchData = () => {

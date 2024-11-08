@@ -37,12 +37,12 @@ const buildStatus = (state: RootState, pendingStatus: PendingStatus, idempotency
     account,
     content: pendingStatus.status.replace(new RegExp('\n', 'g'), '<br>'), /* eslint-disable-line no-control-regex */
     id: `末pending-${idempotencyKey}`,
-    in_reply_to_account_id: state.statuses.getIn([inReplyToId, 'account'], null),
+    in_reply_to_account_id: state.statuses[inReplyToId || '']?.account_id || null,
     in_reply_to_id: inReplyToId,
     media_attachments: (pendingStatus.media_ids || ImmutableList()).map((id: string) => ({ id })),
     mentions: buildMentions(pendingStatus),
     poll: buildPoll(pendingStatus),
-    quote: pendingStatus.quote_id ? state.statuses.get(pendingStatus.quote_id) : null,
+    quote: pendingStatus.quote_id ? state.statuses[pendingStatus.quote_id] : null,
     sensitive: pendingStatus.sensitive,
     visibility: pendingStatus.visibility,
   };

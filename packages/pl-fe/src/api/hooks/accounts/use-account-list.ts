@@ -28,7 +28,7 @@ const useAccountList = (listKey: string[], entityFn: EntityFn<void>) => {
     getNextPageParam: (config) => config.next ? config : undefined,
   });
 
-  const data = flattenPages<Account>(queryInfo.data as any)?.toReversed() || [];
+  const data = flattenPages<Account>(queryInfo.data as any) || [];
 
   const { relationships } = useRelationships(
     listKey,

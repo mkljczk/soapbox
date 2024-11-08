@@ -24,7 +24,6 @@ import { useSettingsStore } from 'pl-fe/stores/settings';
 import { useUiStore } from 'pl-fe/stores/ui';
 import sourceCode from 'pl-fe/utils/code';
 
-import type { List as ImmutableList } from 'immutable';
 import type { Account as AccountEntity } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
@@ -95,9 +94,9 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const features = useFeatures();
   const me = useAppSelector((state) => state.me);
   const { account } = useAccount(me || undefined);
-  const otherAccounts: ImmutableList<AccountEntity> = useAppSelector((state) => getOtherAccounts(state));
+  const otherAccounts = useAppSelector((state) => getOtherAccounts(state));
   const { settings } = useSettingsStore();
-  const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.count());
+  const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.length);
   const interactionRequestsCount = useInteractionRequestsCount().data || 0;
   const scheduledStatusCount = useAppSelector((state) => state.scheduled_statuses.size);
   const draftCount = useAppSelector((state) => state.draft_statuses.size);

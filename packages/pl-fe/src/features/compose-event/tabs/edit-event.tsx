@@ -70,11 +70,11 @@ const EditEvent: React.FC<IEditEvent> = ({ statusId }) => {
     setName(target.value);
   };
 
-  const onChangeStartTime = (date: Date) => {
-    setStartTime(date);
+  const onChangeStartTime = (date: Date | null) => {
+    setStartTime(date === null ? new Date : date);
   };
 
-  const onChangeEndTime = (date: Date) => {
+  const onChangeEndTime = (date: Date | null) => {
     setEndTime(date);
   };
 

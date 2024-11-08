@@ -44,7 +44,7 @@ const expandDirectory = (params: Record<string, any>) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(expandDirectoryRequest());
 
-    const loadedItems = getState().user_lists.directory.items.size;
+    const loadedItems = getState().user_lists.directory.items.length;
 
     return getClient(getState()).instance.profileDirectory({ ...params, offset: loadedItems, limit: 20 }).then((data) => {
       importEntities({ accounts: data });

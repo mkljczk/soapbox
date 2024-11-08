@@ -1,7 +1,5 @@
 import {
-  List as ImmutableList,
   OrderedSet as ImmutableOrderedSet,
-  Record as ImmutableRecord,
 } from 'immutable';
 import { createSelector } from 'reselect';
 
@@ -59,35 +57,35 @@ const getAccountGallery = createSelector([
   (state: RootState, id: string) => state.timelines.get(`account:${id}:with_replies:media`)?.items || ImmutableOrderedSet<string>(),
   (state: RootState) => state.statuses,
 ], (statusIds, statuses) =>
-  statusIds.reduce((medias: ImmutableList<AccountGalleryAttachment>, statusId: string) => {
-    const status = statuses.get(statusId);
+  statusIds.reduce((medias: Array<AccountGalleryAttachment>, statusId: string) => {
+    const status = statuses[statusId];
     if (!status) return medias;
     if (status.reblog_id) return medias;
 
     return medias.concat(
       status.media_attachments.map(media => ({ ...media, status, account: status.account })));
-  }, ImmutableList()),
+  }, []),
 );
 
 const getGroupGallery = createSelector([
   (state: RootState, id: string) => state.timelines.get(`group:${id}:media`)?.items || ImmutableOrderedSet<string>(),
   (state: RootState) => state.statuses,
 ], (statusIds, statuses) =>
-  statusIds.reduce((medias: ImmutableList<any>, statusId: string) => {
-    const status = statuses.get(statusId);
+  statusIds.reduce((medias: Array<AccountGalleryAttachment>, statusId: string) => {
+    const status = statuses[statusId];
     if (!status) return medias;
     if (status.reblog_id) return medias;
 
     return medias.concat(
       status.media_attachments.map(media => ({ ...media, status, account: status.account })));
-  }, ImmutableList()),
+  }, []),
 );
 
 const makeGetReport = () => createSelector(
   [
-    (state: RootState, reportId: string) => state.admin.reports.get(reportId),
-    (state: RootState, reportId: string) => selectAccount(state, state.admin.reports.get(reportId)?.account_id || ''),
-    (state: RootState, reportId: string) => selectAccount(state, state.admin.reports.get(reportId)?.target_account_id || ''),
+    (state: RootState, reportId: string) => state.admin.reports[reportId],
+    (state: RootState, reportId: string) => selectAccount(state, state.admin.reports[reportId]?.account_id || ''),
+    (state: RootState, reportId: string) => selectAccount(state, state.admin.reports[reportId]?.target_account_id || ''),
     // (state: RootState, reportId: string) =>  state.admin.reports.get(reportId)!.status_ids
     //   .map((statusId) => queryClient.getQueryData() getStatus(state, { id: statusId }))
     //   .filter((status): status !== null),
@@ -119,11 +117,12 @@ const makeGetOtherAccounts = () => createSelector([
   getAuthUserIds,
   (state: RootState) => state.me,
 ], (accounts, authUserIds, me) =>
-  authUserIds.reduce((list: ImmutableList<any>, id: string) => {
+  authUserIds.reduce<Array<Account>>((list, id) => {
     if (id === me) return list;
     const account = accounts?.[id];
-    return account ? list.push(account) : list;
-  }, ImmutableList()),
+    if (account) list.push(account);
+    return list;
+  }, []),
 );
 
 const getSimplePolicy = createSelector([
@@ -137,7 +136,7 @@ const getSimplePolicy = createSelector([
 const getRemoteInstanceFavicon = (state: RootState, host: string) => {
   const accounts = state.entities[Entities.ACCOUNTS]?.store as EntityStore<Account>;
   const account = Object.entries(accounts).find(([_, account]) => account && getDomain(account) === host)?.[1];
-  return account?.favicon;
+  return account?.favicon || null;
 };
 
 type HostFederation = {
@@ -161,25 +160,22 @@ const makeGetHosts = () =>
       .sort();
   });
 
-const RemoteInstanceRecord = ImmutableRecord({
-  host: '',
-  favicon: null as string | null,
-  federation: null as unknown as HostFederation,
-});
-
-type RemoteInstance = ReturnType<typeof RemoteInstanceRecord>;
+interface RemoteInstance {
+  host: string;
+  favicon: string | null;
+  federation: HostFederation;
+}
 
 const makeGetRemoteInstance = () =>
   createSelector([
     (_state: RootState, host: string) => host,
     getRemoteInstanceFavicon,
     getRemoteInstanceFederation,
-  ], (host, favicon, federation) =>
-    RemoteInstanceRecord({
-      host,
-      favicon,
-      federation,
-    }));
+  ], (host, favicon, federation): RemoteInstance => ({
+    host,
+    favicon,
+    federation,
+  }));
 
 type ColumnQuery = { type: string; prefix?: string };
 
@@ -189,7 +185,7 @@ const makeGetStatusIds = () => createSelector([
   (state: RootState) => state.statuses,
 ], (columnSettings: any, statusIds: ImmutableOrderedSet<string>, statuses) =>
   statusIds.filter((id: string) => {
-    const status = statuses.get(id);
+    const status = statuses[id];
     if (!status) return true;
     return !shouldFilter(status, columnSettings);
   }),

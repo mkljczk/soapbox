@@ -1,22 +1,25 @@
-import { Record as ImmutableRecord } from 'immutable';
+import { create } from 'mutative';
 
 import { TRENDS_FETCH_SUCCESS, type TrendsAction } from '../actions/trends';
 
 import type { Tag } from 'pl-api';
 
-const ReducerRecord = ImmutableRecord({
-  items: Array<Tag>(),
+interface State {
+  items: Array<Tag>;
+  isLoading: boolean;
+}
+
+const initialState: State = {
+  items: [],
   isLoading: false,
-});
+};
 
-type State = ReturnType<typeof ReducerRecord>;
-
-const trendsReducer = (state: State = ReducerRecord(), action: TrendsAction) => {
+const trendsReducer = (state = initialState, action: TrendsAction) => {
   switch (action.type) {
     case TRENDS_FETCH_SUCCESS:
-      return state.withMutations(map => {
-        map.set('items', action.tags);
-        map.set('isLoading', false);
+      return create(state, (draft) => {
+        draft.items = action.tags;
+        draft.isLoading = false;
       });
     default:
       return state;

@@ -1,6 +1,6 @@
-import { produce } from 'immer';
 import * as v from 'valibot';
 import { create } from 'zustand';
+import { mutative } from 'zustand-mutative';
 
 import { settingsSchema, type Settings } from 'pl-fe/schemas/pl-fe/settings';
 
@@ -35,39 +35,39 @@ const changeSetting = (object: APIEntity, path: string[], value: any) => {
 
 const mergeSettings = (state: State) => state.settings = { ...state.defaultSettings, ...state.userSettings };
 
-const useSettingsStore = create<State>((set) => ({
+const useSettingsStore = create<State>()(mutative((set) => ({
   defaultSettings: v.parse(settingsSchema, {}),
   userSettings: {},
 
   settings: v.parse(settingsSchema, {}),
 
-  loadDefaultSettings: (settings: APIEntity) => set(produce((state: State) => {
+  loadDefaultSettings: (settings: APIEntity) => set((state: State) => {
     if (typeof settings !== 'object') return;
 
     state.defaultSettings = v.parse(settingsSchema, settings);
     mergeSettings(state);
-  })),
+  }),
 
-  loadUserSettings: (settings?: APIEntity) => set(produce((state: State) => {
+  loadUserSettings: (settings?: APIEntity) => set((state: State) => {
     if (typeof settings !== 'object') return;
 
     state.userSettings = v.parse(settingsSchemaPartial, settings);
     mergeSettings(state);
-  })),
+  }),
 
-  userSettingsSaving: () => set(produce((state: State) => {
+  userSettingsSaving: () => set((state: State) => {
     state.userSettings.saved = true;
 
     mergeSettings(state);
-  })),
+  }),
 
-  changeSetting: (path: string[], value: any) => set(produce((state: State) => {
+  changeSetting: (path: string[], value: any) => set((state: State) => {
     changeSetting(state.userSettings, path, value);
 
     mergeSettings(state);
-  })),
+  }),
 
-  rememberEmojiUse: (emoji: Emoji) => set(produce((state: State) => {
+  rememberEmojiUse: (emoji: Emoji) => set((state: State) => {
     const settings = state.userSettings;
     if (!settings.frequentlyUsedEmojis) settings.frequentlyUsedEmojis = {};
 
@@ -75,9 +75,9 @@ const useSettingsStore = create<State>((set) => ({
     settings.saved = false;
 
     mergeSettings(state);
-  })),
+  }),
 
-  rememberLanguageUse: (language: string) => set(produce((state: State) => {
+  rememberLanguageUse: (language: string) => set((state: State) => {
     const settings = state.userSettings;
     if (!settings.frequentlyUsedLanguages) settings.frequentlyUsedLanguages = {};
 
@@ -85,8 +85,8 @@ const useSettingsStore = create<State>((set) => ({
     settings.saved = false;
 
     mergeSettings(state);
-  })),
-}));
+  }),
+}), { enableAutoFreeze: true }));
 
 export { useSettingsStore };
 

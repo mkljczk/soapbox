@@ -43,7 +43,6 @@ const updateNotifications = (notification: Notification) =>
 
     importEntities({ notifications: [{ ...notification, accounts: [notification.account], duplicate: false }] });
 
-
     if (showInColumn) {
       const normalizedNotification = normalizeNotification(notification);
 

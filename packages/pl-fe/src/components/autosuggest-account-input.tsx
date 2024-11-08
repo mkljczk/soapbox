@@ -29,7 +29,7 @@ const AutosuggestAccountInput: React.FC<IAutosuggestAccountInput> = ({
   ...rest
 }) => {
   const dispatch = useAppDispatch();
-  const [accountIds, setAccountIds] = useState(Array<string>());
+  const [accountIds, setAccountIds] = useState<Array<string>>([]);
   const controller = useRef(new AbortController());
 
   const refreshCancelToken = () => {

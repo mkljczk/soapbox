@@ -52,7 +52,7 @@ interface IInteractionRequestStatus {
 }
 
 const InteractionRequestStatus: React.FC<IInteractionRequestStatus> = ({ id: statusId, hasReply, isReply, actions }) => {
-  const status = useAppSelector((state) => state.statuses.get(statusId));
+  const status = useAppSelector((state) => state.statuses[statusId]);
 
   if (!status) return null;
 

@@ -1,4 +1,3 @@
-import { Map as ImmutableMap } from 'immutable';
 import { importEntities } from 'pl-hooks';
 
 import { getLocale } from 'pl-fe/actions/settings';
@@ -104,15 +103,17 @@ interface TimelineDeleteAction {
   type: typeof TIMELINE_DELETE;
   statusId: string;
   accountId: string;
-  references: ImmutableMap<string, readonly [statusId: string, accountId: string]>;
+  references: Record<string, readonly [statusId: string, accountId: string]>;
   reblogOf: string | null;
 }
 
 const deleteFromTimelines = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const accountId = getState().statuses.get(statusId)?.account?.id!;
-    const references = getState().statuses.filter(status => status.reblog_id === statusId).map(status => [status.id, status.account_id] as const);
-    const reblogOf = getState().statuses.get(statusId)?.reblog_id || null;
+    const accountId = getState().statuses[statusId]?.account?.id!;
+    const references = Object.fromEntries(Object.entries(getState().statuses)
+      .filter(([key, status]) => [key, status.reblog_id === statusId])
+      .map(([key, status]) => [key, [status.id, status.account_id] as const]));
+    const reblogOf = getState().statuses[statusId]?.reblog_id || null;
 
     dispatch<TimelineDeleteAction>({
       type: TIMELINE_DELETE,

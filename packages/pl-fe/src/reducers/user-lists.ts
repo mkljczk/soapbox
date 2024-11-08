@@ -1,8 +1,4 @@
-import {
-  Map as ImmutableMap,
-  OrderedSet as ImmutableOrderedSet,
-  Record as ImmutableRecord,
-} from 'immutable';
+import { create } from 'mutative';
 import { AnyAction } from 'redux';
 
 import {
@@ -44,95 +40,123 @@ import {
   FAVOURITES_EXPAND_SUCCESS,
   DISLIKES_FETCH_SUCCESS,
   REACTIONS_FETCH_SUCCESS,
+  InteractionsAction,
 } from 'pl-fe/actions/interactions';
 import { NOTIFICATIONS_UPDATE } from 'pl-fe/actions/notifications';
 
-import type { Account, Notification, PaginatedResponse } from 'pl-api';
+import type { Account, EmojiReaction, Notification, PaginatedResponse } from 'pl-api';
 import type { APIEntity } from 'pl-fe/types/entities';
 
-const ListRecord = ImmutableRecord({
-  next: null as (() => Promise<PaginatedResponse<Account>>) | null,
-  items: ImmutableOrderedSet<string>(),
-  isLoading: false,
-});
+interface List {
+  next: (() => Promise<PaginatedResponse<Account>>) | null;
+  items: Array<string>;
+  isLoading: boolean;
+}
 
-const ReactionRecord = ImmutableRecord({
-  accounts: ImmutableOrderedSet<string>(),
-  count: 0,
-  name: '',
-  url: null as string | null,
-});
+interface Reaction {
+  accounts: Array<string>;
+  count: number;
+  name: string;
+  url: string | null;
+}
 
-const ReactionListRecord = ImmutableRecord({
-  next: null as (() => Promise<PaginatedResponse<Reaction>>) | null,
-  items: ImmutableOrderedSet<Reaction>(),
-  isLoading: false,
-});
+interface ReactionList {
+  next: (() => Promise<PaginatedResponse<Reaction>>) | null;
+  items: Array<Reaction>;
+  isLoading: boolean;
+}
 
-const ParticipationRequestRecord = ImmutableRecord({
-  account: '',
-  participation_message: null as string | null,
-});
+interface ParticipationRequest {
+  account: string;
+  participation_message: string | null;
+}
 
-const ParticipationRequestListRecord = ImmutableRecord({
-  next: null as (() => Promise<PaginatedResponse<any>>) | null,
-  items: ImmutableOrderedSet<ParticipationRequest>(),
-  isLoading: false,
-});
+interface ParticipationRequestList {
+  next: (() => Promise<PaginatedResponse<any>>) | null;
+  items: Array<ParticipationRequest>;
+  isLoading: boolean;
+}
 
-const ReducerRecord = ImmutableRecord({
-  followers: ImmutableMap<string, List>(),
-  following: ImmutableMap<string, List>(),
-  reblogged_by: ImmutableMap<string, List>(),
-  favourited_by: ImmutableMap<string, List>(),
-  disliked_by: ImmutableMap<string, List>(),
-  reactions: ImmutableMap<string, ReactionList>(),
-  follow_requests: ListRecord(),
-  mutes: ListRecord(),
-  directory: ListRecord({ isLoading: true }),
-  pinned: ImmutableMap<string, List>(),
-  birthday_reminders: ImmutableMap<string, List>(),
-  familiar_followers: ImmutableMap<string, List>(),
-  event_participations: ImmutableMap<string, List>(),
-  event_participation_requests: ImmutableMap<string, ParticipationRequestList>(),
-  membership_requests: ImmutableMap<string, List>(),
-  group_blocks: ImmutableMap<string, List>(),
-});
+type ListKey = 'follow_requests' | 'directory';
+type NestedListKey = 'reblogged_by' | 'favourited_by' | 'disliked_by' | 'pinned' | 'birthday_reminders' | 'familiar_followers' | 'event_participations' | 'membership_requests' | 'group_blocks';
 
-type State = ReturnType<typeof ReducerRecord>;
-type List = ReturnType<typeof ListRecord>;
-type Reaction = ReturnType<typeof ReactionRecord>;
-type ReactionList = ReturnType<typeof ReactionListRecord>;
-type ParticipationRequest = ReturnType<typeof ParticipationRequestRecord>;
-type ParticipationRequestList = ReturnType<typeof ParticipationRequestListRecord>;
-type Items = ImmutableOrderedSet<string>;
-type NestedListPath = ['followers' | 'following' | 'reblogged_by' | 'favourited_by' | 'disliked_by' | 'reactions' | 'pinned' | 'birthday_reminders' | 'familiar_followers' | 'event_participations' | 'event_participation_requests' | 'membership_requests' | 'group_blocks', string];
-type ListPath = ['follow_requests' | 'mutes' | 'directory'];
+type State = Record<ListKey, List> & Record<NestedListKey, Record<string, List>> & {
+  reactions: Record<string, ReactionList>;
+  event_participation_requests: Record<string, ParticipationRequestList>;
+};
 
-const normalizeList = (state: State, path: NestedListPath | ListPath, accounts: Array<Pick<Account, 'id'>>, next?: (() => any) | null) =>
-  state.setIn(path, ListRecord({
-    next,
-    items: ImmutableOrderedSet(accounts.map(item => item.id)),
-  }));
+const initialState: State = {
+  reblogged_by: {},
+  favourited_by: {},
+  disliked_by: {},
+  reactions: {},
+  follow_requests: { next: null, items: [], isLoading: false },
+  directory: { next: null, items: [], isLoading: true },
+  pinned: {},
+  birthday_reminders: {},
+  familiar_followers: {},
+  event_participations: {},
+  event_participation_requests: {},
+  membership_requests: {},
+  group_blocks: {},
+};
 
-const appendToList = (state: State, path: NestedListPath | ListPath, accounts: Array<Pick<Account, 'id'>>, next: (() => any) | null) =>
-  state.updateIn(path, map => (map as List)
-    .set('next', next)
-    .set('isLoading', false)
-    .update('items', list => (list as Items).concat(accounts.map(item => item.id))),
-  );
+type NestedListPath = [NestedListKey, string];
+type ListPath = [ListKey];
+
+const normalizeList = (state: State, path: NestedListPath | ListPath, accounts: Array<Pick<Account, 'id'>>, next: (() => Promise<PaginatedResponse<any>>) | null = null) =>
+  create(state, (draft) => {
+    let list: List;
+
+    if (path.length === 1) {
+      list = draft[path[0]];
+    } else {
+      list = draft[path[0]][path[1]];
+    }
+
+    const newList = { ...list, next, items: accounts.map(item => item.id), isLoading: false };
+
+    if (path.length === 1) {
+      draft[path[0]] = newList;
+    } else {
+      draft[path[0]][path[1]] = newList;
+    }
+  });
+
+const appendToList = (state: State, path: NestedListPath | ListPath, accounts: Array<Pick<Account, 'id'>>, next: (() => any) | null = null) =>
+  create(state, (draft) => {
+    let list: List;
+
+    if (path.length === 1) {
+      list = draft[path[0]];
+    } else {
+      list = draft[path[0]][path[1]];
+    }
+
+    list.next = next;
+    list.isLoading = false;
+    list.items = [...new Set([...list.items, ...accounts.map(item => item.id)])];
+  });
 
 const removeFromList = (state: State, path: NestedListPath | ListPath, accountId: string) =>
-  state.updateIn(path, map =>
-    (map as List).update('items', list => (list as Items).filterNot(item => item === accountId)),
-  );
+  create(state, (draft) => {
+    let list: List;
+
+    if (path.length === 1) {
+      list = draft[path[0]];
+    } else {
+      list = draft[path[0]][path[1]];
+    }
+
+    list.items = list.items.filter(item => item !== accountId);
+  });
 
 const normalizeFollowRequest = (state: State, notification: Notification) =>
-  state.updateIn(['follow_requests', 'items'], list =>
-    ImmutableOrderedSet([notification.account.id]).union(list as Items),
-  );
+  create(state, (draft) => {
+    draft.follow_requests.items = [...new Set([notification.account.id, ...draft.follow_requests.items])];
+  });
 
-const userLists = (state = ReducerRecord(), action: DirectoryAction | AnyAction) => {
+const userLists = (state = initialState, action: DirectoryAction | InteractionsAction | AnyAction): State => {
   switch (action.type) {
     case REBLOGS_FETCH_SUCCESS:
       return normalizeList(state, ['reblogged_by', action.statusId], action.accounts, action.next);
@@ -145,12 +169,13 @@ const userLists = (state = ReducerRecord(), action: DirectoryAction | AnyAction)
     case DISLIKES_FETCH_SUCCESS:
       return normalizeList(state, ['disliked_by', action.statusId], action.accounts);
     case REACTIONS_FETCH_SUCCESS:
-      return state.setIn(['reactions', action.statusId], ReactionListRecord({
-        items: ImmutableOrderedSet<Reaction>(action.reactions.map(({ accounts, ...reaction }: APIEntity) => ReactionRecord({
-          ...reaction,
-          accounts: ImmutableOrderedSet(accounts.map((account: APIEntity) => account.id)),
-        }))),
-      }));
+      return create(state, (draft) => {
+        draft.reactions[action.statusId] = {
+          items: action.reactions.map((reaction: EmojiReaction) => ({ ...reaction, accounts: reaction.accounts.map(({ id }) => id) })),
+          next: null,
+          isLoading: false,
+        };
+      });
     case NOTIFICATIONS_UPDATE:
       return action.notification.type === 'follow_request' ? normalizeFollowRequest(state, action.notification) : state;
     case FOLLOW_REQUESTS_FETCH_SUCCESS:
@@ -166,10 +191,14 @@ const userLists = (state = ReducerRecord(), action: DirectoryAction | AnyAction)
       return appendToList(state, ['directory'], action.accounts, null);
     case DIRECTORY_FETCH_REQUEST:
     case DIRECTORY_EXPAND_REQUEST:
-      return state.setIn(['directory', 'isLoading'], true);
+      return create(state, (draft) => {
+        draft.directory.isLoading = true;
+      });
     case DIRECTORY_FETCH_FAIL:
     case DIRECTORY_EXPAND_FAIL:
-      return state.setIn(['directory', 'isLoading'], false);
+      return create(state, (draft) => {
+        draft.directory.isLoading = false;
+      });
     case PINNED_ACCOUNTS_FETCH_SUCCESS:
       return normalizeList(state, ['pinned', action.accountId], action.accounts, action.next);
     case BIRTHDAY_REMINDERS_FETCH_SUCCESS:
@@ -181,43 +210,60 @@ const userLists = (state = ReducerRecord(), action: DirectoryAction | AnyAction)
     case EVENT_PARTICIPATIONS_EXPAND_SUCCESS:
       return appendToList(state, ['event_participations', action.statusId], action.accounts, action.next);
     case EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS:
-      return state.setIn(['event_participation_requests', action.statusId], ParticipationRequestListRecord({
-        next: action.next,
-        items: ImmutableOrderedSet(action.participations.map(({ account, participation_message }: APIEntity) => ParticipationRequestRecord({
-          account: account.id,
-          participation_message,
-        }))),
-      }));
-    case EVENT_PARTICIPATION_REQUESTS_EXPAND_SUCCESS:
-      return state.updateIn(
-        ['event_participation_requests', action.statusId, 'items'],
-        (items) => (items as ImmutableOrderedSet<ParticipationRequest>)
-          .union(action.participations.map(({ account, participation_message }: APIEntity) => ParticipationRequestRecord({
+      return create(state, (draft) => {
+        draft.event_participation_requests[action.statusId] = {
+          next: action.next,
+          items: action.participations.map(({ account, participation_message }: APIEntity) => ({
             account: account.id,
             participation_message,
-          }))),
-      );
+          })),
+          isLoading: false,
+        };
+      });
+    case EVENT_PARTICIPATION_REQUESTS_EXPAND_SUCCESS:
+      return create(state, (draft) => {
+        const list = draft.event_participation_requests[action.statusId];
+        list.next = action.next;
+        list.items = [...list.items, ...action.participations.map(({ account, participation_message }: APIEntity) => ({
+          account: account.id,
+          participation_message,
+        }))];
+        list.isLoading = false;
+      });
     case EVENT_PARTICIPATION_REQUEST_AUTHORIZE_SUCCESS:
     case EVENT_PARTICIPATION_REQUEST_REJECT_SUCCESS:
-      return state.updateIn(
-        ['event_participation_requests', action.statusId, 'items'],
-        items => (items as ImmutableOrderedSet<ParticipationRequest>).filter(({ account }) => account !== action.accountId),
-      );
+      return create(state, (draft) => {
+        const list = draft.event_participation_requests[action.statusId];
+        if (list.items) list.items = list.items.filter(item => item !== action.accountId);
+      });
     case GROUP_BLOCKS_FETCH_SUCCESS:
       return normalizeList(state, ['group_blocks', action.groupId], action.accounts, action.next);
     case GROUP_BLOCKS_FETCH_REQUEST:
-      return state.setIn(['group_blocks', action.groupId, 'isLoading'], true);
+      return create(state, (draft) => {
+        draft.group_blocks[action.groupId] = {
+          items: [],
+          next: null,
+          isLoading: true,
+        };
+      });
     case GROUP_BLOCKS_FETCH_FAIL:
-      return state.setIn(['group_blocks', action.groupId, 'isLoading'], false);
+      return create(state, (draft) => {
+        draft.group_blocks[action.groupId] = {
+          items: [],
+          next: null,
+          isLoading: false,
+        };
+      });
     case GROUP_UNBLOCK_SUCCESS:
-      return state.updateIn(['group_blocks', action.groupId, 'items'], list => (list as ImmutableOrderedSet<string>).filterNot(item => item === action.accountId));
+      return create(state, (draft) => {
+        const list = draft.group_blocks[action.groupId];
+        if (list.items) list.items = list.items.filter(item => item !== action.accountId);
+      });
     default:
       return state;
   }
 };
 
 export {
-  ListRecord,
-  ReducerRecord,
   userLists as default,
 };

@@ -1,4 +1,3 @@
-import { List as ImmutableList } from 'immutable';
 import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -27,7 +26,7 @@ const AccountGallery = () => {
     isUnavailable,
   } = useAccountLookup(username, { withRelationship: true });
 
-  const attachments: ImmutableList<AccountGalleryAttachment> = useAppSelector((state) => account ? getAccountGallery(state, account.id) : ImmutableList());
+  const attachments: Array<AccountGalleryAttachment> = useAppSelector((state) => account ? getAccountGallery(state, account.id) : []);
   const isLoading = useAppSelector((state) => state.timelines.get(`account:${account?.id}:with_replies:media`)?.isLoading);
   const hasMore = useAppSelector((state) => state.timelines.get(`account:${account?.id}:with_replies:media`)?.hasMore);
 
@@ -81,7 +80,7 @@ const AccountGallery = () => {
 
   let loadOlder = null;
 
-  if (hasMore && !(isLoading && attachments.size === 0)) {
+  if (hasMore && !(isLoading && attachments.length === 0)) {
     loadOlder = <LoadMore className='my-auto mt-4' visible={!isLoading} onClick={handleLoadOlder} />;
   }
 
@@ -103,11 +102,11 @@ const AccountGallery = () => {
             key={`${attachment.status.id}+${attachment.id}`}
             attachment={attachment}
             onOpenMedia={handleOpenMedia}
-            isLast={index === attachments.size - 1}
+            isLast={index === attachments.length - 1}
           />
         ))}
 
-        {!isLoading && attachments.size === 0 && (
+        {!isLoading && attachments.length === 0 && (
           <div className='empty-column-indicator col-span-2 sm:col-span-3'>
             <FormattedMessage id='account_gallery.none' defaultMessage='No media to show.' />
           </div>
@@ -116,7 +115,7 @@ const AccountGallery = () => {
 
       {loadOlder}
 
-      {isLoading && attachments.size === 0 && (
+      {isLoading && attachments.length === 0 && (
         <div className='relative flex-auto px-8 py-4'>
           <Spinner />
         </div>

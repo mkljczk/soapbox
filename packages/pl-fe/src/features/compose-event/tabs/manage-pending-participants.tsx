@@ -70,7 +70,7 @@ interface IManagePendingParticipants {
 const ManagePendingParticipants: React.FC<IManagePendingParticipants> = ({ statusId }) => {
   const dispatch = useAppDispatch();
 
-  const accounts = useAppSelector((state) => state.user_lists.event_participation_requests.get(statusId!)?.items);
+  const accounts = useAppSelector((state) => state.user_lists.event_participation_requests[statusId]?.items);
 
   useEffect(() => {
     if (statusId) dispatch(fetchEventParticipationRequests(statusId));

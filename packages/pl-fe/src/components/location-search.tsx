@@ -23,7 +23,7 @@ interface ILocationSearch {
 const LocationSearch: React.FC<ILocationSearch> = ({ onSelected }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const [locationIds, setLocationIds] = useState(Array<string>());
+  const [locationIds, setLocationIds] = useState<Array<string>>([]);
   const controller = useRef(new AbortController());
 
   const [value, setValue] = useState('');

@@ -29,7 +29,7 @@ const BirthdayInput: React.FC<IBirthdayInput> = ({ value, onChange, required }) 
   const minAge = instance.pleroma.metadata.birthday_min_age;
 
   const maxDate = useMemo(() => {
-    if (!supportsBirthdays) return null;
+    if (!supportsBirthdays) return undefined;
 
     let maxDate = new Date();
     maxDate = new Date(maxDate.getTime() - minAge * 1000 * 60 * 60 * 24 + maxDate.getTimezoneOffset() * 1000 * 60);
@@ -108,7 +108,7 @@ const BirthdayInput: React.FC<IBirthdayInput> = ({ value, onChange, required }) 
     </div>
   );
 
-  const handleChange = (date: Date) => onChange(date ? new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, 10) : '');
+  const handleChange = (date: Date | null) => onChange(date ? new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, 10) : '');
 
   return (
     <div className='relative mt-1 rounded-md shadow-sm'>

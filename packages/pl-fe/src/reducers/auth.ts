@@ -261,17 +261,19 @@ const importMastodonPreload = (state: State, data: ImmutableMap<string, any>) =>
   });
 
 const persistAuthAccount = (account: CredentialAccount) => {
-  if (account && account.url) {
-    const key = `authAccount:${account.url}`;
-    KVStore.getItem(key).then((oldAccount: any) => {
-      const settings = oldAccount?.settings_store || {};
-      if (!account.settings_store) {
-        account.settings_store = settings;
-      }
-      KVStore.setItem(key, account);
-    })
-      .catch(console.error);
-  }
+  const persistedAccount = { ...account };
+  const key = `authAccount:${account.url}`;
+
+  KVStore.getItem(key).then((oldAccount: any) => {
+    const settings = oldAccount?.settings_store || {};
+    if (!persistedAccount.settings_store) {
+      persistedAccount.settings_store = settings;
+    }
+    KVStore.setItem(key, persistedAccount);
+  })
+    .catch(console.error);
+
+  return persistedAccount;
 };
 
 const deleteForbiddenToken = (state: State, error: { response: PlfeResponse }, token: string) => {
@@ -293,8 +295,7 @@ const reducer = (state: State, action: AnyAction | AuthAction | MeAction | Prelo
     case AUTH_LOGGED_OUT:
       return deleteUser(state, action.account);
     case VERIFY_CREDENTIALS_SUCCESS:
-      persistAuthAccount(action.account);
-      return importCredentials(state, action.token, action.account);
+      return importCredentials(state, action.token, persistAuthAccount(action.account));
     case VERIFY_CREDENTIALS_FAIL:
       return deleteForbiddenToken(state, action.error, action.token);
     case SWITCH_ACCOUNT:

@@ -39,9 +39,9 @@ const UserIndex: React.FC = () => {
     updateQuery();
   }, []);
 
-  const hasMore = items.count() < total && !!next;
+  const hasMore = items.length < total && !!next;
 
-  const showLoading = isLoading && items.isEmpty();
+  const showLoading = isLoading && !items.length;
 
   return (
     <Column label={intl.formatMessage(messages.heading)}>

@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { List as ImmutableList } from 'immutable';
 import React, { PureComponent } from 'react';
 
 import AutosuggestEmoji from 'pl-fe/components/autosuggest-emoji';
@@ -40,7 +39,7 @@ class AutosuggestInput extends PureComponent<IAutosuggestInput> {
   static defaultProps = {
     autoFocus: false,
     autoSelect: true,
-    searchTokens: ImmutableList(['@', ':', '#']),
+    searchTokens: ['@', ':', '#'],
   };
 
   getFirstIndex = () => this.props.autoSelect ? 0 : -1;
@@ -263,7 +262,7 @@ class AutosuggestInput extends PureComponent<IAutosuggestInput> {
     const { value, suggestions, disabled, placeholder, onKeyUp, autoFocus, className, id, maxLength, menu, theme } = this.props;
     const { suggestionsHidden } = this.state;
 
-    const visible = !suggestionsHidden && (suggestions.length !== 0 || (menu && value));
+    const visible = !suggestionsHidden && (suggestions.length || (menu && value));
 
     return [
       <div key='input' className='relative w-full'>

@@ -20,7 +20,7 @@ interface FamiliarFollowersModalProps {
 const FamiliarFollowersModal: React.FC<BaseModalProps & FamiliarFollowersModalProps> = ({ accountId, onClose }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const account = useAppSelector(state => getAccount(state, accountId));
-  const familiarFollowerIds = useAppSelector(state => state.user_lists.familiar_followers.get(accountId)?.items || []);
+  const familiarFollowerIds = useAppSelector(state => state.user_lists.familiar_followers[accountId]?.items || []);
 
   const onClickClose = () => {
     onClose('FAMILIAR_FOLLOWERS');
