@@ -9,10 +9,6 @@ import { STATUS_FETCH_SOURCE_FAIL, STATUS_FETCH_SOURCE_REQUEST, STATUS_FETCH_SOU
 import type { Account, CreateEventParams, Location, MediaAttachment, PaginatedResponse, Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
-const LOCATION_SEARCH_REQUEST = 'LOCATION_SEARCH_REQUEST' as const;
-const LOCATION_SEARCH_SUCCESS = 'LOCATION_SEARCH_SUCCESS' as const;
-const LOCATION_SEARCH_FAIL = 'LOCATION_SEARCH_FAIL' as const;
-
 const EVENT_SUBMIT_REQUEST = 'EVENT_SUBMIT_REQUEST' as const;
 const EVENT_SUBMIT_SUCCESS = 'EVENT_SUBMIT_SUCCESS' as const;
 const EVENT_SUBMIT_FAIL = 'EVENT_SUBMIT_FAIL' as const;
@@ -72,18 +68,6 @@ const messages = defineMessages({
   authorized: { id: 'compose_event.participation_requests.authorize_success', defaultMessage: 'User accepted' },
   rejected: { id: 'compose_event.participation_requests.reject_success', defaultMessage: 'User rejected' },
 });
-
-const locationSearch = (query: string, signal?: AbortSignal) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: LOCATION_SEARCH_REQUEST, query });
-    return getClient(getState).search.searchLocation(query, { signal }).then((locations) => {
-      dispatch({ type: LOCATION_SEARCH_SUCCESS, locations });
-      return locations;
-    }).catch(error => {
-      dispatch({ type: LOCATION_SEARCH_FAIL });
-      throw error;
-    });
-  };
 
 const submitEvent = ({
   statusId,
@@ -509,9 +493,6 @@ type EventsAction =
   | EventFormSetAction;
 
 export {
-  LOCATION_SEARCH_REQUEST,
-  LOCATION_SEARCH_SUCCESS,
-  LOCATION_SEARCH_FAIL,
   EVENT_SUBMIT_REQUEST,
   EVENT_SUBMIT_SUCCESS,
   EVENT_SUBMIT_FAIL,
@@ -547,7 +528,6 @@ export {
   JOINED_EVENTS_FETCH_REQUEST,
   JOINED_EVENTS_FETCH_SUCCESS,
   JOINED_EVENTS_FETCH_FAIL,
-  locationSearch,
   submitEvent,
   submitEventRequest,
   submitEventSuccess,

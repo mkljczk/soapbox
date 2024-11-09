@@ -23,7 +23,6 @@ import instance from './instance';
 import listAdder from './list-adder';
 import listEditor from './list-editor';
 import lists from './lists';
-import locations from './locations';
 import me from './me';
 import meta from './meta';
 import notifications from './notifications';
@@ -65,7 +64,6 @@ const reducers = {
   listAdder,
   listEditor,
   lists,
-  locations,
   me,
   meta,
   notifications,

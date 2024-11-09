@@ -44,7 +44,9 @@ import AutosuggestAccount from '../../components/autosuggest-account';
 import { $createEmojiNode } from '../nodes/emoji-node';
 import { $createMentionNode } from '../nodes/mention-node';
 
-import type { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
+import type { Emoji } from 'pl-fe/features/emoji';
+
+type AutoSuggestion = string | Emoji;
 
 type QueryMatch = {
   leadOffset: number;

@@ -8,15 +8,18 @@ import Portal from 'pl-fe/components/ui/portal';
 import AutosuggestAccount from 'pl-fe/features/compose/components/autosuggest-account';
 import { textAtCursorMatchesToken } from 'pl-fe/utils/suggestions';
 
+import AutosuggestLocation from './autosuggest-location';
+
+import type { Location } from 'pl-api';
 import type { Menu, MenuItem } from 'pl-fe/components/dropdown-menu';
 import type { InputThemes } from 'pl-fe/components/ui/input';
 import type { Emoji } from 'pl-fe/features/emoji';
 
-type AutoSuggestion = string | Emoji;
+type AutoSuggestion = string | Emoji | Location;
 
 interface IAutosuggestInput extends Pick<React.HTMLAttributes<HTMLInputElement>, 'onChange' | 'onKeyUp' | 'onKeyDown'> {
   value: string;
-  suggestions: Array<any>;
+  suggestions: Array<AutoSuggestion>;
   disabled?: boolean;
   placeholder?: string;
   onSuggestionSelected: (tokenStart: number, lastToken: string | null, suggestion: AutoSuggestion) => void;
@@ -29,7 +32,6 @@ interface IAutosuggestInput extends Pick<React.HTMLAttributes<HTMLInputElement>,
   searchTokens?: string[];
   maxLength?: number;
   menu?: Menu;
-  renderSuggestion?: React.FC<{ id: string }>;
   hidePortal?: boolean;
   theme?: InputThemes;
 }
@@ -165,16 +167,12 @@ const AutosuggestInput: React.FC<IAutosuggestInput> = ({
   const renderSuggestion = (suggestion: AutoSuggestion, i: number) => {
     let inner, key;
 
-    if (props.renderSuggestion && typeof suggestion === 'string') {
-      const RenderSuggestion = props.renderSuggestion;
-      inner = <RenderSuggestion id={suggestion} />;
-      key = suggestion;
+    if (typeof suggestion === 'object' && 'origin_id' in suggestion) {
+      inner = <AutosuggestLocation location={suggestion} />;
+      key = suggestion.origin_id;
     } else if (typeof suggestion === 'object') {
       inner = <AutosuggestEmoji emoji={suggestion} />;
       key = suggestion.id;
-    } else if (suggestion[0] === '#') {
-      inner = suggestion;
-      key = suggestion;
     } else {
       inner = <AutosuggestAccount id={suggestion} />;
       key = suggestion;
