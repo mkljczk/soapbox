@@ -68,7 +68,7 @@ const SearchResults = () => {
   const suggestions = useAppSelector((state) => state.suggestions.items);
   const { data: trendingTags } = useTrends();
   const { data: trendingStatuses } = useTrendingStatuses();
-  const { trendingLinks } = useTrendingLinks();
+  const { data: trendingLinks } = useTrendingLinks();
   const { account } = useAccount(accountId);
 
   const handleUnsetAccount = () => {
