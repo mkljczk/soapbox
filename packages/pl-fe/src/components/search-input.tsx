@@ -1,73 +1,88 @@
 import clsx from 'clsx';
-import debounce from 'lodash/debounce';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { useSearchParams } from 'react-router-dom-v5-compat';
+import { useHistory } from 'react-router-dom';
 
-import Input from 'pl-fe/components/ui/input';
+import AutosuggestAccountInput from 'pl-fe/components/autosuggest-account-input';
 import SvgIcon from 'pl-fe/components/ui/svg-icon';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { selectAccount } from 'pl-fe/selectors';
+import { AppDispatch, RootState } from 'pl-fe/store';
 
 const messages = defineMessages({
   placeholder: { id: 'search.placeholder', defaultMessage: 'Search' },
+  action: { id: 'search.action', defaultMessage: 'Search for “{query}”' },
 });
 
-const Search = () => {
-  const [params, setParams] = useSearchParams();
-  const [value, setValue] = useState(params.get('q') || '');
+const redirectToAccount = (accountId: string, routerHistory: any) =>
+  (_dispatch: AppDispatch, getState: () => RootState) => {
+    const acct = selectAccount(getState(), accountId)!.acct;
 
-  const intl = useIntl();
-
-  const setQuery = (value: string) => {
-    setParams(params => ({ ...Object.fromEntries(params.entries()), q: value }));
+    if (acct && routerHistory) {
+      routerHistory.push(`/@${acct}`);
+    }
   };
 
-  const debouncedSubmit = useCallback(debounce((value: string) => {
-    setQuery(value);
-  }, 900), []);
+const SearchInput = () => {
+  const [value, setValue] = useState('');
+
+  const dispatch = useAppDispatch();
+  const history = useHistory();
+  const intl = useIntl();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
 
     setValue(value);
-    debouncedSubmit(value);
   };
 
   const handleClear = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.preventDefault();
+    setValue('');
+  };
 
-    if (value.length > 0) {
-      setValue('');
-      setQuery('');
-    }
+  const handleSubmit = () => {
+    setValue('');
+    history.push('/search?' + new URLSearchParams({ q: value }));
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
 
-      setQuery(value);
+      handleSubmit();
     } else if (event.key === 'Escape') {
       document.querySelector('.ui')?.parentElement?.focus();
     }
   };
 
+  const handleSelected = (accountId: string) => {
+    setValue('');
+    dispatch(redirectToAccount(accountId, history));
+  };
+
+  const makeMenu = () => [
+    {
+      text: intl.formatMessage(messages.action, { query: value }),
+      icon: require('@tabler/icons/outline/search.svg'),
+      action: handleSubmit,
+    },
+  ];
+
   const hasValue = value.length > 0;
 
   return (
-    <div
-      className='sticky top-[76px] z-10 w-full bg-white/90 backdrop-blur black:bg-black/80 dark:bg-primary-900/90'
-    >
+    <div className='w-full'>
       <label htmlFor='search' className='sr-only'>{intl.formatMessage(messages.placeholder)}</label>
 
       <div className='relative'>
-        <Input
-          type='text'
-          id='search'
+        <AutosuggestAccountInput
           placeholder={intl.formatMessage(messages.placeholder)}
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          autoFocus
+          onSelected={handleSelected}
+          menu={makeMenu()}
+          autoSelect={false}
           theme='search'
           className='pr-10 rtl:pl-10 rtl:pr-3'
         />
@@ -94,4 +109,4 @@ const Search = () => {
   );
 };
 
-export { Search as default };
+export { SearchInput as default };
