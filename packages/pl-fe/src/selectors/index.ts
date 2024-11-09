@@ -1,7 +1,4 @@
-import {
-  List as ImmutableList,
-  OrderedSet as ImmutableOrderedSet,
-} from 'immutable';
+import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import { createSelector } from 'reselect';
 
 // import { getLocale } from 'pl-fe/actions/settings';
@@ -80,8 +77,8 @@ const getFilters = (state: RootState, query: FilterContext) =>
 const escapeRegExp = (string: string) =>
   string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 
-const regexFromFilters = (filters: ImmutableList<Filter>) => {
-  if (filters.size === 0) return null;
+const regexFromFilters = (filters: Array<Filter>) => {
+  if (filters.length === 0) return null;
 
   return new RegExp(filters.map(filter =>
     filter.keywords.map(keyword => {
@@ -102,7 +99,7 @@ const regexFromFilters = (filters: ImmutableList<Filter>) => {
   ).join('|'), 'i');
 };
 
-const checkFiltered = (index: string, filters: ImmutableList<Filter>) =>
+const checkFiltered = (index: string, filters: Array<Filter>) =>
   filters.reduce((result: Array<string>, filter) =>
     result.concat(filter.keywords.reduce((result: Array<string>, keyword) => {
       let expr = escapeRegExp(keyword.keyword);

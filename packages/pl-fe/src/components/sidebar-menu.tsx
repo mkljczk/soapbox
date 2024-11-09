@@ -98,7 +98,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const { settings } = useSettingsStore();
   const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.length);
   const interactionRequestsCount = useInteractionRequestsCount().data || 0;
-  const scheduledStatusCount = useAppSelector((state) => state.scheduled_statuses.size);
+  const scheduledStatusCount = useAppSelector((state) => Object.keys(state.scheduled_statuses).length);
   const draftCount = useAppSelector((state) => Object.keys(state.draft_statuses).length);
   // const dashboardCount = useAppSelector((state) => state.admin.openReports.count() + state.admin.awaitingApproval.count());
   const [sidebarVisible, setSidebarVisible] = useState(isSidebarOpen);

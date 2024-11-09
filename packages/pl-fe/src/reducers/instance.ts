@@ -1,4 +1,3 @@
-import { Map as ImmutableMap } from 'immutable';
 import { create } from 'mutative';
 import { type Instance, instanceSchema, PleromaConfig } from 'pl-api';
 import * as v from 'valibot';
@@ -20,11 +19,11 @@ const preloadImport = (state: State, action: Record<string, any>, path: string) 
   return instance ? v.parse(instanceSchema, instance) : state;
 };
 
-const getConfigValue = (instanceConfig: ImmutableMap<string, any>, key: string) => {
+const getConfigValue = (instanceConfig: Array<any>, key: string) => {
   const v = instanceConfig
-    .find(value => value.getIn(['tuple', 0]) === key);
+    .find(value => value?.tuple?.[0] === key);
 
-  return v ? v.getIn(['tuple', 1]) : undefined;
+  return v ? v?.tuple?.[1] : undefined;
 };
 
 const importConfigs = (state: State, configs: PleromaConfig['configs']) => {
