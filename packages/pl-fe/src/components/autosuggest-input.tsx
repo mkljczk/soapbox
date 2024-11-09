@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { PureComponent } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import AutosuggestEmoji from 'pl-fe/components/autosuggest-emoji';
 import Icon from 'pl-fe/components/icon';
@@ -22,11 +22,11 @@ interface IAutosuggestInput extends Pick<React.HTMLAttributes<HTMLInputElement>,
   onSuggestionSelected: (tokenStart: number, lastToken: string | null, suggestion: AutoSuggestion) => void;
   onSuggestionsClearRequested: () => void;
   onSuggestionsFetchRequested: (token: string) => void;
-  autoFocus: boolean;
-  autoSelect: boolean;
+  autoFocus?: boolean;
+  autoSelect?: boolean;
   className?: string;
   id?: string;
-  searchTokens: string[];
+  searchTokens?: string[];
   maxLength?: number;
   menu?: Menu;
   renderSuggestion?: React.FC<{ id: string }>;
@@ -34,50 +34,48 @@ interface IAutosuggestInput extends Pick<React.HTMLAttributes<HTMLInputElement>,
   theme?: InputThemes;
 }
 
-class AutosuggestInput extends PureComponent<IAutosuggestInput> {
+const AutosuggestInput: React.FC<IAutosuggestInput> = ({
+  autoFocus = false,
+  autoSelect = true,
+  searchTokens = ['@', ':', '#'],
+  ...props
+}) => {
+  const getFirstIndex = () => autoSelect ? 0 : -1;
 
-  static defaultProps = {
-    autoFocus: false,
-    autoSelect: true,
-    searchTokens: ['@', ':', '#'],
-  };
+  const [suggestionsHidden, setSuggestionsHidden] = useState(true);
+  const [focused, setFocused] = useState(false);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(getFirstIndex());
+  const [lastToken, setLastToken] = useState<string | null>(null);
+  const [tokenStart, setTokenStart] = useState<number | null>(0);
 
-  getFirstIndex = () => this.props.autoSelect ? 0 : -1;
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  state = {
-    suggestionsHidden: true,
-    focused: false,
-    selectedSuggestion: this.getFirstIndex(),
-    lastToken: null,
-    tokenStart: 0,
-  };
 
-  input: HTMLInputElement | null = null;
-
-  onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+  const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const [tokenStart, token] = textAtCursorMatchesToken(
       e.target.value,
       e.target.selectionStart || 0,
-      this.props.searchTokens,
+      searchTokens,
     );
 
-    if (token !== null && this.state.lastToken !== token) {
-      this.setState({ lastToken: token, selectedSuggestion: 0, tokenStart });
-      this.props.onSuggestionsFetchRequested(token);
+    if (token !== null && lastToken !== token) {
+      setLastToken(token);
+      setSelectedSuggestion(0);
+      setTokenStart(tokenStart);
+      props.onSuggestionsFetchRequested(token);
     } else if (token === null) {
-      this.setState({ lastToken: null });
-      this.props.onSuggestionsClearRequested();
+      setLastToken(null);
+      props.onSuggestionsClearRequested();
     }
 
-    if (this.props.onChange) {
-      this.props.onChange(e);
+    if (props.onChange) {
+      props.onChange(e);
     }
   };
 
-  onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    const { suggestions, menu, disabled } = this.props;
-    const { selectedSuggestion, suggestionsHidden } = this.state;
-    const firstIndex = this.getFirstIndex();
+  const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+    const { suggestions, menu, disabled } = props;
+    const firstIndex = getFirstIndex();
     const lastIndex = suggestions.length + (menu || []).length - 1;
 
     if (disabled) {
@@ -97,21 +95,21 @@ class AutosuggestInput extends PureComponent<IAutosuggestInput> {
           document.querySelector('.ui')?.parentElement?.focus();
         } else {
           e.preventDefault();
-          this.setState({ suggestionsHidden: true });
+          setSuggestionsHidden(true);
         }
 
         break;
       case 'ArrowDown':
         if (!suggestionsHidden && (suggestions.length > 0 || menu)) {
           e.preventDefault();
-          this.setState({ selectedSuggestion: Math.min(selectedSuggestion + 1, lastIndex) });
+          setSelectedSuggestion((selectedSuggestion) => Math.min(selectedSuggestion + 1, lastIndex));
         }
 
         break;
       case 'ArrowUp':
         if (!suggestionsHidden && (suggestions.length > 0 || menu)) {
           e.preventDefault();
-          this.setState({ selectedSuggestion: Math.max(selectedSuggestion - 1, firstIndex) });
+          setSelectedSuggestion((selectedSuggestion) => Math.min(selectedSuggestion - 1, lastIndex));
         }
 
         break;
@@ -121,61 +119,54 @@ class AutosuggestInput extends PureComponent<IAutosuggestInput> {
         if (!suggestionsHidden && selectedSuggestion > -1 && (suggestions.length > 0 || menu)) {
           e.preventDefault();
           e.stopPropagation();
-          this.setState({ selectedSuggestion: firstIndex });
+          setSelectedSuggestion(firstIndex);
 
           if (selectedSuggestion < suggestions.length) {
-            this.props.onSuggestionSelected(this.state.tokenStart, this.state.lastToken, suggestions[selectedSuggestion]);
+            props.onSuggestionSelected(tokenStart!, lastToken, suggestions[selectedSuggestion]);
           } else if (menu) {
             const item = menu[selectedSuggestion - suggestions.length];
-            this.handleMenuItemAction(item, e);
+            handleMenuItemAction(item, e);
           }
         }
 
         break;
     }
 
-    if (e.defaultPrevented || !this.props.onKeyDown) {
+    if (e.defaultPrevented || !props.onKeyDown) {
       return;
     }
 
-    if (this.props.onKeyDown) {
-      this.props.onKeyDown(e);
+    if (props.onKeyDown) {
+      props.onKeyDown(e);
     }
   };
 
-  onBlur = () => {
-    this.setState({ suggestionsHidden: true, focused: false });
+  const onBlur = () => {
+    setSuggestionsHidden(true);
+    setFocused(true);
   };
 
-  onFocus = () => {
-    this.setState({ focused: true });
+  const onFocus = () => {
+    setFocused(true);
   };
 
-  onSuggestionClick: React.EventHandler<React.MouseEvent | React.TouchEvent> = (e) => {
+  const onSuggestionClick: React.EventHandler<React.MouseEvent | React.TouchEvent> = (e) => {
     const index = Number(e.currentTarget?.getAttribute('data-index'));
-    const suggestion = this.props.suggestions[index];
-    this.props.onSuggestionSelected(this.state.tokenStart, this.state.lastToken, suggestion);
-    this.input?.focus();
+    const suggestion = props.suggestions[index];
+    props.onSuggestionSelected(tokenStart!, lastToken, suggestion);
+    inputRef.current?.focus();
     e.preventDefault();
   };
 
-  componentDidUpdate(prevProps: IAutosuggestInput, prevState: any) {
-    const { suggestions } = this.props;
-    if (suggestions !== prevProps.suggestions && suggestions.length > 0 && prevState.suggestionsHidden && prevState.focused) {
-      this.setState({ suggestionsHidden: false });
-    }
-  }
+  useEffect(() => {
+    if (suggestionsHidden && focused) setSuggestionsHidden(false);
+  }, [props.suggestions]);
 
-  setInput = (c: HTMLInputElement) => {
-    this.input = c;
-  };
-
-  renderSuggestion = (suggestion: AutoSuggestion, i: number) => {
-    const { selectedSuggestion } = this.state;
+  const renderSuggestion = (suggestion: AutoSuggestion, i: number) => {
     let inner, key;
 
-    if (this.props.renderSuggestion && typeof suggestion === 'string') {
-      const RenderSuggestion = this.props.renderSuggestion;
+    if (props.renderSuggestion && typeof suggestion === 'string') {
+      const RenderSuggestion = props.renderSuggestion;
       inner = <RenderSuggestion id={suggestion} />;
       key = suggestion;
     } else if (typeof suggestion === 'object') {
@@ -200,29 +191,28 @@ class AutosuggestInput extends PureComponent<IAutosuggestInput> {
           'hover:bg-gray-100 dark:hover:bg-gray-800': i !== selectedSuggestion,
           'bg-gray-100 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800': i === selectedSuggestion,
         })}
-        onMouseDown={this.onSuggestionClick}
-        onTouchEnd={this.onSuggestionClick}
+        onMouseDown={onSuggestionClick}
+        onTouchEnd={onSuggestionClick}
       >
         {inner}
       </div>
     );
   };
 
-  handleMenuItemAction = (item: MenuItem | null, e: React.MouseEvent | React.KeyboardEvent) => {
-    this.onBlur();
+  const handleMenuItemAction = (item: MenuItem | null, e: React.MouseEvent | React.KeyboardEvent) => {
+    onBlur();
     if (item?.action) {
       item.action(e);
     }
   };
 
-  handleMenuItemClick = (item: MenuItem | null): React.MouseEventHandler => e => {
+  const handleMenuItemClick = (item: MenuItem | null): React.MouseEventHandler => e => {
     e.preventDefault();
-    this.handleMenuItemAction(item, e);
+    handleMenuItemAction(item, e);
   };
 
-  renderMenu = () => {
-    const { menu, suggestions } = this.props;
-    const { selectedSuggestion } = this.state;
+  const renderMenu = () => {
+    const { menu, suggestions } = props;
 
     if (!menu) {
       return null;
@@ -236,7 +226,7 @@ class AutosuggestInput extends PureComponent<IAutosuggestInput> {
         href='#'
         role='button'
         tabIndex={0}
-        onMouseDown={this.handleMenuItemClick(item)}
+        onMouseDown={handleMenuItemClick(item)}
         key={i}
       >
         {item?.icon && (
@@ -248,66 +238,60 @@ class AutosuggestInput extends PureComponent<IAutosuggestInput> {
     ));
   };
 
-  setPortalPosition() {
-    if (!this.input) {
+  const setPortalPosition = () => {
+    if (!inputRef.current) {
       return {};
     }
 
-    const { top, height, left, width } = this.input.getBoundingClientRect();
+    const { top, height, left, width } = inputRef.current.getBoundingClientRect();
 
     return { left, width, top: top + height };
-  }
+  };
 
-  render() {
-    const { value, suggestions, disabled, placeholder, onKeyUp, autoFocus, className, id, maxLength, menu, theme } = this.props;
-    const { suggestionsHidden } = this.state;
+  const visible = !suggestionsHidden && (props.suggestions.length || (props.menu && props.value));
 
-    const visible = !suggestionsHidden && (suggestions.length || (menu && value));
+  return [
+    <div key='input' className='relative w-full'>
+      <label className='sr-only'>{props.placeholder}</label>
 
-    return [
-      <div key='input' className='relative w-full'>
-        <label className='sr-only'>{placeholder}</label>
-
-        <Input
-          type='text'
-          className={className}
-          outerClassName='mt-0'
-          ref={this.setInput}
-          disabled={disabled}
-          placeholder={placeholder}
-          autoFocus={autoFocus}
-          value={value}
-          onChange={this.onChange}
-          onKeyDown={this.onKeyDown}
-          onKeyUp={onKeyUp}
-          onFocus={this.onFocus}
-          onBlur={this.onBlur}
-          aria-autocomplete='list'
-          id={id}
-          maxLength={maxLength}
-          data-testid='autosuggest-input'
-          theme={theme}
-        />
-      </div>,
-      <Portal key='portal'>
-        <div
-          style={this.setPortalPosition()}
-          className={clsx({
-            'fixed w-full z-[1001] shadow bg-white dark:bg-gray-900 rounded-lg py-1 dark:ring-2 dark:ring-primary-700 focus:outline-none': true,
-            hidden: !visible,
-            block: visible,
-          })}
-        >
-          <div className='space-y-0.5'>
-            {suggestions.map(this.renderSuggestion)}
-          </div>
-
-          {this.renderMenu()}
+      <Input
+        type='text'
+        className={props.className}
+        outerClassName='mt-0'
+        ref={inputRef}
+        disabled={props.disabled}
+        placeholder={props.placeholder}
+        autoFocus={autoFocus}
+        value={props.value}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        onKeyUp={props.onKeyUp}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        aria-autocomplete='list'
+        id={props.id}
+        maxLength={props.maxLength}
+        data-testid='autosuggest-input'
+        theme={props.theme}
+      />
+    </div>,
+    <Portal key='portal'>
+      <div
+        style={setPortalPosition()}
+        className={clsx({
+          'fixed w-full z-[1001] shadow bg-white dark:bg-gray-900 rounded-lg py-1 dark:ring-2 dark:ring-primary-700 focus:outline-none': true,
+          hidden: !visible,
+          block: visible,
+        })}
+      >
+        <div className='space-y-0.5'>
+          {props.suggestions.map(renderSuggestion)}
         </div>
-      </Portal>,
-    ];
-  }
 
-}
+        {renderMenu()}
+      </div>
+    </Portal>,
+  ];
+};
 
 export { type AutoSuggestion, type IAutosuggestInput, AutosuggestInput as default };
