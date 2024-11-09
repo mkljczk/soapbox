@@ -113,11 +113,11 @@ const createAppToken = () =>
     const app = getState().auth.app!;
 
     const params = {
-      client_id:     app.client_id!,
+      client_id: app.client_id!,
       client_secret: app.client_secret!,
-      redirect_uri:  'urn:ietf:wg:oauth:2.0:oob',
-      grant_type:    'client_credentials',
-      scope:         getScopes(getState()),
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      grant_type: 'client_credentials',
+      scope: getScopes(getState()),
     };
 
     return dispatch(obtainOAuthToken(params)).then((token) =>
@@ -130,13 +130,13 @@ const createUserToken = (username: string, password: string) =>
     const app = getState().auth.app;
 
     const params = {
-      client_id:     app?.client_id!,
+      client_id: app?.client_id!,
       client_secret: app?.client_secret!,
-      redirect_uri:  'urn:ietf:wg:oauth:2.0:oob',
-      grant_type:    'password',
-      username:      username,
-      password:      password,
-      scope:         getScopes(getState()),
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      grant_type: 'password',
+      username: username,
+      password: password,
+      scope: getScopes(getState()),
     };
 
     return dispatch(obtainOAuthToken(params))

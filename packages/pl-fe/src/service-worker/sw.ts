@@ -155,13 +155,13 @@ const handlePush = (event: PushEvent) => {
   event.waitUntil(
     fetchFromApi(`/api/v1/notifications/${notification_id}`, 'get', access_token).then(notification => {
       const options: ExtendedNotificationOptions = {
-        title:     formatMessage(`notification.${notification.type}`, preferred_locale, { name: notification.account.display_name.length > 0 ? notification.account.display_name : notification.account.username }),
-        body:      notification.status && htmlToPlainText(notification.status.content),
-        icon:      notification.account.avatar_static,
+        title: formatMessage(`notification.${notification.type}`, preferred_locale, { name: notification.account.display_name.length > 0 ? notification.account.display_name : notification.account.username }),
+        body: notification.status && htmlToPlainText(notification.status.content),
+        icon: notification.account.avatar_static,
         timestamp: notification.created_at ? Number(new Date(notification.created_at)) : undefined,
-        tag:       notification.id,
-        image:     notification.status?.media_attachments[0]?.preview_url,
-        data:      { access_token, preferred_locale, id: notification.status ? notification.status.id : notification.account.id, url: notification.status ? `/@${notification.account.acct}/posts/${notification.status.id}` : `/@${notification.account.acct}` },
+        tag: notification.id,
+        image: notification.status?.media_attachments[0]?.preview_url,
+        data: { access_token, preferred_locale, id: notification.status ? notification.status.id : notification.account.id, url: notification.status ? `/@${notification.account.acct}/posts/${notification.status.id}` : `/@${notification.account.acct}` },
       };
 
       if (notification.status?.spoiler_text || notification.status?.sensitive) {
@@ -224,7 +224,7 @@ const findBestClient = (clients: readonly WindowClient[]): WindowClient => {
 const expandNotification = (notification: Notification) => {
   const newNotification = cloneNotification(notification);
 
-  newNotification.body  = newNotification.data.hiddenBody;
+  newNotification.body = newNotification.data.hiddenBody;
   newNotification.image = newNotification.data.hiddenImage;
   newNotification.actions = [actionReblog(notification.data.preferred_locale), actionFavourite(notification.data.preferred_locale)];
 

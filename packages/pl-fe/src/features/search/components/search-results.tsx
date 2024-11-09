@@ -1,11 +1,11 @@
 import clsx from 'clsx';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
 import { expandSearch, setFilter, setSearchAccount } from 'pl-fe/actions/search';
-import { fetchTrendingStatuses } from 'pl-fe/actions/trending-statuses';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import { useTrendingLinks } from 'pl-fe/api/hooks/trends/use-trending-links';
+import { useTrendingStatuses } from 'pl-fe/api/hooks/trends/use-trending-statuses';
 import Hashtag from 'pl-fe/components/hashtag';
 import IconButton from 'pl-fe/components/icon-button';
 import ScrollableList from 'pl-fe/components/scrollable-list';
@@ -21,6 +21,7 @@ import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
+import useTrends from 'pl-fe/queries/trends';
 
 import type { SearchFilter } from 'pl-fe/reducers/search';
 
@@ -41,11 +42,11 @@ const SearchResults = () => {
   const value = useAppSelector((state) => state.search.submittedValue);
   const results = useAppSelector((state) => state.search.results);
   const suggestions = useAppSelector((state) => state.suggestions.items);
-  const trendingStatuses = useAppSelector((state) => state.trending_statuses.items);
-  const trends = useAppSelector((state) => state.trends.items);
   const submitted = useAppSelector((state) => state.search.submitted);
   const selectedFilter = useAppSelector((state) => state.search.filter);
   const filterByAccount = useAppSelector((state) => state.search.accountId || undefined);
+  const { data: trendingTags } = useTrends();
+  const { data: trendingStatuses } = useTrendingStatuses();
   const { trendingLinks } = useTrendingLinks();
   const { account } = useAccount(filterByAccount);
 
@@ -106,10 +107,6 @@ const SearchResults = () => {
 
     if (element) element.focus();
   };
-
-  useEffect(() => {
-    dispatch(fetchTrendingStatuses());
-  }, []);
 
   let searchResults;
   let hasMore = false;
@@ -187,7 +184,7 @@ const SearchResults = () => {
     if (results.hashtags && results.hashtags.length > 0) {
       searchResults = results.hashtags.map(hashtag => <Hashtag key={hashtag.name} hashtag={hashtag} />);
     } else if (!submitted && suggestions && suggestions.length !== 0) {
-      searchResults = trends.map(hashtag => <Hashtag key={hashtag.name} hashtag={hashtag} />);
+      searchResults = trendingTags?.map(hashtag => <Hashtag key={hashtag.name} hashtag={hashtag} />);
     } else if (loaded) {
       noResultsMessage = (
         <div className='empty-column-indicator'>

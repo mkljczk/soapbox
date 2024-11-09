@@ -40,7 +40,6 @@ import suggestions from './suggestions';
 import tags from './tags';
 import timelines from './timelines';
 import trending_statuses from './trending-statuses';
-import trends from './trends';
 import user_lists from './user-lists';
 
 const reducers = {
@@ -81,7 +80,6 @@ const reducers = {
   tags,
   timelines,
   trending_statuses,
-  trends,
   user_lists,
 };
 

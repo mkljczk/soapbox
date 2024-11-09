@@ -5,6 +5,7 @@ import { getClient } from 'pl-fe/api';
 import { isNativeEmoji } from 'pl-fe/features/emoji';
 import emojiSearch from 'pl-fe/features/emoji/search';
 import { Language } from 'pl-fe/features/preferences';
+import { queryClient } from 'pl-fe/queries/client';
 import { selectAccount, selectOwnAccount, makeGetAccount } from 'pl-fe/selectors';
 import { tagHistory } from 'pl-fe/settings';
 import { useModalsStore } from 'pl-fe/stores/modals';
@@ -615,7 +616,7 @@ const fetchComposeSuggestionsTags = (dispatch: AppDispatch, getState: () => Root
   const { trends } = state.auth.client.features;
 
   if (trends) {
-    const currentTrends = state.trends.items;
+    const currentTrends = queryClient.getQueryData<Array<Tag>>(['trends', 'tags']) || [];
 
     return dispatch(updateSuggestionTags(composeId, token, currentTrends));
   }
