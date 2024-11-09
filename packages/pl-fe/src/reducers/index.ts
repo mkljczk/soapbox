@@ -23,10 +23,8 @@ import instance from './instance';
 import listAdder from './list-adder';
 import listEditor from './list-editor';
 import lists from './lists';
-import locations from './locations';
 import me from './me';
 import meta from './meta';
-import mutes from './mutes';
 import notifications from './notifications';
 import onboarding from './onboarding';
 import pending_statuses from './pending-statuses';
@@ -66,10 +64,8 @@ const reducers = {
   listAdder,
   listEditor,
   lists,
-  locations,
   me,
   meta,
-  mutes,
   notifications,
   onboarding,
   pending_statuses,

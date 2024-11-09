@@ -1,4 +1,4 @@
-import { List as ImmutableList, Record as ImmutableRecord } from 'immutable';
+import { create } from 'mutative';
 
 import {
   FOLLOWED_HASHTAGS_FETCH_REQUEST,
@@ -12,34 +12,42 @@ import {
 
 import type { PaginatedResponse, Tag } from 'pl-api';
 
-const ReducerRecord = ImmutableRecord({
-  items: ImmutableList<Tag>(),
-  isLoading: false,
-  next: null as (() => Promise<PaginatedResponse<Tag>>) | null,
-});
+interface State {
+  items: Array<Tag>;
+  isLoading: boolean;
+  next: (() => Promise<PaginatedResponse<Tag>>) | null;
+}
 
-const followed_tags = (state = ReducerRecord(), action: TagsAction) => {
+const initalState: State = {
+  items: [],
+  isLoading: false,
+  next: null,
+};
+
+const followed_tags = (state = initalState, action: TagsAction): State => {
   switch (action.type) {
     case FOLLOWED_HASHTAGS_FETCH_REQUEST:
-      return state.set('isLoading', true);
+    case FOLLOWED_HASHTAGS_EXPAND_REQUEST:
+      return create(state, draft => {
+        draft.isLoading = true;
+      });
     case FOLLOWED_HASHTAGS_FETCH_SUCCESS:
-      return state.withMutations(map => {
-        map.set('items', ImmutableList(action.followed_tags));
-        map.set('isLoading', false);
-        map.set('next', action.next);
+      return create(state, draft => {
+        draft.items = action.followed_tags;
+        draft.isLoading = true;
+        draft.next = action.next;
       });
     case FOLLOWED_HASHTAGS_FETCH_FAIL:
-      return state.set('isLoading', false);
-    case FOLLOWED_HASHTAGS_EXPAND_REQUEST:
-      return state.set('isLoading', true);
-    case FOLLOWED_HASHTAGS_EXPAND_SUCCESS:
-      return state.withMutations(map => {
-        map.update('items', list => list.concat(action.followed_tags));
-        map.set('isLoading', false);
-        map.set('next', action.next);
-      });
     case FOLLOWED_HASHTAGS_EXPAND_FAIL:
-      return state.set('isLoading', false);
+      return create(state, draft => {
+        draft.isLoading = false;
+      });
+    case FOLLOWED_HASHTAGS_EXPAND_SUCCESS:
+      return create(state, draft => {
+        draft.items = [...draft.items, ...action.followed_tags];
+        draft.isLoading = true;
+        draft.next = action.next;
+      });
     default:
       return state;
   }

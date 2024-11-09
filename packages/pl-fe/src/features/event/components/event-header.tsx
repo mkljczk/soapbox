@@ -7,7 +7,6 @@ import { directCompose, mentionCompose, quoteCompose } from 'pl-fe/actions/compo
 import { fetchEventIcs } from 'pl-fe/actions/events';
 import { toggleBookmark, togglePin, toggleReblog } from 'pl-fe/actions/interactions';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
-import { initMuteModal } from 'pl-fe/actions/mutes';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { deleteStatus } from 'pl-fe/actions/statuses';
 import DropdownMenu, { type Menu as MenuType } from 'pl-fe/components/dropdown-menu';
@@ -167,7 +166,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
   };
 
   const handleMuteClick = () => {
-    dispatch(initMuteModal(account));
+    openModal('MUTE', { accountId: account.id });
   };
 
   const handleBlockClick = () => {

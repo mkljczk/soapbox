@@ -91,16 +91,8 @@ const EditEvent: React.FC<IEditEvent> = ({ statusId }) => {
     setApprovalRequired(target.checked);
   };
 
-  const onChangeLocation = (value: string | null) => {
-    dispatch((_, getState) => {
-      let location = null;
-
-      if (value) {
-        location = getState().locations.get(value, null);
-      }
-
-      setLocation(location);
-    });
+  const onChangeLocation = (location: Location | null) => {
+    setLocation(location);
   };
 
   const handleFiles = (files: FileList) => {

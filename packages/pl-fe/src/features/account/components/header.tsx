@@ -8,7 +8,6 @@ import * as v from 'valibot';
 import { biteAccount, blockAccount, pinAccount, removeFromFollowers, unblockAccount, unmuteAccount, unpinAccount } from 'pl-fe/actions/accounts';
 import { mentionCompose, directCompose } from 'pl-fe/actions/compose';
 import { blockDomain, unblockDomain } from 'pl-fe/actions/domain-blocks';
-import { initMuteModal } from 'pl-fe/actions/mutes';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { setSearchAccount } from 'pl-fe/actions/search';
 import { useFollow } from 'pl-fe/api/hooks/accounts/use-follow';
@@ -196,7 +195,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
     if (account.relationship?.muting) {
       dispatch(unmuteAccount(account.id));
     } else {
-      dispatch(initMuteModal(account));
+      openModal('MUTE', { accountId: account.id });
     }
   };
 

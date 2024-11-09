@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { muteAccount } from 'pl-fe/actions/accounts';
-import { toggleHideNotifications, changeMuteDuration } from 'pl-fe/actions/mutes';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import HStack from 'pl-fe/components/ui/hstack';
 import Modal from 'pl-fe/components/ui/modal';
@@ -11,25 +10,31 @@ import Text from 'pl-fe/components/ui/text';
 import Toggle from 'pl-fe/components/ui/toggle';
 import DurationSelector from 'pl-fe/features/compose/components/polls/duration-selector';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 
 import type { BaseModalProps } from '../modal-root';
 
-const MuteModal: React.FC<BaseModalProps> = ({ onClose }) => {
+interface MuteModalProps {
+  accountId: string;
+}
+
+const MuteModal: React.FC<MuteModalProps & BaseModalProps> = ({ accountId, onClose }) => {
   const dispatch = useAppDispatch();
 
-  const accountId = useAppSelector((state) => state.mutes.new.accountId);
   const { account } = useAccount(accountId || undefined);
-  const notifications = useAppSelector((state) => state.mutes.new.notifications);
-  const duration = useAppSelector((state) => state.mutes.new.duration);
+  const [notifications, setNotifications] = useState(true);
+  const [duration, setDuration] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const mutesDuration = useFeatures().mutesDuration;
 
   if (!account) return null;
 
   const handleClick = () => {
-    onClose('MUTE');
-    dispatch(muteAccount(account.id, notifications, duration));
+    setIsSubmitting(true);
+    dispatch(muteAccount(account.id, notifications, duration))?.then(() => {
+      setIsSubmitting(false);
+      onClose('MUTE');
+    });
   };
 
   const handleCancel = () => {
@@ -37,14 +42,14 @@ const MuteModal: React.FC<BaseModalProps> = ({ onClose }) => {
   };
 
   const toggleNotifications = () => {
-    dispatch(toggleHideNotifications());
+    setNotifications(notifications => !notifications);
   };
 
   const handleChangeMuteDuration = (expiresIn: number): void => {
-    dispatch(changeMuteDuration(expiresIn));
+    setDuration(expiresIn);
   };
 
-  const toggleAutoExpire = () => handleChangeMuteDuration(duration ? 0 : 2 * 60 * 60 * 24);
+  const toggleAutoExpire = () => setDuration(duration ? 0 : 2 * 60 * 60 * 24);
 
   return (
     <Modal
@@ -58,6 +63,7 @@ const MuteModal: React.FC<BaseModalProps> = ({ onClose }) => {
       onClose={handleCancel}
       confirmationAction={handleClick}
       confirmationText={<FormattedMessage id='confirmations.mute.confirm' defaultMessage='Mute' />}
+      confirmationDisabled={isSubmitting}
       cancelText={<FormattedMessage id='confirmation_modal.cancel' defaultMessage='Cancel' />}
       cancelAction={handleCancel}
     >
@@ -112,4 +118,4 @@ const MuteModal: React.FC<BaseModalProps> = ({ onClose }) => {
   );
 };
 
-export { MuteModal as default };
+export { MuteModal as default, type MuteModalProps };

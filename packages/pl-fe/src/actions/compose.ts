@@ -679,7 +679,7 @@ const selectComposeSuggestion = (composeId: string, position: number, token: str
   (dispatch: AppDispatch, getState: () => RootState) => {
     let completion = '', startPosition = position;
 
-    if (typeof suggestion === 'object' && suggestion.id) {
+    if (typeof suggestion === 'object' && 'id' in suggestion) {
       completion = isNativeEmoji(suggestion) ? suggestion.native : suggestion.colons;
       startPosition = position - 1;
 
