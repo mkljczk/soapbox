@@ -26,7 +26,6 @@ import lists from './lists';
 import locations from './locations';
 import me from './me';
 import meta from './meta';
-import mutes from './mutes';
 import notifications from './notifications';
 import onboarding from './onboarding';
 import pending_statuses from './pending-statuses';
@@ -69,7 +68,6 @@ const reducers = {
   locations,
   me,
   meta,
-  mutes,
   notifications,
   onboarding,
   pending_statuses,

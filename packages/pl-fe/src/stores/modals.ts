@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { mutative } from 'zustand-mutative';
 
+import { MuteModalProps } from 'pl-fe/features/ui/components/modals/mute-modal';
+
 import type { ICryptoAddress } from 'pl-fe/features/crypto-donate/components/crypto-address';
 import type { ModalType } from 'pl-fe/features/ui/components/modal-root';
 import type { AccountModerationModalProps } from 'pl-fe/features/ui/components/modals/account-moderation-modal';
@@ -63,7 +65,7 @@ type OpenModalProps =
   | [type: 'MEDIA', props: MediaModalProps]
   | [type: 'MENTIONS', props: MentionsModalProps]
   | [type: 'MISSING_DESCRIPTION', props: MissingDescriptionModalProps]
-  | [type: 'MUTE']
+  | [type: 'MUTE', props: MuteModalProps]
   | [type: 'REACTIONS', props: ReactionsModalProps]
   | [type: 'REBLOGS', props: ReblogsModalProps]
   | [type: 'REPLY_MENTIONS', props: ReplyMentionsModalProps]

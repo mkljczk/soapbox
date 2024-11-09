@@ -9,7 +9,6 @@ import { directCompose, mentionCompose, quoteCompose, replyCompose } from 'pl-fe
 import { emojiReact, unEmojiReact } from 'pl-fe/actions/emoji-reacts';
 import { toggleBookmark, toggleDislike, toggleFavourite, togglePin, toggleReblog } from 'pl-fe/actions/interactions';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
-import { initMuteModal } from 'pl-fe/actions/mutes';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { changeSetting } from 'pl-fe/actions/settings';
 import { deleteStatus, editStatus, toggleMuteStatus, translateStatus, undoStatusTranslation } from 'pl-fe/actions/statuses';
@@ -681,7 +680,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   };
 
   const handleMuteClick: React.EventHandler<React.MouseEvent> = (e) => {
-    dispatch(initMuteModal(status.account));
+    openModal('MUTE', { accountId: status.account.id });
   };
 
   const handleBlockClick: React.EventHandler<React.MouseEvent> = (e) => {
