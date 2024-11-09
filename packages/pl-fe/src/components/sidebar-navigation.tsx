@@ -52,7 +52,7 @@ const SidebarNavigation = () => {
   const interactionRequestsCount = useInteractionRequestsCount().data || 0;
   const dashboardCount = useAppSelector((state) => state.admin.openReports.length + state.admin.awaitingApproval.length);
   const scheduledStatusCount = useAppSelector((state) => state.scheduled_statuses.size);
-  const draftCount = useAppSelector((state) => state.draft_statuses.size);
+  const draftCount = useAppSelector((state) => Object.keys(state.draft_statuses).length);
 
   const restrictUnauth = instance.pleroma.metadata.restrict_unauthenticated;
 
