@@ -24,10 +24,12 @@ const fetchDraftStatuses = () =>
     const accountUrl = getAccount(state, state.me as string)!.url;
 
     return KVStore.getItem<Array<APIEntity>>(`drafts:${accountUrl}`).then((statuses) => {
-      dispatch<DraftStatusesFetchSuccessAction>({
-        type: DRAFT_STATUSES_FETCH_SUCCESS,
-        statuses,
-      });
+      if (statuses) {
+        dispatch<DraftStatusesFetchSuccessAction>({
+          type: DRAFT_STATUSES_FETCH_SUCCESS,
+          statuses,
+        });
+      }
     }).catch(() => {});
   };
 
