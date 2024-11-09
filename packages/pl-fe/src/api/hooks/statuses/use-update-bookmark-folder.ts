@@ -1,6 +1,7 @@
-import { Entities } from 'pl-fe/entity-store/entities';
-import { useCreateEntity } from 'pl-fe/entity-store/hooks/use-create-entity';
+import { useMutation } from '@tanstack/react-query';
+
 import { useClient } from 'pl-fe/hooks/use-client';
+import { queryClient } from 'pl-fe/queries/client';
 
 interface UpdateBookmarkFolderParams {
   name: string;
@@ -10,16 +11,11 @@ interface UpdateBookmarkFolderParams {
 const useUpdateBookmarkFolder = (folderId: string) => {
   const client = useClient();
 
-  const { createEntity, ...rest } = useCreateEntity(
-    [Entities.BOOKMARK_FOLDERS],
-    (params: UpdateBookmarkFolderParams) =>
-      client.myAccount.updateBookmarkFolder(folderId, params),
-  );
-
-  return {
-    updateBookmarkFolder: createEntity,
-    ...rest,
-  };
+  return useMutation({
+    mutationKey: ['bookmarkFolders', 'update', folderId],
+    mutationFn: (params: UpdateBookmarkFolderParams) => client.myAccount.updateBookmarkFolder(folderId, params),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['bookmarkFolders'] }),
+  });
 };
 
 export { useUpdateBookmarkFolder };

@@ -49,8 +49,8 @@ const Bookmarks: React.FC<IBookmarks> = ({ params }) => {
   const folderId = params?.id;
 
   const { openModal } = useModalsStore();
-  const { bookmarkFolder: folder } = useBookmarkFolder(folderId);
-  const { deleteBookmarkFolder } = useDeleteBookmarkFolder();
+  const { data: folder } = useBookmarkFolder(folderId);
+  const { mutate: deleteBookmarkFolder } = useDeleteBookmarkFolder();
 
   const bookmarksKey = folderId ? `bookmarks:${folderId}` : 'bookmarks';
 

@@ -22,7 +22,7 @@ const BookmarkFolders: React.FC = () => {
   const intl = useIntl();
   const features = useFeatures();
 
-  const { bookmarkFolders, isFetching } = useBookmarkFolders();
+  const { data: bookmarkFolders, isFetching } = useBookmarkFolders(data => data);
 
   if (!features.bookmarkFolders) return <Redirect to='/bookmarks/all' />;
 
