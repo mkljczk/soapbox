@@ -11,7 +11,6 @@ import { fetchMarker } from 'pl-fe/actions/markers';
 import { expandNotifications } from 'pl-fe/actions/notifications';
 import { register as registerPushNotifications } from 'pl-fe/actions/push-notifications';
 import { fetchScheduledStatuses } from 'pl-fe/actions/scheduled-statuses';
-import { fetchSuggestionsForTimeline } from 'pl-fe/actions/suggestions';
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
 import { useUserStream } from 'pl-fe/api/hooks/streaming/use-user-stream';
 import SidebarNavigation from 'pl-fe/components/sidebar-navigation';
@@ -388,9 +387,7 @@ const UI: React.FC<IUI> = ({ children }) => {
 
     dispatch(fetchDraftStatuses());
 
-    dispatch(fetchHomeTimeline(false, () => {
-      dispatch(fetchSuggestionsForTimeline());
-    }));
+    dispatch(fetchHomeTimeline());
 
     dispatch(expandNotifications())
       // @ts-ignore

@@ -35,7 +35,6 @@ import scheduled_statuses from './scheduled-statuses';
 import security from './security';
 import status_lists from './status-lists';
 import statuses from './statuses';
-import suggestions from './suggestions';
 import tags from './tags';
 import timelines from './timelines';
 import trending_statuses from './trending-statuses';
@@ -74,7 +73,6 @@ const reducers = {
   security,
   status_lists,
   statuses,
-  suggestions,
   tags,
   timelines,
   trending_statuses,

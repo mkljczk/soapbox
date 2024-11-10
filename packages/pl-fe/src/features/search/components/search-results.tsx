@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router-dom-v5-compat';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import { useSearchAccounts, useSearchHashtags, useSearchStatuses } from 'pl-fe/api/hooks/search/use-search';
+import { useSuggestedAccounts } from 'pl-fe/api/hooks/trends/use-suggested-accounts';
 import { useTrendingLinks } from 'pl-fe/api/hooks/trends/use-trending-links';
 import { useTrendingStatuses } from 'pl-fe/api/hooks/trends/use-trending-statuses';
 import Hashtag from 'pl-fe/components/hashtag';
@@ -19,7 +20,6 @@ import StatusContainer from 'pl-fe/containers/status-container';
 import PlaceholderAccount from 'pl-fe/features/placeholder/components/placeholder-account';
 import PlaceholderHashtag from 'pl-fe/features/placeholder/components/placeholder-hashtag';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import useTrends from 'pl-fe/queries/trends';
 
@@ -65,7 +65,7 @@ const SearchResults = () => {
     else setParams(params => ({ ...Object.fromEntries(params.entries()), type: newActiveFilter }));
   };
 
-  const suggestions = useAppSelector((state) => state.suggestions.items);
+  const { data: suggestions } = useSuggestedAccounts();
   const { data: trendingTags } = useTrends();
   const { data: trendingStatuses } = useTrendingStatuses();
   const { data: trendingLinks } = useTrendingLinks();

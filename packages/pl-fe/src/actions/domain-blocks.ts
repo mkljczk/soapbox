@@ -1,9 +1,11 @@
 import { Entities } from 'pl-fe/entity-store/entities';
+import { queryClient } from 'pl-fe/queries/client';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 
 import { getClient } from '../api';
 
 import type { PaginatedResponse } from 'pl-api';
+import type { MinifiedSuggestion } from 'pl-fe/api/hooks/trends/use-suggested-accounts';
 import type { EntityStore } from 'pl-fe/entity-store/types';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -35,6 +37,10 @@ const blockDomain = (domain: string) =>
       const accounts = selectAccountsByDomain(getState(), domain);
       if (!accounts) return;
       dispatch(blockDomainSuccess(domain, accounts));
+
+      queryClient.setQueryData<Array<MinifiedSuggestion>>(['suggestions'], suggestions => suggestions
+        ? suggestions.filter((suggestion) => !accounts.includes(suggestion.account_id))
+        : undefined);
     }).catch(err => {
       dispatch(blockDomainFail(domain, err));
     });

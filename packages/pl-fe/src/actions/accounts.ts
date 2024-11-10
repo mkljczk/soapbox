@@ -1,6 +1,16 @@
-import { PLEROMA, type UpdateNotificationSettingsParams, type Account, type CreateAccountParams, type PaginatedResponse, type Relationship, Token, PlApiClient } from 'pl-api';
+import {
+  PLEROMA,
+  type UpdateNotificationSettingsParams,
+  type Account,
+  type CreateAccountParams,
+  type PaginatedResponse,
+  type PlApiClient,
+  type Relationship,
+  type Token,
+} from 'pl-api';
 
 import { Entities } from 'pl-fe/entity-store/entities';
+import { queryClient } from 'pl-fe/queries/client';
 import { selectAccount } from 'pl-fe/selectors';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 
@@ -8,6 +18,7 @@ import { getClient, type PlfeResponse } from '../api';
 
 import { importEntities } from './importer';
 
+import type { MinifiedSuggestion } from 'pl-fe/api/hooks/trends/use-suggested-accounts';
 import type { MinifiedStatus } from 'pl-fe/reducers/statuses';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 import type { History } from 'pl-fe/types/history';
@@ -187,6 +198,11 @@ const blockAccount = (accountId: string) =>
     return getClient(getState).filtering.blockAccount(accountId)
       .then(response => {
         dispatch(importEntities({ relationships: [response] }));
+
+        queryClient.setQueryData<Array<MinifiedSuggestion>>(['suggestions'], suggestions => suggestions
+          ? suggestions.filter((suggestion) => suggestion.account_id !== accountId)
+          : undefined);
+
         // Pass in entire statuses map so we can use it to filter stuff in different parts of the reducers
         return dispatch(blockAccountSuccess(response, getState().statuses));
       }).catch(error => dispatch(blockAccountFail(error)));
@@ -243,6 +259,11 @@ const muteAccount = (accountId: string, notifications?: boolean, duration = 0) =
     return client.filtering.muteAccount(accountId, params)
       .then(response => {
         dispatch(importEntities({ relationships: [response] }));
+
+        queryClient.setQueryData<Array<MinifiedSuggestion>>(['suggestions'], suggestions => suggestions
+          ? suggestions.filter((suggestion) => suggestion.account_id !== accountId)
+          : undefined);
+
         // Pass in entire statuses map so we can use it to filter stuff in different parts of the reducers
         return dispatch(muteAccountSuccess(response, getState().statuses));
       })

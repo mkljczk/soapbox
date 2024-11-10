@@ -203,7 +203,7 @@ const userLists = (state = initialState, action: AccountsAction | DirectoryActio
     case PINNED_ACCOUNTS_FETCH_SUCCESS:
       return normalizeList(state, ['pinned', action.accountId], action.accounts, action.next);
     case BIRTHDAY_REMINDERS_FETCH_SUCCESS:
-      return normalizeList(state, ['birthday_reminders', action.accountId], action.accounts, action.next);
+      return normalizeList(state, ['birthday_reminders', action.accountId], action.accounts);
     case FAMILIAR_FOLLOWERS_FETCH_SUCCESS:
       return normalizeList(state, ['familiar_followers', action.accountId], action.accounts, action.next);
     case EVENT_PARTICIPATIONS_FETCH_SUCCESS:
