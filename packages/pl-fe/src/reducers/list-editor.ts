@@ -1,4 +1,4 @@
-import { List as ImmutableList, Record as ImmutableRecord } from 'immutable';
+import { create } from 'mutative';
 
 import {
   LIST_CREATE_REQUEST,
@@ -22,83 +22,109 @@ import {
 
 import type { AnyAction } from 'redux';
 
-const AccountsRecord = ImmutableRecord({
-  items: ImmutableList<string>(),
-  loaded: false,
-  isLoading: false,
-});
+interface State {
+  listId: string | null;
+  isSubmitting: boolean;
+  isChanged: boolean;
+  title: string;
 
-const SuggestionsRecord = ImmutableRecord({
-  value: '',
-  items: ImmutableList<string>(),
-});
+  accounts: {
+    items: Array<string>;
+    loaded: boolean;
+    isLoading: boolean;
+  };
 
-const ReducerRecord = ImmutableRecord({
-  listId: null as string | null,
+  suggestions: {
+    value: string;
+    items: Array<string>;
+  };
+}
+
+const initialState: State = {
+  listId: null,
   isSubmitting: false,
   isChanged: false,
   title: '',
 
-  accounts: AccountsRecord(),
+  accounts: {
+    items: [],
+    loaded: false,
+    isLoading: false,
+  },
 
-  suggestions: SuggestionsRecord(),
-});
+  suggestions: {
+    value: '',
+    items: [],
+  },
+};
 
-type State = ReturnType<typeof ReducerRecord>;
-
-const listEditorReducer = (state: State = ReducerRecord(), action: AnyAction) => {
+const listEditorReducer = (state: State = initialState, action: AnyAction): State => {
   switch (action.type) {
     case LIST_EDITOR_RESET:
-      return ReducerRecord();
+      return initialState;
     case LIST_EDITOR_SETUP:
-      return state.withMutations(map => {
-        map.set('listId', action.list.id);
-        map.set('title', action.list.title);
-        map.set('isSubmitting', false);
+      return create(state, (draft) => {
+        draft.listId = action.list.id;
+        draft.title = action.list.title;
+        draft.isSubmitting = false;
       });
     case LIST_EDITOR_TITLE_CHANGE:
-      return state.withMutations(map => {
-        map.set('title', action.value);
-        map.set('isChanged', true);
+      return create(state, (draft) => {
+        draft.title = action.value;
+        draft.isChanged = true;
       });
     case LIST_CREATE_REQUEST:
     case LIST_UPDATE_REQUEST:
-      return state.withMutations(map => {
-        map.set('isSubmitting', true);
-        map.set('isChanged', false);
+      return create(state, (draft) => {
+        draft.isSubmitting = true;
+        draft.isChanged = false;
       });
     case LIST_CREATE_FAIL:
     case LIST_UPDATE_FAIL:
-      return state.set('isSubmitting', false);
+      return create(state, (draft) => {
+        draft.isSubmitting = false;
+      });
     case LIST_CREATE_SUCCESS:
     case LIST_UPDATE_SUCCESS:
-      return state.withMutations(map => {
-        map.set('isSubmitting', false);
-        map.set('listId', action.list.id);
+      return create(state, (draft) => {
+        draft.isSubmitting = false;
+        draft.listId = action.list.id;
       });
     case LIST_ACCOUNTS_FETCH_REQUEST:
-      return state.setIn(['accounts', 'isLoading'], true);
+      return create(state, (draft) => {
+        draft.accounts.isLoading = true;
+      });
     case LIST_ACCOUNTS_FETCH_FAIL:
-      return state.setIn(['accounts', 'isLoading'], false);
+      return create(state, (draft) => {
+        draft.accounts.isLoading = false;
+      });
     case LIST_ACCOUNTS_FETCH_SUCCESS:
-      return state.update('accounts', accounts => accounts.withMutations(map => {
-        map.set('isLoading', false);
-        map.set('loaded', true);
-        map.set('items', ImmutableList(action.accounts.map((item: { id: string }) => item.id)));
-      }));
+      return create(state, (draft) => {
+        draft.accounts.isLoading = false;
+        draft.accounts.loaded = true;
+        draft.accounts.items = action.accounts.map((item: { id: string }) => item.id);
+      });
     case LIST_EDITOR_SUGGESTIONS_CHANGE:
-      return state.setIn(['suggestions', 'value'], action.value);
+      return create(state, (draft) => {
+        draft.suggestions.value = action.value;
+      });
     case LIST_EDITOR_SUGGESTIONS_READY:
-      return state.setIn(['suggestions', 'items'], ImmutableList(action.accounts.map((item: { id: string }) => item.id)));
+      return create(state, (draft) => {
+        draft.suggestions.items = action.accounts.map((item: { id: string }) => item.id);
+      });
     case LIST_EDITOR_SUGGESTIONS_CLEAR:
-      return state.update('suggestions', suggestions => suggestions.withMutations(map => {
-        map.set('items', ImmutableList());
-        map.set('value', '');
-      }));
+      return create(state, (draft) => {
+        draft.suggestions.items = [];
+        draft.suggestions.value = '';
+      });
     case LIST_EDITOR_ADD_SUCCESS:
-      return state.updateIn(['accounts', 'items'], list => (list as ImmutableList<string>).unshift(action.accountId));
+      return create(state, (draft) => {
+        draft.accounts.items = [action.accountId, ...draft.accounts.items];
+      });
     case LIST_EDITOR_REMOVE_SUCCESS:
-      return state.updateIn(['accounts', 'items'], list => (list as ImmutableList<string>).filterNot((item) => item === action.accountId));
+      return create(state, (draft) => {
+        draft.accounts.items = draft.accounts.items.filter(id => id !== action.accoundId);
+      });
     default:
       return state;
   }

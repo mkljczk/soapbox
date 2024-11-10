@@ -1,4 +1,3 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import { createSelector } from 'reselect';
 
 // import { getLocale } from 'pl-fe/actions/settings';
@@ -262,14 +261,11 @@ const makeGetReport = () => {
 
 const getAuthUserIds = createSelector(
   [(state: RootState) => state.auth.users],
-  authUsers => authUsers.reduce((userIds: ImmutableOrderedSet<string>, authUser) => {
-    try {
-      const userId = authUser.id;
-      return validId(userId) ? userIds.add(userId) : userIds;
-    } catch {
-      return userIds;
-    }
-  }, ImmutableOrderedSet<string>()));
+  authUsers => authUsers.reduce((userIds: Array<string>, authUser) => {
+    const userId = authUser?.id;
+    if (validId(userId)) userIds.push(userId);
+    return userIds;
+  }, []));
 
 const makeGetOtherAccounts = () => createSelector([
   (state: RootState) => state.entities[Entities.ACCOUNTS]?.store as EntityStore<Account>,
@@ -314,9 +310,7 @@ const makeGetHosts = () =>
   createSelector([getSimplePolicy], (simplePolicy) => {
     const { accept, reject_deletes, report_removal, ...rest } = simplePolicy;
 
-    return Object.values(rest)
-      .reduce((acc, hosts) => acc.union(hosts), ImmutableOrderedSet())
-      .sort();
+    return [...new Set(Object.values(rest).reduce((acc, hosts) => (acc.push(...hosts), acc), []))].toSorted();
   });
 
 interface RemoteInstance {

@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { List as ImmutableList } from 'immutable';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -31,8 +30,8 @@ const messages = defineMessages({
 });
 
 const getNotifications = createSelector([
-  (state: RootState) => state.notifications.items.toList(),
-], (notifications) => notifications.filter(item => item !== null));
+  (state: RootState) => state.notifications.items.toArray(),
+], (notifications) => notifications.map(([_, notification]) => notification).filter(item => item !== null));
 
 const Notifications = () => {
   const dispatch = useAppDispatch();
@@ -47,7 +46,7 @@ const Notifications = () => {
   const hasMore = useAppSelector(state => state.notifications.hasMore);
   const totalQueuedNotificationsCount = useAppSelector(state => state.notifications.totalQueuedNotificationsCount || 0);
 
-  const scrollableContentRef = useRef<ImmutableList<JSX.Element> | null>(null);
+  const scrollableContentRef = useRef<Array<JSX.Element> | null>(null);
 
   // const handleLoadGap = (maxId) => {
   //   dispatch(expandNotifications({ maxId }));
@@ -105,7 +104,7 @@ const Notifications = () => {
     ? <FormattedMessage id='empty_column.notifications' defaultMessage="You don't have any notifications yet. Interact with others to start the conversation." />
     : <FormattedMessage id='empty_column.notifications_filtered' defaultMessage="You don't have any notifications of this type yet." />;
 
-  let scrollableContent: ImmutableList<JSX.Element> | null = null;
+  let scrollableContent: Array<JSX.Element> | null = null;
 
   const filterBarContainer = showFilterBar
     ? (<FilterBar />)
@@ -113,7 +112,7 @@ const Notifications = () => {
 
   if (isLoading && scrollableContentRef.current) {
     scrollableContent = scrollableContentRef.current;
-  } else if (notifications.size > 0 || hasMore) {
+  } else if (notifications.length > 0 || hasMore) {
     scrollableContent = notifications.map((item) => (
       <Notification
         key={item.group_key}
@@ -131,7 +130,7 @@ const Notifications = () => {
   const scrollContainer = (
     <ScrollableList
       isLoading={isLoading}
-      showLoading={isLoading && notifications.size === 0}
+      showLoading={isLoading && notifications.length === 0}
       hasMore={hasMore}
       emptyMessage={emptyMessage}
       placeholderComponent={PlaceholderNotification}
@@ -139,7 +138,7 @@ const Notifications = () => {
       onLoadMore={handleLoadOlder}
       onScroll={handleScroll}
       listClassName={clsx('divide-y divide-solid divide-gray-200 black:divide-gray-800 dark:divide-primary-800', {
-        'animate-pulse': notifications.size === 0,
+        'animate-pulse': notifications.length === 0,
       })}
     >
       {scrollableContent!}
