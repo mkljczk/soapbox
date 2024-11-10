@@ -142,7 +142,7 @@ const Notifications = () => {
         'animate-pulse': notifications.size === 0,
       })}
     >
-      {scrollableContent as ImmutableList<JSX.Element>}
+      {scrollableContent!}
     </ScrollableList>
   );
 

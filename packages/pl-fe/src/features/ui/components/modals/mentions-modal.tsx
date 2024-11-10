@@ -1,4 +1,3 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -24,7 +23,7 @@ const MentionsModal: React.FC<BaseModalProps & MentionsModalProps> = ({ onClose,
   const getStatus = useCallback(makeGetStatus(), []);
 
   const status = useAppSelector((state) => getStatus(state, { id: statusId }));
-  const accountIds = status ? ImmutableOrderedSet(status.mentions.map(m => m.id)) : null;
+  const accountIds = status ? status.mentions.map(m => m.id) : null;
 
   const fetchData = () => {
     dispatch(fetchStatusWithContext(statusId, intl));
