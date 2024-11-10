@@ -1,6 +1,3 @@
-import {
-  Map as ImmutableMap,
-} from 'immutable';
 import { create } from 'mutative';
 
 import { STATUS_IMPORT, STATUSES_IMPORT, type ImporterAction } from 'pl-fe/actions/importer';
@@ -143,13 +140,11 @@ const filterContexts = (
   state: State,
   relationship: { id: string },
   /** The entire statuses map from the store. */
-  statuses: ImmutableMap<string, Status>,
+  statuses: Record<string, Status>,
 ) => {
-  const ownedStatusIds = statuses
+  const ownedStatusIds = Object.values(statuses)
     .filter(status => status.account.id === relationship.id)
-    .map(status => status.id)
-    .toList()
-    .toArray();
+    .map(status => status.id);
 
   deleteStatuses(state, ownedStatusIds);
 };
