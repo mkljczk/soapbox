@@ -1,4 +1,4 @@
-import { PLEROMA, type UpdateNotificationSettingsParams, type Account, type CreateAccountParams, type PaginatedResponse, type Relationship } from 'pl-api';
+import { PLEROMA, type UpdateNotificationSettingsParams, type Account, type CreateAccountParams, type PaginatedResponse, type Relationship, Token, PlApiClient } from 'pl-api';
 
 import { Entities } from 'pl-fe/entity-store/entities';
 import { selectAccount } from 'pl-fe/selectors';
@@ -11,6 +11,7 @@ import { importEntities } from './importer';
 import type { MinifiedStatus } from 'pl-fe/reducers/statuses';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 import type { History } from 'pl-fe/types/history';
+import type { Me } from 'pl-fe/types/pl-fe';
 
 const ACCOUNT_CREATE_REQUEST = 'ACCOUNT_CREATE_REQUEST' as const;
 const ACCOUNT_CREATE_SUCCESS = 'ACCOUNT_CREATE_SUCCESS' as const;
@@ -73,13 +74,30 @@ const maybeRedirectLogin = (error: { response: PlfeResponse }, history?: History
 
 const noOp = () => new Promise(f => f(undefined));
 
+interface AccountCreateRequestAction {
+  type: typeof ACCOUNT_CREATE_REQUEST;
+  params: CreateAccountParams;
+}
+
+interface AccountCreateSuccessAction {
+  type: typeof ACCOUNT_CREATE_SUCCESS;
+  params: CreateAccountParams;
+  token: Token;
+}
+
+interface AccountCreateFailAction {
+  type: typeof ACCOUNT_CREATE_FAIL;
+  params: CreateAccountParams;
+  error: unknown;
+}
+
 const createAccount = (params: CreateAccountParams) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: ACCOUNT_CREATE_REQUEST, params });
+    dispatch<AccountCreateRequestAction>({ type: ACCOUNT_CREATE_REQUEST, params });
     return getClient(getState()).settings.createAccount(params).then((token) =>
-      dispatch({ type: ACCOUNT_CREATE_SUCCESS, params, token }),
+      dispatch<AccountCreateSuccessAction>({ type: ACCOUNT_CREATE_SUCCESS, params, token }),
     ).catch(error => {
-      dispatch({ type: ACCOUNT_CREATE_FAIL, error, params });
+      dispatch<AccountCreateFailAction>({ type: ACCOUNT_CREATE_FAIL, error, params });
       throw error;
     });
   };
@@ -411,13 +429,30 @@ const unpinAccount = (accountId: string) =>
     );
   };
 
+interface NotificationSettingsRequestAction {
+  type: typeof NOTIFICATION_SETTINGS_REQUEST;
+  params: UpdateNotificationSettingsParams;
+}
+
+interface NotificationSettingsSuccessAction {
+  type: typeof NOTIFICATION_SETTINGS_SUCCESS;
+  params: UpdateNotificationSettingsParams;
+  data: Awaited<ReturnType<(InstanceType<typeof PlApiClient>)['settings']['updateNotificationSettings']>>;
+}
+
+interface NotificationSettingsFailAction {
+  type: typeof NOTIFICATION_SETTINGS_FAIL;
+  params: UpdateNotificationSettingsParams;
+  error: unknown;
+}
+
 const updateNotificationSettings = (params: UpdateNotificationSettingsParams) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: NOTIFICATION_SETTINGS_REQUEST, params });
+    dispatch<NotificationSettingsRequestAction>({ type: NOTIFICATION_SETTINGS_REQUEST, params });
     return getClient(getState).settings.updateNotificationSettings(params).then((data) => {
-      dispatch({ type: NOTIFICATION_SETTINGS_SUCCESS, params, data });
+      dispatch<NotificationSettingsSuccessAction>({ type: NOTIFICATION_SETTINGS_SUCCESS, params, data });
     }).catch(error => {
-      dispatch({ type: NOTIFICATION_SETTINGS_FAIL, params, error });
+      dispatch<NotificationSettingsFailAction>({ type: NOTIFICATION_SETTINGS_FAIL, params, error });
       throw error;
     });
   };
@@ -452,31 +487,84 @@ const fetchPinnedAccountsFail = (accountId: string, error: unknown) => ({
   error,
 });
 
+interface AccountSearchRequestAction {
+  type: typeof ACCOUNT_SEARCH_REQUEST;
+  params: {
+    q: string;
+  };
+}
+
+interface AccountSearchSuccessAction {
+  type: typeof ACCOUNT_SEARCH_SUCCESS;
+  accounts: Array<Account>;
+}
+
+interface AccountSearchFailAction {
+  type: typeof ACCOUNT_SEARCH_FAIL;
+  skipAlert: true;
+}
+
 const accountSearch = (q: string, signal?: AbortSignal) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: ACCOUNT_SEARCH_REQUEST, params: { q } });
+    dispatch<AccountSearchRequestAction>({ type: ACCOUNT_SEARCH_REQUEST, params: { q } });
     return getClient(getState()).accounts.searchAccounts(q, { resolve: false, limit: 4, following: true }, { signal }).then((accounts) => {
       dispatch(importEntities({ accounts }));
-      dispatch({ type: ACCOUNT_SEARCH_SUCCESS, accounts });
+      dispatch<AccountSearchSuccessAction>({ type: ACCOUNT_SEARCH_SUCCESS, accounts });
       return accounts;
     }).catch(error => {
-      dispatch({ type: ACCOUNT_SEARCH_FAIL, skipAlert: true });
+      dispatch<AccountSearchFailAction>({ type: ACCOUNT_SEARCH_FAIL, skipAlert: true });
       throw error;
     });
   };
 
+interface AccountLookupRequestAction {
+  type: typeof ACCOUNT_LOOKUP_REQUEST;
+  acct: string;
+}
+
+interface AccountLookupSuccessAction {
+  type: typeof ACCOUNT_LOOKUP_SUCCESS;
+  account: Account;
+}
+
+interface AccountLookupFailAction {
+  type: typeof ACCOUNT_LOOKUP_FAIL;
+}
+
 const accountLookup = (acct: string, signal?: AbortSignal) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: ACCOUNT_LOOKUP_REQUEST, acct });
+    dispatch<AccountLookupRequestAction>({ type: ACCOUNT_LOOKUP_REQUEST, acct });
     return getClient(getState()).accounts.lookupAccount(acct, { signal }).then((account) => {
       if (account && account.id) dispatch(importEntities({ accounts: [account] }));
-      dispatch({ type: ACCOUNT_LOOKUP_SUCCESS, account });
+      dispatch<AccountLookupSuccessAction>({ type: ACCOUNT_LOOKUP_SUCCESS, account });
       return account;
     }).catch(error => {
-      dispatch({ type: ACCOUNT_LOOKUP_FAIL });
+      dispatch<AccountLookupFailAction>({ type: ACCOUNT_LOOKUP_FAIL });
       throw error;
     });
   };
+
+interface BirthdayRemindersFetchRequestAction {
+  type: typeof BIRTHDAY_REMINDERS_FETCH_REQUEST;
+  day: number;
+  month: number;
+  accountId: Me;
+}
+
+interface BirthdayRemindersFetchSuccessAction {
+  type: typeof BIRTHDAY_REMINDERS_FETCH_SUCCESS;
+  day: number;
+  month: number;
+  accountId: Me;
+  accounts: Array<Account>;
+}
+
+interface BirthdayRemindersFetchFailAction {
+  type: typeof BIRTHDAY_REMINDERS_FETCH_FAIL;
+  day: number;
+  month: number;
+  accountId: Me;
+}
 
 const fetchBirthdayReminders = (month: number, day: number) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
@@ -484,11 +572,11 @@ const fetchBirthdayReminders = (month: number, day: number) =>
 
     const me = getState().me;
 
-    dispatch({ type: BIRTHDAY_REMINDERS_FETCH_REQUEST, day, month, accountId: me });
+    dispatch<BirthdayRemindersFetchRequestAction>({ type: BIRTHDAY_REMINDERS_FETCH_REQUEST, day, month, accountId: me });
 
     return getClient(getState).accounts.getBirthdays(day, month).then(response => {
       dispatch(importEntities({ accounts: response }));
-      dispatch({
+      dispatch<BirthdayRemindersFetchSuccessAction>({
         type: BIRTHDAY_REMINDERS_FETCH_SUCCESS,
         accounts: response,
         day,
@@ -496,7 +584,7 @@ const fetchBirthdayReminders = (month: number, day: number) =>
         accountId: me,
       });
     }).catch(() => {
-      dispatch({ type: BIRTHDAY_REMINDERS_FETCH_FAIL, day, month, accountId: me });
+      dispatch<BirthdayRemindersFetchFailAction>({ type: BIRTHDAY_REMINDERS_FETCH_FAIL, day, month, accountId: me });
     });
   };
 
@@ -506,6 +594,47 @@ const biteAccount = (accountId: string) =>
 
     return client.accounts.biteAccount(accountId);
   };
+
+type AccountsAction =
+  | AccountCreateRequestAction
+  | AccountCreateSuccessAction
+  | AccountCreateFailAction
+  | ReturnType<typeof fetchAccountRequest>
+  | ReturnType<typeof fetchAccountSuccess>
+  | ReturnType<typeof fetchAccountFail>
+  | ReturnType<typeof blockAccountRequest>
+  | ReturnType<typeof blockAccountSuccess>
+  | ReturnType<typeof blockAccountFail>
+  | ReturnType<typeof muteAccountRequest>
+  | ReturnType<typeof muteAccountSuccess>
+  | ReturnType<typeof muteAccountFail>
+  | ReturnType<typeof fetchFollowRequestsRequest>
+  | ReturnType<typeof fetchFollowRequestsSuccess>
+  | ReturnType<typeof fetchFollowRequestsFail>
+  | ReturnType<typeof expandFollowRequestsRequest>
+  | ReturnType<typeof expandFollowRequestsSuccess>
+  | ReturnType<typeof expandFollowRequestsFail>
+  | ReturnType<typeof authorizeFollowRequestRequest>
+  | ReturnType<typeof authorizeFollowRequestSuccess>
+  | ReturnType<typeof authorizeFollowRequestFail>
+  | ReturnType<typeof rejectFollowRequestRequest>
+  | ReturnType<typeof rejectFollowRequestSuccess>
+  | ReturnType<typeof rejectFollowRequestFail>
+  | NotificationSettingsRequestAction
+  | NotificationSettingsSuccessAction
+  | NotificationSettingsFailAction
+  | ReturnType<typeof fetchPinnedAccountsRequest>
+  | ReturnType<typeof fetchPinnedAccountsSuccess>
+  | ReturnType<typeof fetchPinnedAccountsFail>
+  | AccountSearchRequestAction
+  | AccountSearchSuccessAction
+  | AccountSearchFailAction
+  | AccountLookupRequestAction
+  | AccountLookupSuccessAction
+  | AccountLookupFailAction
+  | BirthdayRemindersFetchSuccessAction
+  | BirthdayRemindersFetchRequestAction
+  | BirthdayRemindersFetchFailAction
 
 export {
   ACCOUNT_CREATE_REQUEST,
@@ -592,4 +721,5 @@ export {
   accountLookup,
   fetchBirthdayReminders,
   biteAccount,
+  type AccountsAction,
 };

@@ -1,6 +1,6 @@
 import { Record as ImmutableRecord } from 'immutable';
 
-import { ACCOUNT_BLOCK_SUCCESS, ACCOUNT_MUTE_SUCCESS } from 'pl-fe/actions/accounts';
+import { ACCOUNT_BLOCK_SUCCESS, ACCOUNT_MUTE_SUCCESS, type AccountsAction } from 'pl-fe/actions/accounts';
 import { DOMAIN_BLOCK_SUCCESS, type DomainBlocksAction } from 'pl-fe/actions/domain-blocks';
 import {
   SUGGESTIONS_FETCH_REQUEST,
@@ -10,7 +10,6 @@ import {
 } from 'pl-fe/actions/suggestions';
 
 import type { Suggestion as SuggestionEntity } from 'pl-api';
-import type { AnyAction } from 'redux';
 
 const ReducerRecord = ImmutableRecord({
   items: Array<MinifiedSuggestion>(),
@@ -38,7 +37,7 @@ const dismissAccount = (state: State, accountId: string) =>
 const dismissAccounts = (state: State, accountIds: string[]) =>
   state.update('items', items => items.filter(item => !accountIds.includes(item.account_id)));
 
-const suggestionsReducer = (state: State = ReducerRecord(), action: AnyAction | DomainBlocksAction | SuggestionsAction) => {
+const suggestionsReducer = (state: State = ReducerRecord(), action: AccountsAction | DomainBlocksAction | SuggestionsAction) => {
   switch (action.type) {
     case SUGGESTIONS_FETCH_REQUEST:
       return state.set('isLoading', true);

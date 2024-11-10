@@ -1,7 +1,7 @@
 import sample from 'lodash/sample';
 import { create } from 'mutative';
 
-import { ACCOUNT_BLOCK_SUCCESS, ACCOUNT_MUTE_SUCCESS } from '../actions/accounts';
+import { ACCOUNT_BLOCK_SUCCESS, ACCOUNT_MUTE_SUCCESS, type AccountsAction } from '../actions/accounts';
 import { PIN_SUCCESS, UNPIN_SUCCESS, type InteractionsAction } from '../actions/interactions';
 import { STATUS_CREATE_REQUEST, STATUS_CREATE_SUCCESS, type StatusesAction } from '../actions/statuses';
 import {
@@ -295,7 +295,7 @@ const handleExpandFail = (state: State, timelineId: string) => {
   setFailed(state, timelineId, true);
 };
 
-const timelines = (state: State = initialState, action: AnyAction | InteractionsAction | StatusesAction | TimelineAction): State => {
+const timelines = (state: State = initialState, action: AccountsAction | AnyAction | InteractionsAction | StatusesAction | TimelineAction): State => {
   switch (action.type) {
     case STATUS_CREATE_REQUEST:
       if (action.params.scheduled_at) return state;

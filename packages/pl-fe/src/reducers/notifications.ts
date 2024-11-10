@@ -5,6 +5,7 @@ import {
   ACCOUNT_MUTE_SUCCESS,
   FOLLOW_REQUEST_AUTHORIZE_SUCCESS,
   FOLLOW_REQUEST_REJECT_SUCCESS,
+  type AccountsAction,
 } from '../actions/accounts';
 import {
   MARKER_FETCH_SUCCESS,
@@ -149,7 +150,7 @@ const importMarker = (state: State, marker: Markers) => {
   });
 };
 
-const notifications = (state: State = ReducerRecord(), action: AnyAction | TimelineAction) => {
+const notifications = (state: State = ReducerRecord(), action: AccountsAction | AnyAction | TimelineAction) => {
   switch (action.type) {
     case NOTIFICATIONS_EXPAND_REQUEST:
       return state.set('isLoading', true);
