@@ -209,7 +209,7 @@ type AccountGalleryAttachment = MediaAttachment & {
 }
 
 const getAccountGallery = createSelector([
-  (state: RootState, id: string) => state.timelines.get(`account:${id}:with_replies:media`)?.items || ImmutableOrderedSet<string>(),
+  (state: RootState, id: string) => state.timelines[`account:${id}:with_replies:media`]?.items || [],
   (state: RootState) => state.statuses,
 ], (statusIds, statuses) =>
   statusIds.reduce((medias: Array<AccountGalleryAttachment>, statusId: string) => {
@@ -223,7 +223,7 @@ const getAccountGallery = createSelector([
 );
 
 const getGroupGallery = createSelector([
-  (state: RootState, id: string) => state.timelines.get(`group:${id}:media`)?.items || ImmutableOrderedSet<string>(),
+  (state: RootState, id: string) => state.timelines[`group:${id}:media`]?.items || [],
   (state: RootState) => state.statuses,
 ], (statusIds, statuses) =>
   statusIds.reduce((medias: Array<AccountGalleryAttachment>, statusId: string) => {
@@ -340,14 +340,14 @@ type ColumnQuery = { type: string; prefix?: string };
 
 const makeGetStatusIds = () => createSelector([
   (state: RootState, { type, prefix }: ColumnQuery) => useSettingsStore.getState().settings.timelines[prefix || type],
-  (state: RootState, { type }: ColumnQuery) => state.timelines.get(type)?.items || ImmutableOrderedSet(),
+  (state: RootState, { type }: ColumnQuery) => state.timelines[type]?.items || [],
   (state: RootState) => state.statuses,
-], (columnSettings: any, statusIds: ImmutableOrderedSet<string>, statuses) =>
+], (columnSettings: any, statusIds: Array<string>, statuses) =>
   statusIds.filter((id: string) => {
     const status = statuses[id];
     if (!status) return true;
     return !shouldFilter(status, columnSettings);
-  }).toArray(),
+  }),
 );
 
 export {

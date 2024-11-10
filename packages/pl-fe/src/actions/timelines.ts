@@ -76,7 +76,7 @@ interface TimelineDequeueAction {
 const dequeueTimeline = (timelineId: string, expandFunc?: (lastStatusId: string) => void) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const queuedCount = state.timelines.get(timelineId)?.totalQueuedItemsCount || 0;
+    const queuedCount = state.timelines[timelineId]?.totalQueuedItemsCount || 0;
 
     if (queuedCount <= 0) return;
 
@@ -185,9 +185,9 @@ const fetchHomeTimeline = (expand = false, done = noOp) =>
     const params: HomeTimelineParams = {};
     if (useSettingsStore.getState().settings.autoTranslate) params.language = getLocale();
 
-    if (expand && state.timelines.get('home')?.isLoading) return;
+    if (expand && state.timelines.home?.isLoading) return;
 
-    const fn = (expand && state.timelines.get('home')?.next?.()) || getClient(state).timelines.homeTimeline(params);
+    const fn = (expand && state.timelines.home?.next?.()) || getClient(state).timelines.homeTimeline(params);
 
     return dispatch(handleTimelineExpand('home', fn, false, done));
   };
@@ -200,9 +200,9 @@ const fetchPublicTimeline = ({ onlyMedia, local, instance }: Record<string, any>
     const params: PublicTimelineParams = { only_media: onlyMedia, local: instance ? false : local, instance };
     if (useSettingsStore.getState().settings.autoTranslate) params.language = getLocale();
 
-    if (expand && state.timelines.get(timelineId)?.isLoading) return;
+    if (expand && state.timelines[timelineId]?.isLoading) return;
 
-    const fn = (expand && state.timelines.get(timelineId)?.next?.()) || getClient(state).timelines.publicTimeline(params);
+    const fn = (expand && state.timelines[timelineId]?.next?.()) || getClient(state).timelines.publicTimeline(params);
 
     return dispatch(handleTimelineExpand(timelineId, fn, false, done));
   };
@@ -215,9 +215,9 @@ const fetchBubbleTimeline = ({ onlyMedia }: Record<string, any> = {}, expand = f
     const params: PublicTimelineParams = { only_media: onlyMedia };
     if (useSettingsStore.getState().settings.autoTranslate) params.language = getLocale();
 
-    if (expand && state.timelines.get(timelineId)?.isLoading) return;
+    if (expand && state.timelines[timelineId]?.isLoading) return;
 
-    const fn = (expand && state.timelines.get(timelineId)?.next?.()) || getClient(state).timelines.bubbleTimeline(params);
+    const fn = (expand && state.timelines[timelineId]?.next?.()) || getClient(state).timelines.bubbleTimeline(params);
 
     return dispatch(handleTimelineExpand(timelineId, fn, false, done));
   };
@@ -231,9 +231,9 @@ const fetchAccountTimeline = (accountId: string, { exclude_replies, pinned, only
     if (pinned || only_media) params.with_muted = true;
     if (useSettingsStore.getState().settings.autoTranslate) params.language = getLocale();
 
-    if (expand && state.timelines.get(timelineId)?.isLoading) return;
+    if (expand && state.timelines[timelineId]?.isLoading) return;
 
-    const fn = (expand && state.timelines.get(timelineId)?.next?.()) || getClient(state).accounts.getAccountStatuses(accountId, params);
+    const fn = (expand && state.timelines[timelineId]?.next?.()) || getClient(state).accounts.getAccountStatuses(accountId, params);
 
     return dispatch(handleTimelineExpand(timelineId, fn, false, done));
   };
@@ -246,9 +246,9 @@ const fetchListTimeline = (listId: string, expand = false, done = noOp) =>
     const params: ListTimelineParams = {};
     if (useSettingsStore.getState().settings.autoTranslate) params.language = getLocale();
 
-    if (expand && state.timelines.get(timelineId)?.isLoading) return;
+    if (expand && state.timelines[timelineId]?.isLoading) return;
 
-    const fn = (expand && state.timelines.get(timelineId)?.next?.()) || getClient(state).timelines.listTimeline(listId, params);
+    const fn = (expand && state.timelines[timelineId]?.next?.()) || getClient(state).timelines.listTimeline(listId, params);
 
     return dispatch(handleTimelineExpand(timelineId, fn, false, done));
   };
@@ -262,9 +262,9 @@ const fetchGroupTimeline = (groupId: string, { only_media, limit }: Record<strin
     if (only_media) params.with_muted = true;
     if (useSettingsStore.getState().settings.autoTranslate) params.language = getLocale();
 
-    if (expand && state.timelines.get(timelineId)?.isLoading) return;
+    if (expand && state.timelines[timelineId]?.isLoading) return;
 
-    const fn = (expand && state.timelines.get(timelineId)?.next?.()) || getClient(state).timelines.groupTimeline(groupId, params);
+    const fn = (expand && state.timelines[timelineId]?.next?.()) || getClient(state).timelines.groupTimeline(groupId, params);
 
     return dispatch(handleTimelineExpand(timelineId, fn, false, done));
   };
@@ -280,11 +280,11 @@ const fetchHashtagTimeline = (hashtag: string, { tags }: Record<string, any> = {
       none: parseTags(tags, 'none'),
     };
 
-    if (expand && state.timelines.get(timelineId)?.isLoading) return;
+    if (expand && state.timelines[timelineId]?.isLoading) return;
 
     if (useSettingsStore.getState().settings.autoTranslate) params.language = getLocale();
 
-    const fn = (expand && state.timelines.get(timelineId)?.next?.()) || getClient(state).timelines.hashtagTimeline(hashtag, params);
+    const fn = (expand && state.timelines[timelineId]?.next?.()) || getClient(state).timelines.hashtagTimeline(hashtag, params);
 
     return dispatch(handleTimelineExpand(timelineId, fn, false, done));
   };

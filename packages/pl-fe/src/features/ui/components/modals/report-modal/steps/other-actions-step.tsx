@@ -1,4 +1,3 @@
-import { OrderedSet } from 'immutable';
 import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
@@ -47,7 +46,7 @@ const OtherActionsStep = ({
   const features = useFeatures();
   const intl = useIntl();
 
-  const statusIds = useAppSelector((state) => OrderedSet(state.timelines.get(`account:${account.id}:with_replies`)!.items).union(selectedStatusIds) as OrderedSet<string>);
+  const statusIds = useAppSelector((state) => [...new Set([...state.timelines[`account:${account.id}:with_replies`]!.items, ...selectedStatusIds])]);
   const isBlocked = block;
   const isForward = forward;
   const canForward = !account.local && features.federating;
