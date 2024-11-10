@@ -35,7 +35,7 @@ interface FetchStatusQuotesFailAction {
 
 const fetchStatusQuotes = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (getState().status_lists.getIn([`quotes:${statusId}`, 'isLoading'])) {
+    if (getState().status_lists[`quotes:${statusId}`]?.isLoading) {
       return dispatch(noOp);
     }
 
@@ -78,9 +78,9 @@ interface ExpandStatusQuotesFailAction {
 
 const expandStatusQuotes = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const next = getState().status_lists.get(`quotes:${statusId}`)?.next || null;
+    const next = getState().status_lists[`quotes:${statusId}`]?.next || null;
 
-    if (next === null || getState().status_lists.getIn([`quotes:${statusId}`, 'isLoading'])) {
+    if (next === null || getState().status_lists[`quotes:${statusId}`]?.isLoading) {
       return dispatch(noOp);
     }
 

@@ -347,7 +347,7 @@ const makeGetStatusIds = () => createSelector([
     const status = statuses[id];
     if (!status) return true;
     return !shouldFilter(status, columnSettings);
-  }),
+  }).toArray(),
 );
 
 export {

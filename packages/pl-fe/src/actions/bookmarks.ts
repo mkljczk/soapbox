@@ -17,7 +17,7 @@ const noOp = () => new Promise(f => f(undefined));
 
 const fetchBookmarkedStatuses = (folderId?: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (getState().status_lists.get(folderId ? `bookmarks:${folderId}` : 'bookmarks')?.isLoading) {
+    if (getState().status_lists[folderId ? `bookmarks:${folderId}` : 'bookmarks']?.isLoading) {
       return dispatch(noOp);
     }
 
@@ -52,9 +52,9 @@ const fetchBookmarkedStatusesFail = (error: unknown, folderId?: string) => ({
 const expandBookmarkedStatuses = (folderId?: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const list = folderId ? `bookmarks:${folderId}` : 'bookmarks';
-    const next = getState().status_lists.get(list)?.next || null;
+    const next = getState().status_lists[list]?.next || null;
 
-    if (next === null || getState().status_lists.get(list)?.isLoading) {
+    if (next === null || getState().status_lists[list]?.isLoading) {
       return dispatch(noOp);
     }
 

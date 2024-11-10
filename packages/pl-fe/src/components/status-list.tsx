@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import debounce from 'lodash/debounce';
 import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -18,11 +17,11 @@ interface IStatusList extends Omit<IScrollableListWithContainer, 'onLoadMore' | 
   /** Unique key to preserve the scroll position when navigating back. */
   scrollKey: string;
   /** List of status IDs to display. */
-  statusIds: ImmutableOrderedSet<string>;
+  statusIds: Array<string>;
   /** Last _unfiltered_ status ID (maxId) for pagination. */
   lastStatusId?: string;
   /** Pinned statuses to show at the top of the feed. */
-  featuredStatusIds?: ImmutableOrderedSet<string>;
+  featuredStatusIds?: Array<string>;
   /** Pagination callback when the end of the list is reached. */
   onLoadMore?: (lastStatusId: string) => void;
   /** Whether the data is currently being fetched. */
@@ -57,13 +56,13 @@ const StatusList: React.FC<IStatusList> = ({
 }) => {
   const plFeConfig = usePlFeConfig();
 
-  const getFeaturedStatusCount = () => featuredStatusIds?.size || 0;
+  const getFeaturedStatusCount = () => featuredStatusIds?.length || 0;
 
   const getCurrentStatusIndex = (id: string, featured: boolean): number => {
     if (featured) {
-      return featuredStatusIds?.keySeq().findIndex(key => key === id) || 0;
+      return featuredStatusIds?.findIndex(key => key === id) || 0;
     } else {
-      return statusIds.keySeq().findIndex(key => key === id) + getFeaturedStatusCount();
+      return statusIds.findIndex(key => key === id) + getFeaturedStatusCount();
     }
   };
 
@@ -78,11 +77,11 @@ const StatusList: React.FC<IStatusList> = ({
   };
 
   const handleLoadOlder = useCallback(debounce(() => {
-    const maxId = lastStatusId || statusIds.last();
+    const maxId = lastStatusId || statusIds.at(-1);
     if (onLoadMore && maxId) {
       onLoadMore(maxId.replace('末suggestions-', ''));
     }
-  }, 300, { leading: true }), [onLoadMore, lastStatusId, statusIds.last()]);
+  }, 300, { leading: true }), [onLoadMore, lastStatusId, statusIds.at(-1)]);
 
   const selectChild = (index: number) => {
     const selector = `#status-list [data-index="${index}"] .focusable`;
@@ -92,9 +91,9 @@ const StatusList: React.FC<IStatusList> = ({
   };
 
   const renderLoadGap = (index: number) => {
-    const ids = statusIds.toList();
-    const nextId = ids.get(index + 1);
-    const prevId = ids.get(index - 1);
+    const ids = statusIds;
+    const nextId = ids[index + 1];
+    const prevId = ids[index - 1];
 
     if (index < 1 || !nextId || !prevId || !onLoadMore) return null;
 
@@ -136,7 +135,7 @@ const StatusList: React.FC<IStatusList> = ({
   const renderFeaturedStatuses = (): React.ReactNode[] => {
     if (!featuredStatusIds) return [];
 
-    return featuredStatusIds.toArray().map(statusId => (
+    return featuredStatusIds.map(statusId => (
       <StatusContainer
         key={`f-${statusId}`}
         id={statusId}
@@ -160,8 +159,8 @@ const StatusList: React.FC<IStatusList> = ({
   );
 
   const renderStatuses = (): React.ReactNode[] => {
-    if (isLoading || statusIds.size > 0) {
-      return statusIds.toList().reduce((acc, statusId, index) => {
+    if (isLoading || statusIds.length > 0) {
+      return statusIds.reduce((acc, statusId, index) => {
         if (statusId === null) {
           const gap = renderLoadGap(index);
           if (gap) {
@@ -214,7 +213,7 @@ const StatusList: React.FC<IStatusList> = ({
       id='status-list'
       key='scrollable-list'
       isLoading={isLoading}
-      showLoading={isLoading && statusIds.size === 0}
+      showLoading={isLoading && statusIds.length === 0}
       onLoadMore={handleLoadOlder}
       placeholderComponent={() => <PlaceholderStatus variant={divideType === 'border' ? 'slim' : 'rounded'} />}
       placeholderCount={20}

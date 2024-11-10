@@ -19,7 +19,7 @@ const fetchScheduledStatuses = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
 
-    if (state.status_lists.get('scheduled_statuses')?.isLoading) {
+    if (state.status_lists.scheduled_statuses?.isLoading) {
       return;
     }
 
@@ -63,9 +63,9 @@ const fetchScheduledStatusesFail = (error: unknown) => ({
 
 const expandScheduledStatuses = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const next = getState().status_lists.get('scheduled_statuses')?.next as any as () => Promise<PaginatedResponse<ScheduledStatus>> || null;
+    const next = getState().status_lists.scheduled_statuses?.next as any as () => Promise<PaginatedResponse<ScheduledStatus>> || null;
 
-    if (next === null || getState().status_lists.get('scheduled_statuses')?.isLoading) {
+    if (next === null || getState().status_lists.scheduled_statuses?.isLoading) {
       return;
     }
 

@@ -448,7 +448,7 @@ const initEventEdit = (statusId: string) => (dispatch: AppDispatch, getState: ()
 
 const fetchRecentEvents = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (getState().status_lists.get('recent_events')?.isLoading) {
+    if (getState().status_lists.recent_events?.isLoading) {
       return;
     }
 
@@ -470,7 +470,7 @@ const fetchRecentEvents = () =>
 
 const fetchJoinedEvents = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (getState().status_lists.get('joined_events')?.isLoading) {
+    if (getState().status_lists.joined_events?.isLoading) {
       return;
     }
 

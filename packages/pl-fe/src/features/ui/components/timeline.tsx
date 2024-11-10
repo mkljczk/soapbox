@@ -34,7 +34,7 @@ const Timeline: React.FC<ITimeline> = ({
   const getStatusIds = useCallback(makeGetStatusIds(), []);
 
   const statusIds = useAppSelector(state => getStatusIds(state, { type: timelineId, prefix }));
-  const lastStatusId = statusIds.last();
+  const lastStatusId = statusIds.at(-1);
   const isLoading = useAppSelector(state => (state.timelines.get(timelineId) || { isLoading: true }).isLoading === true);
   const isPartial = useAppSelector(state => (state.timelines.get(timelineId)?.isPartial || false) === true);
   const hasMore = useAppSelector(state => state.timelines.get(timelineId)?.hasMore === true);
