@@ -261,7 +261,7 @@ const makeGetReport = () => {
 
 const getAuthUserIds = createSelector(
   [(state: RootState) => state.auth.users],
-  authUsers => authUsers.reduce((userIds: Array<string>, authUser) => {
+  authUsers => Object.values(authUsers).reduce((userIds: Array<string>, authUser) => {
     const userId = authUser?.id;
     if (validId(userId)) userIds.push(userId);
     return userIds;

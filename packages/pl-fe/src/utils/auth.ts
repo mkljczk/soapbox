@@ -30,7 +30,7 @@ const getUserToken = (state: RootState, accountId?: string | false | null) => {
   if (!accountId) return;
   const accountUrl = selectAccount(state, accountId)?.url;
   if (!accountUrl) return;
-  return state.auth.users.get(accountUrl)?.access_token;
+  return state.auth.users[accountUrl]?.access_token;
 };
 
 const getAccessToken = (state: RootState) => {
@@ -42,7 +42,7 @@ const getAuthUserId = (state: RootState) => {
   const me = state.auth.me;
 
   return [
-    state.auth.users.get(me!)?.id,
+    state.auth.users[me!]?.id,
     me,
   ].filter(id => id).find(validId);
 };
@@ -51,7 +51,7 @@ const getAuthUserUrl = (state: RootState) => {
   const me = state.auth.me;
 
   return [
-    state.auth.users.get(me!)?.url,
+    state.auth.users[me!]?.url,
     me,
   ].filter(url => url).find(isURL);
 };
