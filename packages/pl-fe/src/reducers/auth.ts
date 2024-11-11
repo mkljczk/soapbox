@@ -210,11 +210,7 @@ const importCredentials = (state: State | Draft<State>, token: string, account: 
   });
   // state.tokens[token].account = account.id;
   state.tokens[token].me = account.url;
-  state.users = Object.fromEntries(Object.entries(state.users).filter(([url, user]) => userMismatch(token, account)(user, url)));
-  if (!state.me) {
-    if (state.client.baseURL === parseBaseURL(account.url)) state.client.accessToken = token;
-    else state.client = new PlApiClient(parseBaseURL(account.url) || backendUrl, token);
-  }
+  state.users = Object.fromEntries(Object.entries(state.users).filter(([url, user]) => !userMismatch(token, account)(user, url)));
   state.me = state.me || account.url;
   upgradeNonUrlId(state, account);
 };
@@ -281,47 +277,64 @@ const deleteForbiddenToken = (state: State | Draft<State>, error: { response: Pl
   }
 };
 
+const updateState = (state: State, updater: (state: Draft<State>) => void, clientUpdater?: (state: State) => InstanceType<typeof PlApiClient>) => {
+  const oldClient = state.client;
+
+  const newState = create(state, updater);
+  const newClient = clientUpdater?.(state) || oldClient;
+  return { ...newState, client: newClient };
+};
+
 const reducer = (state: State, action: AnyAction | AuthAction | MeAction | PreloadAction): State => {
   switch (action.type) {
     case AUTH_APP_CREATED:
-      return create(state, (draft) => {
+      return updateState(state, (draft) => {
         draft.app = action.app;
       });
     case AUTH_APP_AUTHORIZED:
-      return create(state, (draft) => {
+      return updateState(state, (draft) => {
         draft.app = ({ ...draft.app, ...action.token });
       });
     case AUTH_LOGGED_IN:
-      return create(state, (draft) => {
+      return updateState(state, (draft) => {
         importToken(draft, action.token);
       });
     case AUTH_LOGGED_OUT:
-      return create(state, (draft) => {
+      return updateState(state, (draft) => {
         deleteUser(draft, action.account);
       });
     case VERIFY_CREDENTIALS_SUCCESS:
-      return create(state, (draft) => {
+      return updateState(state, (draft) => {
         importCredentials(draft, action.token, persistAuthAccount(action.account));
+      }, () => {
+        if (!state.me) {
+          if (state.client.baseURL === parseBaseURL(action.account.url)) {
+            state.client.accessToken = action.token;
+            return state.client;
+          } else return new PlApiClient(parseBaseURL(action.account.url) || backendUrl, action.token);
+        }
+        return state.client;
       });
     case VERIFY_CREDENTIALS_FAIL:
-      return create(state, (draft) => {
+      return updateState(state, (draft) => {
         deleteForbiddenToken(draft, action.error, action.token);
       });
     case SWITCH_ACCOUNT:
-      return create(state, (draft) => {
+      return updateState(state, (draft) => {
         draft.me = action.account.url;
-        if (draft.client.baseURL === parseBaseURL(action.account.url)) {
-          draft.client.accessToken = action.account.access_token;
-        } else {
-          draft.client = new PlApiClient(parseBaseURL(action.account.url) || backendUrl, action.account.access_token);
+      }, () => {
+        if (state.client.baseURL === parseBaseURL(action.account.url)) {
+          state.client.accessToken = action.account.access_token;
+          return state.client;
         }
+        return new PlApiClient(parseBaseURL(action.account.url) || backendUrl, action.account.access_token);
       });
     case ME_FETCH_SKIP:
-      return create(state, (draft) => {
+      return updateState(state, (draft) => {
         draft.me = null;
       });
     case MASTODON_PRELOAD_IMPORT:
-      return create(state, (draft) => {
+      return updateState(state, (draft) => {
         importMastodonPreload(draft, fromJS<ImmutableMap<string, any>>(action.data));
       });
     default:
