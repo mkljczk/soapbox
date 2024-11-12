@@ -5,6 +5,7 @@ import {
   SCHEDULED_STATUSES_FETCH_SUCCESS,
   SCHEDULED_STATUS_CANCEL_REQUEST,
   SCHEDULED_STATUS_CANCEL_SUCCESS,
+  type ScheduledStatusesAction,
 } from 'pl-fe/actions/scheduled-statuses';
 import { STATUS_CREATE_SUCCESS } from 'pl-fe/actions/statuses';
 
@@ -28,7 +29,7 @@ const deleteStatus = (state: State, statusId: string) => {
   delete state[statusId];
 };
 
-const scheduled_statuses = (state: State = initialState, action: AnyAction | ImporterAction) => {
+const scheduled_statuses = (state: State = initialState, action: AnyAction | ImporterAction | ScheduledStatusesAction) => {
   switch (action.type) {
     case STATUS_IMPORT:
     case STATUS_CREATE_SUCCESS:

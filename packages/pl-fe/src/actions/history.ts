@@ -47,8 +47,5 @@ export {
   HISTORY_FETCH_SUCCESS,
   HISTORY_FETCH_FAIL,
   fetchHistory,
-  fetchHistoryRequest,
-  fetchHistorySuccess,
-  fetchHistoryFail,
   type HistoryAction,
 };

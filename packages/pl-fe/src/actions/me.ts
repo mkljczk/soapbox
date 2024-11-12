@@ -158,11 +158,8 @@ export {
   ME_PATCH_FAIL,
   fetchMe,
   patchMe,
-  fetchMeRequest,
   fetchMeSuccess,
   fetchMeFail,
-  patchMeRequest,
   patchMeSuccess,
-  patchMeFail,
   type MeAction,
 };

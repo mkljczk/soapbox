@@ -8,9 +8,8 @@ import {
   LIST_ADDER_LISTS_FETCH_FAIL,
   LIST_EDITOR_ADD_SUCCESS,
   LIST_EDITOR_REMOVE_SUCCESS,
+  type ListsAction,
 } from '../actions/lists';
-
-import type { AnyAction } from 'redux';
 
 interface State {
   accountId: string | null;
@@ -30,7 +29,7 @@ const initialState: State = {
   },
 };
 
-const listAdderReducer = (state: State = initialState, action: AnyAction): State => {
+const listAdderReducer = (state: State = initialState, action: ListsAction): State => {
   switch (action.type) {
     case LIST_ADDER_RESET:
       return initialState;

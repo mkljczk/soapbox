@@ -7,10 +7,10 @@ import {
   LIST_CREATE_SUCCESS,
   LIST_UPDATE_SUCCESS,
   LIST_DELETE_SUCCESS,
+  type ListsAction,
 } from 'pl-fe/actions/lists';
 
 import type { List } from 'pl-api';
-import type { AnyAction } from 'redux';
 
 type State = Record<string, List | false>;
 
@@ -24,7 +24,7 @@ const importLists = (state: State, lists: Array<List>) => {
   lists.forEach(list => importList(state, list));
 };
 
-const lists = (state: State = initialState, action: AnyAction) => {
+const lists = (state: State = initialState, action: ListsAction) => {
   switch (action.type) {
     case LIST_FETCH_SUCCESS:
     case LIST_CREATE_SUCCESS:

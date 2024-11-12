@@ -82,12 +82,6 @@ export {
   DIRECTORY_EXPAND_SUCCESS,
   DIRECTORY_EXPAND_FAIL,
   fetchDirectory,
-  fetchDirectoryRequest,
-  fetchDirectorySuccess,
-  fetchDirectoryFail,
   expandDirectory,
-  expandDirectoryRequest,
-  expandDirectorySuccess,
-  expandDirectoryFail,
   type DirectoryAction,
 };

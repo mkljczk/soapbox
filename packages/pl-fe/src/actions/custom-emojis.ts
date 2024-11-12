@@ -45,8 +45,5 @@ export {
   CUSTOM_EMOJIS_FETCH_SUCCESS,
   CUSTOM_EMOJIS_FETCH_FAIL,
   fetchCustomEmojis,
-  fetchCustomEmojisRequest,
-  fetchCustomEmojisSuccess,
-  fetchCustomEmojisFail,
   type CustomEmojisAction,
 };

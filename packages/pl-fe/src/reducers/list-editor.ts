@@ -18,9 +18,8 @@ import {
   LIST_EDITOR_SUGGESTIONS_CHANGE,
   LIST_EDITOR_ADD_SUCCESS,
   LIST_EDITOR_REMOVE_SUCCESS,
+  type ListsAction,
 } from '../actions/lists';
-
-import type { AnyAction } from 'redux';
 
 interface State {
   listId: string | null;
@@ -58,7 +57,7 @@ const initialState: State = {
   },
 };
 
-const listEditorReducer = (state: State = initialState, action: AnyAction): State => {
+const listEditorReducer = (state: State = initialState, action: ListsAction): State => {
   switch (action.type) {
     case LIST_EDITOR_RESET:
       return initialState;
@@ -123,7 +122,7 @@ const listEditorReducer = (state: State = initialState, action: AnyAction): Stat
       });
     case LIST_EDITOR_REMOVE_SUCCESS:
       return create(state, (draft) => {
-        draft.accounts.items = draft.accounts.items.filter(id => id !== action.accoundId);
+        draft.accounts.items = draft.accounts.items.filter(id => id !== action.accountId);
       });
     default:
       return state;

@@ -102,12 +102,6 @@ export {
   BOOKMARKED_STATUSES_EXPAND_SUCCESS,
   BOOKMARKED_STATUSES_EXPAND_FAIL,
   fetchBookmarkedStatuses,
-  fetchBookmarkedStatusesRequest,
-  fetchBookmarkedStatusesSuccess,
-  fetchBookmarkedStatusesFail,
   expandBookmarkedStatuses,
-  expandBookmarkedStatusesRequest,
-  expandBookmarkedStatusesSuccess,
-  expandBookmarkedStatusesFail,
   type BookmarksAction,
 };

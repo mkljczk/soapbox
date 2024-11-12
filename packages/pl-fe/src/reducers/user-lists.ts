@@ -17,7 +17,7 @@ import {
   DIRECTORY_EXPAND_REQUEST,
   DIRECTORY_EXPAND_SUCCESS,
   DIRECTORY_EXPAND_FAIL,
-  DirectoryAction,
+  type DirectoryAction,
 } from 'pl-fe/actions/directory';
 import {
   EVENT_PARTICIPATIONS_EXPAND_SUCCESS,
@@ -33,6 +33,7 @@ import {
   GROUP_BLOCKS_FETCH_SUCCESS,
   GROUP_BLOCKS_FETCH_FAIL,
   GROUP_UNBLOCK_SUCCESS,
+  type GroupsAction,
 } from 'pl-fe/actions/groups';
 import {
   REBLOGS_FETCH_SUCCESS,
@@ -41,7 +42,7 @@ import {
   FAVOURITES_EXPAND_SUCCESS,
   DISLIKES_FETCH_SUCCESS,
   REACTIONS_FETCH_SUCCESS,
-  InteractionsAction,
+  type InteractionsAction,
 } from 'pl-fe/actions/interactions';
 import { NOTIFICATIONS_UPDATE, type NotificationsAction } from 'pl-fe/actions/notifications';
 
@@ -157,7 +158,7 @@ const normalizeFollowRequest = (state: State, notification: Notification) =>
     draft.follow_requests.items = [...new Set([notification.account.id, ...draft.follow_requests.items])];
   });
 
-const userLists = (state = initialState, action: AccountsAction | DirectoryAction | InteractionsAction | NotificationsAction | AnyAction): State => {
+const userLists = (state = initialState, action: AccountsAction | DirectoryAction | GroupsAction | InteractionsAction | NotificationsAction | AnyAction): State => {
   switch (action.type) {
     case REBLOGS_FETCH_SUCCESS:
       return normalizeList(state, ['reblogged_by', action.statusId], action.accounts, action.next);
