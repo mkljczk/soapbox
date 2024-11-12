@@ -87,7 +87,7 @@ const updateNotifications = (notification: BaseNotification) =>
     }
   };
 
-const updateNotificationsQueue = (notification: BaseNotification, intlMessages: Record<string, string>, intlLocale: string, curPath: string) =>
+const updateNotificationsQueue = (notification: BaseNotification, intlMessages: Record<string, string>, intlLocale: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!notification.type) return; // drop invalid notifications
     if (notification.type === 'chat_mention') return; // Drop chat notifications, handle them per-chat
