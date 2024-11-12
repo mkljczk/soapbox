@@ -1,9 +1,9 @@
 import { useDebounce } from '@uidotdev/usehooks';
 import clsx from 'clsx';
+import { useSearchLocation } from 'pl-hooks';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { useSearchLocation } from 'pl-fe/api/hooks/search/use-search-location';
 import AutosuggestInput, { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import Icon from 'pl-fe/components/icon';
 

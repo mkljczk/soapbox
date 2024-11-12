@@ -1,10 +1,9 @@
 import { useFloating, shift, autoUpdate } from '@floating-ui/react';
+import { useBookmarkFolder, useUpdateBookmarkFolder } from 'pl-hooks';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useBookmarkFolder } from 'pl-fe/api/hooks/statuses/use-bookmark-folder';
-import { useUpdateBookmarkFolder } from 'pl-fe/api/hooks/statuses/use-update-bookmark-folder';
 import Emoji from 'pl-fe/components/ui/emoji';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';

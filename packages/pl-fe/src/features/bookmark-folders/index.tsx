@@ -1,8 +1,8 @@
+import { useBookmarkFolders } from 'pl-hooks';
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { Redirect } from 'react-router-dom';
 
-import { useBookmarkFolders } from 'pl-fe/api/hooks/statuses/use-bookmark-folders';
 import List, { ListItem } from 'pl-fe/components/list';
 import Column from 'pl-fe/components/ui/column';
 import Emoji from 'pl-fe/components/ui/emoji';

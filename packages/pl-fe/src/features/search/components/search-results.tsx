@@ -1,10 +1,10 @@
 import clsx from 'clsx';
+import { useSearchAccounts, useSearchHashtags, useSearchStatuses } from 'pl-hooks';
 import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { useSearchParams } from 'react-router-dom-v5-compat';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
-import { useSearchAccounts, useSearchHashtags, useSearchStatuses } from 'pl-fe/api/hooks/search/use-search';
 import { useSuggestedAccounts } from 'pl-fe/api/hooks/trends/use-suggested-accounts';
 import { useTrendingLinks } from 'pl-fe/api/hooks/trends/use-trending-links';
 import { useTrendingStatuses } from 'pl-fe/api/hooks/trends/use-trending-statuses';

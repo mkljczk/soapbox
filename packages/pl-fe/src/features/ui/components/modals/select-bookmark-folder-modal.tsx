@@ -1,9 +1,8 @@
-import { useStatus } from 'pl-hooks';
+import { useBookmarkFolders, useStatus } from 'pl-hooks';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { bookmark } from 'pl-fe/actions/interactions';
-import { useBookmarkFolders } from 'pl-fe/api/hooks/statuses/use-bookmark-folders';
 import { RadioGroup, RadioItem } from 'pl-fe/components/radio';
 import Emoji from 'pl-fe/components/ui/emoji';
 import HStack from 'pl-fe/components/ui/hstack';
