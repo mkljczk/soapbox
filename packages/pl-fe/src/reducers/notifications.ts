@@ -18,9 +18,8 @@ import {
   NOTIFICATIONS_EXPAND_REQUEST,
   NOTIFICATIONS_EXPAND_FAIL,
   NOTIFICATIONS_FILTER_SET,
-  NOTIFICATIONS_CLEAR,
   NOTIFICATIONS_SCROLL_TOP,
-  NOTIFICATIONS_MARK_READ_REQUEST,
+  type NotificationsAction,
 } from '../actions/notifications';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
@@ -110,7 +109,7 @@ const importMarker = (state: State, marker: Markers) => {
   });
 };
 
-const notifications = (state: State = ReducerRecord(), action: AccountsAction | AnyAction | TimelineAction) => {
+const notifications = (state: State = ReducerRecord(), action: AccountsAction | AnyAction | NotificationsAction | TimelineAction) => {
   switch (action.type) {
     case NOTIFICATIONS_EXPAND_REQUEST:
       return state.set('isLoading', true);
@@ -132,10 +131,6 @@ const notifications = (state: State = ReducerRecord(), action: AccountsAction | 
     case FOLLOW_REQUEST_AUTHORIZE_SUCCESS:
     case FOLLOW_REQUEST_REJECT_SUCCESS:
       return filterNotificationIds(state, [action.accountId], 'follow_request');
-    case NOTIFICATIONS_CLEAR:
-      return state.set('items', ImmutableOrderedMap()).set('hasMore', false);
-    case NOTIFICATIONS_MARK_READ_REQUEST:
-      return state.set('lastRead', action.lastRead);
     case MARKER_FETCH_SUCCESS:
     case MARKER_SAVE_REQUEST:
     case MARKER_SAVE_SUCCESS:

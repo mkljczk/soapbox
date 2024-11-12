@@ -43,7 +43,7 @@ import {
   REACTIONS_FETCH_SUCCESS,
   InteractionsAction,
 } from 'pl-fe/actions/interactions';
-import { NOTIFICATIONS_UPDATE } from 'pl-fe/actions/notifications';
+import { NOTIFICATIONS_UPDATE, type NotificationsAction } from 'pl-fe/actions/notifications';
 
 import type { Account, EmojiReaction, Notification, PaginatedResponse } from 'pl-api';
 import type { APIEntity } from 'pl-fe/types/entities';
@@ -157,7 +157,7 @@ const normalizeFollowRequest = (state: State, notification: Notification) =>
     draft.follow_requests.items = [...new Set([notification.account.id, ...draft.follow_requests.items])];
   });
 
-const userLists = (state = initialState, action: AccountsAction | DirectoryAction | InteractionsAction | AnyAction): State => {
+const userLists = (state = initialState, action: AccountsAction | DirectoryAction | InteractionsAction | NotificationsAction | AnyAction): State => {
   switch (action.type) {
     case REBLOGS_FETCH_SUCCESS:
       return normalizeList(state, ['reblogged_by', action.statusId], action.accounts, action.next);

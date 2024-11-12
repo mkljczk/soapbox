@@ -23,7 +23,6 @@ import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const NOTIFICATIONS_UPDATE = 'NOTIFICATIONS_UPDATE' as const;
 const NOTIFICATIONS_UPDATE_NOOP = 'NOTIFICATIONS_UPDATE_NOOP' as const;
-const NOTIFICATIONS_UPDATE_QUEUE = 'NOTIFICATIONS_UPDATE_QUEUE' as const;
 
 const NOTIFICATIONS_EXPAND_REQUEST = 'NOTIFICATIONS_EXPAND_REQUEST' as const;
 const NOTIFICATIONS_EXPAND_SUCCESS = 'NOTIFICATIONS_EXPAND_SUCCESS' as const;
@@ -31,12 +30,7 @@ const NOTIFICATIONS_EXPAND_FAIL = 'NOTIFICATIONS_EXPAND_FAIL' as const;
 
 const NOTIFICATIONS_FILTER_SET = 'NOTIFICATIONS_FILTER_SET' as const;
 
-const NOTIFICATIONS_CLEAR = 'NOTIFICATIONS_CLEAR' as const;
 const NOTIFICATIONS_SCROLL_TOP = 'NOTIFICATIONS_SCROLL_TOP' as const;
-
-const NOTIFICATIONS_MARK_READ_REQUEST = 'NOTIFICATIONS_MARK_READ_REQUEST' as const;
-const NOTIFICATIONS_MARK_READ_SUCCESS = 'NOTIFICATIONS_MARK_READ_SUCCESS' as const;
-const NOTIFICATIONS_MARK_READ_FAIL = 'NOTIFICATIONS_MARK_READ_FAIL' as const;
 
 const MAX_QUEUED_NOTIFICATIONS = 40;
 
@@ -65,6 +59,11 @@ const fetchRelatedRelationships = (dispatch: AppDispatch, notifications: Array<N
   }
 };
 
+interface NotificationsUpdateAction {
+  type: typeof NOTIFICATIONS_UPDATE;
+  notification: NotificationGroup;
+}
+
 const updateNotifications = (notification: BaseNotification) =>
   (dispatch: AppDispatch) => {
     const selectedFilter = useSettingsStore.getState().settings.notifications.quickFilter.active;
@@ -78,7 +77,7 @@ const updateNotifications = (notification: BaseNotification) =>
     if (showInColumn) {
       const normalizedNotification = normalizeNotification(notification);
 
-      dispatch({
+      dispatch<NotificationsUpdateAction>({
         type: NOTIFICATIONS_UPDATE,
         notification: normalizedNotification,
       });
@@ -86,6 +85,11 @@ const updateNotifications = (notification: BaseNotification) =>
       fetchRelatedRelationships(dispatch, [normalizedNotification]);
     }
   };
+
+interface NotificationsUpdateNoopAction {
+  type: typeof NOTIFICATIONS_UPDATE_NOOP;
+  meta: { sound: 'boop' };
+}
 
 const updateNotificationsQueue = (notification: BaseNotification, intlMessages: Record<string, string>, intlLocale: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
@@ -130,7 +134,7 @@ const updateNotificationsQueue = (notification: BaseNotification, intlMessages: 
     }
 
     if (playSound && !filtered) {
-      dispatch({
+      dispatch<NotificationsUpdateNoopAction>({
         type: NOTIFICATIONS_UPDATE_NOOP,
         meta: { sound: 'boop' },
       });
@@ -217,14 +221,23 @@ const expandNotificationsFail = (error: unknown) => ({
   error,
 });
 
+interface NotificationsScrollTopAction {
+  type: typeof NOTIFICATIONS_SCROLL_TOP;
+  top: boolean;
+}
+
 const scrollTopNotifications = (top: boolean) =>
   (dispatch: AppDispatch) => {
-    dispatch({
+    dispatch(markReadNotifications());
+    return dispatch<NotificationsScrollTopAction>({
       type: NOTIFICATIONS_SCROLL_TOP,
       top,
     });
-    dispatch(markReadNotifications());
   };
+
+interface SetFilterAction {
+  type: typeof NOTIFICATIONS_FILTER_SET;
+}
 
 const setFilter = (filterType: FilterType, abort?: boolean) =>
   (dispatch: AppDispatch) => {
@@ -233,10 +246,10 @@ const setFilter = (filterType: FilterType, abort?: boolean) =>
 
     settingsStore.changeSetting(['notifications', 'quickFilter', 'active'], filterType);
 
-    dispatch({ type: NOTIFICATIONS_FILTER_SET });
     dispatch(expandNotifications(undefined, undefined, abort));
-
     if (activeFilter !== filterType) dispatch(saveSettings());
+
+    return dispatch<SetFilterAction>({ type: NOTIFICATIONS_FILTER_SET });
   };
 
 const markReadNotifications = () =>
@@ -258,19 +271,23 @@ const markReadNotifications = () =>
     }
   };
 
+type NotificationsAction =
+  | NotificationsUpdateAction
+  | NotificationsUpdateNoopAction
+  | ReturnType<typeof expandNotificationsRequest>
+  | ReturnType<typeof expandNotificationsSuccess>
+  | ReturnType<typeof expandNotificationsFail>
+  | NotificationsScrollTopAction
+  | SetFilterAction;
+
 export {
   NOTIFICATIONS_UPDATE,
   NOTIFICATIONS_UPDATE_NOOP,
-  NOTIFICATIONS_UPDATE_QUEUE,
   NOTIFICATIONS_EXPAND_REQUEST,
   NOTIFICATIONS_EXPAND_SUCCESS,
   NOTIFICATIONS_EXPAND_FAIL,
   NOTIFICATIONS_FILTER_SET,
-  NOTIFICATIONS_CLEAR,
   NOTIFICATIONS_SCROLL_TOP,
-  NOTIFICATIONS_MARK_READ_REQUEST,
-  NOTIFICATIONS_MARK_READ_SUCCESS,
-  NOTIFICATIONS_MARK_READ_FAIL,
   MAX_QUEUED_NOTIFICATIONS,
   type FilterType,
   updateNotifications,
@@ -282,4 +299,5 @@ export {
   scrollTopNotifications,
   setFilter,
   markReadNotifications,
+  type NotificationsAction,
 };
