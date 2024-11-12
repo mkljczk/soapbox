@@ -1,11 +1,5 @@
 .status {
-  @apply min-h-[54px] cursor-default opacity-100;
-  animation: fade 150ms linear;
-
-  @keyframes fade {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
+  @apply min-h-[54px] cursor-default;
 }
 
 [column-type='filled'] .status__wrapper,
