@@ -24,7 +24,6 @@ import type { AppDispatch, RootState } from 'pl-fe/store';
 const NOTIFICATIONS_UPDATE = 'NOTIFICATIONS_UPDATE' as const;
 const NOTIFICATIONS_UPDATE_NOOP = 'NOTIFICATIONS_UPDATE_NOOP' as const;
 const NOTIFICATIONS_UPDATE_QUEUE = 'NOTIFICATIONS_UPDATE_QUEUE' as const;
-const NOTIFICATIONS_DEQUEUE = 'NOTIFICATIONS_DEQUEUE' as const;
 
 const NOTIFICATIONS_EXPAND_REQUEST = 'NOTIFICATIONS_EXPAND_REQUEST' as const;
 const NOTIFICATIONS_EXPAND_SUCCESS = 'NOTIFICATIONS_EXPAND_SUCCESS' as const;
@@ -100,8 +99,6 @@ const updateNotificationsQueue = (notification: BaseNotification, intlMessages: 
 
     let filtered: boolean | null = false;
 
-    const isOnNotificationsPage = curPath === '/notifications';
-
     if (notification.type === 'mention' || notification.type === 'status') {
       const regex = regexFromFilters(filters);
       const searchIndex = notification.status.spoiler_text + '\n' + unescapeHTML(notification.status.content);
@@ -139,37 +136,7 @@ const updateNotificationsQueue = (notification: BaseNotification, intlMessages: 
       });
     }
 
-    if (isOnNotificationsPage) {
-      dispatch({
-        type: NOTIFICATIONS_UPDATE_QUEUE,
-        notification,
-        intlMessages,
-        intlLocale,
-      });
-    } else {
-      dispatch(updateNotifications(notification));
-    }
-  };
-
-const dequeueNotifications = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const queuedNotifications = getState().notifications.queuedNotifications;
-    const totalQueuedNotificationsCount = getState().notifications.totalQueuedNotificationsCount;
-
-    if (totalQueuedNotificationsCount === 0) {
-      return;
-    } else if (totalQueuedNotificationsCount > 0 && totalQueuedNotificationsCount <= MAX_QUEUED_NOTIFICATIONS) {
-      queuedNotifications.forEach((block) => {
-        dispatch(updateNotifications(block.notification));
-      });
-    } else {
-      dispatch(expandNotifications());
-    }
-
-    dispatch({
-      type: NOTIFICATIONS_DEQUEUE,
-    });
-    dispatch(markReadNotifications());
+    dispatch(updateNotifications(notification));
   };
 
 const excludeTypesFromFilter = (filters: string[]) => NOTIFICATION_TYPES.filter(item => !filters.includes(item));
@@ -295,7 +262,6 @@ export {
   NOTIFICATIONS_UPDATE,
   NOTIFICATIONS_UPDATE_NOOP,
   NOTIFICATIONS_UPDATE_QUEUE,
-  NOTIFICATIONS_DEQUEUE,
   NOTIFICATIONS_EXPAND_REQUEST,
   NOTIFICATIONS_EXPAND_SUCCESS,
   NOTIFICATIONS_EXPAND_FAIL,
@@ -309,7 +275,6 @@ export {
   type FilterType,
   updateNotifications,
   updateNotificationsQueue,
-  dequeueNotifications,
   expandNotifications,
   expandNotificationsRequest,
   expandNotificationsSuccess,
