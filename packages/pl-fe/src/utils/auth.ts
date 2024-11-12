@@ -1,5 +1,3 @@
-import { List as ImmutableList } from 'immutable';
-
 import { selectAccount, selectOwnAccount } from 'pl-fe/selectors';
 
 import type { RootState } from 'pl-fe/store';
@@ -32,7 +30,7 @@ const getUserToken = (state: RootState, accountId?: string | false | null) => {
   if (!accountId) return;
   const accountUrl = selectAccount(state, accountId)?.url;
   if (!accountUrl) return;
-  return state.auth.users.get(accountUrl)?.access_token;
+  return state.auth.users[accountUrl]?.access_token;
 };
 
 const getAccessToken = (state: RootState) => {
@@ -43,19 +41,19 @@ const getAccessToken = (state: RootState) => {
 const getAuthUserId = (state: RootState) => {
   const me = state.auth.me;
 
-  return ImmutableList([
-    state.auth.users.get(me!)?.id,
+  return [
+    state.auth.users[me!]?.id,
     me,
-  ].filter(id => id)).find(validId);
+  ].filter(id => id).find(validId);
 };
 
 const getAuthUserUrl = (state: RootState) => {
   const me = state.auth.me;
 
-  return ImmutableList([
-    state.auth.users.get(me!)?.url,
+  return [
+    state.auth.users[me!]?.url,
     me,
-  ].filter(url => url)).find(isURL);
+  ].filter(url => url).find(isURL);
 };
 
 /** Get the VAPID public key. */

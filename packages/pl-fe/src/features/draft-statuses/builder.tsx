@@ -8,11 +8,11 @@ import type { DraftStatus } from 'pl-fe/reducers/draft-statuses';
 import type { RootState } from 'pl-fe/store';
 
 const buildPoll = (draftStatus: DraftStatus) => {
-  if (draftStatus.hasIn(['poll', 'options'])) {
+  if (draftStatus.poll?.options) {
     return {
-      ...draftStatus.poll!.toJS(),
+      ...draftStatus.poll,
       id: `${draftStatus.draft_id}-poll`,
-      options: draftStatus.poll!.get('options').map((title: string) => ({ title })).toArray(),
+      options: draftStatus.poll.options.map((title: string) => ({ title })).toArray(),
     };
   } else {
     return null;

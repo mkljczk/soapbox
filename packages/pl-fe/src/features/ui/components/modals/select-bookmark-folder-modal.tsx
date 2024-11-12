@@ -24,7 +24,7 @@ const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseM
   const { data: status } = useStatus(statusId);
   const dispatch = useAppDispatch();
 
-  const { isFetching, bookmarkFolders } = useBookmarkFolders();
+  const { isFetching, data: bookmarkFolders } = useBookmarkFolders(data => data);
 
   const [selectedFolder, setSelectedFolder] = useState(status?.bookmark_folder || null);
 
@@ -56,7 +56,7 @@ const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseM
   ];
 
   if (!isFetching) {
-    items.push(...(bookmarkFolders.map((folder) => (
+    items.push(...((bookmarkFolders || []).map((folder) => (
       <RadioItem
         key={folder.id}
         label={

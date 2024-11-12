@@ -9,9 +9,8 @@ import { fetchCustomEmojis } from 'pl-fe/actions/custom-emojis';
 import { fetchDraftStatuses } from 'pl-fe/actions/draft-statuses';
 import { fetchFilters } from 'pl-fe/actions/filters';
 import { FilterType } from 'pl-fe/actions/notifications';
-import { register as registerPushNotifications } from 'pl-fe/actions/push-notifications';
+import { register as registerPushNotifications } from 'pl-fe/actions/push-notifications/registerer';
 import { fetchScheduledStatuses } from 'pl-fe/actions/scheduled-statuses';
-import { fetchSuggestionsForTimeline } from 'pl-fe/actions/suggestions';
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
 import { useUserStream } from 'pl-fe/api/hooks/streaming/use-user-stream';
 import SidebarNavigation from 'pl-fe/components/sidebar-navigation';
@@ -399,9 +398,7 @@ const UI: React.FC<IUI> = ({ children }) => {
 
     dispatch(fetchDraftStatuses());
 
-    dispatch(fetchHomeTimeline(false, () => {
-      dispatch(fetchSuggestionsForTimeline());
-    }));
+    dispatch(fetchHomeTimeline());
 
     prefetchNotifications(client, notificationsParams)
       .then(() => prefetchMarker(client, 'notifications'))

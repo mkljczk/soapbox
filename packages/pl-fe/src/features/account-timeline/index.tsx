@@ -41,8 +41,8 @@ const AccountTimeline: React.FC<IAccountTimeline> = ({ params, withReplies = fal
 
   const isBlocked = account?.relationship?.blocked_by;
   const unavailable = isBlocked && !features.blockersVisible;
-  const isLoading = useAppSelector(state => state.timelines.get(`account:${path}`)?.isLoading === true);
-  const hasMore = useAppSelector(state => state.timelines.get(`account:${path}`)?.hasMore === true);
+  const isLoading = useAppSelector(state => state.timelines[`account:${path}`]?.isLoading === true);
+  const hasMore = useAppSelector(state => state.timelines[`account:${path}`]?.hasMore === true);
 
   const accountUsername = account?.username || params.username;
 

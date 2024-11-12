@@ -14,6 +14,8 @@ Changes made since the project forked from Soapbox in April 2024.
 - Notifications of the same type and reposts of the same post are grouped client-side.
 - Date is displayed for notifications that are not about new posts.
 - Replies to your posts are displayed differently to other mentions in notification list.
+- Hashtags from the last line of a post are displayed in a separate component. Adapted [from Mastodon](https://github.com/mastodon/mastodon/pull/26499).
+- Native grouped notifications are used on Mastodon.
 
 **Settings:**
 - You can add image description to your avatar/backend, if supported by backend.
@@ -37,6 +39,9 @@ Changes made since the project forked from Soapbox in April 2024.
 - Posts can be addressed to lists of users, on Pleroma.
 - Support for events with external registration.
 - Added a dedicated wrench reaction button.
+- Interaction requests are supported. You can review pending requests and you get informed if your backend doesn't let you reply to a post. Supported on GoToSocial.
+- Events with external sign up are supported.
+- Application name used to post a status is displayed.
 
 ### Changed
 
@@ -66,10 +71,13 @@ Changes made since the project forked from Soapbox in April 2024.
 - Conversations page is always displayed, even when Chats are supported.
 - Made it woke.
 - Emojis are zoomed on hover.
+- Event create/edit form is now a page, instead of a modal.
+- A star is used for favorite icon, instead of a heart.
 
 **Internal:**
-- Migrated some local stores from Redux to Zustand.
+- Migrated some local stores from Redux to Zustand. Other stores are being migrated away from `immutable`, before moving them either to Zustand or TanStack Query.
 - Posts are now emojified during render, instead of when inserting posts to the state.
+- Barrel exports are no longer used.
 
 **Dependencies:**
 - `@tanstack/react-virtual` is used for list virtualization, instead of `react-virtuoso`. This improves compatibility with Ladybird browser.
@@ -89,3 +97,4 @@ Changes made since the project forked from Soapbox in April 2024.
 - Improved regex for mentions in post composer.
 - Post tombstones don't interrupt status navigation with hotkeys.
 - Emojis are supported in poll options.
+- Unsupported content types are not listed as available, when composing a post.

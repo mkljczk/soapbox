@@ -54,7 +54,7 @@ const ListEditorModal: React.FC<BaseModalProps & ListEditorModalProps> = ({ list
       <EditListForm />
       <br />
 
-      {accountIds.size > 0 && (
+      {accountIds.length > 0 && (
         <div>
           <CardHeader>
             <CardTitle title={intl.formatMessage(messages.removeFromList)} />

@@ -28,7 +28,7 @@ const getOrderedLists = createSelector([(state: RootState) => state.lists], list
     return lists;
   }
 
-  return lists.toList().filter((item): item is ListEntity => !!item).sort((a, b) => a.title.localeCompare(b.title));
+  return Object.values(lists).filter((item): item is ListEntity => !!item).sort((a, b) => a.title.localeCompare(b.title));
 });
 
 const Lists: React.FC = () => {
@@ -56,7 +56,7 @@ const Lists: React.FC = () => {
       <Stack space={4}>
         <NewListForm />
 
-        {lists.isEmpty() ? (
+        {!Object.keys(lists).length ? (
           <Card variant='rounded' size='lg'>
             {emptyMessage}
           </Card>

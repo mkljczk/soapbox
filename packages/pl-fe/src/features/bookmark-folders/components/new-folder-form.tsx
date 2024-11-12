@@ -20,7 +20,7 @@ const NewFolderForm: React.FC = () => {
 
   const name = useTextField();
 
-  const { createBookmarkFolder, isSubmitting } = useCreateBookmarkFolder();
+  const { mutate: createBookmarkFolder, isPending } = useCreateBookmarkFolder();
 
   const handleSubmit = (e: React.FormEvent<Element>) => {
     e.preventDefault();
@@ -47,13 +47,13 @@ const NewFolderForm: React.FC = () => {
           <Input
             type='text'
             placeholder={label}
-            disabled={isSubmitting}
+            disabled={isPending}
             {...name}
           />
         </label>
 
         <Button
-          disabled={isSubmitting}
+          disabled={isPending}
           onClick={handleSubmit}
           theme='primary'
         >

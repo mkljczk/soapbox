@@ -2,12 +2,10 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { setFilter } from 'pl-fe/actions/search';
 import Hashtag from 'pl-fe/components/hashtag';
 import Text from 'pl-fe/components/ui/text';
 import Widget from 'pl-fe/components/ui/widget';
 import PlaceholderSidebarTrends from 'pl-fe/features/placeholder/components/placeholder-sidebar-trends';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import useTrends from 'pl-fe/queries/trends';
 
 interface ITrendsPanel {
@@ -22,14 +20,9 @@ const messages = defineMessages({
 });
 
 const TrendsPanel = ({ limit }: ITrendsPanel) => {
-  const dispatch = useAppDispatch();
   const intl = useIntl();
 
   const { data: trends, isFetching } = useTrends();
-
-  const setHashtagsFilter = () => {
-    dispatch(setFilter('', 'hashtags'));
-  };
 
   if (!isFetching && !trends?.length) {
     return null;
@@ -39,7 +32,7 @@ const TrendsPanel = ({ limit }: ITrendsPanel) => {
     <Widget
       title={<FormattedMessage id='trends.title' defaultMessage='Trends' />}
       action={
-        <Link className='text-right' to='/search' onClick={setHashtagsFilter}>
+        <Link className='text-right' to='/search?type=hashtags'>
           <Text tag='span' theme='primary' size='sm' className='hover:underline'>
             {intl.formatMessage(messages.viewAll)}
           </Text>

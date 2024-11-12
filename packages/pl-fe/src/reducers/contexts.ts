@@ -1,11 +1,8 @@
-import {
-  Map as ImmutableMap,
-} from 'immutable';
 import { create } from 'mutative';
 
 import { STATUS_IMPORT, STATUSES_IMPORT, type ImporterAction } from 'pl-fe/actions/importer';
 
-import { ACCOUNT_BLOCK_SUCCESS, ACCOUNT_MUTE_SUCCESS } from '../actions/accounts';
+import { ACCOUNT_BLOCK_SUCCESS, ACCOUNT_MUTE_SUCCESS, type AccountsAction } from '../actions/accounts';
 import {
   CONTEXT_FETCH_SUCCESS,
   STATUS_CREATE_REQUEST,
@@ -143,13 +140,11 @@ const filterContexts = (
   state: State,
   relationship: { id: string },
   /** The entire statuses map from the store. */
-  statuses: ImmutableMap<string, Status>,
+  statuses: Record<string, Pick<Status, 'account' | 'id'>>,
 ) => {
-  const ownedStatusIds = statuses
+  const ownedStatusIds = Object.values(statuses)
     .filter(status => status.account.id === relationship.id)
-    .map(status => status.id)
-    .toList()
-    .toArray();
+    .map(status => status.id);
 
   deleteStatuses(state, ownedStatusIds);
 };
@@ -176,7 +171,7 @@ const deletePendingStatus = (state: State, params: Pick<Status, 'id' | 'in_reply
 };
 
 /** Contexts reducer. Used for building a nested tree structure for threads. */
-const replies = (state = initialState, action: AnyAction | ImporterAction | StatusesAction | TimelineAction): State => {
+const replies = (state = initialState, action: AccountsAction | AnyAction | ImporterAction | StatusesAction | TimelineAction): State => {
   switch (action.type) {
     case ACCOUNT_BLOCK_SUCCESS:
     case ACCOUNT_MUTE_SUCCESS:

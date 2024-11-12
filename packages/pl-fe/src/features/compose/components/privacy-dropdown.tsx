@@ -78,10 +78,10 @@ const getItems = (features: Features, lists: ReturnType<typeof getOrderedLists>,
     text: intl.formatMessage(messages.local_short),
     meta: intl.formatMessage(messages.local_long),
   } : undefined,
-  features.addressableLists && !lists.isEmpty() ? {
+  features.addressableLists && Object.keys(lists).length ? {
     icon: require('@tabler/icons/outline/list.svg'),
     value: '',
-    items: lists.toArray().map((list) => ({
+    items: Object.values(lists).map((list) => ({
       icon: require('@tabler/icons/outline/list.svg'),
       value: `list:${list.id}`,
       text: list.title,

@@ -18,7 +18,6 @@ import Stack from 'pl-fe/components/ui/stack';
 import EmojiPickerDropdown from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
 import { ComposeEditor } from 'pl-fe/features/ui/util/async-components';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useCompose } from 'pl-fe/hooks/use-compose';
 import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
 import { useFeatures } from 'pl-fe/hooks/use-features';
@@ -79,7 +78,6 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
   const { configuration } = useInstance();
 
   const compose = useCompose(id);
-  const showSearch = useAppSelector((state) => state.search.submitted && !state.search.hidden);
   const maxTootChars = configuration.statuses.max_characters;
   const features = useFeatures();
 
@@ -111,7 +109,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
 
   const isEmpty = !(fulltext.trim() || anyMedia);
   const condensed = shouldCondense && !isDraggedOver && !composeFocused && isEmpty && !isUploading;
-  const shouldAutoFocus = autoFocus && !showSearch;
+  const shouldAutoFocus = autoFocus;
   const canSubmit = !!editorRef.current && !isSubmitting && !isUploading && !isChangingUpload && !isEmpty && length(fulltext) <= maxTootChars;
 
   const getClickableArea = () => clickableAreaRef ? clickableAreaRef.current : formRef.current;

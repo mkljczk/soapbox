@@ -27,8 +27,8 @@ const AccountGallery = () => {
   } = useAccountLookup(username, { withRelationship: true });
 
   const attachments: Array<AccountGalleryAttachment> = useAppSelector((state) => account ? getAccountGallery(state, account.id) : []);
-  const isLoading = useAppSelector((state) => state.timelines.get(`account:${account?.id}:with_replies:media`)?.isLoading);
-  const hasMore = useAppSelector((state) => state.timelines.get(`account:${account?.id}:with_replies:media`)?.hasMore);
+  const isLoading = useAppSelector((state) => state.timelines[`account:${account?.id}:with_replies:media`]?.isLoading);
+  const hasMore = useAppSelector((state) => state.timelines[`account:${account?.id}:with_replies:media`]?.hasMore);
 
   const handleScrollToBottom = () => {
     if (hasMore) {

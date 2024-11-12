@@ -5,6 +5,7 @@ import {
   ACCOUNT_MUTE_SUCCESS,
   FOLLOW_REQUEST_AUTHORIZE_SUCCESS,
   FOLLOW_REQUEST_REJECT_SUCCESS,
+  type AccountsAction,
 } from '../actions/accounts';
 import {
   NOTIFICATIONS_UPDATE,
@@ -91,7 +92,7 @@ const updateNotificationsQueue = (state: State, notification: BaseNotification, 
   });
 };
 
-const notifications = (state: State = ReducerRecord(), action: AnyAction | TimelineAction) => {
+const notifications = (state: State = ReducerRecord(), action: AccountsAction | AnyAction | TimelineAction) => {
   switch (action.type) {
     case NOTIFICATIONS_UPDATE:
       return importNotification(state, action.notification);

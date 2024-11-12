@@ -9,7 +9,6 @@ import { biteAccount, blockAccount, pinAccount, removeFromFollowers, unblockAcco
 import { mentionCompose, directCompose } from 'pl-fe/actions/compose';
 import { blockDomain, unblockDomain } from 'pl-fe/actions/domain-blocks';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
-import { setSearchAccount } from 'pl-fe/actions/search';
 import { useFollow } from 'pl-fe/api/hooks/accounts/use-follow';
 import Badge from 'pl-fe/components/badge';
 import DropdownMenu, { Menu } from 'pl-fe/components/dropdown-menu';
@@ -240,11 +239,6 @@ const Header: React.FC<IHeader> = ({ account }) => {
     }
   };
 
-  const onSearch = () => {
-    dispatch(setSearchAccount(account.id));
-    history.push('/search');
-  };
-
   const onAvatarClick = () => {
     const avatar = v.parse(mediaAttachmentSchema, {
       id: '',
@@ -334,7 +328,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
     if (features.searchFromAccount) {
       menu.push({
         text: intl.formatMessage(account.id === ownAccount.id ? messages.searchSelf : messages.search, { name: account.username }),
-        action: onSearch,
+        to: '/search?' + new URLSearchParams({ type: 'statuses', accountId: account.id }).toString(),
         icon: require('@tabler/icons/outline/search.svg'),
       });
     }

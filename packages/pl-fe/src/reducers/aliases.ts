@@ -1,4 +1,4 @@
-import { List as ImmutableList, Record as ImmutableRecord } from 'immutable';
+import { create } from 'mutative';
 
 import {
   ALIASES_SUGGESTIONS_READY,
@@ -8,37 +8,52 @@ import {
   AliasesAction,
 } from '../actions/aliases';
 
-const ReducerRecord = ImmutableRecord({
-  aliases: ImmutableRecord({
-    items: ImmutableList<string>(),
+interface State {
+  aliases: {
+    items: Array<string>;
+    loaded: boolean;
+  };
+  suggestions: {
+    items: Array<string>;
+    value: string;
+    loaded: boolean;
+  };
+}
+
+const initialState: State = {
+  aliases: {
+    items: [],
     loaded: false,
-  })(),
-  suggestions: ImmutableRecord({
-    items: ImmutableList<string>(),
+  },
+  suggestions: {
+    items: [],
     value: '',
     loaded: false,
-  })(),
-});
+  },
+};
 
-const aliasesReducer = (state = ReducerRecord(), action: AliasesAction) => {
+const aliasesReducer = (state = initialState, action: AliasesAction): State => {
   switch (action.type) {
     case ALIASES_FETCH_SUCCESS:
-      return state
-        .setIn(['aliases', 'items'], action.value);
+      return create(state, (draft) => {
+        draft.aliases.items = action.value;
+      });
     case ALIASES_SUGGESTIONS_CHANGE:
-      return state
-        .setIn(['suggestions', 'value'], action.value)
-        .setIn(['suggestions', 'loaded'], false);
+      return create(state, (draft) => {
+        draft.suggestions.value = action.value;
+        draft.suggestions.loaded = false;
+      });
     case ALIASES_SUGGESTIONS_READY:
-      return state
-        .setIn(['suggestions', 'items'], ImmutableList(action.accounts.map((item) => item.id)))
-        .setIn(['suggestions', 'loaded'], true);
+      return create(state, (draft) => {
+        draft.suggestions.items = action.accounts.map((item) => item.id);
+        draft.suggestions.loaded = true;
+      });
     case ALIASES_SUGGESTIONS_CLEAR:
-      return state.update('suggestions', suggestions => suggestions.withMutations(map => {
-        map.set('items', ImmutableList());
-        map.set('value', '');
-        map.set('loaded', false);
-      }));
+      return create(state, (draft) => {
+        draft.suggestions.items = [];
+        draft.suggestions.value = '';
+        draft.suggestions.loaded = false;
+      });
     default:
       return state;
   }

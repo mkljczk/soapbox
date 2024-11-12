@@ -1,4 +1,3 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import debounce from 'lodash/debounce';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -49,14 +48,14 @@ const Bookmarks: React.FC<IBookmarks> = ({ params }) => {
   const folderId = params?.id;
 
   const { openModal } = useModalsStore();
-  const { bookmarkFolder: folder } = useBookmarkFolder(folderId);
-  const { deleteBookmarkFolder } = useDeleteBookmarkFolder();
+  const { data: folder } = useBookmarkFolder(folderId);
+  const { mutate: deleteBookmarkFolder } = useDeleteBookmarkFolder();
 
   const bookmarksKey = folderId ? `bookmarks:${folderId}` : 'bookmarks';
 
-  const statusIds = useAppSelector((state) => state.status_lists.get(bookmarksKey)?.items || ImmutableOrderedSet<string>());
-  const isLoading = useAppSelector((state) => state.status_lists.get(bookmarksKey)?.isLoading === true);
-  const hasMore = useAppSelector((state) => !!state.status_lists.get(bookmarksKey)?.next);
+  const statusIds = useAppSelector((state) => state.status_lists[bookmarksKey]?.items || []);
+  const isLoading = useAppSelector((state) => state.status_lists[bookmarksKey]?.isLoading === true);
+  const hasMore = useAppSelector((state) => !!state.status_lists[bookmarksKey]?.next);
 
   React.useEffect(() => {
     dispatch(fetchBookmarkedStatuses(folderId));
