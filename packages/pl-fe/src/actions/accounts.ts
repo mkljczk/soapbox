@@ -8,15 +8,13 @@ import {
   type Relationship,
   type Token,
 } from 'pl-api';
+import { importEntities } from 'pl-hooks';
 
+import { getClient, type PlfeResponse } from 'pl-fe/api';
 import { Entities } from 'pl-fe/entity-store/entities';
 import { queryClient } from 'pl-fe/queries/client';
 import { selectAccount } from 'pl-fe/selectors';
 import { isLoggedIn } from 'pl-fe/utils/auth';
-
-import { getClient, type PlfeResponse } from '../api';
-
-import { importEntities } from './importer';
 
 import type { MinifiedSuggestion } from 'pl-fe/api/hooks/trends/use-suggested-accounts';
 import type { MinifiedStatus } from 'pl-fe/reducers/statuses';
@@ -127,7 +125,7 @@ const fetchAccount = (accountId: string) =>
 
     return getClient(getState()).accounts.getAccount(accountId)
       .then(response => {
-        dispatch(importEntities({ accounts: [response] }));
+        importEntities({ accounts: [response] });
         dispatch(fetchAccountSuccess(response));
       })
       .catch(error => {
@@ -142,8 +140,8 @@ const fetchAccountByUsername = (username: string, history?: History) =>
 
     if (features.accountByUsername && (me || !features.accountLookup)) {
       return getClient(getState()).accounts.getAccount(username).then(response => {
+        importEntities({ accounts: [response] });
         dispatch(fetchRelationships([response.id]));
-        dispatch(importEntities({ accounts: [response] }));
         dispatch(fetchAccountSuccess(response));
       }).catch(error => {
         dispatch(fetchAccountFail(null, error));
@@ -197,7 +195,7 @@ const blockAccount = (accountId: string) =>
 
     return getClient(getState).filtering.blockAccount(accountId)
       .then(response => {
-        dispatch(importEntities({ relationships: [response] }));
+        importEntities({ relationships: [response] });
 
         queryClient.setQueryData<Array<MinifiedSuggestion>>(['suggestions'], suggestions => suggestions
           ? suggestions.filter((suggestion) => suggestion.account_id !== accountId)
@@ -213,9 +211,7 @@ const unblockAccount = (accountId: string) =>
     if (!isLoggedIn(getState)) return null;
 
     return getClient(getState).filtering.unblockAccount(accountId)
-      .then(response => {
-        dispatch(importEntities({ relationships: [response] }));
-      });
+      .then(response => importEntities({ relationships: [response] }));
   };
 
 const blockAccountRequest = (accountId: string) => ({
@@ -258,7 +254,7 @@ const muteAccount = (accountId: string, notifications?: boolean, duration = 0) =
 
     return client.filtering.muteAccount(accountId, params)
       .then(response => {
-        dispatch(importEntities({ relationships: [response] }));
+        importEntities({ relationships: [response] });
 
         queryClient.setQueryData<Array<MinifiedSuggestion>>(['suggestions'], suggestions => suggestions
           ? suggestions.filter((suggestion) => suggestion.account_id !== accountId)
@@ -275,7 +271,7 @@ const unmuteAccount = (accountId: string) =>
     if (!isLoggedIn(getState)) return null;
 
     return getClient(getState()).filtering.unmuteAccount(accountId)
-      .then(response => dispatch(importEntities({ relationships: [response] })));
+      .then(response => importEntities({ relationships: [response] }));
   };
 
 const muteAccountRequest = (accountId: string) => ({
@@ -300,7 +296,7 @@ const removeFromFollowers = (accountId: string) =>
     if (!isLoggedIn(getState)) return null;
 
     return getClient(getState()).accounts.removeAccountFromFollowers(accountId)
-      .then(response => dispatch(importEntities({ relationships: [response] })));
+      .then(response => importEntities({ relationships: [response] }));
   };
 
 const fetchRelationships = (accountIds: string[]) =>
@@ -315,7 +311,7 @@ const fetchRelationships = (accountIds: string[]) =>
     }
 
     return getClient(getState()).accounts.getRelationships(newAccountIds)
-      .then(response => dispatch(importEntities({ relationships: response })));
+      .then(response => importEntities({ relationships: response }));
   };
 
 const fetchFollowRequests = () =>
@@ -326,7 +322,7 @@ const fetchFollowRequests = () =>
 
     return getClient(getState()).myAccount.getFollowRequests()
       .then(response => {
-        dispatch(importEntities({ accounts: response.items }));
+        importEntities({ accounts: response.items });
         dispatch(fetchFollowRequestsSuccess(response.items, response.next));
       })
       .catch(error => dispatch(fetchFollowRequestsFail(error)));
@@ -358,7 +354,7 @@ const expandFollowRequests = () =>
     dispatch(expandFollowRequestsRequest());
 
     return next().then(response => {
-      dispatch(importEntities({ accounts: response.items }));
+      importEntities({ accounts: response.items });
       dispatch(expandFollowRequestsSuccess(response.items, response.next));
     }).catch(error => dispatch(expandFollowRequestsFail(error)));
   };
@@ -436,18 +432,16 @@ const pinAccount = (accountId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return dispatch(noOp);
 
-    return getClient(getState).accounts.pinAccount(accountId).then(response =>
-      dispatch(importEntities({ relationships: [response] })),
-    );
+    return getClient(getState).accounts.pinAccount(accountId)
+      .then(response => importEntities({ relationships: [response] }));
   };
 
 const unpinAccount = (accountId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return dispatch(noOp);
 
-    return getClient(getState).accounts.unpinAccount(accountId).then(response =>
-      dispatch(importEntities({ relationships: [response] })),
-    );
+    return getClient(getState).accounts.unpinAccount(accountId)
+      .then(response => importEntities({ relationships: [response] }));
   };
 
 interface NotificationSettingsRequestAction {
@@ -483,7 +477,7 @@ const fetchPinnedAccounts = (accountId: string) =>
     dispatch(fetchPinnedAccountsRequest(accountId));
 
     return getClient(getState).accounts.getAccountEndorsements(accountId).then(response => {
-      dispatch(importEntities({ accounts: response }));
+      importEntities({ accounts: response });
       dispatch(fetchPinnedAccountsSuccess(accountId, response, null));
     }).catch(error => {
       dispatch(fetchPinnedAccountsFail(accountId, error));
@@ -529,7 +523,7 @@ const accountSearch = (q: string, signal?: AbortSignal) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch<AccountSearchRequestAction>({ type: ACCOUNT_SEARCH_REQUEST, params: { q } });
     return getClient(getState()).accounts.searchAccounts(q, { resolve: false, limit: 4, following: true }, { signal }).then((accounts) => {
-      dispatch(importEntities({ accounts }));
+      importEntities({ accounts });
       dispatch<AccountSearchSuccessAction>({ type: ACCOUNT_SEARCH_SUCCESS, accounts });
       return accounts;
     }).catch(error => {
@@ -556,7 +550,7 @@ const accountLookup = (acct: string, signal?: AbortSignal) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch<AccountLookupRequestAction>({ type: ACCOUNT_LOOKUP_REQUEST, acct });
     return getClient(getState()).accounts.lookupAccount(acct, { signal }).then((account) => {
-      if (account && account.id) dispatch(importEntities({ accounts: [account] }));
+      if (account && account.id) importEntities({ accounts: [account] });
       dispatch<AccountLookupSuccessAction>({ type: ACCOUNT_LOOKUP_SUCCESS, account });
       return account;
     }).catch(error => {
@@ -596,7 +590,7 @@ const fetchBirthdayReminders = (month: number, day: number) =>
     dispatch<BirthdayRemindersFetchRequestAction>({ type: BIRTHDAY_REMINDERS_FETCH_REQUEST, day, month, accountId: me });
 
     return getClient(getState).accounts.getBirthdays(day, month).then(response => {
-      dispatch(importEntities({ accounts: response }));
+      importEntities({ accounts: response });
       dispatch<BirthdayRemindersFetchSuccessAction>({
         type: BIRTHDAY_REMINDERS_FETCH_SUCCESS,
         accounts: response,

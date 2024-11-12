@@ -1,17 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useIntl } from 'react-intl';
+import { useStatus } from 'pl-hooks';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { fetchStatus } from 'pl-fe/actions/statuses';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import SiteLogo from 'pl-fe/components/site-logo';
 import Status from 'pl-fe/components/status';
 import Spinner from 'pl-fe/components/ui/spinner';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useLogo } from 'pl-fe/hooks/use-logo';
 import { iframeId } from 'pl-fe/iframe';
-import { makeGetStatus } from 'pl-fe/selectors';
 
 interface IEmbeddedStatus {
   params: {
@@ -20,25 +16,16 @@ interface IEmbeddedStatus {
 }
 
 /** Status to be presented in an iframe for embeds on external websites. */
-const EmbeddedStatus: React.FC<IEmbeddedStatus> = ({ params }) => {
-  const dispatch = useAppDispatch();
+const EmbeddedStatus: React.FC<IEmbeddedStatus> = ({ params: { statusId: statusId } }) => {
   const history = useHistory();
-  const getStatus = useCallback(makeGetStatus(), []);
-  const intl = useIntl();
   const logoSrc = useLogo();
 
-  const status = useAppSelector(state => getStatus(state, { id: params.statusId }));
-
-  const [loading, setLoading] = useState(true);
+  const statusQuery = useStatus(statusId);
 
   useEffect(() => {
     // Prevent navigation for UX and security.
     // https://stackoverflow.com/a/71531211
     history.block();
-
-    dispatch(fetchStatus(params.statusId, intl))
-      .then(() => setLoading(false))
-      .catch(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -47,7 +34,7 @@ const EmbeddedStatus: React.FC<IEmbeddedStatus> = ({ params }) => {
       id: iframeId,
       height: document.getElementsByTagName('html')[0].scrollHeight,
     }, '*');
-  }, [status, loading]);
+  }, [statusQuery.isSuccess]);
 
   const logo = logoSrc && (
     <div className='ml-4 flex justify-center align-middle'>
@@ -56,10 +43,10 @@ const EmbeddedStatus: React.FC<IEmbeddedStatus> = ({ params }) => {
   );
 
   const renderInner = () => {
-    if (loading) {
+    if (!statusQuery.isSuccess) {
       return <Spinner />;
     } else if (status) {
-      return <Status status={status} accountAction={logo || undefined} variant='default' />;
+      return <Status status={statusQuery.data} accountAction={logo || undefined} variant='default' />;
     } else {
       return <MissingIndicator nested />;
     }
@@ -68,7 +55,7 @@ const EmbeddedStatus: React.FC<IEmbeddedStatus> = ({ params }) => {
   return (
     <a
       className='block bg-white dark:bg-primary-900'
-      href={status?.url || '#'}
+      href={statusQuery.data?.url || '#'}
       onClick={e => e.stopPropagation()}
       target='_blank'
     >

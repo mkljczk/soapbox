@@ -11,7 +11,7 @@ import FaviconService from 'pl-fe/utils/favicon-service';
 FaviconService.initFaviconService();
 
 const getNotifTotals = (state: RootState): number => {
-  const notifications = state.notifications.unread || 0;
+  const notifications = state.notifications.unread;
   const reports = state.admin.openReports.length;
   const approvals = state.admin.awaitingApproval.length;
   return notifications + reports + approvals;

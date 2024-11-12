@@ -1,7 +1,7 @@
+import { useInteractionRequestsCount } from 'pl-hooks';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import { useStatContext } from 'pl-fe/contexts/stat-context';

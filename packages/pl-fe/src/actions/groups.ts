@@ -1,6 +1,6 @@
-import { getClient } from '../api';
+import { importEntities } from 'pl-hooks';
 
-import { importEntities } from './importer';
+import { getClient } from 'pl-fe/api';
 
 import type { Account, PaginatedResponse } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -23,7 +23,7 @@ const fetchGroupBlocks = (groupId: string) =>
     dispatch(fetchGroupBlocksRequest(groupId));
 
     return getClient(getState).experimental.groups.getGroupBlocks(groupId).then(response => {
-      dispatch(importEntities({ accounts: response.items }));
+      importEntities({ accounts: response.items });
       dispatch(fetchGroupBlocksSuccess(groupId, response.items, response.next));
     }).catch(error => {
       dispatch(fetchGroupBlocksFail(groupId, error));

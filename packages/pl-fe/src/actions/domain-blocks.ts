@@ -1,8 +1,7 @@
+import { getClient } from 'pl-fe/api';
 import { Entities } from 'pl-fe/entity-store/entities';
 import { queryClient } from 'pl-fe/queries/client';
 import { isLoggedIn } from 'pl-fe/utils/auth';
-
-import { getClient } from '../api';
 
 import type { PaginatedResponse } from 'pl-api';
 import type { MinifiedSuggestion } from 'pl-fe/api/hooks/trends/use-suggested-accounts';

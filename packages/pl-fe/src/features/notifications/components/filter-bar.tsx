@@ -32,7 +32,7 @@ const NotificationFilterBar = () => {
 
   const onClick = (notificationType: FilterType) => () => {
     try {
-      dispatch(setFilter(notificationType, true));
+      dispatch(setFilter(notificationType));
     } catch (e) {
       console.error(e);
     }

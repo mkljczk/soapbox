@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 
 import { updateConversations } from 'pl-fe/actions/conversations';
 import { fetchFilters } from 'pl-fe/actions/filters';
-import { MARKER_FETCH_SUCCESS } from 'pl-fe/actions/markers';
 import { updateNotificationsQueue } from 'pl-fe/actions/notifications';
 import { getLocale } from 'pl-fe/actions/settings';
 import { updateStatus } from 'pl-fe/actions/statuses';
@@ -23,7 +22,7 @@ import { updateReactions } from '../announcements/use-announcements';
 
 import { useTimelineStream } from './use-timeline-stream';
 
-import type { Announcement, AnnouncementReaction, FollowRelationshipUpdate, Relationship, StreamingEvent } from 'pl-api';
+import type { Announcement, AnnouncementReaction, FollowRelationshipUpdate, Marker, Relationship, StreamingEvent } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const updateAnnouncementReactions = ({ announcement_id: id, name }: AnnouncementReaction) => {
@@ -168,7 +167,7 @@ const useUserStream = () => {
         deleteAnnouncement(event.payload);
         break;
       case 'marker':
-        dispatch({ type: MARKER_FETCH_SUCCESS, marker: event.payload });
+        Object.entries(event.payload).forEach(([key, marker]) => queryClient.setQueryData<Marker>(['markers', key], marker));
         break;
     }
   }, []);

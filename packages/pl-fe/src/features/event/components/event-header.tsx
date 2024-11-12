@@ -33,7 +33,7 @@ import PlaceholderEventHeader from '../../placeholder/components/placeholder-eve
 import EventActionButton from '../components/event-action-button';
 import EventDate from '../components/event-date';
 
-import type { Status } from 'pl-fe/normalizers/status';
+import type { UseStatusData as Status } from 'pl-hooks';
 
 const messages = defineMessages({
   bannerHeader: { id: 'event.banner', defaultMessage: 'Event banner' },
@@ -425,8 +425,8 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
                   id='event.participants'
                   defaultMessage='{count} {rawCount, plural, one {person} other {people}} going'
                   values={{
-                    rawCount: event.participants_count || 0,
-                    count: shortNumberFormat(event.participants_count || 0),
+                    rawCount: event.participants_count,
+                    count: shortNumberFormat(event.participants_count),
                   }}
                 />
               </span>

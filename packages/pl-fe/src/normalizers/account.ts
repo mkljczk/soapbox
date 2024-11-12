@@ -28,7 +28,6 @@ const normalizeAccount = (account: BaseAccount) => {
   const domain = fqn.split('@')[1] || '';
 
   return {
-    mute_expires_at: null,
     ...account,
     avatar: account.avatar || account.avatar_static || missingAvatar,
     avatar_static: account.avatar_static || account.avatar || missingAvatar,

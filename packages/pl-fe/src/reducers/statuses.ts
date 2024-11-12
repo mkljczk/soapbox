@@ -39,10 +39,6 @@ import {
   STATUS_HIDE_MEDIA,
   STATUS_MUTE_SUCCESS,
   STATUS_REVEAL_MEDIA,
-  STATUS_TRANSLATE_FAIL,
-  STATUS_TRANSLATE_REQUEST,
-  STATUS_TRANSLATE_SUCCESS,
-  STATUS_TRANSLATE_UNDO,
   STATUS_UNFILTER,
   STATUS_UNMUTE_SUCCESS,
   STATUS_LANGUAGE_CHANGE,
@@ -52,7 +48,7 @@ import {
 } from '../actions/statuses';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
-import type { Status as BaseStatus, Translation } from 'pl-api';
+import type { Status as BaseStatus } from 'pl-api';
 import type { AnyAction } from 'redux';
 
 type State = Record<string, MinifiedStatus>;
@@ -161,18 +157,6 @@ const simulateDislike = (
   });
 
   state[statusId] = updatedStatus;
-};
-
-/** Import translation from translation service into the store. */
-const importTranslation = (state: State, statusId: string, translation: Translation) => {
-  if (!state[statusId]) return;
-  state[statusId].translation = translation;
-  state[statusId].translating = false;
-};
-
-/** Delete translation from the store. */
-const deleteTranslation = (state: State, statusId: string) => {
-  state[statusId].translation = null;
 };
 
 const initialState: State = {};
@@ -309,25 +293,6 @@ const statuses = (state = initialState, action: AnyAction | EmojiReactsAction | 
       return create(state, (draft) => decrementReplyCount(draft, action.params));
     case STATUS_DELETE_FAIL:
       return create(state, (draft) => incrementReplyCount(draft, action.params));
-    case STATUS_TRANSLATE_REQUEST:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.translating = true;
-        }
-      });
-    case STATUS_TRANSLATE_SUCCESS:
-      return create(state, (draft) => importTranslation(draft, action.statusId, action.translation));
-    case STATUS_TRANSLATE_FAIL:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.translating = false;
-          status.translation = false;
-        }
-      });
-    case STATUS_TRANSLATE_UNDO:
-      return create(state, (draft) => deleteTranslation(draft, action.statusId));
     case STATUS_UNFILTER:
       return create(state, (draft) => {
         const status = draft[action.statusId];

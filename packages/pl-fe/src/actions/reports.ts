@@ -1,6 +1,5 @@
+import { getClient } from 'pl-fe/api';
 import { useModalsStore } from 'pl-fe/stores/modals';
-
-import { getClient } from '../api';
 
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';

@@ -1,6 +1,6 @@
-import { getClient } from 'pl-fe/api';
+import { importEntities } from 'pl-hooks';
 
-import { importEntities } from './importer';
+import { getClient } from 'pl-fe/api';
 
 import type { StatusEdit } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -18,7 +18,7 @@ const fetchHistory = (statusId: string) =>
     dispatch(fetchHistoryRequest(statusId));
 
     return getClient(getState()).statuses.getStatusHistory(statusId).then(data => {
-      dispatch(importEntities({ accounts: data.map((x) => x.account) }));
+      importEntities({ accounts: data.map((x) => x.account) });
       dispatch(fetchHistorySuccess(statusId, data));
     }).catch(error => dispatch(fetchHistoryFail(statusId, error)));
   };

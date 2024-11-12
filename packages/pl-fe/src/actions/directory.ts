@@ -1,7 +1,8 @@
-import { getClient } from '../api';
+import { importEntities } from 'pl-hooks';
+
+import { getClient } from 'pl-fe/api';
 
 import { fetchRelationships } from './accounts';
-import { importEntities } from './importer';
 
 import type { Account, ProfileDirectoryParams } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -19,7 +20,7 @@ const fetchDirectory = (params: ProfileDirectoryParams) =>
     dispatch(fetchDirectoryRequest());
 
     return getClient(getState()).instance.profileDirectory({ ...params, limit: 20 }).then((data) => {
-      dispatch(importEntities({ accounts: data }));
+      importEntities({ accounts: data });
       dispatch(fetchDirectorySuccess(data));
       dispatch(fetchRelationships(data.map((x) => x.id)));
     }).catch(error => dispatch(fetchDirectoryFail(error)));
@@ -46,7 +47,7 @@ const expandDirectory = (params: Record<string, any>) =>
     const loadedItems = getState().user_lists.directory.items.length;
 
     return getClient(getState()).instance.profileDirectory({ ...params, offset: loadedItems, limit: 20 }).then((data) => {
-      dispatch(importEntities({ accounts: data }));
+      importEntities({ accounts: data });
       dispatch(expandDirectorySuccess(data));
       dispatch(fetchRelationships(data.map((x) => x.id)));
     }).catch(error => dispatch(expandDirectoryFail(error)));

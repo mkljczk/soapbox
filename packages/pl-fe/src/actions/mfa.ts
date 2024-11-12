@@ -1,4 +1,4 @@
-import { getClient } from '../api';
+import { getClient } from 'pl-fe/api';
 
 import type { AppDispatch, RootState } from 'pl-fe/store';
 

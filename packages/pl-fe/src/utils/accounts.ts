@@ -1,6 +1,6 @@
 import range from 'lodash/range';
 
-import type { Account } from 'pl-fe/normalizers/account';
+import type { NormalizedAccount as Account } from 'pl-hooks';
 
 const getDomainFromURL = (account: Pick<Account, 'url'>): string => {
   try {

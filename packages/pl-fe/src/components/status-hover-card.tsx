@@ -80,7 +80,6 @@ const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
   if (!statusId) return null;
 
   const renderStatus = (statusId: string) => (
-    // @ts-ignore
     <StatusContainer
       key={statusId}
       id={statusId}

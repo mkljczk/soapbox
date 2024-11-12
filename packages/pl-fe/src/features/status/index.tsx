@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useStatus } from 'pl-hooks';
+import React, { useEffect } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Redirect } from 'react-router-dom';
 
@@ -9,9 +10,7 @@ import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
-import { makeGetStatus } from 'pl-fe/selectors';
 
 import Thread from './components/thread';
 import ThreadLoginCta from './components/thread-login-cta';
@@ -48,10 +47,12 @@ const StatusDetails: React.FC<IStatusDetails> = (props) => {
   const intl = useIntl();
   const { isLoggedIn } = useLoggedIn();
 
-  const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector((state) => getStatus(state, { id: props.params.statusId }));
+  const statusQuery = useStatus(props.params.statusId);
 
-  const [isLoaded, setIsLoaded] = useState<boolean>(!!status);
+  const status = statusQuery.data;
+  const isLoaded = statusQuery.isSuccess;
+
+  // const [isLoaded, setIsLoaded] = useState<boolean>(!!status);
 
   /** Fetch the status (and context) from the API. */
   const fetchData = () => {
@@ -63,9 +64,9 @@ const StatusDetails: React.FC<IStatusDetails> = (props) => {
   // Load data.
   useEffect(() => {
     fetchData().then(() => {
-      setIsLoaded(true);
+      // setIsLoaded(true);
     }).catch(() => {
-      setIsLoaded(true);
+      // setIsLoaded(true);
     });
   }, [props.params.statusId]);
 
@@ -89,9 +90,9 @@ const StatusDetails: React.FC<IStatusDetails> = (props) => {
     );
   }
 
-  if (status.group && typeof status.group === 'object') {
-    if (status.group.id && !props.params.groupId) {
-      return <Redirect to={`/groups/${status.group.id}/posts/${props.params.statusId}`} />;
+  if (status.group_id) {
+    if (status.group_id && !props.params.groupId) {
+      return <Redirect to={`/groups/${status.group_id}/posts/${props.params.statusId}`} />;
     }
   }
 

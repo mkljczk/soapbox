@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { defineMessages, FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import Account from 'pl-fe/components/account';
 import StatusContent from 'pl-fe/components/status-content';
 import StatusLanguagePicker from 'pl-fe/components/status-language-picker';
@@ -17,16 +18,16 @@ import Emojify from 'pl-fe/features/emoji/emojify';
 import StatusInteractionBar from './status-interaction-bar';
 import StatusTypeIcon from './status-type-icon';
 
-import type { SelectedStatus } from 'pl-fe/selectors';
+import type { UseStatusData } from 'pl-hooks';
 
 const messages = defineMessages({
   applicationName: { id: 'status.application_name', defaultMessage: 'Sent from {name}' },
 });
 
 interface IDetailedStatus {
-  status: SelectedStatus;
+  status: UseStatusData;
   withMedia?: boolean;
-  onOpenCompareHistoryModal: (status: Pick<SelectedStatus, 'id'>) => void;
+  onOpenCompareHistoryModal: (status: Pick<UseStatusData, 'id'>) => void;
 }
 
 const DetailedStatus: React.FC<IDetailedStatus> = ({
@@ -38,12 +39,14 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
 
   const node = useRef<HTMLDivElement>(null);
 
+  const groupQuery = useGroup(status.group_id || undefined);
+
   const handleOpenCompareHistoryModal = () => {
     onOpenCompareHistoryModal(status);
   };
 
   const renderStatusInfo = () => {
-    if (status.group) {
+    if (groupQuery.group) {
       return (
         <div className='mb-4'>
           <StatusInfo
@@ -60,10 +63,10 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
                 defaultMessage='Posted in {group}'
                 values={{
                   group: (
-                    <Link to={`/groups/${status.group.id}`} className='hover:underline'>
+                    <Link to={`/groups/${status.group_id}`} className='hover:underline'>
                       <bdi className='truncate'>
                         <strong className='text-gray-800 dark:text-gray-200'>
-                          <Emojify text={status.account.display_name} emojis={status.account.emojis} />
+                          <Emojify text={groupQuery.group?.display_name} emojis={groupQuery.group?.emojis} />
                         </strong>
                       </bdi>
                     </Link>

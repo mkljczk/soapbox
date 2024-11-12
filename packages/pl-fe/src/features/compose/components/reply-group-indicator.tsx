@@ -1,11 +1,11 @@
-import React, { useCallback } from 'react';
+import { useStatus } from 'pl-hooks';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import Link from 'pl-fe/components/link';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 
 interface IReplyGroupIndicator {
   composeId: string;
@@ -14,9 +14,9 @@ interface IReplyGroupIndicator {
 const ReplyGroupIndicator = (props: IReplyGroupIndicator) => {
   const { composeId } = props;
 
-  const getStatus = useCallback(makeGetStatus(), []);
+  const inReplyTo = useCompose(composeId).in_reply_to!;
 
-  const status = useAppSelector((state) => getStatus(state, { id: state.compose.get(composeId)?.in_reply_to! }));
+  const { data: status } = useStatus(inReplyTo);
   const group = status?.group;
 
   if (!group) {

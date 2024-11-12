@@ -1,10 +1,10 @@
 import clsx from 'clsx';
+import { type MinifiedInteractionRequest, useAuthorizeInteractionRequestMutation, useFlatInteractionRequests, useRejectInteractionRequestMutation } from 'pl-hooks';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
-import { type MinifiedInteractionRequest, useAuthorizeInteractionRequestMutation, useFlatInteractionRequests, useRejectInteractionRequestMutation } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import AttachmentThumbs from 'pl-fe/components/attachment-thumbs';
 import Icon from 'pl-fe/components/icon';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';

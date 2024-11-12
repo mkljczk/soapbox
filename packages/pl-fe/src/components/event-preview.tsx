@@ -13,7 +13,7 @@ import EventActionButton from 'pl-fe/features/event/components/event-action-butt
 import EventDate from 'pl-fe/features/event/components/event-date';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
-import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
+import type { UseStatusData as Status } from 'pl-hooks';
 
 const messages = defineMessages({
   eventBanner: { id: 'event.banner', defaultMessage: 'Event banner' },
@@ -22,7 +22,7 @@ const messages = defineMessages({
 });
 
 interface IEventPreview {
-  status: Pick<StatusEntity, 'id' | 'account' | 'event' | 'url'>;
+  status: Pick<Status, 'id' | 'account' | 'event' | 'url'>;
   className?: string;
   hideAction?: boolean;
   floatingAction?: boolean;

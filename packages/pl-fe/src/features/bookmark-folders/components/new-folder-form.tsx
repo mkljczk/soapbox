@@ -1,7 +1,7 @@
+import { useCreateBookmarkFolder } from 'pl-hooks';
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useCreateBookmarkFolder } from 'pl-fe/api/hooks/statuses/use-create-bookmark-folder';
 import Button from 'pl-fe/components/ui/button';
 import Form from 'pl-fe/components/ui/form';
 import HStack from 'pl-fe/components/ui/hstack';

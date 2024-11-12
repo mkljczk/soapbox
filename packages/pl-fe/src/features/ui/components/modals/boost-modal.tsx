@@ -1,4 +1,5 @@
-import React, { useCallback } from 'react';
+import { useStatus } from 'pl-hooks';
+import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import Icon from 'pl-fe/components/icon';
@@ -6,8 +7,6 @@ import Modal from 'pl-fe/components/ui/modal';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import ReplyIndicator from 'pl-fe/features/compose/components/reply-indicator';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { makeGetStatus } from 'pl-fe/selectors';
 
 import type { BaseModalProps } from '../modal-root';
 import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
@@ -23,10 +22,10 @@ interface BoostModalProps {
 }
 
 const BoostModal: React.FC<BaseModalProps & BoostModalProps> = ({ statusId, onReblog, onClose }) => {
-  const getStatus = useCallback(makeGetStatus(), []);
-
   const intl = useIntl();
-  const status = useAppSelector(state => getStatus(state, { id: statusId }))!;
+  const { data: status } = useStatus(statusId);
+
+  if (!status) return null;
 
   const handleReblog = () => {
     onReblog(status);

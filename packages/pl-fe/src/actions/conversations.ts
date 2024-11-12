@@ -1,8 +1,7 @@
+import { importEntities } from 'pl-hooks';
+
+import { getClient } from 'pl-fe/api';
 import { isLoggedIn } from 'pl-fe/utils/auth';
-
-import { getClient } from '../api';
-
-import { importEntities } from './importer';
 
 import type { Account, Conversation, PaginatedResponse } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -49,10 +48,10 @@ const expandConversations = (expand = true) => (dispatch: AppDispatch, getState:
 
   return (state.conversations.next?.() || getClient(state).timelines.getConversations())
     .then(response => {
-      dispatch(importEntities({
+      importEntities({
         accounts: response.items.reduce((aggr: Array<Account>, item) => aggr.concat(item.accounts), []),
         statuses: response.items.map((item) => item.last_status),
-      }));
+      });
       dispatch(expandConversationsSuccess(response.items, response.next, isLoadingRecent));
     })
     .catch(err => dispatch(expandConversationsFail(err)));
@@ -82,10 +81,10 @@ interface ConversataionsUpdateAction {
 }
 
 const updateConversations = (conversation: Conversation) => (dispatch: AppDispatch) => {
-  dispatch(importEntities({
+  importEntities({
     accounts: conversation.accounts,
     statuses: [conversation.last_status],
-  }));
+  });
 
   return dispatch<ConversataionsUpdateAction>({
     type: CONVERSATIONS_UPDATE,

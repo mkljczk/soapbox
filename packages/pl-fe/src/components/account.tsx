@@ -21,8 +21,8 @@ import Badge from './badge';
 import { ParsedContent } from './parsed-content';
 import RelativeTimestamp from './relative-timestamp';
 
-import type { Account as AccountSchema } from 'pl-fe/normalizers/account';
 import type { StatusApprovalStatus } from 'pl-fe/normalizers/status';
+import type { NormalizedAccount as AccountSchema } from 'pl-hooks';
 
 interface IInstanceFavicon {
   account: Pick<AccountSchema, 'domain' | 'favicon'>;
@@ -336,13 +336,13 @@ const Account = ({
                   </>
                 ) : null}
 
-                {actionType === 'muting' && account.mute_expires_at ? (
+                {/* {actionType === 'muting' && account.mute_expires_at ? (
                   <>
                     <Text tag='span' theme='muted' size='sm'>&middot;</Text>
 
                     <Text theme='muted' size='sm'><RelativeTimestamp timestamp={account.mute_expires_at} futureDate /></Text>
                   </>
-                ) : null}
+                ) : null} */}
 
                 {items}
               </HStack>

@@ -28,7 +28,7 @@ import ThreadStatus from './thread-status';
 import type { Virtualizer } from '@tanstack/react-virtual';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';
-import type { SelectedStatus } from 'pl-fe/selectors';
+import type { UseStatusData } from 'pl-hooks';
 
 const makeGetAncestorsIds = () => createSelector([
   (_: RootState, statusId: string | undefined) => statusId,
@@ -97,7 +97,7 @@ const makeGetThread = () => {
 };
 
 interface IThread {
-  status: SelectedStatus;
+  status: UseStatusData;
   withMedia?: boolean;
   isModal?: boolean;
   itemClassName?: string;
@@ -133,27 +133,25 @@ const Thread: React.FC<IThread> = ({
     }
   };
 
-  const handleFavouriteClick = (status: SelectedStatus) => {
+  const handleFavouriteClick = (status: UseStatusData) => {
     dispatch(toggleFavourite(status));
   };
 
   const handleReplyClick = (status: ComposeReplyAction['status']) => dispatch(replyCompose(status));
 
-  const handleModalReblog = (status: Pick<SelectedStatus, 'id'>) => dispatch(reblog(status));
+  const handleModalReblog = (status: Pick<UseStatusData, 'id'>) => dispatch(reblog(status));
 
-  const handleReblogClick = (status: SelectedStatus, e?: React.MouseEvent) => {
-    dispatch((_, getState) => {
-      const boostModal = settings.boostModal;
-      if (status.reblogged) {
-        dispatch(unreblog(status));
+  const handleReblogClick = (status: UseStatusData, e?: React.MouseEvent) => {
+    const boostModal = settings.boostModal;
+    if (status.reblogged) {
+      dispatch(unreblog(status));
+    } else {
+      if ((e && e.shiftKey) || !boostModal) {
+        handleModalReblog(status);
       } else {
-        if ((e && e.shiftKey) || !boostModal) {
-          handleModalReblog(status);
-        } else {
-          openModal('BOOST', { statusId: status.id, onReblog: handleModalReblog });
-        }
+        openModal('BOOST', { statusId: status.id, onReblog: handleModalReblog });
       }
-    });
+    }
   };
 
   const handleMentionClick = (account: Pick<Account, 'acct'>) => dispatch(mentionCompose(account));

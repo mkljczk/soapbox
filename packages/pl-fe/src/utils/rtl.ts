@@ -51,7 +51,7 @@ interface GetTextDirectionOpts {
 }
 
 /** Get the direction of the text. */
-const getTextDirection = (text: string, { fallback = 'ltr', confidence }: GetTextDirectionOpts = {}): 'ltr' | 'rtl' => {
+const getTextDirection = (text?: string, { fallback = 'ltr', confidence }: GetTextDirectionOpts = {}): 'ltr' | 'rtl' => {
   if (!text) return fallback;
   return isRtl(text, confidence) ? 'rtl' : 'ltr';
 };

@@ -1,6 +1,5 @@
+import { getClient } from 'pl-fe/api';
 import { getAuthUserUrl, getMeUrl } from 'pl-fe/utils/auth';
-
-import { getClient } from '../api';
 
 import type { Instance } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';

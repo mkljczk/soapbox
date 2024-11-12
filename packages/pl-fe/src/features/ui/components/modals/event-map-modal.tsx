@@ -1,17 +1,16 @@
 import L from 'leaflet';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { useStatus } from 'pl-hooks';
+import React, { useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import Button from 'pl-fe/components/ui/button';
 import Modal from 'pl-fe/components/ui/modal';
 import Stack from 'pl-fe/components/ui/stack';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
-import { makeGetStatus } from 'pl-fe/selectors';
-
-import 'leaflet/dist/leaflet.css';
 
 import type { BaseModalProps } from '../modal-root';
+
+import 'leaflet/dist/leaflet.css';
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -26,9 +25,8 @@ interface EventMapModalProps {
 const EventMapModal: React.FC<BaseModalProps & EventMapModalProps> = ({ onClose, statusId }) => {
   const { tileServer, tileServerAttribution } = usePlFeConfig();
 
-  const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector(state => getStatus(state, { id: statusId }))!;
-  const location = status.event!.location!;
+  const { data: status } = useStatus(statusId);
+  const location = status!.event!.location!;
 
   const map = useRef<L.Map>();
 

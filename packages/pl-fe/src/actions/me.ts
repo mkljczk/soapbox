@@ -1,13 +1,13 @@
+import { importEntities } from 'pl-hooks';
+
+import { getClient } from 'pl-fe/api';
 import { selectAccount } from 'pl-fe/selectors';
 import { setSentryAccount } from 'pl-fe/sentry';
 import KVStore from 'pl-fe/storage/kv-store';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { getAuthUserId, getAuthUserUrl } from 'pl-fe/utils/auth';
 
-import { getClient } from '../api';
-
 import { loadCredentials } from './auth';
-import { importEntities } from './importer';
 import { FE_NAME } from './settings';
 
 import type { CredentialAccount, UpdateCredentialsParams } from 'pl-api';
@@ -126,7 +126,7 @@ interface MePatchSuccessAction {
 
 const patchMeSuccess = (me: CredentialAccount) =>
   (dispatch: AppDispatch) => {
-    dispatch(importEntities({ accounts: [me] }));
+    importEntities({ accounts: [me] });
     dispatch<MePatchSuccessAction>({
       type: ME_PATCH_SUCCESS,
       me,

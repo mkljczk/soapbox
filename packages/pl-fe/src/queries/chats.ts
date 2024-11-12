@@ -1,13 +1,12 @@
 import { InfiniteData, keepPreviousData, useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 import sumBy from 'lodash/sumBy';
 import { type Chat, type ChatMessage as BaseChatMessage, type PaginatedResponse, chatMessageSchema, type Relationship } from 'pl-api';
+import { importEntities } from 'pl-hooks';
 import * as v from 'valibot';
 
-import { importEntities } from 'pl-fe/actions/importer';
 import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
 import { useStatContext } from 'pl-fe/contexts/stat-context';
 import { Entities } from 'pl-fe/entity-store/entities';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useClient } from 'pl-fe/hooks/use-client';
 import { useFeatures } from 'pl-fe/hooks/use-features';
@@ -58,7 +57,6 @@ const useChatMessages = (chat: Chat) => {
 
 const useChats = () => {
   const client = useClient();
-  const dispatch = useAppDispatch();
   const features = useFeatures();
   const { setUnreadChatsCount } = useStatContext();
   const fetchRelationships = useFetchRelationships();
@@ -72,7 +70,7 @@ const useChats = () => {
 
     // Set the relationships to these users in the redux store.
     fetchRelationships.mutate({ accountIds: items.map((item) => item.account.id) });
-    dispatch(importEntities({ accounts: items.map((item) => item.account) }));
+    importEntities({ accounts: items.map((item) => item.account) });
 
     return response;
   };
@@ -101,7 +99,6 @@ const useChats = () => {
 
 const useChat = (chatId?: string) => {
   const client = useClient();
-  const dispatch = useAppDispatch();
   const fetchRelationships = useFetchRelationships();
 
   const getChat = async () => {
@@ -109,7 +106,7 @@ const useChat = (chatId?: string) => {
       const data = await client.chats.getChat(chatId);
 
       fetchRelationships.mutate({ accountIds: [data.account.id] });
-      dispatch(importEntities({ accounts: [data.account] }));
+      importEntities({ accounts: [data.account] });
 
       return data;
     }

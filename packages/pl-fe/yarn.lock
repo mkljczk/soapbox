@@ -7588,6 +7588,11 @@ pl-api@^0.1.9:
     semver "^7.6.3"
     valibot "^0.42.1"
 
+pl-hooks@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/pl-hooks/-/pl-hooks-0.0.1.tgz#a9e127242e8868f993e0dd696db1e403e03a1cf7"
+  integrity sha512-zGyIB7+G/8ZTACytBlLWZcAd0DBBYuP4ocP07UI9FjBNJdplDk4pWitGlttJELAkDBasUTPp7iIEXyadrpIW4A==
+
 possible-typed-array-names@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/possible-typed-array-names/-/possible-typed-array-names-1.0.0.tgz#89bb63c6fada2c3e90adc4a647beeeb39cc7bf8f"

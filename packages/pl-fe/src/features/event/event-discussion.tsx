@@ -1,3 +1,4 @@
+import { useStatus } from 'pl-hooks';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -11,7 +12,6 @@ import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder
 import PendingStatus from 'pl-fe/features/ui/components/pending-status';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { makeGetStatus } from 'pl-fe/selectors';
 
 import ComposeForm from '../compose/components/compose-form';
 import { makeGetDescendantsIds } from '../status/components/thread';
@@ -31,9 +31,8 @@ const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statu
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
-  const getStatus = useCallback(makeGetStatus(), []);
+  const { data: status } = useStatus(statusId);
   const getDescendantsIds = useCallback(makeGetDescendantsIds(), []);
-  const status = useAppSelector(state => getStatus(state, { id: statusId }));
 
   const me = useAppSelector((state) => state.me);
 
@@ -91,7 +90,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statu
     <ThreadStatus
       key={id}
       id={id}
-      focusedStatusId={status!.id}
+      focusedStatusId={statusId}
       onMoveUp={handleMoveUp}
       onMoveDown={handleMoveDown}
     />

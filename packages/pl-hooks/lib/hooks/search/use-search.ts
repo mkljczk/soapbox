@@ -14,27 +14,21 @@ const useSearchAccounts = (
   const queryClient = usePlHooksQueryClient();
   const { client } = usePlHooksApiClient();
 
-  const searchQuery = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey: ['search', 'accounts', query, params],
-    queryFn: ({ pageParam }) => client.search.search(query!, {
+    queryFn: ({ pageParam: offset, signal }) => client.search.search(query!, {
+      with_relationships: true,
       ...params,
-      offset: pageParam ? data?.length : 0,
+      offset,
       type: 'accounts',
-    }).then(({ accounts }) => {
+    }, { signal }).then(({ accounts }) => {
       importEntities({ accounts });
       return accounts.map(({ id }) => id);
     }),
     enabled: !!query?.trim(),
-    initialPageParam: [''],
-    getNextPageParam: (page) => page.length ? page : undefined,
+    initialPageParam: 0,
+    getNextPageParam: (page, allPages) => page.length ? allPages.flat().length : undefined,
   }, queryClient);
-
-  const data: Array<string> | undefined = searchQuery.data?.pages.flat();
-
-  return {
-    ...searchQuery,
-    data,
-  };
 };
 
 const useSearchStatuses = (
@@ -44,27 +38,22 @@ const useSearchStatuses = (
   const queryClient = usePlHooksQueryClient();
   const { client } = usePlHooksApiClient();
 
-  const searchQuery = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey: ['search', 'statuses', query, params],
-    queryFn: ({ pageParam }) => client.search.search(query, {
+    queryFn: ({ pageParam: offset, signal }) => client.search.search(query, {
+      with_relationships: true,
       ...params,
-      offset: pageParam ? data?.length : 0,
+      offset,
       type: 'statuses',
-    }).then(({ statuses }) => {
+    }, { signal }).then(({ statuses }) => {
       importEntities({ statuses });
       return statuses.map(({ id }) => id);
     }),
     enabled: !!query?.trim(),
-    initialPageParam: [''],
-    getNextPageParam: (page) => page.length ? page : undefined,
+    initialPageParam: 0,
+    getNextPageParam: (page, allPages) => page.length ? allPages.flat().length : undefined,
+    select: (data => data.pages.flat()),
   }, queryClient);
-
-  const data: Array<string> | undefined = searchQuery.data?.pages.flat();
-
-  return {
-    ...searchQuery,
-    data,
-  };
 };
 
 const useSearchHashtags = (
@@ -74,24 +63,43 @@ const useSearchHashtags = (
   const queryClient = usePlHooksQueryClient();
   const { client } = usePlHooksApiClient();
 
-  const searchQuery = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey: ['search', 'hashtags', query, params],
-    queryFn: ({ pageParam }) => client.search.search(query, {
+    queryFn: ({ pageParam: offset, signal }) => client.search.search(query, {
       ...params,
-      offset: pageParam ? data?.length : 0,
+      offset,
       type: 'hashtags',
-    }).then(({ hashtags }) => hashtags as Array<Tag>),
+    }, { signal }).then(({ hashtags }) => hashtags as Array<Tag>),
     enabled: !!query?.trim(),
-    initialPageParam: [{}],
-    getNextPageParam: (page) => page.length ? page : undefined,
+    initialPageParam: 0,
+    getNextPageParam: (page, allPages) => page.length ? allPages.flat().length : undefined,
+    select: (data => data.pages.flat()),
   }, queryClient);
-
-  const data: Array<Tag> | undefined = searchQuery.data?.pages.flat();
-
-  return {
-    ...searchQuery,
-    data,
-  };
 };
 
-export { useSearchAccounts, useSearchStatuses, useSearchHashtags };
+const useSearchGroups = (
+  query: string,
+  params?: Omit<SearchParams, keyof PaginationParams | 'type' | 'offset'>,
+) => {
+  const queryClient = usePlHooksQueryClient();
+  const { client } = usePlHooksApiClient();
+
+  return useInfiniteQuery({
+    queryKey: ['search', 'groups', query, params],
+    queryFn: ({ pageParam: offset, signal }) => client.search.search(query, {
+      with_relationships: true,
+      ...params,
+      offset,
+      type: 'groups',
+    }, { signal }).then(({ groups }) => {
+      importEntities({ groups });
+      return groups.map(({ id }) => id);
+    }),
+    enabled: !!query?.trim(),
+    initialPageParam: 0,
+    getNextPageParam: (page, allPages) => page.length ? allPages.flat().length : undefined,
+    select: (data => data.pages.flat()),
+  }, queryClient);
+};
+
+export { useSearchAccounts, useSearchStatuses, useSearchHashtags, useSearchGroups };

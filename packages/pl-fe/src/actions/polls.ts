@@ -1,6 +1,6 @@
-import { getClient } from '../api';
+import { importEntities } from 'pl-hooks';
 
-import { importEntities } from './importer';
+import { getClient } from 'pl-fe/api';
 
 import type { Poll } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -18,7 +18,7 @@ const vote = (pollId: string, choices: number[]) =>
     dispatch(voteRequest());
 
     return getClient(getState()).polls.vote(pollId, choices).then((data) => {
-      dispatch(importEntities({ polls: [data] }));
+      importEntities({ polls: [data] });
       dispatch(voteSuccess(data));
     }).catch(err => dispatch(voteFail(err)));
   };
@@ -28,7 +28,7 @@ const fetchPoll = (pollId: string) =>
     dispatch(fetchPollRequest());
 
     return getClient(getState()).polls.getPoll(pollId).then((data) => {
-      dispatch(importEntities({ polls: [data] }));
+      importEntities({ polls: [data] });
       dispatch(fetchPollSuccess(data));
     }).catch(err => dispatch(fetchPollFail(err)));
   };

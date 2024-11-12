@@ -20,7 +20,7 @@ import AnimatedNumber from './animated-number';
 
 import type { EmojiReaction } from 'pl-api';
 import type { Emoji as EmojiType } from 'pl-fe/features/emoji';
-import type { SelectedStatus } from 'pl-fe/selectors';
+import type { UseStatusData as Status } from 'pl-hooks';
 
 const messages = defineMessages({
   emojiCount: { id: 'status.reactions.label', defaultMessage: '{count} {count, plural, one {person} other {people}} reacted with {emoji}' },
@@ -28,12 +28,12 @@ const messages = defineMessages({
 });
 
 interface IStatusReactionsBar {
-  status: Pick<SelectedStatus, 'id' | 'emoji_reactions'>;
+  status: Pick<Status, 'id' | 'emoji_reactions'>;
   collapsed?: boolean;
 }
 
 interface IStatusReaction {
-  status: Pick<SelectedStatus, 'id'>;
+  status: Pick<Status, 'id'>;
   reaction: EmojiReaction;
   obfuscate?: boolean;
   unauthenticated?: boolean;

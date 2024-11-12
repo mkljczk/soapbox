@@ -1,4 +1,5 @@
 import { GroupRoles } from 'pl-api';
+import { useTranslationLanguages, useInstance } from 'pl-hooks';
 import React, { useMemo } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -11,13 +12,12 @@ import { toggleBookmark, toggleDislike, toggleFavourite, togglePin, toggleReblog
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { changeSetting } from 'pl-fe/actions/settings';
-import { deleteStatus, editStatus, toggleMuteStatus, translateStatus, undoStatusTranslation } from 'pl-fe/actions/statuses';
+import { deleteStatus, editStatus, toggleMuteStatus } from 'pl-fe/actions/statuses';
 import { deleteFromTimelines } from 'pl-fe/actions/timelines';
 import { useBlockGroupMember } from 'pl-fe/api/hooks/groups/use-block-group-member';
 import { useDeleteGroupStatus } from 'pl-fe/api/hooks/groups/use-delete-group-status';
 import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import { useGroupRelationship } from 'pl-fe/api/hooks/groups/use-group-relationship';
-import { useTranslationLanguages } from 'pl-fe/api/hooks/instance/use-translation-languages';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import StatusActionButton from 'pl-fe/components/status-action-button';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -27,12 +27,12 @@ import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useCanInteract } from 'pl-fe/hooks/use-can-interact';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
 import { RootState } from 'pl-fe/store';
 import { useModalsStore } from 'pl-fe/stores/modals';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import toast from 'pl-fe/toast';
 import copy from 'pl-fe/utils/copy';
 
@@ -46,8 +46,8 @@ import type { Emoji as EmojiType } from 'pl-fe/features/emoji';
 import type { UnauthorizedModalAction } from 'pl-fe/features/ui/components/modals/unauthorized-modal';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Group } from 'pl-fe/normalizers/group';
-import type { SelectedStatus } from 'pl-fe/selectors';
 import type { Me } from 'pl-fe/types/pl-fe';
+import type { UseStatusData as Status } from 'pl-hooks';
 
 const messages = defineMessages({
   adminAccount: { id: 'status.admin_account', defaultMessage: 'Moderate @{name}' },
@@ -593,10 +593,13 @@ const MenuButton: React.FC<IMenuButton> = ({
 
   const { groupRelationship } = useGroupRelationship(status.group_id || undefined);
   const features = useFeatures();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
   const { autoTranslate, deleteModal, knownLanguages } = useSettings();
 
-  const { translationLanguages } = useTranslationLanguages();
+  const { statuses: statusesMeta, fetchTranslation, hideTranslation } = useStatusMetaStore();
+  const targetLanguage = statusesMeta[status.id]?.targetLanguage;
+
+  const { data: translationLanguages } = useTranslationLanguages();
 
   const autoTranslating = useMemo(() => {
     const {
@@ -605,7 +608,7 @@ const MenuButton: React.FC<IMenuButton> = ({
     } = instance.pleroma.metadata.translation;
 
     const renderTranslate = (me || allowUnauthenticated) && (allowRemote || status.account.local) && ['public', 'unlisted'].includes(status.visibility) && status.content.length > 0 && status.language !== null && !knownLanguages.includes(status.language);
-    const supportsLanguages = (translationLanguages[status.language!]?.includes(intl.locale));
+    const supportsLanguages = (translationLanguages?.[status.language!]?.includes(intl.locale));
 
     return autoTranslate && features.translations && renderTranslate && supportsLanguages;
   }, [me, status, autoTranslate]);
@@ -774,10 +777,10 @@ const MenuButton: React.FC<IMenuButton> = ({
   };
 
   const handleTranslate = () => {
-    if (status.translation) {
-      dispatch(undoStatusTranslation(status.id));
+    if (targetLanguage) {
+      hideTranslation(status.id);
     } else {
-      dispatch(translateStatus(status.id, intl.locale));
+      fetchTranslation(status.id, intl.locale);
     }
   };
 
@@ -1045,7 +1048,7 @@ const MenuButton: React.FC<IMenuButton> = ({
 };
 
 interface IStatusActionBar {
-  status: SelectedStatus;
+  status: Status;
   rebloggedBy?: Account;
   withLabels?: boolean;
   expandable?: boolean;

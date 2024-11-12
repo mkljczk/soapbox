@@ -9,7 +9,7 @@ import Text from 'pl-fe/components/ui/text';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
-import type { Status } from 'pl-fe/normalizers/status';
+import type { UseStatusData as Status } from 'pl-hooks';
 
 interface IStatusInteractionBar {
   status: Pick<Status, 'id' | 'account' | 'dislikes_count' | 'favourited' | 'favourites_count' | 'reblogs_count' | 'quotes_count'>;

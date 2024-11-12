@@ -1,12 +1,12 @@
+import { importEntities } from 'pl-hooks';
+
+import { getClient } from 'pl-fe/api';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 import { shouldHaveCard } from 'pl-fe/utils/status';
 
-import { getClient } from '../api';
-
 import { setComposeToStatus } from './compose';
-import { importEntities } from './importer';
 import { deleteFromTimelines } from './timelines';
 
 import type { CreateStatusParams, Status as BaseStatus } from 'pl-api';
@@ -48,11 +48,6 @@ const STATUS_HIDE_MEDIA = 'STATUS_HIDE_MEDIA' as const;
 const STATUS_EXPAND_SPOILER = 'STATUS_EXPAND_SPOILER' as const;
 const STATUS_COLLAPSE_SPOILER = 'STATUS_COLLAPSE_SPOILER' as const;
 
-const STATUS_TRANSLATE_REQUEST = 'STATUS_TRANSLATE_REQUEST' as const;
-const STATUS_TRANSLATE_SUCCESS = 'STATUS_TRANSLATE_SUCCESS' as const;
-const STATUS_TRANSLATE_FAIL = 'STATUS_TRANSLATE_FAIL' as const;
-const STATUS_TRANSLATE_UNDO = 'STATUS_TRANSLATE_UNDO' as const;
-
 const STATUS_UNFILTER = 'STATUS_UNFILTER' as const;
 
 const STATUS_LANGUAGE_CHANGE = 'STATUS_LANGUAGE_CHANGE' as const;
@@ -76,7 +71,7 @@ const createStatus = (params: CreateStatusParams, idempotencyKey: string, status
           const poll = (retries = 5) => {
             return getClient(getState()).statuses.getStatus(status.id).then(response => {
               if (response.card) {
-                dispatch(importEntities({ statuses: [response] }));
+                importEntities({ statuses: [response] });
               } else if (retries > 0 && response) {
                 setTimeout(() => poll(retries - 1), delay);
               }
@@ -119,7 +114,7 @@ const fetchStatus = (statusId: string, intl?: IntlShape) =>
     } : undefined;
 
     return getClient(getState()).statuses.getStatus(statusId, params).then(status => {
-      dispatch(importEntities({ statuses: [status] }));
+      importEntities({ statuses: [status] });
       dispatch({ type: STATUS_FETCH_SUCCESS, status });
       return status;
     }).catch(error => {
@@ -153,7 +148,7 @@ const deleteStatus = (statusId: string, withRedraft = false) =>
   };
 
 const updateStatus = (status: BaseStatus) => (dispatch: AppDispatch) =>
-  dispatch(importEntities({ statuses: [status] }));
+  importEntities({ statuses: [status] });
 
 const fetchContext = (statusId: string, intl?: IntlShape) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
@@ -166,7 +161,7 @@ const fetchContext = (statusId: string, intl?: IntlShape) =>
     return getClient(getState()).statuses.getContext(statusId, params).then(context => {
       const { ancestors, descendants } = context;
       const statuses = ancestors.concat(descendants);
-      dispatch(importEntities({ statuses }));
+      importEntities({ statuses });
       dispatch({ type: CONTEXT_FETCH_SUCCESS, statusId, ancestors, descendants });
       return context;
     }).catch(error => {
@@ -269,76 +264,6 @@ const expandStatusSpoiler = (statusIds: string[] | string) => {
   };
 };
 
-let TRANSLATIONS_QUEUE: Set<string> = new Set();
-let TRANSLATIONS_TIMEOUT: NodeJS.Timeout | null = null;
-
-const translateStatus = (statusId: string, targetLanguage: string, lazy?: boolean) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const client = getClient(getState);
-    const features = client.features;
-
-    dispatch({ type: STATUS_TRANSLATE_REQUEST, statusId });
-
-    const handleTranslateMany = () => {
-      const copy = [...TRANSLATIONS_QUEUE];
-      TRANSLATIONS_QUEUE = new Set();
-      if (TRANSLATIONS_TIMEOUT) clearTimeout(TRANSLATIONS_TIMEOUT);
-
-      return client.statuses.translateStatuses(copy, targetLanguage).then((response) => {
-        response.forEach((translation) => {
-          dispatch({
-            type: STATUS_TRANSLATE_SUCCESS,
-            statusId: translation.id,
-            translation: translation,
-          });
-
-          copy
-            .filter((statusId) => !response.some(({ id }) => id === statusId))
-            .forEach((statusId) => dispatch({
-              type: STATUS_TRANSLATE_FAIL,
-              statusId,
-            }));
-        });
-      }).catch(error => {
-        dispatch({
-          type: STATUS_TRANSLATE_FAIL,
-          statusId,
-          error,
-        });
-      });
-    };
-
-    if (features.lazyTranslations && lazy) {
-      TRANSLATIONS_QUEUE.add(statusId);
-
-      if (TRANSLATIONS_TIMEOUT) clearTimeout(TRANSLATIONS_TIMEOUT);
-      TRANSLATIONS_TIMEOUT = setTimeout(() => handleTranslateMany(), 3000);
-    } else if (features.lazyTranslations && TRANSLATIONS_QUEUE.size) {
-      TRANSLATIONS_QUEUE.add(statusId);
-
-      handleTranslateMany();
-    } else {
-      return client.statuses.translateStatus(statusId, targetLanguage).then(response => {
-        dispatch({
-          type: STATUS_TRANSLATE_SUCCESS,
-          statusId,
-          translation: response,
-        });
-      }).catch(error => {
-        dispatch({
-          type: STATUS_TRANSLATE_FAIL,
-          statusId,
-          error,
-        });
-      });
-    }
-  };
-
-const undoStatusTranslation = (statusId: string) => ({
-  type: STATUS_TRANSLATE_UNDO,
-  statusId,
-});
-
 const unfilterStatus = (statusId: string) => ({
   type: STATUS_UNFILTER,
   statusId,
@@ -381,10 +306,6 @@ export {
   STATUS_HIDE_MEDIA,
   STATUS_EXPAND_SPOILER,
   STATUS_COLLAPSE_SPOILER,
-  STATUS_TRANSLATE_REQUEST,
-  STATUS_TRANSLATE_SUCCESS,
-  STATUS_TRANSLATE_FAIL,
-  STATUS_TRANSLATE_UNDO,
   STATUS_UNFILTER,
   STATUS_LANGUAGE_CHANGE,
   createStatus,
@@ -402,8 +323,6 @@ export {
   toggleStatusMediaHidden,
   expandStatusSpoiler,
   collapseStatusSpoiler,
-  translateStatus,
-  undoStatusTranslation,
   unfilterStatus,
   changeStatusLanguage,
   type StatusesAction,

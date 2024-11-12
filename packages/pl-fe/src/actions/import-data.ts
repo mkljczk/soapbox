@@ -1,8 +1,7 @@
 import { defineMessages } from 'react-intl';
 
+import { getClient } from 'pl-fe/api';
 import toast from 'pl-fe/toast';
-
-import { getClient } from '../api';
 
 import type { RootState } from 'pl-fe/store';
 

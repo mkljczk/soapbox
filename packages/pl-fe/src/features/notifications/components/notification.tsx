@@ -1,3 +1,4 @@
+import { useNotification } from 'pl-hooks';
 import React, { useCallback } from 'react';
 import { defineMessages, useIntl, FormattedList, FormattedMessage, IntlShape, MessageDescriptor } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
@@ -16,10 +17,8 @@ import StatusContainer from 'pl-fe/containers/status-container';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
-import { makeGetNotification } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { NotificationType } from 'pl-fe/utils/notification';
@@ -182,7 +181,8 @@ const avatarSize = 48;
 
 interface INotification {
   hidden?: boolean;
-  notification: NotificationGroup;
+  id: string;
+  // notification: MinifiedNotification;
   onMoveUp?: (notificationId: string) => void;
   onMoveDown?: (notificationId: string) => void;
   onReblog?: (status: StatusEntity, e?: KeyboardEvent) => void;
@@ -195,19 +195,15 @@ const getNotificationStatus = (n: Pick<NotificationGroup, 'type'> & ({ status: S
   return null;
 };
 
-const Notification: React.FC<INotification> = (props) => {
-  const { hidden = false, onMoveUp, onMoveDown } = props;
+const Notification: React.FC<INotification> = ({ hidden = false, id, onMoveUp, onMoveDown }) => {
+  const notificationQuery = useNotification(id);
+  const notification = notificationQuery.data!;
 
   const dispatch = useAppDispatch();
-
-  const getNotification = useCallback(makeGetNotification(), []);
 
   const { me } = useLoggedIn();
   const { openModal } = useModalsStore();
   const { settings } = useSettingsStore();
-
-  const notification = useAppSelector((state) => getNotification(state, props.notification));
-  const status = getNotificationStatus(notification);
 
   const history = useHistory();
   const intl = useIntl();
@@ -380,7 +376,7 @@ const Notification: React.FC<INotification> = (props) => {
     }
   };
 
-  const targetName = notification.type === 'move' ? notification.target.acct : '';
+  const targetName = notification.type === 'move' && notification.target?.acct || '';
 
   const message: React.ReactNode = account && typeof account === 'object'
     ? buildMessage(intl, displayedType, accounts, targetName, instance.title)

@@ -1,8 +1,8 @@
-import { fetchRelationships } from 'pl-fe/actions/accounts';
-import { importEntities } from 'pl-fe/actions/importer';
-import { filterBadges, getTagDiff } from 'pl-fe/utils/badges';
+import { importEntities } from 'pl-hooks';
 
-import { getClient } from '../api';
+import { fetchRelationships } from 'pl-fe/actions/accounts';
+import { getClient } from 'pl-fe/api';
+import { filterBadges, getTagDiff } from 'pl-fe/utils/badges';
 
 import { deleteFromTimelines } from './timelines';
 
@@ -110,10 +110,15 @@ const fetchReports = (params?: AdminGetReportsParams) =>
 
     return getClient(state).admin.reports.getReports(params)
       .then(({ items }) => {
+        const accounts: Array<Account> = [];
+        const statuses: Array<Status> = [];
+
         items.forEach((report) => {
-          dispatch(importEntities({ statuses: report.statuses as Array<Status>, accounts: [report.account?.account, report.target_account?.account] }));
+          importEntities({ statuses: report.statuses as Array<Status>, accounts: [report.account?.account, report.target_account?.account] });
           dispatch({ type: ADMIN_REPORTS_FETCH_SUCCESS, reports: items, params });
         });
+
+        importEntities({ accounts, statuses });
       }).catch(error => {
         dispatch({ type: ADMIN_REPORTS_FETCH_FAIL, error, params });
       });
@@ -139,7 +144,7 @@ const fetchUsers = (params?: AdminGetAccountsParams) =>
     dispatch({ type: ADMIN_USERS_FETCH_REQUEST, params });
 
     return getClient(state).admin.accounts.getAccounts(params).then((res) => {
-      dispatch(importEntities({ accounts: res.items.map(({ account }) => account).filter((account): account is Account => account !== null) }));
+      importEntities({ accounts: res.items.map(({ account }) => account).filter((account): account is Account => account !== null) });
       dispatch(fetchRelationships(res.items.map((account) => account.id)));
       dispatch({ type: ADMIN_USERS_FETCH_SUCCESS, users: res.items, params, next: res.next });
       return res;
@@ -201,7 +206,7 @@ const toggleStatusSensitivity = (statusId: string, sensitive: boolean) =>
     dispatch({ type: ADMIN_STATUS_TOGGLE_SENSITIVITY_REQUEST, statusId });
     return getClient(getState).admin.statuses.updateStatus(statusId, { sensitive: !sensitive })
       .then((status) => {
-        dispatch(importEntities({ statuses: [status] }));
+        importEntities({ statuses: [status] });
         dispatch({ type: ADMIN_STATUS_TOGGLE_SENSITIVITY_SUCCESS, statusId, status });
       }).catch(error => {
         dispatch({ type: ADMIN_STATUS_TOGGLE_SENSITIVITY_FAIL, error, statusId });

@@ -1,11 +1,10 @@
 import debounce from 'lodash/debounce';
+import { useBookmarkFolder, useDeleteBookmarkFolder } from 'pl-hooks';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { fetchBookmarkedStatuses, expandBookmarkedStatuses } from 'pl-fe/actions/bookmarks';
-import { useBookmarkFolder } from 'pl-fe/api/hooks/statuses/use-bookmark-folder';
-import { useDeleteBookmarkFolder } from 'pl-fe/api/hooks/statuses/use-delete-bookmark-folder';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import StatusList from 'pl-fe/components/status-list';

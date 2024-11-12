@@ -1,11 +1,10 @@
 import { defineMessages, type IntlShape } from 'react-intl';
 
+import { getClient } from 'pl-fe/api';
 import toast from 'pl-fe/toast';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 import { formatBytes, getVideoDuration } from 'pl-fe/utils/media';
 import resizeImage from 'pl-fe/utils/resize-image';
-
-import { getClient } from '../api';
 
 import type { MediaAttachment, UploadMediaParams } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';

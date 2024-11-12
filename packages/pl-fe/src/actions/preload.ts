@@ -1,7 +1,7 @@
 import mapValues from 'lodash/mapValues';
+import { importEntities } from 'pl-hooks';
 
 import { verifyCredentials } from './auth';
-import { importEntities } from './importer';
 
 import type { AppDispatch } from 'pl-fe/store';
 
@@ -54,7 +54,7 @@ const preloadMastodon = (data: Record<string, any>) =>
     const { me, access_token } = data.meta;
     const { url } = data.accounts[me];
 
-    dispatch(importEntities({ accounts: Object.values(data.accounts) }));
+    importEntities({ accounts: Object.values(data.accounts) });
     dispatch(verifyCredentials(access_token, url));
     dispatch({ type: MASTODON_PRELOAD_IMPORT, data });
   };

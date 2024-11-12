@@ -1,4 +1,4 @@
-import { staticFetch } from '../api';
+import { staticFetch } from 'pl-fe/api';
 
 import type { AppDispatch, RootState } from 'pl-fe/store';
 

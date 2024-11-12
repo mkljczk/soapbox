@@ -1,7 +1,7 @@
+import { importEntities } from 'pl-hooks';
 import React from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
-import { importEntities } from 'pl-fe/actions/importer';
 import { expandTimelineSuccess } from 'pl-fe/actions/timelines';
 import Column from 'pl-fe/components/ui/column';
 import Timeline from 'pl-fe/features/ui/components/timeline';
@@ -35,7 +35,7 @@ const TestTimeline: React.FC = () => {
   const isMobile = useIsMobile();
 
   React.useEffect(() => {
-    dispatch(importEntities({ statuses: MOCK_STATUSES }));
+    importEntities({ statuses: MOCK_STATUSES });
     dispatch(expandTimelineSuccess(timelineId, MOCK_STATUSES, null, null, false, false));
   }, []);
 
