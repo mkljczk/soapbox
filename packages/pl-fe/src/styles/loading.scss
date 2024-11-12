@@ -17,10 +17,6 @@
   border-color: #e5e7eb;
 }
 
-.no-reduce-motion .loading-indicator span {
-  animation: loader-label 1.15s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-
 .no-reduce-motion .loading-indicator__figure {
   animation: loader-figure 1.15s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
 }
@@ -50,47 +46,4 @@
   100% {
     @apply w-12 h-12 border-0 opacity-0 bg-transparent;
   }
-}
-
-@keyframes loader-label {
-  0% { opacity: 0.25; }
-  30% { opacity: 1; }
-  100% { opacity: 0.25; }
-}
-
-@keyframes heartbeat {
-  0% {
-    transform: scale(1);
-    animation-timing-function: ease-out;
-  }
-
-  10% {
-    transform: scale(0.91);
-    animation-timing-function: ease-in;
-  }
-
-  17% {
-    transform: scale(0.98);
-    animation-timing-function: ease-out;
-  }
-
-  33% {
-    transform: scale(0.87);
-    animation-timing-function: ease-in;
-  }
-
-  45% {
-    transform: scale(1);
-    animation-timing-function: ease-out;
-  }
-}
-
-.no-reduce-motion .pulse-loading {
-  transform-origin: center center;
-  animation: heartbeat 1.5s ease-in-out infinite both;
-}
-
-.ptr,
-.ptr__children {
-  @apply overflow-visible #{!important};
 }
