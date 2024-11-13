@@ -1,4 +1,5 @@
-import { Record as ImmutableRecord, OrderedMap as ImmutableOrderedMap } from 'immutable';
+import { OrderedMap as ImmutableOrderedMap } from 'immutable';
+import { create } from 'mutative';
 
 import {
   ACCOUNT_BLOCK_SUCCESS,
@@ -26,16 +27,23 @@ import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 import type { Notification as BaseNotification, Markers, NotificationGroup, PaginatedResponse, Relationship } from 'pl-api';
 import type { AnyAction } from 'redux';
 
-const ReducerRecord = ImmutableRecord({
-  items: ImmutableOrderedMap<string, NotificationGroup>(),
+interface State {
+  items: ImmutableOrderedMap<string, NotificationGroup>;
+  hasMore: boolean;
+  top: boolean;
+  unread: number;
+  isLoading: boolean;
+  lastRead: string | -1;
+}
+
+const initialState: State = {
+  items: ImmutableOrderedMap(),
   hasMore: true,
   top: false,
   unread: 0,
   isLoading: false,
-  lastRead: -1 as string | -1,
-});
-
-type State = ReturnType<typeof ReducerRecord>;
+  lastRead: -1,
+};
 
 const parseId = (id: string | number) => parseInt(id as string, 10);
 
@@ -57,41 +65,45 @@ const countFuture = (notifications: ImmutableOrderedMap<string, NotificationGrou
     }
   }, 0);
 
-const importNotification = (state: State, notification: NotificationGroup) => {
-  const top = state.top;
+const importNotification = (state: State, notification: NotificationGroup) =>
+  create(state, (draft) => {
+    const top = draft.top;
+    if (!top) draft.unread += 1;
 
-  if (!top) state = state.update('unread', unread => unread + 1);
-
-  return state.update('items', map => map.set(notification.group_key, notification).sort(comparator));
-};
-
-const expandNormalizedNotifications = (state: State, notifications: NotificationGroup[], next: (() => Promise<PaginatedResponse<BaseNotification>>) | null) => {
-  const items = ImmutableOrderedMap(notifications.map(n => [n.group_key, n]));
-
-  return state.withMutations(mutable => {
-    mutable.update('items', map => map.merge(items).sort(comparator));
-
-    if (!next) mutable.set('hasMore', false);
-    mutable.set('isLoading', false);
+    draft.items = draft.items.set(notification.group_key, notification).sort(comparator);
   });
-};
+
+const expandNormalizedNotifications = (state: State, notifications: NotificationGroup[], next: (() => Promise<PaginatedResponse<BaseNotification>>) | null) =>
+  create(state, (draft) => {
+    const items = ImmutableOrderedMap(notifications.map(n => [n.group_key, n]));
+    draft.items = draft.items.merge(items).sort(comparator);
+
+    if (!next) draft.hasMore = false;
+    draft.isLoading = false;
+  });
 
 const filterNotifications = (state: State, relationship: Relationship) =>
-  state.update('items', map => map.filterNot(item => item !== null && item.sample_account_ids.includes(relationship.id)));
+  create(state, (draft) => {
+    draft.items = draft.items.filterNot(item => item !== null && item.sample_account_ids.includes(relationship.id));
+  });
 
-const filterNotificationIds = (state: State, accountIds: Array<string>, type?: string) => {
-  const helper = (list: ImmutableOrderedMap<string, NotificationGroup>) => list.filterNot(item => item !== null && accountIds.includes(item.sample_account_ids[0]) && (type === undefined || type === item.type));
-  return state.update('items', helper);
-};
+const filterNotificationIds = (state: State, accountIds: Array<string>, type?: string) =>
+  create(state, (draft) => {
+    const helper = (list: ImmutableOrderedMap<string, NotificationGroup>) => list.filterNot(item => item !== null && accountIds.includes(item.sample_account_ids[0]) && (type === undefined || type === item.type));
+    draft.items = helper(draft.items);
+  });
 
-const updateTop = (state: State, top: boolean) => {
-  if (top) state = state.set('unread', 0);
-  return state.set('top', top);
-};
+const updateTop = (state: State, top: boolean) =>
+  create(state, (draft) => {
+    if (top) draft.unread = 0;
+    draft.top = top;
+  });
 
 const deleteByStatus = (state: State, statusId: string) =>
-  // @ts-ignore
-  state.update('items', map => map.filterNot(item => item !== null && item.status === statusId));
+  create(state, (draft) => {
+    // @ts-ignore
+    draft.items = draft.items.filterNot(item => item !== null && item.status_id === statusId);
+  });
 
 const importMarker = (state: State, marker: Markers) => {
   const lastReadId = marker.notifications.last_read_id || -1 as string | -1;
@@ -100,24 +112,31 @@ const importMarker = (state: State, marker: Markers) => {
     return state;
   }
 
-  return state.withMutations(state => {
-    const notifications = state.items;
+  return create(state, (draft) => {
+    const notifications = draft.items;
     const unread = countFuture(notifications, lastReadId);
 
-    state.set('unread', unread);
-    state.set('lastRead', lastReadId);
+    draft.unread = unread;
+    draft.lastRead = lastReadId;
   });
 };
 
-const notifications = (state: State = ReducerRecord(), action: AccountsAction | AnyAction | NotificationsAction | TimelineAction) => {
+const notifications = (state: State = initialState, action: AccountsAction | AnyAction | NotificationsAction | TimelineAction): State => {
   switch (action.type) {
     case NOTIFICATIONS_EXPAND_REQUEST:
-      return state.set('isLoading', true);
+      return create(state, (draft) => {
+        draft.isLoading = true;
+      });
     case NOTIFICATIONS_EXPAND_FAIL:
       if (action.error?.message === 'canceled') return state;
-      return state.set('isLoading', false);
+      return create(state, (draft) => {
+        draft.isLoading = false;
+      });
     case NOTIFICATIONS_FILTER_SET:
-      return state.set('items', ImmutableOrderedMap()).set('hasMore', true);
+      return create(state, (draft) => {
+        draft.items = ImmutableOrderedMap();
+        draft.hasMore = true;
+      });
     case NOTIFICATIONS_SCROLL_TOP:
       return updateTop(state, action.top);
     case NOTIFICATIONS_UPDATE:
