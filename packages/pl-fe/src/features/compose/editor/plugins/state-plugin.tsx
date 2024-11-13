@@ -29,7 +29,7 @@ const StatePlugin: React.FC<IStatePlugin> = ({ composeId, isWysiwyg }) => {
   const getQuoteSuggestions = useCallback(debounce((text: string) => {
     dispatch(async (_, getState) => {
       const state = getState();
-      const compose = state.compose.get(composeId);
+      const compose = state.compose[composeId];
 
       if (!features.quotePosts || compose?.quote) return;
 
@@ -60,7 +60,7 @@ const StatePlugin: React.FC<IStatePlugin> = ({ composeId, isWysiwyg }) => {
   const detectLanguage = useCallback(debounce(async (text: string) => {
     dispatch(async (dispatch, getState) => {
       const state = getState();
-      const compose = state.compose.get(composeId);
+      const compose = state.compose[composeId];
 
       if (!features.postLanguages || features.languageDetection || compose?.language) return;
 

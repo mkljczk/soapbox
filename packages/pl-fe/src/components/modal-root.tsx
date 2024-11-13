@@ -10,7 +10,7 @@ import { usePrevious } from 'pl-fe/hooks/use-previous';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import type { ModalType } from 'pl-fe/features/ui/components/modal-root';
-import type { ReducerCompose } from 'pl-fe/reducers/compose';
+import type { Compose } from 'pl-fe/reducers/compose';
 
 const messages = defineMessages({
   confirm: { id: 'confirmations.cancel.confirm', defaultMessage: 'Discard' },
@@ -18,7 +18,7 @@ const messages = defineMessages({
   saveDraft: { id: 'confirmations.cancel_editing.save_draft', defaultMessage: 'Save draft' },
 });
 
-const checkComposeContent = (compose?: ReturnType<typeof ReducerCompose>) =>
+const checkComposeContent = (compose?: Compose) =>
   !!compose && [
     compose.editorState && compose.editorState.length > 0,
     compose.spoiler_text.length > 0,
@@ -59,7 +59,7 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
 
   const handleOnClose = () => {
     dispatch((_, getState) => {
-      const compose = getState().compose.get('compose-modal');
+      const compose = getState().compose['compose-modal'];
       const hasComposeContent = checkComposeContent(compose);
 
       if (hasComposeContent && type === 'COMPOSE') {

@@ -297,7 +297,7 @@ const handleComposeSubmit = (dispatch: AppDispatch, getState: () => RootState, c
   const state = getState();
 
   const accountUrl = getAccount(state, state.me as string)!.url;
-  const draftId = getState().compose.get(composeId)!.draft_id;
+  const draftId = getState().compose[composeId]!.draft_id;
 
   dispatch(submitComposeSuccess(composeId, data, accountUrl, draftId));
   if (data.scheduled_at === null) {
@@ -315,7 +315,7 @@ const handleComposeSubmit = (dispatch: AppDispatch, getState: () => RootState, c
 };
 
 const needsDescriptions = (state: RootState, composeId: string) => {
-  const media = state.compose.get(composeId)!.media_attachments;
+  const media = state.compose[composeId]!.media_attachments;
   const missingDescriptionModal = useSettingsStore.getState().settings.missingDescriptionModal;
 
   const hasMissing = media.filter(item => !item.description).size > 0;
@@ -324,7 +324,7 @@ const needsDescriptions = (state: RootState, composeId: string) => {
 };
 
 const validateSchedule = (state: RootState, composeId: string) => {
-  const schedule = state.compose.get(composeId)?.schedule;
+  const schedule = state.compose[composeId]?.schedule;
   if (!schedule) return true;
 
   const fiveMinutesFromNow = new Date(new Date().getTime() + 300000);
@@ -345,7 +345,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
     if (!isLoggedIn(getState)) return;
     const state = getState();
 
-    const compose = state.compose.get(composeId)!;
+    const compose = state.compose[composeId]!;
 
     const status = compose.text;
     const media = compose.media_attachments;
@@ -467,7 +467,7 @@ const uploadCompose = (composeId: string, files: FileList, intl: IntlShape) =>
     if (!isLoggedIn(getState)) return;
     const attachmentLimit = getState().instance.configuration.statuses.max_media_attachments;
 
-    const media = getState().compose.get(composeId)?.media_attachments;
+    const media = getState().compose[composeId]?.media_attachments;
     const progress = new Array(files.length).fill(0);
     let total = Array.from(files).reduce((a, v) => a + v.size, 0);
 
@@ -673,10 +673,10 @@ interface ComposeSuggestionSelectAction {
   position: number;
   token: string | null;
   completion: string;
-  path: Array<string | number>;
+  path: ['spoiler_text'] | ['poll', 'options', number];
 }
 
-const selectComposeSuggestion = (composeId: string, position: number, token: string | null, suggestion: AutoSuggestion, path: Array<string | number>) =>
+const selectComposeSuggestion = (composeId: string, position: number, token: string | null, suggestion: AutoSuggestion, path: ComposeSuggestionSelectAction['path']) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     let completion = '', startPosition = position;
 
@@ -719,7 +719,7 @@ const updateTagHistory = (composeId: string, tags: string[]) => ({
 const insertIntoTagHistory = (composeId: string, recognizedTags: Array<Tag>, text: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const oldHistory = state.compose.get(composeId)!.tagHistory;
+    const oldHistory = state.compose[composeId]!.tagHistory;
     const me = state.me;
     const names = recognizedTags
       .filter(tag => text.match(new RegExp(`#${tag.name}`, 'i')))
@@ -1100,5 +1100,6 @@ export {
   addSuggestedLanguage,
   changeComposeFederated,
   type ComposeReplyAction,
+  type ComposeSuggestionSelectAction,
   type ComposeAction,
 };

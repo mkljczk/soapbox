@@ -44,10 +44,10 @@ const saveDraftStatus = (composeId: string) =>
     const state = getState();
     const accountUrl = getAccount(state, state.me as string)!.url;
 
-    const compose = state.compose.get(composeId)!;
+    const compose = state.compose[composeId]!;
 
     const draft = {
-      ...compose.toJS(),
+      ...compose,
       draft_id: compose.draft_id || crypto.randomUUID(),
     };
 
