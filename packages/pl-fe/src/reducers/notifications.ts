@@ -1,4 +1,3 @@
-import { OrderedMap as ImmutableOrderedMap } from 'immutable';
 import { create } from 'mutative';
 
 import {
@@ -28,7 +27,7 @@ import type { Notification as BaseNotification, Markers, NotificationGroup, Pagi
 import type { AnyAction } from 'redux';
 
 interface State {
-  items: ImmutableOrderedMap<string, NotificationGroup>;
+  items: Array<NotificationGroup>;
   hasMore: boolean;
   top: boolean;
   unread: number;
@@ -37,7 +36,7 @@ interface State {
 }
 
 const initialState: State = {
-  items: ImmutableOrderedMap(),
+  items: [],
   hasMore: true,
   top: false,
   unread: 0,
@@ -46,6 +45,9 @@ const initialState: State = {
 };
 
 const parseId = (id: string | number) => parseInt(id as string, 10);
+
+const filterUnique = (notification: NotificationGroup, index: number, notifications: Array<NotificationGroup>) =>
+  notifications.findIndex(({ group_key }) => group_key === notification.group_key) === index;
 
 // For sorting the notifications
 const comparator = (a: Pick<NotificationGroup, 'most_recent_notification_id'>, b: Pick<NotificationGroup, 'most_recent_notification_id'>) => {
@@ -56,7 +58,7 @@ const comparator = (a: Pick<NotificationGroup, 'most_recent_notification_id'>, b
 };
 
 // Count how many notifications appear after the given ID (for unread count)
-const countFuture = (notifications: ImmutableOrderedMap<string, NotificationGroup>, lastId: string | number) =>
+const countFuture = (notifications: Array<NotificationGroup>, lastId: string | number) =>
   notifications.reduce((acc, notification) => {
     if (parseId(notification.group_key) > parseId(lastId)) {
       return acc + 1;
@@ -70,13 +72,12 @@ const importNotification = (state: State, notification: NotificationGroup) =>
     const top = draft.top;
     if (!top) draft.unread += 1;
 
-    draft.items = draft.items.set(notification.group_key, notification).sort(comparator);
+    draft.items = [notification, ...draft.items].toSorted(comparator).filter(filterUnique);
   });
 
 const expandNormalizedNotifications = (state: State, notifications: NotificationGroup[], next: (() => Promise<PaginatedResponse<BaseNotification>>) | null) =>
   create(state, (draft) => {
-    const items = ImmutableOrderedMap(notifications.map(n => [n.group_key, n]));
-    draft.items = draft.items.merge(items).sort(comparator);
+    draft.items = [...notifications, ...draft.items].toSorted(comparator).filter(filterUnique);
 
     if (!next) draft.hasMore = false;
     draft.isLoading = false;
@@ -84,12 +85,12 @@ const expandNormalizedNotifications = (state: State, notifications: Notification
 
 const filterNotifications = (state: State, relationship: Relationship) =>
   create(state, (draft) => {
-    draft.items = draft.items.filterNot(item => item !== null && item.sample_account_ids.includes(relationship.id));
+    draft.items = draft.items.filter(item => !item.sample_account_ids.includes(relationship.id));
   });
 
 const filterNotificationIds = (state: State, accountIds: Array<string>, type?: string) =>
   create(state, (draft) => {
-    const helper = (list: ImmutableOrderedMap<string, NotificationGroup>) => list.filterNot(item => item !== null && accountIds.includes(item.sample_account_ids[0]) && (type === undefined || type === item.type));
+    const helper = (list: Array<NotificationGroup>) => list.filter(item => !(accountIds.includes(item.sample_account_ids[0]) && (type === undefined || type === item.type)));
     draft.items = helper(draft.items);
   });
 
@@ -134,7 +135,7 @@ const notifications = (state: State = initialState, action: AccountsAction | Any
       });
     case NOTIFICATIONS_FILTER_SET:
       return create(state, (draft) => {
-        draft.items = ImmutableOrderedMap();
+        draft.items = [];
         draft.hasMore = true;
       });
     case NOTIFICATIONS_SCROLL_TOP:

@@ -187,8 +187,8 @@ const expandNotifications = ({ maxId }: Record<string, any> = {}, done: () => an
       }
     }
 
-    if (!maxId && notifications.items.size > 0) {
-      params.since_id = notifications.items.first()?.page_max_id;
+    if (!maxId && notifications.items.length > 0) {
+      params.since_id = notifications.items[0]?.page_max_id;
     }
 
     dispatch(expandNotificationsRequest());
@@ -257,7 +257,7 @@ const markReadNotifications = () =>
     if (!isLoggedIn(getState)) return;
 
     const state = getState();
-    const topNotificationId = state.notifications.items.first()?.page_max_id;
+    const topNotificationId = state.notifications.items[0]?.page_max_id;
     const lastReadId = state.notifications.lastRead;
 
     if (topNotificationId && (lastReadId === -1 || compareId(topNotificationId, lastReadId) > 0)) {

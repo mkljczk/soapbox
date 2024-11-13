@@ -30,16 +30,14 @@ const messages = defineMessages({
 });
 
 const getNotifications = createSelector([
-  (state: RootState) => state.notifications.items.toArray(),
+  (state: RootState) => state.notifications.items,
   (_, topNotification?: string) => topNotification,
 ], (notifications, topNotificationId) => {
-  const allNotifications = notifications.map(([_, notification]) => notification).filter(item => item !== null);
-
   if (topNotificationId) {
-    const queuedNotificationCount = allNotifications.findIndex((notification) =>
+    const queuedNotificationCount = notifications.findIndex((notification) =>
       notification.most_recent_notification_id <= topNotificationId,
     );
-    const displayedNotifications = allNotifications.slice(queuedNotificationCount);
+    const displayedNotifications = notifications.slice(queuedNotificationCount);
 
     return {
       queuedNotificationCount,
@@ -49,7 +47,7 @@ const getNotifications = createSelector([
 
   return {
     queuedNotificationCount: 0,
-    displayedNotifications: allNotifications,
+    displayedNotifications: notifications,
   };
 });
 
