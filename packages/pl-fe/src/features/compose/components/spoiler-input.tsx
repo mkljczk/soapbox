@@ -45,6 +45,7 @@ const SpoilerInput: React.FC<ISpoilerInput> = ({
       searchTokens={[':']}
       id='cw-spoiler-input'
       className='rounded-md !bg-transparent dark:!bg-transparent'
+      lang={modified_language || undefined}
     />
   );
 };

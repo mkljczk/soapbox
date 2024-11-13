@@ -17,7 +17,7 @@ import type { Emoji } from 'pl-fe/features/emoji';
 
 type AutoSuggestion = string | Emoji | Location;
 
-interface IAutosuggestInput extends Pick<React.HTMLAttributes<HTMLInputElement>, 'onChange' | 'onKeyUp' | 'onKeyDown'> {
+interface IAutosuggestInput extends Pick<React.HTMLAttributes<HTMLInputElement>, 'lang' | 'onChange' | 'onKeyUp' | 'onKeyDown'> {
   value: string;
   suggestions: Array<AutoSuggestion>;
   disabled?: boolean;
@@ -271,6 +271,7 @@ const AutosuggestInput: React.FC<IAutosuggestInput> = ({
         maxLength={props.maxLength}
         data-testid='autosuggest-input'
         theme={props.theme}
+        lang={props.lang}
       />
     </div>,
     <Portal key='portal'>

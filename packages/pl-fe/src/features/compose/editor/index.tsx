@@ -99,7 +99,7 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
   placeholder,
 }, ref) => {
   const dispatch = useAppDispatch();
-  const { content_type: contentType } = useCompose(composeId);
+  const { content_type: contentType, modified_language: language } = useCompose(composeId);
   const isWysiwyg = contentType === 'wysiwyg';
   const nodes = useNodes(isWysiwyg);
   const intl = useIntl();
@@ -210,6 +210,7 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
                     'min-h-[99px]': !condensed,
                   },
                 )}
+                lang={language || undefined}
               />
             </div>
           }

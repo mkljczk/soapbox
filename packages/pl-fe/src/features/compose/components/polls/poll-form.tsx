@@ -55,7 +55,7 @@ const Option: React.FC<IOption> = ({
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
-  const { suggestions } = useCompose(composeId);
+  const { suggestions, modified_language: language } = useCompose(composeId);
 
   const handleOptionTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => onChange(index, event.target.value);
 
@@ -96,6 +96,7 @@ const Option: React.FC<IOption> = ({
           onSuggestionSelected={onSuggestionSelected}
           searchTokens={[':']}
           autoFocus={index === 0 || index >= 2}
+          lang={language || undefined}
         />
       </HStack>
 
