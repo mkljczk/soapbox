@@ -1,4 +1,4 @@
-import { Map as ImmutableMap, List as ImmutableList, OrderedSet as ImmutableOrderedSet, fromJS } from 'immutable';
+import { Map as ImmutableMap, List as ImmutableList, OrderedSet as ImmutableOrderedSet } from 'immutable';
 import { create } from 'mutative';
 import { Instance, PLEROMA, type CredentialAccount, type MediaAttachment, type Tag } from 'pl-api';
 
@@ -514,7 +514,7 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
       return updateCompose(state, action.composeId, compose => updateSuggestionTags(compose, action.token, action.tags));
     case COMPOSE_TAG_HISTORY_UPDATE:
       return updateCompose(state, action.composeId, compose => {
-        compose.tagHistory = ImmutableList(fromJS(action.tags)) as ImmutableList<string>;
+        compose.tagHistory = ImmutableList(action.tags) as ImmutableList<string>;
       });
     case TIMELINE_DELETE:
       return updateCompose(state, 'compose-modal', compose => {
