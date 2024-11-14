@@ -1,9 +1,8 @@
-import { List as ImmutableList } from 'immutable';
 import { create } from 'mutative';
-import { Instance, PLEROMA, type CredentialAccount, type MediaAttachment, type Tag } from 'pl-api';
+import { PLEROMA, type CredentialAccount, type Instance, type MediaAttachment, type Tag } from 'pl-api';
 
 import { INSTANCE_FETCH_SUCCESS, InstanceAction } from 'pl-fe/actions/instance';
-import { isNativeEmoji } from 'pl-fe/features/emoji';
+import { isNativeEmoji, type Emoji } from 'pl-fe/features/emoji';
 import { tagHistory } from 'pl-fe/settings';
 import { hasIntegerMediaIds } from 'pl-fe/utils/status';
 
@@ -69,11 +68,9 @@ import { FE_NAME } from '../actions/settings';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 import { unescapeHTML } from '../utils/html';
 
-import type { Emoji } from 'pl-fe/features/emoji';
 import type { Language } from 'pl-fe/features/preferences';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';
-import type { APIEntity } from 'pl-fe/types/entities';
 
 const getResetFileKey = () => Math.floor((Math.random() * 0x10000));
 
@@ -109,7 +106,7 @@ interface Compose {
   is_composing: boolean;
   is_submitting: boolean;
   is_uploading: boolean;
-  media_attachments: ImmutableList<MediaAttachment>;
+  media_attachments: Array<MediaAttachment>;
   poll: ComposePoll | null;
   privacy: string;
   progress: number;
@@ -119,9 +116,9 @@ interface Compose {
   sensitive: boolean;
   spoiler_text: string;
   spoilerTextMap: Partial<Record<Language, string>>;
-  suggestions: ImmutableList<string>;
+  suggestions: Array<string> | Array<Emoji>;
   suggestion_token: string | null;
-  tagHistory: ImmutableList<string>;
+  tagHistory: Array<string>;
   text: string;
   textMap: Partial<Record<Language, string>>;
   to: Array<string>;
@@ -149,7 +146,7 @@ const newCompose = (params: Partial<Compose> = {}): Compose => ({
   is_composing: false,
   is_submitting: false,
   is_uploading: false,
-  media_attachments: ImmutableList<MediaAttachment>(),
+  media_attachments: [],
   poll: null,
   privacy: 'public',
   progress: 0,
@@ -159,9 +156,9 @@ const newCompose = (params: Partial<Compose> = {}): Compose => ({
   sensitive: false,
   spoiler_text: '',
   spoilerTextMap: {},
-  suggestions: ImmutableList<string>(),
+  suggestions: [],
   suggestion_token: null,
-  tagHistory: ImmutableList<string>(),
+  tagHistory: [],
   text: '',
   textMap: {},
   to: [],
@@ -204,7 +201,7 @@ const statusToMentionsAccountIdsArray = (status: Pick<Status, 'mentions' | 'acco
 };
 
 const appendMedia = (compose: Compose, media: MediaAttachment, defaultSensitive?: boolean) => {
-  const prevSize = compose.media_attachments.size;
+  const prevSize = compose.media_attachments.length;
 
   compose.media_attachments.push(media);
   compose.is_uploading = false;
@@ -217,7 +214,7 @@ const appendMedia = (compose: Compose, media: MediaAttachment, defaultSensitive?
 };
 
 const removeMedia = (compose: Compose, mediaId: string) => {
-  const prevSize = compose.media_attachments.size;
+  const prevSize = compose.media_attachments.length;
 
   compose.media_attachments = compose.media_attachments.filter(item => item.id !== mediaId);
   compose.idempotencyKey = crypto.randomUUID();
@@ -235,17 +232,17 @@ const insertSuggestion = (compose: Compose, position: number, token: string | nu
     compose.poll.options[path[2]] = updateText(compose.poll.options[path[2]]);
   }
   compose.suggestion_token = null;
-  compose.suggestions = ImmutableList();
+  compose.suggestions = [];
   compose.idempotencyKey = crypto.randomUUID();
 };
 
 const updateSuggestionTags = (compose: Compose, token: string, tags: Tag[]) => {
   const prefix = token.slice(1);
 
-  compose.suggestions = ImmutableList(tags
+  compose.suggestions = tags
     .filter((tag) => tag.name.toLowerCase().startsWith(prefix.toLowerCase()))
     .slice(0, 4)
-    .map((tag) => '#' + tag.name));
+    .map((tag) => '#' + tag.name);
   compose.suggestion_token = token;
 };
 
@@ -299,7 +296,7 @@ const importAccount = (compose: Compose, account: CredentialAccount) => {
 
   if (settings.defaultPrivacy) compose.privacy = settings.defaultPrivacy;
   if (settings.defaultContentType) compose.content_type = settings.defaultContentType;
-  compose.tagHistory = ImmutableList(tagHistory.get(account.id));
+  compose.tagHistory = tagHistory.get(account.id);
 };
 
 // const updateSetting = (compose: Compose, path: string[], value: string) => {
@@ -493,12 +490,12 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
       });
     case COMPOSE_SUGGESTIONS_CLEAR:
       return updateCompose(state, action.composeId, compose => {
-        compose.suggestions = compose.suggestions.clear();
+        compose.suggestions = [];
         compose.suggestion_token = null;
       });
     case COMPOSE_SUGGESTIONS_READY:
       return updateCompose(state, action.composeId, compose => {
-        compose.suggestions = ImmutableList(action.accounts ? action.accounts.map((item: APIEntity) => item.id) : action.emojis);
+        compose.suggestions = action.accounts ? action.accounts.map((item) => item.id) : action.emojis || [];
         compose.suggestion_token = action.token;
       });
     case COMPOSE_SUGGESTION_SELECT:
@@ -507,7 +504,7 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
       return updateCompose(state, action.composeId, compose => updateSuggestionTags(compose, action.token, action.tags));
     case COMPOSE_TAG_HISTORY_UPDATE:
       return updateCompose(state, action.composeId, compose => {
-        compose.tagHistory = ImmutableList(action.tags) as ImmutableList<string>;
+        compose.tagHistory = action.tags;
       });
     case TIMELINE_DELETE:
       return updateCompose(state, 'compose-modal', compose => {
@@ -550,9 +547,9 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
         compose.group_id = action.status.group_id;
 
         if (action.v?.software === PLEROMA && action.withRedraft && hasIntegerMediaIds(action.status)) {
-          compose.media_attachments = ImmutableList();
+          compose.media_attachments = [];
         } else {
-          compose.media_attachments = ImmutableList(action.status.media_attachments);
+          compose.media_attachments = action.status.media_attachments;
         }
 
         if (action.status.spoiler_text.length > 0) {
@@ -661,10 +658,10 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
     case COMPOSE_CHANGE_MEDIA_ORDER:
       return updateCompose(state, action.composeId, compose => {
         const indexA = compose.media_attachments.findIndex(x => x.id === action.a);
-        const moveItem = compose.media_attachments.get(indexA)!;
+        const moveItem = compose.media_attachments[indexA];
         const indexB = compose.media_attachments.findIndex(x => x.id === action.b);
 
-        return compose.media_attachments.splice(indexA, 1).splice(indexB, 0, moveItem);
+        compose.media_attachments = compose.media_attachments.splice(indexA, 1).splice(indexB, 0, moveItem);
       });
     case COMPOSE_ADD_SUGGESTED_QUOTE:
       return updateCompose(state, action.composeId, compose => {
