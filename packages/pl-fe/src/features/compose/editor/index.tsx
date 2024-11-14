@@ -119,7 +119,7 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
 
       const editorState = !compose.modified_language || compose.modified_language === compose.language
         ? compose.editorState
-        : compose.editorStateMap.get(compose.modified_language, '');
+        : compose.editorStateMap[compose.modified_language] || '';
 
       if (editorState) {
         return editorState;
@@ -128,7 +128,7 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
       return () => {
         const text = !compose.modified_language || compose.modified_language === compose.language
           ? compose.text
-          : compose.textMap.get(compose.modified_language, '');
+          : compose.textMap[compose.modified_language] || '';
 
         if (!text && navigator.userAgent.includes('Ladybird/')) {
           const paragraph = $createParagraphNode();

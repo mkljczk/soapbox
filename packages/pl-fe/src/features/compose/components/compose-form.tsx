@@ -189,7 +189,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
     </HStack>
   ), [features, id, anyMedia]);
 
-  const showModifiers = !condensed && (compose.media_attachments.size || compose.is_uploading || compose.poll?.options.size || compose.schedule);
+  const showModifiers = !condensed && (compose.media_attachments.size || compose.is_uploading || compose.poll?.options.length || compose.schedule);
 
   const composeModifiers = showModifiers && (
     <Stack space={4} className='font-[inherit] text-sm text-gray-900'>

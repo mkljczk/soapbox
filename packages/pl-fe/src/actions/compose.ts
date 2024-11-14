@@ -375,7 +375,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
     const mentions: string[] | null = status.match(/(?:^|\s)@([a-z\d_-]+(?:@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]+)?)/gi);
 
     if (mentions) {
-      to = to.union(mentions.map(mention => mention.replace(/&#x20;/g, '').trim().slice(1)));
+      to = [...new Set([...to, ...mentions.map(mention => mention.replace(/&#x20;/g, '').trim().slice(1))])];
     }
 
     dispatch(submitComposeRequest(composeId));
@@ -399,26 +399,26 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
       content_type: contentType,
       scheduled_at: compose.schedule?.toISOString(),
       language: compose.language || compose.suggested_language || undefined,
-      to: to.size ? to.toArray() : undefined,
+      to: to.length ? to : undefined,
       local_only: !compose.federated,
     };
 
     if (compose.poll) {
       params.poll = {
-        options: compose.poll.options.toArray(),
+        options: compose.poll.options,
         expires_in: compose.poll.expires_in,
         multiple: compose.poll.multiple,
         hide_totals: compose.poll.hide_totals,
-        options_map: compose.poll.options_map.toJS(),
+        options_map: compose.poll.options_map,
       };
     }
 
-    if (compose.language && compose.textMap.size) {
-      params.status_map = compose.textMap.toJS();
+    if (compose.language && Object.keys(compose.textMap).length) {
+      params.status_map = compose.textMap;
       params.status_map[compose.language] = status;
 
       if (params.spoiler_text) {
-        params.spoiler_text_map = compose.spoilerTextMap.toJS();
+        params.spoiler_text_map = compose.spoilerTextMap;
         params.spoiler_text_map[compose.language] = compose.spoiler_text;
       }
 

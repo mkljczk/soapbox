@@ -30,7 +30,7 @@ const SpoilerInput: React.FC<ISpoilerInput> = ({
     dispatch(changeComposeSpoilerText(composeId, e.target.value));
   };
 
-  const value = !modified_language || modified_language === language ? spoilerText : spoilerTextMap.get(modified_language, '');
+  const value = !modified_language || modified_language === language ? spoilerText : spoilerTextMap[modified_language] || '';
 
   return (
     <AutosuggestInput

@@ -1,4 +1,4 @@
-import { Map as ImmutableMap, List as ImmutableList, OrderedSet as ImmutableOrderedSet } from 'immutable';
+import { List as ImmutableList } from 'immutable';
 import { create } from 'mutative';
 import { Instance, PLEROMA, type CredentialAccount, type MediaAttachment, type Tag } from 'pl-api';
 
@@ -78,16 +78,16 @@ import type { APIEntity } from 'pl-fe/types/entities';
 const getResetFileKey = () => Math.floor((Math.random() * 0x10000));
 
 interface ComposePoll {
-  options: ImmutableList<string>;
-  options_map: ImmutableList<ImmutableMap<Language, string>>;
+  options: Array<string>;
+  options_map: Array<Partial<Record<Language, string>>>;
   expires_in: number;
   multiple: boolean;
   hide_totals: boolean;
 }
 
 const newPoll = (params: Partial<ComposePoll> = {}): ComposePoll => ({
-  options: ImmutableList(['', '']),
-  options_map: ImmutableList([ImmutableMap(), ImmutableMap()]),
+  options: ['', ''],
+  options_map: [{}, {}],
   expires_in: 24 * 3600,
   multiple: false,
   hide_totals: false,
@@ -99,7 +99,7 @@ interface Compose {
   content_type: string;
   draft_id: string | null;
   editorState: string | null;
-  editorStateMap: ImmutableMap<Language, string | null>;
+  editorStateMap: Partial<Record<Language, string | null>>;
   focusDate: Date | null;
   group_id: string | null;
   idempotencyKey: string;
@@ -118,15 +118,15 @@ interface Compose {
   schedule: Date | null;
   sensitive: boolean;
   spoiler_text: string;
-  spoilerTextMap: ImmutableMap<Language, string>;
+  spoilerTextMap: Partial<Record<Language, string>>;
   suggestions: ImmutableList<string>;
   suggestion_token: string | null;
   tagHistory: ImmutableList<string>;
   text: string;
-  textMap: ImmutableMap<Language, string>;
-  to: ImmutableOrderedSet<string>;
+  textMap: Partial<Record<Language, string>>;
+  to: Array<string>;
   parent_reblogged_by: string | null;
-  dismissed_quotes: ImmutableOrderedSet<string>;
+  dismissed_quotes: Array<string>;
   language: Language | null;
   modified_language: Language | null;
   suggested_language: string | null;
@@ -139,7 +139,7 @@ const newCompose = (params: Partial<Compose> = {}): Compose => ({
   content_type: 'text/plain',
   draft_id: null,
   editorState: null,
-  editorStateMap: ImmutableMap<Language, string | null>(),
+  editorStateMap: {},
   focusDate: null,
   group_id: null,
   idempotencyKey: '',
@@ -158,15 +158,15 @@ const newCompose = (params: Partial<Compose> = {}): Compose => ({
   schedule: null,
   sensitive: false,
   spoiler_text: '',
-  spoilerTextMap: ImmutableMap<Language, string>(),
+  spoilerTextMap: {},
   suggestions: ImmutableList<string>(),
   suggestion_token: null,
   tagHistory: ImmutableList<string>(),
   text: '',
-  textMap: ImmutableMap<Language, string>(),
-  to: ImmutableOrderedSet<string>(),
+  textMap: {},
+  to: [],
   parent_reblogged_by: null,
-  dismissed_quotes: ImmutableOrderedSet<string>(),
+  dismissed_quotes: [],
   language: null,
   modified_language: null,
   suggested_language: null,
@@ -184,9 +184,8 @@ const statusToTextMentions = (status: Pick<Status, 'account' | 'mentions'>, acco
   const author = status.account.acct;
   const mentions = status.mentions.map((m) => m.acct) || [];
 
-  return ImmutableOrderedSet([author])
-    .concat(mentions)
-    .delete(account.acct)
+  return [...new Set([author, ...mentions]
+    .filter(acct => acct !== account.acct))]
     .map(m => `@${m} `)
     .join('');
 };
@@ -195,19 +194,13 @@ const statusToMentionsArray = (status: Pick<Status, 'account' | 'mentions'>, acc
   const author = status.account.acct;
   const mentions = status.mentions.map((m) => m.acct) || [];
 
-  return ImmutableOrderedSet<string>([author])
-    .concat(rebloggedBy ? [rebloggedBy.acct] : [])
-    .concat(mentions)
-    .delete(account.acct);
+  return [...new Set([author, ...(rebloggedBy ? [rebloggedBy.acct] : []), ...mentions].filter(acct => acct !== account.acct))];
 };
 
 const statusToMentionsAccountIdsArray = (status: Pick<Status, 'mentions' | 'account'>, account: Pick<Account, 'id'>, parentRebloggedBy?: string | null) => {
   const mentions = status.mentions.map((m) => m.id);
 
-  return ImmutableOrderedSet<string>([status.account.id])
-    .concat(parentRebloggedBy ? [parentRebloggedBy] : [])
-    .concat(mentions)
-    .delete(account.id);
+  return [...new Set([status.account.id, ...(parentRebloggedBy ? [parentRebloggedBy] : []), ...mentions].filter((id) => id !== account.id))];
 };
 
 const appendMedia = (compose: Compose, media: MediaAttachment, defaultSensitive?: boolean) => {
@@ -239,7 +232,7 @@ const insertSuggestion = (compose: Compose, position: number, token: string | nu
   if (path[0] === 'spoiler_text') {
     compose.spoiler_text = updateText(compose.spoiler_text);
   } else if (compose.poll) {
-    compose.poll.options = compose.poll.options.update(path[2], updateText);
+    compose.poll.options[path[2]] = updateText(compose.poll.options[path[2]]);
   }
   compose.suggestion_token = null;
   compose.suggestions = ImmutableList();
@@ -296,7 +289,7 @@ const getExplicitMentions = (me: string, status: Pick<Status, 'content' | 'menti
     .filter((mention) => !(fragment.querySelector(`a[href="${mention.url}"]`) || mention.id === me))
     .map((m) => m.acct);
 
-  return ImmutableOrderedSet<string>(mentions);
+  return [...new Set(mentions)];
 };
 
 const importAccount = (compose: Compose, account: CredentialAccount) => {
@@ -352,10 +345,10 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
       });
     case COMPOSE_SPOILER_TEXT_CHANGE:
       return updateCompose(state, action.composeId, compose => {
-        if (compose.modified_language === compose.language) {
+        if (!compose.modified_language || compose.modified_language === compose.language) {
           compose.spoiler_text = action.text;
-        } else {
-          compose.spoilerTextMap = compose.spoilerTextMap.set(compose.modified_language!, action.text);
+        } else if (compose.modified_language) {
+          compose.spoilerTextMap[compose.modified_language] = action.text;
         }
       });
     case COMPOSE_VISIBILITY_CHANGE:
@@ -385,7 +378,7 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
 
         const to = action.explicitAddressing
           ? statusToMentionsArray(action.status, action.account, action.rebloggedBy)
-          : ImmutableOrderedSet<string>();
+          : [];
 
         compose.group_id = action.status.group_id;
         compose.in_reply_to = action.status.id;
@@ -415,7 +408,7 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
         const defaultCompose = state.default;
 
         compose.quote = action.status.id;
-        compose.to = ImmutableOrderedSet<string>([author]);
+        compose.to = [author];
         compose.parent_reblogged_by = null;
         compose.text = '';
         compose.privacy = privacyPreference(action.status.visibility, defaultCompose.privacy);
@@ -540,7 +533,7 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
       });
     case COMPOSE_SET_STATUS:
       return updateCompose(state, 'compose-modal', compose => {
-        const to = action.explicitAddressing ? getExplicitMentions(action.status.account.id, action.status) : ImmutableOrderedSet<string>();
+        const to = action.explicitAddressing ? getExplicitMentions(action.status.account.id, action.status) : [];
         if (!action.withRedraft && !action.draftId) {
           compose.id = action.status.id;
         }
@@ -570,7 +563,7 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
 
         if (action.poll) {
           compose.poll = newPoll({
-            options: ImmutableList(action.poll.options.map(({ title }) => title)),
+            options: action.poll.options.map(({ title }) => title),
             multiple: action.poll.multiple,
             expires_in: 24 * 3600,
           });
@@ -607,22 +600,22 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
     case COMPOSE_POLL_OPTION_ADD:
       return updateCompose(state, action.composeId, compose => {
         if (!compose.poll) return;
-        compose.poll.options = compose.poll.options.push(action.title);
-        compose.poll.options_map = compose.poll.options_map.push(ImmutableMap(compose.textMap.map(_ => action.title)));
+        compose.poll.options.push(action.title);
+        compose.poll.options_map.push(Object.fromEntries(Object.entries(compose.textMap).map((key) => [key, action.title])));
       });
     case COMPOSE_POLL_OPTION_CHANGE:
       return updateCompose(state, action.composeId, compose => {
         if (!compose.poll) return;
         if (!compose.modified_language || compose.modified_language === compose.language) {
-          compose.poll.options = compose.poll.options.set(action.index, action.title);
-          compose.poll.options_map = compose.poll.options_map.setIn([action.index, compose.modified_language], action.title);
+          compose.poll.options[action.index] = action.title;
+          if (compose.modified_language) compose.poll.options_map[action.index][compose.modified_language] = action.title;
         }
       });
     case COMPOSE_POLL_OPTION_REMOVE:
       return updateCompose(state, action.composeId, compose => {
         if (!compose.poll) return;
-        compose.poll.options = compose.poll.options.delete(action.index);
-        compose.poll.options_map = compose.poll.options_map.delete(action.index);
+        compose.poll.options = compose.poll.options.filter((_, index) => index !== action.index);
+        compose.poll.options_map = compose.poll.options_map.filter((_, index) => index !== action.index);
       });
     case COMPOSE_POLL_SETTINGS_CHANGE:
       return updateCompose(state, action.composeId, compose => {
@@ -636,11 +629,11 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
       });
     case COMPOSE_ADD_TO_MENTIONS:
       return updateCompose(state, action.composeId, compose => {
-        compose.to = compose.to.add(action.account);
+        compose.to = [...new Set([...compose.to, action.account])];
       });
     case COMPOSE_REMOVE_FROM_MENTIONS:
       return updateCompose(state, action.composeId, compose => {
-        compose.to = compose.to.delete(action.account);
+        compose.to = compose.to.filter(acct => acct !== action.account);
       });
     case ME_FETCH_SUCCESS:
     case ME_PATCH_SUCCESS:
@@ -649,12 +642,12 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
     //   return updateCompose(state, 'default', compose => updateSetting(compose, action.path, action.value));
     case COMPOSE_EDITOR_STATE_SET:
       return updateCompose(state, action.composeId, compose => {
-        if (!compose.modified_language || compose.modified_language) {
+        if (!compose.modified_language || compose.modified_language === compose.language) {
           compose.editorState = action.editorState as string;
           compose.text = action.text as string;
-        } else {
-          compose.editorStateMap = compose.editorStateMap.set(compose.modified_language, action.editorState as string);
-          compose.textMap = compose.textMap.set(compose.modified_language, action.text as string);
+        } else if (compose.modified_language) {
+          compose.editorStateMap[compose.modified_language] = action.editorState as string;
+          compose.textMap[compose.modified_language] = action.text as string;
         }
       });
     case EVENT_COMPOSE_CANCEL:
@@ -683,20 +676,20 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
       });
     case COMPOSE_LANGUAGE_ADD:
       return updateCompose(state, action.composeId, compose => {
-        compose.editorStateMap = compose.editorStateMap.set(action.value, compose.editorState);
-        compose.textMap = compose.textMap.set(action.value, compose.text);
-        compose.spoilerTextMap = compose.spoilerTextMap.set(action.value, compose.spoiler_text);
-        if (compose.poll) compose.poll.options_map =  compose.poll.options_map.map((option, key) => option.set(action.value, compose.poll!.options.get(key)!));
+        compose.editorStateMap[action.value] = compose.editorState;
+        compose.textMap[action.value] = compose.text;
+        compose.spoilerTextMap[action.value] = compose.spoiler_text;
+        if (compose.poll) compose.poll.options_map.forEach((option, key) => option[action.value] = compose.poll!.options[key]);
       });
     case COMPOSE_LANGUAGE_DELETE:
       return updateCompose(state, action.composeId, compose => {
-        compose.editorStateMap = compose.editorStateMap.delete(action.value);
-        compose.textMap = compose.textMap.delete(action.value);
-        compose.spoilerTextMap = compose.spoilerTextMap.delete(action.value);
+        delete compose.editorStateMap[action.value];
+        delete compose.textMap[action.value];
+        delete compose.spoilerTextMap[action.value];
       });
     case COMPOSE_QUOTE_CANCEL:
       return updateCompose(state, action.composeId, (compose) => {
-        if (compose.quote) compose.dismissed_quotes = compose.dismissed_quotes.add(compose.quote);
+        if (compose.quote) compose.dismissed_quotes.push(compose.quote);
         compose.quote = null;
       });
     case COMPOSE_FEDERATED_CHANGE:

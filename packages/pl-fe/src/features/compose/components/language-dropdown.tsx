@@ -53,11 +53,13 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
     textMap,
   } = useCompose(composeId);
 
+  const hasMultipleLanguages = !!Object.keys(textMap).length;
+
   const handleOptionClick: React.EventHandler<any> = (e: MouseEvent | KeyboardEvent) => {
     const value = (e.currentTarget as HTMLElement)?.getAttribute('data-index') as Language;
 
-    if (textMap.size) {
-      if (!(textMap.has(value) || language === value)) return;
+    if (Object.keys(textMap).length) {
+      if (!(value in textMap || language === value)) return;
 
       dispatch(changeComposeModifiedLanguage(composeId, value));
     } else {
@@ -99,11 +101,11 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
       return [...languages].sort((a, b) => {
         // Push current selection to the top of the list
 
-        if (textMap.has(a[0])) {
+        if (a[0] in textMap) {
           if (b[0] === language) return 1;
           return -1;
         }
-        if (textMap.has(b[0])) {
+        if (b[0] in textMap) {
           if (a[0] === language) return -1;
           return 1;
         }
@@ -180,9 +182,9 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
                 'flex w-full gap-2 p-2.5 text-left text-sm text-gray-700 dark:text-gray-400',
                 {
                   'bg-gray-100 dark:bg-gray-800 black:bg-gray-900 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700': modified,
-                  'cursor-pointer hover:bg-gray-100 black:hover:bg-gray-900 dark:hover:bg-gray-800': !textMap.size || textMap.has(code),
+                  'cursor-pointer hover:bg-gray-100 black:hover:bg-gray-900 dark:hover:bg-gray-800': !hasMultipleLanguages || code in textMap,
                   'cursor-pointer': active,
-                  'cursor-default': !active && !(!textMap.size || textMap.has(code)),
+                  'cursor-default': !active && !(!hasMultipleLanguages || code in textMap),
                 },
               )}
               aria-selected={active}
@@ -196,7 +198,7 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
                 {name}
               </div>
               {features.multiLanguage && !!language && !active && (
-                textMap.has(code) ? (
+                code in textMap ? (
                   <button title={intl.formatMessage(messages.deleteLanguage)} onClick={handleDeleteLanguageClick}>
                     <Icon className='size-4' src={require('@tabler/icons/outline/minus.svg')} />
                   </button>
@@ -228,11 +230,13 @@ const LanguageDropdownButton: React.FC<ILanguageDropdownButton> = ({ composeId }
     textMap,
   } = useCompose(composeId);
 
+  const languagesCount = Object.keys(textMap).length;
+
   let buttonLabel = intl.formatMessage(messages.languagePrompt);
   if (language) {
     const list: string[] = [languagesObject[modifiedLanguage || language]];
-    if (textMap.size) list.push(intl.formatMessage(messages.multipleLanguages, {
-      count: textMap.size,
+    if (languagesCount) list.push(intl.formatMessage(messages.multipleLanguages, {
+      count: languagesCount,
     }));
     buttonLabel = intl.formatList(list);
   } else if (suggestedLanguage) buttonLabel = intl.formatMessage(messages.languageSuggestion, {
