@@ -5,7 +5,7 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Input from 'pl-fe/components/ui/input';
 
 import type { StreamfieldComponent } from 'pl-fe/components/ui/streamfield';
-import type { FooterItem } from 'pl-fe/types/pl-fe';
+import type { FooterItem } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 
 const messages = defineMessages({
   label: { id: 'plfe_config.home_footer.meta_fields.label_placeholder', defaultMessage: 'Label' },

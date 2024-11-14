@@ -1,7 +1,7 @@
 import { hexToRgb } from './colors';
 
+import type { PlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import type { Rgb, Hsl, TailwindColorPalette, TailwindColorObject } from 'pl-fe/types/colors';
-import type { PlFeConfig } from 'pl-fe/types/pl-fe';
 
 // Taken from chromatism.js
 // https://github.com/graypegg/chromatism/blob/master/src/conversions/rgb.js
@@ -111,7 +111,7 @@ const colorsToCss = (colors: TailwindColorPalette): string => {
 };
 
 const generateThemeCss = (plFeConfig: PlFeConfig): string =>
-  colorsToCss(plFeConfig.colors.toJS() as TailwindColorPalette);
+  colorsToCss(plFeConfig.colors);
 
 const hexToHsl = (hex: string): Hsl | null => {
   const rgb = hexToRgb(hex);

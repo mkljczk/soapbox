@@ -159,7 +159,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
   const standalone = useAppSelector(isStandalone);
 
   const { authenticatedProfile, cryptoAddresses } = usePlFeConfig();
-  const hasCrypto = cryptoAddresses.size > 0;
+  const hasCrypto = cryptoAddresses.length > 0;
 
   // NOTE: Mastodon and Pleroma route some basenames to the backend.
   // When adding new routes, use a basename that does NOT conflict

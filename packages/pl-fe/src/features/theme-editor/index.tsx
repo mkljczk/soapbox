@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import * as v from 'valibot';
 
 import { updatePlFeConfig } from 'pl-fe/actions/admin';
 import { getHost } from 'pl-fe/actions/instance';
@@ -14,7 +15,7 @@ import ColorPicker from 'pl-fe/features/pl-fe-config/components/color-picker';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
-import { normalizePlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
+import { plFeConfigSchema } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import toast from 'pl-fe/toast';
 import { download } from 'pl-fe/utils/download';
 
@@ -53,7 +54,7 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
   const host = useAppSelector(state => getHost(state));
   const rawConfig = useAppSelector(state => state.plfe);
 
-  const [colors, setColors] = useState(plFe.colors.toJS() as any);
+  const [colors, setColors] = useState(plFe.colors);
   const [submitting, setSubmitting] = useState(false);
   const [resetKey, setResetKey] = useState(crypto.randomUUID());
 
@@ -82,16 +83,16 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
   };
 
   const resetTheme = () => {
-    setTheme(plFe.colors.toJS() as any);
+    setTheme(plFe.colors);
   };
 
   const updateTheme = async () => {
-    const params = rawConfig.set('colors', colors).toJS();
+    const params = { ...rawConfig, colors };
     await dispatch(updatePlFeConfig(params));
   };
 
   const restoreDefaultTheme = () => {
-    const colors = normalizePlFeConfig({ brandColor: '#d80482' }).colors.toJS();
+    const colors = v.parse(plFeConfigSchema, { brandColor: '#d80482' }).colors;
     setTheme(colors);
   };
 
@@ -110,7 +111,7 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
     if (file) {
       const text = await file.text();
       const json = JSON.parse(text);
-      const colors = normalizePlFeConfig({ colors: json }).colors.toJS();
+      const colors = v.parse(plFeConfigSchema, { colors: json }).colors;
 
       setTheme(colors);
       toast.success(intl.formatMessage(messages.importSuccess));
@@ -243,13 +244,13 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
 
 interface IPaletteListItem {
   label: React.ReactNode;
-  palette: ColorGroup;
+  palette: ColorGroup | string;
   onChange: (palette: ColorGroup) => void;
   resetKey?: string;
 }
 
 /** Palette editor inside a ListItem. */
-const PaletteListItem: React.FC<IPaletteListItem> = ({ label, palette, onChange, resetKey }) => (
+const PaletteListItem: React.FC<IPaletteListItem> = ({ label, palette, onChange, resetKey }) => typeof palette === 'string' ? null : (
   <ListItem label={<div className='w-20'>{label}</div>}>
     <Palette palette={palette} onChange={onChange} resetKey={resetKey} />
   </ListItem>
@@ -257,12 +258,14 @@ const PaletteListItem: React.FC<IPaletteListItem> = ({ label, palette, onChange,
 
 interface IColorListItem {
   label: React.ReactNode;
-  value: string;
+  value: string | Record<string, string>;
   onChange: (hex: string) => void;
 }
 
 /** Single-color picker. */
 const ColorListItem: React.FC<IColorListItem> = ({ label, value, onChange }) => {
+  if (typeof value !== 'string') return null;
+
   const handleChange: ColorChangeHandler = (color, _e) => {
     onChange(color.hex);
   };

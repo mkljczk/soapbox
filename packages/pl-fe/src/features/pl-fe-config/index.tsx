@@ -1,6 +1,7 @@
 import { Map as ImmutableMap, List as ImmutableList, fromJS } from 'immutable';
 import React, { useState, useEffect, useMemo } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
+import * as v from 'valibot';
 
 import { updatePlFeConfig } from 'pl-fe/actions/admin';
 import { uploadMedia } from 'pl-fe/actions/media';
@@ -21,7 +22,7 @@ import ThemeSelector from 'pl-fe/features/ui/components/theme-selector';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { normalizePlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
+import { plFeConfigSchema } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import toast from 'pl-fe/toast';
 
 import CryptoAddressInput from './components/crypto-address-input';
@@ -34,13 +35,11 @@ const messages = defineMessages({
   saved: { id: 'plfe_config.saved', defaultMessage: 'pl-fe config saved!' },
   copyrightFooterLabel: { id: 'plfe_config.copyright_footer.meta_fields.label_placeholder', defaultMessage: 'Copyright footer' },
   cryptoDonatePanelLimitLabel: { id: 'plfe_config.crypto_donate_panel_limit.meta_fields.limit_placeholder', defaultMessage: 'Number of items to display in the crypto homepage widget' },
-  customCssLabel: { id: 'plfe_config.custom_css.meta_fields.url_placeholder', defaultMessage: 'URL' },
   rawJSONLabel: { id: 'plfe_config.raw_json_label', defaultMessage: 'Advanced: Edit raw JSON data' },
   rawJSONHint: { id: 'plfe_config.raw_json_hint', defaultMessage: 'Edit the settings data directly. Changes made directly to the JSON file will override the form fields above. Click "Save" to apply your changes.' },
   rawJSONInvalid: { id: 'plfe_config.raw_json_invalid', defaultMessage: 'is invalid' },
   displayFqnLabel: { id: 'plfe_config.display_fqn_label', defaultMessage: 'Display domain (eg @user@domain) for local accounts.' },
   greentextLabel: { id: 'plfe_config.greentext_label', defaultMessage: 'Enable greentext support' },
-  promoPanelIconsLink: { id: 'plfe_config.hints.promo_panel_icons.link', defaultMessage: 'pl-fe Icons List' },
   authenticatedProfileLabel: { id: 'plfe_config.authenticated_profile_label', defaultMessage: 'Profiles require authentication' },
   authenticatedProfileHint: { id: 'plfe_config.authenticated_profile_hint', defaultMessage: 'Users must be logged-in to view replies and media on user profiles.' },
   displayCtaLabel: { id: 'plfe_config.cta_label', defaultMessage: 'Display call to action panels if not authenticated' },
@@ -81,7 +80,7 @@ const PlFeConfig: React.FC = () => {
   const [rawJSON, setRawJSON] = useState<string>(JSON.stringify(initialData, null, 2));
   const [jsonValid, setJsonValid] = useState(true);
 
-  const plFe = useMemo(() => normalizePlFeConfig(data), [data]);
+  const plFe = useMemo(() => v.parse(plFeConfigSchema, data), [data]);
 
   const setConfig = (path: ConfigPath, value: any) => {
     const newData = data.setIn(path, value);
@@ -284,7 +283,7 @@ const PlFeConfig: React.FC = () => {
             label={<FormattedMessage id='plfe_config.fields.promo_panel_fields_label' defaultMessage='Promo panel items' />}
             hint={<FormattedMessage id='plfe_config.hints.promo_panel_fields' defaultMessage='You can have custom defined links displayed on the right panel of the timelines page.' />}
             component={PromoPanelInput}
-            values={plFe.promoPanel.items.toArray()}
+            values={plFe.promoPanel.items}
             onChange={handleStreamItemChange(['promoPanel', 'items'])}
             onAddItem={addStreamItem(['promoPanel', 'items'], templates.promoPanel)}
             onRemoveItem={deleteStreamItem(['promoPanel', 'items'])}
@@ -295,7 +294,7 @@ const PlFeConfig: React.FC = () => {
             label={<FormattedMessage id='plfe_config.fields.home_footer_fields_label' defaultMessage='Home footer items' />}
             hint={<FormattedMessage id='plfe_config.hints.home_footer_fields' defaultMessage='You can have custom defined links displayed on the footer of your static pages' />}
             component={FooterLinkInput}
-            values={plFe.navlinks.get('homeFooter')?.toArray() || []}
+            values={plFe.navlinks.homeFooter || []}
             onChange={handleStreamItemChange(['navlinks', 'homeFooter'])}
             onAddItem={addStreamItem(['navlinks', 'homeFooter'], templates.footerItem)}
             onRemoveItem={deleteStreamItem(['navlinks', 'homeFooter'])}
@@ -345,7 +344,7 @@ const PlFeConfig: React.FC = () => {
             label={<FormattedMessage id='plfe_config.fields.crypto_addresses_label' defaultMessage='Cryptocurrency addresses' />}
             hint={<FormattedMessage id='plfe_config.hints.crypto_addresses' defaultMessage='Add cryptocurrency addresses so users of your site can donate to you. Order matters, and you must use lowercase ticker values.' />}
             component={CryptoAddressInput}
-            values={plFe.cryptoAddresses.toArray()}
+            values={plFe.cryptoAddresses}
             onChange={handleStreamItemChange(['cryptoAddresses'])}
             onAddItem={addStreamItem(['cryptoAddresses'], templates.cryptoAddress)}
             onRemoveItem={deleteStreamItem(['cryptoAddresses'])}
@@ -358,7 +357,7 @@ const PlFeConfig: React.FC = () => {
               min={0}
               pattern='[0-9]+'
               placeholder={intl.formatMessage(messages.cryptoDonatePanelLimitLabel)}
-              value={plFe.cryptoDonatePanel.get('limit')}
+              value={plFe.cryptoDonatePanel.limit}
               onChange={handleChange(['cryptoDonatePanel', 'limit'], (e) => Number(e.target.value))}
             />
           </FormGroup>

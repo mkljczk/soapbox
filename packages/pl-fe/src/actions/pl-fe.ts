@@ -1,7 +1,8 @@
 import { createSelector } from 'reselect';
+import * as v from 'valibot';
 
 import { getHost } from 'pl-fe/actions/instance';
-import { normalizePlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
+import { plFeConfigSchema } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import KVStore from 'pl-fe/storage/kv-store';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 
@@ -17,10 +18,8 @@ const PLFE_CONFIG_REMEMBER_SUCCESS = 'PLFE_CONFIG_REMEMBER_SUCCESS' as const;
 
 const getPlFeConfig = createSelector([
   (state: RootState) => state.plfe,
-], (plfe) => {
-  // Do some additional normalization with the state
-  return normalizePlFeConfig(plfe);
-});
+// Do some additional normalization with the state
+], (plfe) => v.parse(plFeConfigSchema, plfe));
 
 const rememberPlFeConfig = (host: string | null) =>
   (dispatch: AppDispatch) => {
