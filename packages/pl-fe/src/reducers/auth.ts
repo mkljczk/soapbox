@@ -1,4 +1,3 @@
-import { Map as ImmutableMap, fromJS } from 'immutable';
 import trim from 'lodash/trim';
 import { create, Draft } from 'mutative';
 import { applicationSchema, PlApiClient, tokenSchema, type CredentialAccount, type CredentialApplication, type Token } from 'pl-api';
@@ -6,6 +5,7 @@ import * as v from 'valibot';
 
 import { MASTODON_PRELOAD_IMPORT, type PreloadAction } from 'pl-fe/actions/preload';
 import * as BuildConfig from 'pl-fe/build-config';
+import { coerceObject } from 'pl-fe/schemas/utils';
 import KVStore from 'pl-fe/storage/kv-store';
 import { validId, isURL, parseBaseURL } from 'pl-fe/utils/auth';
 
@@ -26,6 +26,16 @@ import type { Account as AccountEntity } from 'pl-fe/normalizers/account';
 import type { AnyAction } from 'redux';
 
 const backendUrl = (isURL(BuildConfig.BACKEND_URL) ? BuildConfig.BACKEND_URL : '');
+
+const mastodonPreloadSchema = coerceObject({
+  meta: coerceObject({
+    access_token: v.string(),
+    me: v.string(),
+  }),
+  accounts: v.record(v.string(), v.object({
+    url: v.string(),
+  })),
+});
 
 const authUserSchema = v.object({
   access_token: v.string(),
@@ -229,10 +239,11 @@ const deleteUser = (state: State | Draft<State>, account: Pick<AccountEntity, 'u
   maybeShiftMe(state);
 };
 
-const importMastodonPreload = (state: State | Draft<State>, data: ImmutableMap<string, any>) => {
-  const accountId = data.getIn(['meta', 'me']) as string;
-  const accountUrl = data.getIn(['accounts', accountId, 'url']) as string;
-  const accessToken = data.getIn(['meta', 'access_token']) as string;
+const importMastodonPreload = (state: State | Draft<State>, data: Record<string, any>) => {
+  const parsedData = v.parse(mastodonPreloadSchema, data);
+  const accountId = parsedData.meta.me;
+  const accountUrl = parsedData.accounts[accountId]?.url;
+  const accessToken = parsedData.meta.access_token;
 
   if (validId(accessToken) && validId(accountId) && isURL(accountUrl)) {
     state.tokens[accessToken] = v.parse(tokenSchema, {
@@ -335,7 +346,7 @@ const reducer = (state: State, action: AnyAction | AuthAction | MeAction | Prelo
       });
     case MASTODON_PRELOAD_IMPORT:
       return updateState(state, (draft) => {
-        importMastodonPreload(draft, fromJS<ImmutableMap<string, any>>(action.data));
+        importMastodonPreload(draft, action.data);
       });
     default:
       return state;
