@@ -17,7 +17,7 @@ const CryptoAddressInput: StreamfieldComponent<CryptoAddress> = ({ value, onChan
   const intl = useIntl();
 
   const handleChange = (key: 'ticker' | 'address' | 'note'): React.ChangeEventHandler<HTMLInputElement> => e => {
-    onChange(value.set(key, e.currentTarget.value));
+    onChange({ ...value, [key]: e.currentTarget.value });
   };
 
   return (

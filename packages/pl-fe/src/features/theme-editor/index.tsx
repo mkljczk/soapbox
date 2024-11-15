@@ -61,6 +61,8 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
   const fileInput = useRef<HTMLInputElement>(null);
 
   const updateColors = (key: string) => (newColors: ColorGroup) => {
+    if (typeof colors[key] === 'string') return;
+
     setColors({
       ...colors,
       [key]: {

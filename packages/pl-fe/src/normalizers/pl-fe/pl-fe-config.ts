@@ -51,7 +51,7 @@ type PromoPanel = v.InferOutput<typeof promoPanelSchema>;
 const footerItemSchema = coerceObject({
   title: v.fallback(v.string(), ''),
   url: v.fallback(v.string(), ''),
-  titleLocales: v.fallback(v.record(v.string(), v.string()), {})
+  titleLocales: v.fallback(v.record(v.string(), v.string()), {}),
 });
 
 type FooterItem = v.InferOutput<typeof footerItemSchema>;
@@ -150,6 +150,9 @@ const plFeConfigSchema = v.pipe(coerceObject({
 type PlFeConfig = v.InferOutput<typeof plFeConfigSchema>;
 
 export {
+  promoPanelItemSchema,
+  footerItemSchema,
+  cryptoAddressSchema,
   plFeConfigSchema,
   type PromoPanelItem,
   type PromoPanel,

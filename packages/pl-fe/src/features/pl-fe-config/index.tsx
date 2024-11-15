@@ -1,4 +1,4 @@
-import { Map as ImmutableMap, List as ImmutableList, fromJS } from 'immutable';
+import { create } from 'mutative';
 import React, { useState, useEffect, useMemo } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import * as v from 'valibot';
@@ -22,7 +22,7 @@ import ThemeSelector from 'pl-fe/features/ui/components/theme-selector';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { plFeConfigSchema } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
+import { cryptoAddressSchema, footerItemSchema, plFeConfigSchema, promoPanelItemSchema, type PlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import toast from 'pl-fe/toast';
 
 import CryptoAddressInput from './components/crypto-address-input';
@@ -55,18 +55,11 @@ const messages = defineMessages({
   sentryDsnHint: { id: 'plfe_config.sentry_dsn_hint', defaultMessage: 'DSN URL for error reporting. Works with Sentry and GlitchTip.' },
 });
 
-type ValueGetter<T = Element> = (e: React.ChangeEvent<T>) => any;
-type Template = ImmutableMap<string, any>;
-type ConfigPath = Array<string | number>;
+type ValueGetter<T1 = Element, T2 = any> = (e: React.ChangeEvent<T1>) => T2;
+type StreamItemConfigPath = ['promoPanel', 'items'] | ['navlinks', 'homeFooter'] | ['cryptoAddresses'];
 type ThemeChangeHandler = (theme: string) => void;
 
-const templates: Record<string, Template> = {
-  promoPanelItem: ImmutableMap({ icon: '', text: '', url: '' }),
-  footerItem: ImmutableMap({ title: '', url: '' }),
-  cryptoAddress: ImmutableMap({ ticker: '', address: '', note: '' }),
-};
-
-const PlFeConfig: React.FC = () => {
+const PlFeConfigEditor: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
@@ -75,26 +68,25 @@ const PlFeConfig: React.FC = () => {
   const initialData = useAppSelector(state => state.plfe);
 
   const [isLoading, setLoading] = useState(false);
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState(v.parse(plFeConfigSchema, initialData));
   const [jsonEditorExpanded, setJsonEditorExpanded] = useState(false);
   const [rawJSON, setRawJSON] = useState<string>(JSON.stringify(initialData, null, 2));
   const [jsonValid, setJsonValid] = useState(true);
 
   const plFe = useMemo(() => v.parse(plFeConfigSchema, data), [data]);
 
-  const setConfig = (path: ConfigPath, value: any) => {
-    const newData = data.setIn(path, value);
+  const setConfig = (newData: PlFeConfig) => {
     setData(newData);
     setJsonValid(true);
   };
 
-  const putConfig = (newData: any) => {
+  const putConfig = (newData: PlFeConfig) => {
     setData(newData);
     setJsonValid(true);
   };
 
   const handleSubmit: React.FormEventHandler = (e) => {
-    dispatch(updatePlFeConfig(data.toJS())).then(() => {
+    dispatch(updatePlFeConfig(data)).then(() => {
       setLoading(false);
       toast.success(intl.formatMessage(messages.saved));
     }).catch(() => {
@@ -104,15 +96,20 @@ const PlFeConfig: React.FC = () => {
     e.preventDefault();
   };
 
-  const handleChange = (path: ConfigPath, getValue: ValueGetter<any>): React.ChangeEventHandler => e => {
-    setConfig(path, getValue(e));
+  const handleChange = (path: keyof PlFeConfig, getValue: ValueGetter<any, PlFeConfig[typeof path]>): React.ChangeEventHandler => e => {
+    const newData: PlFeConfig = { ...data, [path]: getValue(e) };
+    setConfig(newData);
   };
 
-  const handleThemeChange = (path: ConfigPath): ThemeChangeHandler => theme => {
-    setConfig(path, theme);
+  const handleThemeChange: ThemeChangeHandler = (theme) => {
+    const newData = create(data, (draft) => {
+      if (!draft.defaultSettings) draft.defaultSettings = {};
+      draft.defaultSettings.themeMode = theme;
+    });
+    setConfig(newData);
   };
 
-  const handleFileChange = (path: ConfigPath): React.ChangeEventHandler<HTMLInputElement> => e => {
+  const handleFileChange = (path: keyof PlFeConfig): React.ChangeEventHandler<HTMLInputElement> => e => {
     const file = e.target.files?.item(0);
 
     if (file) {
@@ -122,19 +119,40 @@ const PlFeConfig: React.FC = () => {
     }
   };
 
-  const handleStreamItemChange = (path: ConfigPath) => (values: any[]) => {
-    setConfig(path, ImmutableList(values));
+  const handleStreamItemChange = (path: StreamItemConfigPath) => (values: any[]) => {
+    const newData = create(data, (draft) => {
+      if (path[0] === 'cryptoAddresses') {
+        draft.cryptoAddresses = values;
+      } else {
+        // @ts-ignore
+        draft[path[0]][path[1]] = values;
+      }
+    });
+    setConfig(newData);
   };
 
-  const addStreamItem = (path: ConfigPath, template: Template) => () => {
-    let items = data;
-    path.forEach(key => items = items?.[key] || []);
-    setConfig(path, items.push(template));
+  const addStreamItem = <T, >(path: StreamItemConfigPath, schema: v.BaseSchema<any, T, v.BaseIssue<unknown>>) => () => {
+    const newData = create(data, (draft) => {
+      if (path[0] === 'cryptoAddresses') {
+        draft.cryptoAddresses.push(v.parse(cryptoAddressSchema, {}));
+      } else {
+        // @ts-ignore
+        draft[path[0]][path[1]].push(v.parse(schema, {}));
+      }
+    });
+    setConfig(newData);
   };
 
-  const deleteStreamItem = (path: ConfigPath) => (i: number) => {
-    const newData = data.deleteIn([...path, i]);
-    setData(newData);
+  const deleteStreamItem = (path: StreamItemConfigPath) => (i: number) => {
+    const newData = create(data, (draft) => {
+      if (path[0] === 'cryptoAddresses') {
+        draft.cryptoAddresses = draft.cryptoAddresses.filter((_, index) => index !== i);
+      } else {
+        // @ts-ignore
+        draft[path[0]][path[1]] = draft[path[0]][path[1]].filter((_, index) => index !== i);
+      }
+    });
+    setConfig(newData);
   };
 
   const handleEditJSON: React.ChangeEventHandler<HTMLTextAreaElement> = e => {
@@ -144,7 +162,7 @@ const PlFeConfig: React.FC = () => {
   const toggleJSONEditor = (expanded: boolean) => setJsonEditorExpanded(expanded);
 
   useEffect(() => {
-    putConfig(initialData);
+    putConfig(v.parse(plFeConfigSchema, initialData));
   }, [initialData]);
 
   useEffect(() => {
@@ -153,7 +171,7 @@ const PlFeConfig: React.FC = () => {
 
   useEffect(() => {
     try {
-      const data = fromJS(JSON.parse(rawJSON));
+      const data = v.parse(plFeConfigSchema, JSON.parse(rawJSON));
       putConfig(data);
     } catch {
       setJsonValid(false);
@@ -171,7 +189,7 @@ const PlFeConfig: React.FC = () => {
             hintText={<FormattedMessage id='plfe_config.hints.logo' defaultMessage='SVG. At most 2 MB. Will be displayed to 50px height, maintaining aspect ratio' />}
           >
             <FileInput
-              onChange={handleFileChange(['logo'])}
+              onChange={handleFileChange('logo')}
               accept='image/svg+xml,image/png'
             />
           </FormGroup>
@@ -183,8 +201,8 @@ const PlFeConfig: React.FC = () => {
           <List>
             <ListItem label={<FormattedMessage id='plfe_config.fields.theme_label' defaultMessage='Default theme' />}>
               <ThemeSelector
-                value={plFe.defaultSettings.get('themeMode')}
-                onChange={handleThemeChange(['defaultSettings', 'themeMode'])}
+                value={plFe.defaultSettings?.themeMode}
+                onChange={handleThemeChange}
               />
             </ListItem>
 
@@ -202,14 +220,14 @@ const PlFeConfig: React.FC = () => {
             <ListItem label={intl.formatMessage(messages.displayFqnLabel)}>
               <Toggle
                 checked={plFe.displayFqn === true}
-                onChange={handleChange(['displayFqn'], (e) => e.target.checked)}
+                onChange={handleChange('displayFqn', (e) => e.target.checked)}
               />
             </ListItem>
 
             <ListItem label={intl.formatMessage(messages.greentextLabel)}>
               <Toggle
                 checked={plFe.greentext === true}
-                onChange={handleChange(['greentext'], (e) => e.target.checked)}
+                onChange={handleChange('greentext', (e) => e.target.checked)}
               />
             </ListItem>
 
@@ -219,7 +237,7 @@ const PlFeConfig: React.FC = () => {
             >
               <Toggle
                 checked={plFe.feedInjection === true}
-                onChange={handleChange(['feedInjection'], (e) => e.target.checked)}
+                onChange={handleChange('feedInjection', (e) => e.target.checked)}
               />
             </ListItem>
 
@@ -229,14 +247,14 @@ const PlFeConfig: React.FC = () => {
             >
               <Toggle
                 checked={plFe.mediaPreview === true}
-                onChange={handleChange(['mediaPreview'], (e) => e.target.checked)}
+                onChange={handleChange('mediaPreview', (e) => e.target.checked)}
               />
             </ListItem>
 
             <ListItem label={intl.formatMessage(messages.displayCtaLabel)}>
               <Toggle
                 checked={plFe.displayCta === true}
-                onChange={handleChange(['displayCta'], (e) => e.target.checked)}
+                onChange={handleChange('displayCta', (e) => e.target.checked)}
               />
             </ListItem>
 
@@ -246,7 +264,7 @@ const PlFeConfig: React.FC = () => {
             >
               <Toggle
                 checked={plFe.authenticatedProfile === true}
-                onChange={handleChange(['authenticatedProfile'], (e) => e.target.checked)}
+                onChange={handleChange('authenticatedProfile', (e) => e.target.checked)}
               />
             </ListItem>
 
@@ -258,7 +276,7 @@ const PlFeConfig: React.FC = () => {
                 type='text'
                 placeholder='/timeline/local'
                 value={String(data.redirectRootNoLogin || '')}
-                onChange={handleChange(['redirectRootNoLogin'], (e) => e.target.value)}
+                onChange={handleChange('redirectRootNoLogin', (e) => e.target.value)}
               />
             </ListItem>
 
@@ -270,7 +288,7 @@ const PlFeConfig: React.FC = () => {
                 type='text'
                 placeholder='https://01234abcdef@glitch.tip.tld/5678'
                 value={String(data.sentryDsn ||  '')}
-                onChange={handleChange(['sentryDsn'], (e) => e.target.value)}
+                onChange={handleChange('sentryDsn', (e) => e.target.value)}
               />
             </ListItem>
           </List>
@@ -285,7 +303,7 @@ const PlFeConfig: React.FC = () => {
             component={PromoPanelInput}
             values={plFe.promoPanel.items}
             onChange={handleStreamItemChange(['promoPanel', 'items'])}
-            onAddItem={addStreamItem(['promoPanel', 'items'], templates.promoPanel)}
+            onAddItem={addStreamItem(['promoPanel', 'items'], promoPanelItemSchema)}
             onRemoveItem={deleteStreamItem(['promoPanel', 'items'])}
             draggable
           />
@@ -296,7 +314,7 @@ const PlFeConfig: React.FC = () => {
             component={FooterLinkInput}
             values={plFe.navlinks.homeFooter || []}
             onChange={handleStreamItemChange(['navlinks', 'homeFooter'])}
-            onAddItem={addStreamItem(['navlinks', 'homeFooter'], templates.footerItem)}
+            onAddItem={addStreamItem(['navlinks', 'homeFooter'], footerItemSchema)}
             onRemoveItem={deleteStreamItem(['navlinks', 'homeFooter'])}
             draggable
           />
@@ -306,7 +324,7 @@ const PlFeConfig: React.FC = () => {
               type='text'
               placeholder={intl.formatMessage(messages.copyrightFooterLabel)}
               value={plFe.copyright}
-              onChange={handleChange(['copyright'], (e) => e.target.value)}
+              onChange={handleChange('copyright', (e) => e.target.value)}
             />
           </FormGroup>
 
@@ -321,7 +339,7 @@ const PlFeConfig: React.FC = () => {
                   type='text'
                   placeholder={intl.formatMessage(messages.tileServerLabel)}
                   value={plFe.tileServer}
-                  onChange={handleChange(['tileServer'], (e) => e.target.value)}
+                  onChange={handleChange('tileServer', (e) => e.target.value)}
                 />
               </FormGroup>
 
@@ -330,7 +348,7 @@ const PlFeConfig: React.FC = () => {
                   type='text'
                   placeholder={intl.formatMessage(messages.tileServerAttributionLabel)}
                   value={plFe.tileServerAttribution}
-                  onChange={handleChange(['tileServerAttribution'], (e) => e.target.value)}
+                  onChange={handleChange('tileServerAttribution', (e) => e.target.value)}
                 />
               </FormGroup>
             </>
@@ -346,7 +364,7 @@ const PlFeConfig: React.FC = () => {
             component={CryptoAddressInput}
             values={plFe.cryptoAddresses}
             onChange={handleStreamItemChange(['cryptoAddresses'])}
-            onAddItem={addStreamItem(['cryptoAddresses'], templates.cryptoAddress)}
+            onAddItem={addStreamItem(['cryptoAddresses'], cryptoAddressSchema)}
             onRemoveItem={deleteStreamItem(['cryptoAddresses'])}
             draggable
           />
@@ -358,7 +376,7 @@ const PlFeConfig: React.FC = () => {
               pattern='[0-9]+'
               placeholder={intl.formatMessage(messages.cryptoDonatePanelLimitLabel)}
               value={plFe.cryptoDonatePanel.limit}
-              onChange={handleChange(['cryptoDonatePanel', 'limit'], (e) => Number(e.target.value))}
+              onChange={handleChange('cryptoDonatePanel', (e) => ({ limit: Number(e.target.value) }))}
             />
           </FormGroup>
 
@@ -395,4 +413,4 @@ const PlFeConfig: React.FC = () => {
   );
 };
 
-export { PlFeConfig as default };
+export { PlFeConfigEditor as default };
