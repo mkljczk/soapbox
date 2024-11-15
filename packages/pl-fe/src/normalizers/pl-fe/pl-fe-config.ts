@@ -143,7 +143,15 @@ const plFeConfigSchema = v.pipe(coerceObject({
     ...config,
     brandColor,
     accentColor,
-    colors: normalizedColors,
+    colors: {
+      // @ts-ignore
+      'gradient-start': normalizedColors.primary?.['500'],
+      // @ts-ignore
+      'gradient-end': normalizedColors.accent?.['500'],
+      // @ts-ignore
+      'accent-blue': normalizedColors.primary?.['600'],
+      ...normalizedColors,
+    } as typeof normalizedColors,
   };
 }));
 

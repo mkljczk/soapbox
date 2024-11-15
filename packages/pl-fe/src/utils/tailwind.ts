@@ -52,7 +52,7 @@ const toTailwind = (config: {
   const colors: PlFeColors = config.colors;
   const legacyColors = fromLegacyColors(config);
 
-  return Object.fromEntries(Object.entries(legacyColors).map(([key, value]) => [key, typeof value === 'string' ? colors[key] || value : { ...value, ...config.colors[key] }]));
+  return Object.fromEntries(Object.entries(legacyColors).map(([key, value]) => [key, typeof value === 'string' ? colors[key] || value : { ...value, ...colors[key] }]));
 };
 
 export {
