@@ -318,7 +318,7 @@ const needsDescriptions = (state: RootState, composeId: string) => {
   const media = state.compose[composeId]!.media_attachments;
   const missingDescriptionModal = useSettingsStore.getState().settings.missingDescriptionModal;
 
-  const hasMissing = media.filter(item => !item.description).size > 0;
+  const hasMissing = media.filter(item => !item.description).length > 0;
 
   return missingDescriptionModal && hasMissing;
 };
@@ -357,7 +357,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
       return;
     }
 
-    if ((!status || !status.length) && media.size === 0) {
+    if ((!status || !status.length) && media.length === 0) {
       return;
     }
 
@@ -392,7 +392,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
       status,
       in_reply_to_id: compose.in_reply_to || undefined,
       quote_id: compose.quote || undefined,
-      media_ids: media.map(item => item.id).toArray(),
+      media_ids: media.map(item => item.id),
       sensitive: compose.sensitive,
       spoiler_text: compose.spoiler_text,
       visibility: compose.privacy,
@@ -471,7 +471,7 @@ const uploadCompose = (composeId: string, files: FileList, intl: IntlShape) =>
     const progress = new Array(files.length).fill(0);
     let total = Array.from(files).reduce((a, v) => a + v.size, 0);
 
-    const mediaCount = media ? media.size : 0;
+    const mediaCount = media ? media.length : 0;
 
     if (files.length + mediaCount > attachmentLimit) {
       toast.error(messages.uploadErrorLimit);
@@ -726,7 +726,7 @@ const insertIntoTagHistory = (composeId: string, recognizedTags: Array<Tag>, tex
       .map(tag => tag.name);
     const intersectedOldHistory = oldHistory.filter(name => names.findIndex(newName => newName.toLowerCase() === name.toLowerCase()) === -1);
 
-    names.push(...intersectedOldHistory.toJS());
+    names.push(...intersectedOldHistory);
 
     const newHistory = names.slice(0, 1000);
 

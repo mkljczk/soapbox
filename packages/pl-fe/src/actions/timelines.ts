@@ -28,7 +28,7 @@ const processTimelineUpdate = (timeline: string, status: BaseStatus) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const me = getState().me;
     const ownStatus = status.account?.id === me;
-    const hasPendingStatuses = !getState().pending_statuses.isEmpty();
+    const hasPendingStatuses = !!getState().pending_statuses.length;
 
     const columnSettings = useSettingsStore.getState().settings.timelines[timeline];
     const shouldSkipQueue = shouldFilter({

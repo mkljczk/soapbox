@@ -44,8 +44,8 @@ const HomeLayout: React.FC<IHomeLayout> = ({ children }) => {
   const composeBlock = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
-  const hasCrypto = typeof plFeConfig.cryptoAddresses.getIn([0, 'ticker']) === 'string';
-  const cryptoLimit = plFeConfig.cryptoDonatePanel.get('limit', 0);
+  const hasCrypto = typeof plFeConfig.cryptoAddresses[0]?.ticker === 'string';
+  const cryptoLimit = plFeConfig.cryptoDonatePanel.limit;
 
   const { isDragging, isDraggedOver } = useDraggedFiles(composeBlock, (files) => {
     dispatch(uploadCompose(composeId, files, intl));

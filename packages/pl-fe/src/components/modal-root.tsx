@@ -22,7 +22,7 @@ const checkComposeContent = (compose?: Compose) =>
   !!compose && [
     compose.editorState && compose.editorState.length > 0,
     compose.spoiler_text.length > 0,
-    compose.media_attachments.size > 0,
+    compose.media_attachments.length > 0,
     compose.poll !== null,
   ].some(check => check === true);
 

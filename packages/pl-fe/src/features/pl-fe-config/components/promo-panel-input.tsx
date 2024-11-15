@@ -7,7 +7,7 @@ import Input from 'pl-fe/components/ui/input';
 import IconPicker from './icon-picker';
 
 import type { StreamfieldComponent } from 'pl-fe/components/ui/streamfield';
-import type { PromoPanelItem } from 'pl-fe/types/pl-fe';
+import type { PromoPanelItem } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 
 const messages = defineMessages({
   icon: { id: 'plfe_config.promo_panel.meta_fields.icon_placeholder', defaultMessage: 'Icon' },
@@ -19,11 +19,11 @@ const PromoPanelInput: StreamfieldComponent<PromoPanelItem> = ({ value, onChange
   const intl = useIntl();
 
   const handleIconChange = (icon: string) => {
-    onChange(value.set('icon', icon));
+    onChange({ ...value, icon });
   };
 
   const handleChange = (key: 'text' | 'url'): React.ChangeEventHandler<HTMLInputElement> => e => {
-    onChange(value.set(key, e.currentTarget.value));
+    onChange({ ...value, [key]: e.currentTarget.value });
   };
 
   return (

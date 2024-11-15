@@ -96,7 +96,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
 
   const hasPoll = !!compose.poll;
   const isEditing = compose.id !== null;
-  const anyMedia = compose.media_attachments.size > 0;
+  const anyMedia = compose.media_attachments.length > 0;
 
   const [composeFocused, setComposeFocused] = useState(false);
 
@@ -189,7 +189,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
     </HStack>
   ), [features, id, anyMedia]);
 
-  const showModifiers = !condensed && (compose.media_attachments.size || compose.is_uploading || compose.poll?.options.length || compose.schedule);
+  const showModifiers = !condensed && (compose.media_attachments.length || compose.is_uploading || compose.poll?.options.length || compose.schedule);
 
   const composeModifiers = showModifiers && (
     <Stack space={4} className='font-[inherit] text-sm text-gray-900'>

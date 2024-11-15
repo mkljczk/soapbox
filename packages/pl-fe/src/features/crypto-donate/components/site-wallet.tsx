@@ -11,7 +11,7 @@ interface ISiteWallet {
 
 const SiteWallet: React.FC<ISiteWallet> = ({ limit }): JSX.Element => {
   const { cryptoAddresses } = usePlFeConfig();
-  const addresses = typeof limit === 'number' ? cryptoAddresses.take(limit) : cryptoAddresses;
+  const addresses = typeof limit === 'number' ? cryptoAddresses.slice(0, limit) : cryptoAddresses;
 
   return (
     <Stack space={4}>

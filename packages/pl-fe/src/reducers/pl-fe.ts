@@ -10,10 +10,11 @@ import {
 } from '../actions/pl-fe';
 
 import type { PleromaConfig } from 'pl-api';
+import type { PlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 
-const initialState: Record<string, any> = {};
+const initialState: Partial<PlFeConfig> = {};
 
-const fallbackState = {
+const fallbackState: Partial<PlFeConfig> = {
   brandColor: '#d80482',
 };
 
@@ -46,12 +47,12 @@ const persistPlFeConfig = (plFeConfig: Record<string, any>, host: string) => {
   }
 };
 
-const importPlFeConfig = (plFeConfig: Record<string, any>, host: string) => {
+const importPlFeConfig = (plFeConfig: PlFeConfig, host: string) => {
   persistPlFeConfig(plFeConfig, host);
   return plFeConfig;
 };
 
-const plfe = (state = initialState, action: Record<string, any>): Record<string, any> => {
+const plfe = (state = initialState, action: Record<string, any>): Partial<PlFeConfig> => {
   switch (action.type) {
     case PLEROMA_PRELOAD_IMPORT:
       return preloadImport(state, action);

@@ -29,7 +29,7 @@ const renderTermsOfServiceLink = (href: string) => (
 
 const ConfirmationStep: React.FC = () => {
   const intl = useIntl();
-  const links = useAppSelector((state) => getPlFeConfig(state).get('links') as any);
+  const links = useAppSelector((state) => getPlFeConfig(state).links);
 
   const entity = intl.formatMessage(messages.accountEntity);
 
@@ -42,8 +42,8 @@ const ConfirmationStep: React.FC = () => {
       <Text>
         {intl.formatMessage(messages.content, {
           entity,
-          link: links.get('termsOfService') ?
-            renderTermsOfServiceLink(links.get('termsOfService')) :
+          link: links.termsOfService ?
+            renderTermsOfServiceLink(links.termsOfService) :
             termsOfServiceText,
         })}
       </Text>

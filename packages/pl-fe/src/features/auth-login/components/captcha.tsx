@@ -72,7 +72,7 @@ const CaptchaField: React.FC<ICaptchaField> = ({
     };
   }, [idempotencyKey]);
 
-  switch (captcha.get('type')) {
+  switch (captcha.type) {
     case 'native':
       return (
         <div>

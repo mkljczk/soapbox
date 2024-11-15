@@ -1,10 +1,11 @@
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
+import * as v from 'valibot';
 
 import BackgroundShapes from 'pl-fe/features/ui/components/background-shapes';
 import { useSystemTheme } from 'pl-fe/hooks/use-system-theme';
-import { normalizePlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
+import { plFeConfigSchema } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { generateThemeCss } from 'pl-fe/utils/theme';
 
@@ -15,7 +16,7 @@ interface ISitePreview {
 
 /** Renders a preview of the website's style with the configuration applied. */
 const SitePreview: React.FC<ISitePreview> = ({ plFe }) => {
-  const plFeConfig = useMemo(() => normalizePlFeConfig(plFe), [plFe]);
+  const plFeConfig = useMemo(() => v.parse(plFeConfigSchema, plFe), [plFe]);
   const { defaultSettings } = useSettingsStore();
 
   const userTheme = defaultSettings.themeMode;
