@@ -658,10 +658,10 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
     case COMPOSE_CHANGE_MEDIA_ORDER:
       return updateCompose(state, action.composeId, compose => {
         const indexA = compose.media_attachments.findIndex(x => x.id === action.a);
-        const moveItem = compose.media_attachments[indexA];
         const indexB = compose.media_attachments.findIndex(x => x.id === action.b);
 
-        compose.media_attachments = compose.media_attachments.splice(indexA, 1).splice(indexB, 0, moveItem);
+        const item = compose.media_attachments.splice(indexA, 1)[0];
+        compose.media_attachments.splice(indexB, 0, item);
       });
     case COMPOSE_ADD_SUGGESTED_QUOTE:
       return updateCompose(state, action.composeId, compose => {
