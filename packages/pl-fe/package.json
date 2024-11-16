@@ -87,6 +87,7 @@
     "fuzzysort": "^3.1.0",
     "graphemesplit": "^2.4.4",
     "html-react-parser": "^5.1.18",
+    "immutable": "^5.0.2",
     "intersection-observer": "^0.12.2",
     "intl-messageformat": "^10.5.14",
     "intl-pluralrules": "^2.0.1",
