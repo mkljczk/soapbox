@@ -1,7 +1,7 @@
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
-import { useSearchParams } from 'react-router-dom-v5-compat';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import { useSearchAccounts, useSearchHashtags, useSearchStatuses } from 'pl-fe/api/hooks/search/use-search';
@@ -38,12 +38,15 @@ const SearchResults = () => {
 
   const [tabKey, setTabKey] = useState(1);
 
-  const [params, setParams] = useSearchParams();
+  const params = useSearch({ strict: false });
+  const navigate = useNavigate();
+  console.log(params);
+  // const [params, setParams] = useSearchParams();
 
-  const value = params.get('q') || '';
+  const value = params.q || '';
   const submitted = !!value.trim();
-  const selectedFilter = (params.get('type') || 'accounts') as SearchFilter;
-  const accountId = params.get('accountId') || undefined;
+  const selectedFilter = (params.type || 'accounts') as SearchFilter;
+  const accountId = params.accountId || undefined;
 
   const searchAccountsQuery = useSearchAccounts(selectedFilter === 'accounts' && value || '');
   const searchStatusesQuery = useSearchStatuses(selectedFilter === 'statuses' && value || '', {
@@ -62,7 +65,9 @@ const SearchResults = () => {
 
   const selectFilter = (newActiveFilter: SearchFilter) => {
     if (newActiveFilter === selectedFilter) activeQuery.refetch();
-    else setParams(params => ({ ...Object.fromEntries(params.entries()), type: newActiveFilter }));
+    else navigate({
+      search: { ...params, type: newActiveFilter },
+    });
   };
 
   const { data: suggestions } = useSuggestedAccounts();
@@ -72,8 +77,9 @@ const SearchResults = () => {
   const { account } = useAccount(accountId);
 
   const handleUnsetAccount = () => {
-    params.delete('accountId');
-    setParams(params => Object.fromEntries(params.entries()));
+    navigate({
+      search: { ...params, accountId: undefined },
+    });
   };
 
   const renderFilterBar = () => {

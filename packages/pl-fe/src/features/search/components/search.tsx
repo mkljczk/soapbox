@@ -1,8 +1,8 @@
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import clsx from 'clsx';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { useSearchParams } from 'react-router-dom-v5-compat';
 
 import Input from 'pl-fe/components/ui/input';
 import SvgIcon from 'pl-fe/components/ui/svg-icon';
@@ -12,13 +12,16 @@ const messages = defineMessages({
 });
 
 const Search = () => {
-  const [params, setParams] = useSearchParams();
-  const [value, setValue] = useState(params.get('q') || '');
+  const params = useSearch({ strict: false });
+  const navigate = useNavigate();
+  const [value, setValue] = useState(params.q || '');
 
   const intl = useIntl();
 
   const setQuery = (value: string) => {
-    setParams(params => ({ ...Object.fromEntries(params.entries()), q: value }));
+    navigate({
+      search: { ...params, q: value },
+    });
   };
 
   const debouncedSubmit = useCallback(debounce((value: string) => {

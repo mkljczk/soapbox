@@ -1,6 +1,7 @@
+import { Link } from '@tanstack/react-router';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose } from 'pl-fe/actions/compose';

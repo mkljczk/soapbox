@@ -145,6 +145,8 @@ import {
 import GlobalHotkeys from './util/global-hotkeys';
 import { WrappedRoute } from './util/react-router-helpers';
 
+import type { Features, Instance } from 'pl-api';
+
 // Dummy import, to make sure that <Status /> ends up in the application bundle.
 // Without this it ends up in ~8 very commonly used bundles.
 import 'pl-fe/components/status';
@@ -220,17 +222,6 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
       <WrappedRoute path='/reset-password' layout={DefaultLayout} component={PasswordReset} publicRoute exact />
       <WrappedRoute path='/invite/:token' layout={DefaultLayout} component={RegisterInvite} publicRoute exact />
 
-      <WrappedRoute path='/search' layout={SearchLayout} component={Search} content={children} publicRoute />
-
-      {features.events && <WrappedRoute path='/events/new' layout={EventsLayout} component={ComposeEvent} content={children} />}
-      {features.events && <WrappedRoute path='/events' layout={EventsLayout} component={Events} content={children} />}
-      {features.events && <WrappedRoute path='/@:username/events/:statusId/edit' publicRoute exact layout={EventsLayout} component={ComposeEvent} content={children} />}
-
-      {features.chats && <WrappedRoute path='/chats' exact layout={ChatsLayout} component={ChatIndex} content={children} />}
-      {features.chats && <WrappedRoute path='/chats/new' layout={ChatsLayout} component={ChatIndex} content={children} />}
-      {features.chats && <WrappedRoute path='/chats/settings' layout={ChatsLayout} component={ChatIndex} content={children} />}
-      {features.chats && <WrappedRoute path='/chats/:chatId' layout={ChatsLayout} component={ChatIndex} content={children} />}
-
       <WrappedRoute path='/@:username' publicRoute exact layout={ProfileLayout} component={AccountTimeline} content={children} />
       <WrappedRoute path='/@:username/with_replies' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={AccountTimeline} content={children} componentParams={{ withReplies: true }} />
       <WrappedRoute path='/@:username/followers' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={Followers} content={children} />
@@ -257,7 +248,6 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
       {features.groups && <WrappedRoute path='/groups/:groupId/manage/edit' exact layout={ManageGroupsLayout} component={EditGroup} content={children} />}
       {features.groups && <WrappedRoute path='/groups/:groupId/manage/blocks' exact layout={ManageGroupsLayout} component={GroupBlockedMembers} content={children} />}
       {features.groups && <WrappedRoute path='/groups/:groupId/manage/requests' exact layout={ManageGroupsLayout} component={GroupMembershipRequests} content={children} />}
-
 
       <WrappedRoute path='/pl-fe/admin' staffOnly layout={AdminLayout} component={Dashboard} content={children} exact />
       <WrappedRoute path='/pl-fe/admin/approval' staffOnly layout={AdminLayout} component={Dashboard} content={children} exact />
@@ -324,7 +314,6 @@ const UI = () => {
   const node = useRef<HTMLDivElement | null>(null);
   const me = useAppSelector(state => state.me);
   const { account } = useOwnAccount();
-  const features = useFeatures();
   const vapidKey = useAppSelector(state => getVapidKey(state));
 
   const { isDropdownMenuOpen } = useUiStore();
@@ -447,13 +436,13 @@ const UI = () => {
             <SidebarMenu />
           </Suspense>
 
-          {me && features.chats && (
+          {/* {me && features.chats && (
             <div className='hidden xl:block'>
               <Suspense fallback={<div className='fixed bottom-0 z-[99] flex h-16 w-96 animate-pulse flex-col rounded-t-lg bg-white shadow-3xl dark:bg-gray-900 ltr:right-5 rtl:left-5' />}>
                 <ChatWidget />
               </Suspense>
-            </div>
-          )}
+          </div>
+          )} */}
 
           {/* <ThumbNavigation /> */}
 
@@ -505,24 +494,77 @@ const layouts = {
   status: createRoute({ getParentRoute: () => rootRoute, id: 'status-layout', component: StatusLayout }),
 };
 
-const logoutRoute = createRoute({ getParentRoute: () => layouts.empty, path: '/logout', component: LogoutPage });
-const serverInfoRoute = createRoute({ getParentRoute: () => layouts.empty, path: '/info', component: ServerInfo });
-const intentionalErrorRoute = createRoute({ getParentRoute: () => layouts.empty, path: '/error', component: IntentionalError });
-const intentionalNetworkErrorRoute = createRoute({ getParentRoute: () => layouts.empty, path: '/error/network', component: lazy(() => Promise.reject(new TypeError('Failed to fetch dynamically imported module: TEST'))) });
-const registrationRoute = createRoute({ getParentRoute: () => layouts.empty, path: '/signup', component: RegistrationPage });
-
-const homeRoute = createRoute({ getParentRoute: () => layouts.home, path: '/', component: HomeComponent });
-const communityTimelineRoute = createRoute({ getParentRoute: () => layouts.home, path: '/timeline/local', component: CommunityTimeline });
-const publicTimelineRoute = createRoute({ getParentRoute: () => layouts.home, path: '/timeline/fediverse', component: PublicTimeline });
-const bubbleTimelineRoute = createRoute({ getParentRoute: () => layouts.home, path: '/timeline/bubble', component: BubbleTimeline });
-
-const remoteTimelineRoute = createRoute({ getParentRoute: () => layouts.remoteInstance, path: '/timeline/$instance', component: RemoteTimeline });
-
-const conversationsRoute = createRoute({ getParentRoute: () => layouts.default, path: '/conversations', component: Conversations });
-
 type IRoute = ReturnType<typeof createRoute>;
 
-const filterRoutes = (routes: Array<IRoute | false>): Array<IRoute> => routes.filter((route): route is IRoute => route !== false);
+interface ConditionParam {
+  features: Features;
+  instance: Instance;
+}
+
+interface RouteDefinition {
+  route: IRoute;
+  condition?: (params: ConditionParam) => boolean;
+}
+
+export const logoutRoute = { route: createRoute({ getParentRoute: () => layouts.empty, path: '/logout', component: LogoutPage }) };
+export const serverInfoRoute = { route: createRoute({ getParentRoute: () => layouts.empty, path: '/info', component: ServerInfo }) };
+export const intentionalErrorRoute = { route: createRoute({ getParentRoute: () => layouts.empty, path: '/error', component: IntentionalError }) };
+export const intentionalNetworkErrorRoute = {
+  route: createRoute({ getParentRoute: () => layouts.empty, path: '/error/network', component: lazy(() => Promise.reject(new TypeError('Failed to fetch dynamically imported module: TEST'))) }),
+};
+export const registrationRoute = {
+  route: createRoute({ getParentRoute: () => layouts.empty, path: '/signup', component: RegistrationPage }),
+  condition: ({ features, instance }: ConditionParam) => features.accountCreation && instance.registrations.enabled,
+};
+
+export const homeRoute = { route: createRoute({ getParentRoute: () => layouts.home, path: '/', component: HomeComponent }) };
+export const communityTimelineRoute = {
+  route: createRoute({ getParentRoute: () => layouts.home, path: '/timeline/local', component: CommunityTimeline }),
+  condition: ({ features }: ConditionParam) => features.federating,
+};
+export const publicTimelineRoute = {
+  route: createRoute({ getParentRoute: () => layouts.home, path: '/timeline/fediverse', component: PublicTimeline }),
+  condition: ({ features }: ConditionParam) => features.federating,
+};
+export const bubbleTimelineRoute = {
+  route: createRoute({ getParentRoute: () => layouts.home, path: '/timeline/bubble', component: BubbleTimeline }),
+  condition: ({ features }: ConditionParam) => features.bubbleTimeline,
+};
+
+export const remoteTimelineRoute = {
+  route: createRoute({ getParentRoute: () => layouts.remoteInstance, path: '/timeline/$instance', component: RemoteTimeline }),
+  condition: ({ features }: ConditionParam) => features.federating,
+};
+
+export const conversationsRoute = {
+  route: createRoute({ getParentRoute: () => layouts.default, path: '/conversations', component: Conversations }),
+  condition: ({ features }: ConditionParam) => features.conversations,
+};
+
+export const searchRoute = {
+  route: createRoute({ getParentRoute: () => layouts.search, path: '/search', component: Search }),
+};
+
+export const composeEventRoute = {
+  route: createRoute({ getParentRoute: () => layouts.events, path: '/events/new', component: ComposeEvent }),
+  condition: ({ features }: ConditionParam) => features.events,
+};
+export const eventsRoute = {
+  route: createRoute({ getParentRoute: () => layouts.events, path: '/events/new', component: Events }),
+  condition: ({ features }: ConditionParam) => features.events,
+};
+export const editEventRoute = {
+  route: createRoute({ getParentRoute: () => layouts.events, path: '/@$username/events/$statusId/edit', component: ComposeEvent }),
+  condition: ({ features }: ConditionParam) => features.events,
+};
+
+export const chatsRoute = {
+  route: createRoute({ getParentRoute: () => layouts.chats, path: '/chats', component: ChatIndex }),
+  condition: ({ features }: ConditionParam) => features.chats,
+};
+// {features.chats && <WrappedRoute path='/chats/new' layout={ChatsLayout} component={ChatIndex} content={children} />;}
+// {features.chats && <WrappedRoute path='/chats/settings' layout={ChatsLayout} component={ChatIndex} content={children} />;}
+// {features.chats && <WrappedRoute path='/chats/:chatId' layout={ChatsLayout} component={ChatIndex} content={children} />;}
 
 // is this even legal lol
 const useRouter = () => {
@@ -530,26 +572,30 @@ const useRouter = () => {
   const features = useFeatures();
 
   return useMemo(() => {
+    const params = { features, instance };
+    const filterRoutes = (routes: Array<RouteDefinition>): Array<IRoute> => routes
+      .map(({ route, condition }) => condition ? condition(params) && route : route)
+      .filter((route): route is IRoute => route !== false);
+
     const routeTree = rootRoute.addChildren([
+      layouts.chats.addChildren(filterRoutes([chatsRoute])),
+      layouts.default.addChildren(filterRoutes([conversationsRoute])),
       layouts.empty.addChildren(filterRoutes([
         logoutRoute,
         serverInfoRoute,
         intentionalErrorRoute,
         intentionalNetworkErrorRoute,
-        (features.accountCreation && instance.registrations.enabled) && registrationRoute,
+        registrationRoute,
       ])),
+      layouts.events.addChildren(filterRoutes([composeEventRoute, eventsRoute, editEventRoute])),
       layouts.home.addChildren(filterRoutes([
         homeRoute,
-        features.federating && communityTimelineRoute,
-        features.federating && publicTimelineRoute,
-        features.bubbleTimeline && bubbleTimelineRoute,
+        communityTimelineRoute,
+        publicTimelineRoute,
+        bubbleTimelineRoute,
       ])),
-      layouts.remoteInstance.addChildren(filterRoutes([
-        features.federating && remoteTimelineRoute,
-      ])),
-      layouts.default.addChildren(filterRoutes([
-        features.conversations && conversationsRoute,
-      ])),
+      layouts.remoteInstance.addChildren(filterRoutes([remoteTimelineRoute])),
+      layouts.search.addChildren(filterRoutes([searchRoute])),
     ]);
 
     return createRouter({
@@ -561,6 +607,5 @@ const useRouter = () => {
 };
 
 export {
-  remoteTimelineRoute,
   useRouter,
 };

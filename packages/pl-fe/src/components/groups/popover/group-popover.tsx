@@ -1,6 +1,7 @@
+import { Link } from '@tanstack/react-router';
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { Link, matchPath, useHistory } from 'react-router-dom';
+import { matchPath, useHistory } from 'react-router-dom';
 
 import Button from 'pl-fe/components/ui/button';
 import Divider from 'pl-fe/components/ui/divider';

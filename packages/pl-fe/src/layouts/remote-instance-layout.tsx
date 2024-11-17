@@ -15,7 +15,7 @@ import { federationRestrictionsDisclosed } from 'pl-fe/utils/state';
 
 /** Layout for viewing a remote instance timeline. */
 const RemoteInstanceLayout = () => {
-  const { instance } = remoteTimelineRoute.useParams();
+  const { instance } = remoteTimelineRoute.route.useParams();
 
   const { account } = useOwnAccount();
   const disclosed = useAppSelector(federationRestrictionsDisclosed);

@@ -18,19 +18,13 @@ import { remoteTimelineRoute } from '../ui/routes';
 
 import PinnedHostsPicker from './components/pinned-hosts-picker';
 
-interface IRemoteTimeline {
-  params?: {
-    instance?: string;
-  };
-}
-
 /** View statuses from a remote instance. */
-const RemoteTimeline: React.FC<IRemoteTimeline> = ({ params }) => {
+const RemoteTimeline = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const theme = useTheme();
 
-  const { instance } = remoteTimelineRoute.useParams();
+  const { instance } = remoteTimelineRoute.route.useParams();
   const settings = useSettings();
 
   const timelineId = 'remote';

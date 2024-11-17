@@ -8,6 +8,7 @@ import ChatPageMain from './components/chat-page-main';
 import ChatPageNew from './components/chat-page-new';
 import ChatPageSettings from './components/chat-page-settings';
 import ChatPageSidebar from './components/chat-page-sidebar';
+import { Outlet } from '@tanstack/react-router';
 
 interface IChatPage {
   chatId?: string;
@@ -74,7 +75,8 @@ const ChatPage: React.FC<IChatPage> = ({ chatId }) => {
             'hidden sm:block': !isSidebarHidden,
           })}
         >
-          <Switch>
+          <Outlet />
+          {/* <Switch>
             <Route path='/chats/new'>
               <ChatPageNew />
             </Route>
@@ -84,7 +86,7 @@ const ChatPage: React.FC<IChatPage> = ({ chatId }) => {
             <Route>
               <ChatPageMain />
             </Route>
-          </Switch>
+          </Switch> */}
         </Stack>
       </div>
     </div>
