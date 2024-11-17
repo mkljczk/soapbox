@@ -1,4 +1,3 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import debounce from 'lodash/debounce';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -26,9 +25,9 @@ const Quotes: React.FC = () => {
   const theme = useTheme();
   const isMobile = useIsMobile();
 
-  const statusIds = useAppSelector((state) => state.status_lists.getIn([`quotes:${statusId}`, 'items'], ImmutableOrderedSet<string>()));
-  const isLoading = useAppSelector((state) => state.status_lists.getIn([`quotes:${statusId}`, 'isLoading'], true));
-  const hasMore = useAppSelector((state) => !!state.status_lists.getIn([`quotes:${statusId}`, 'next']));
+  const statusIds = useAppSelector((state) => state.status_lists[`quotes:${statusId}`]?.items || []);
+  const isLoading = useAppSelector((state) => state.status_lists[`quotes:${statusId}`]?.isLoading !== false);
+  const hasMore = useAppSelector((state) => !!state.status_lists[`quotes:${statusId}`]?.next);
 
   React.useEffect(() => {
     dispatch(fetchStatusQuotes(statusId));
@@ -41,7 +40,7 @@ const Quotes: React.FC = () => {
       <StatusList
         className='black:p-0 black:sm:p-4 black:sm:pt-0'
         loadMoreClassName='black:sm:mx-4'
-        statusIds={statusIds as ImmutableOrderedSet<string>}
+        statusIds={statusIds}
         scrollKey={`quotes:${statusId}`}
         hasMore={hasMore}
         isLoading={typeof isLoading === 'boolean' ? isLoading : true}

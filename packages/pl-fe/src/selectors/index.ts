@@ -1,7 +1,3 @@
-import {
-  List as ImmutableList,
-  OrderedSet as ImmutableOrderedSet,
-} from 'immutable';
 import { createSelector } from 'reselect';
 
 // import { getLocale } from 'pl-fe/actions/settings';
@@ -80,8 +76,8 @@ const getFilters = (state: RootState, query: FilterContext) =>
 const escapeRegExp = (string: string) =>
   string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 
-const regexFromFilters = (filters: ImmutableList<Filter>) => {
-  if (filters.size === 0) return null;
+const regexFromFilters = (filters: Array<Filter>) => {
+  if (filters.length === 0) return null;
 
   return new RegExp(filters.map(filter =>
     filter.keywords.map(keyword => {
@@ -102,7 +98,7 @@ const regexFromFilters = (filters: ImmutableList<Filter>) => {
   ).join('|'), 'i');
 };
 
-const checkFiltered = (index: string, filters: ImmutableList<Filter>) =>
+const checkFiltered = (index: string, filters: Array<Filter>) =>
   filters.reduce((result: Array<string>, filter) =>
     result.concat(filter.keywords.reduce((result: Array<string>, keyword) => {
       let expr = escapeRegExp(keyword.keyword);
@@ -212,7 +208,7 @@ type AccountGalleryAttachment = MediaAttachment & {
 }
 
 const getAccountGallery = createSelector([
-  (state: RootState, id: string) => state.timelines.get(`account:${id}:with_replies:media`)?.items || ImmutableOrderedSet<string>(),
+  (state: RootState, id: string) => state.timelines[`account:${id}:with_replies:media`]?.items || [],
   (state: RootState) => state.statuses,
 ], (statusIds, statuses) =>
   statusIds.reduce((medias: Array<AccountGalleryAttachment>, statusId: string) => {
@@ -226,7 +222,7 @@ const getAccountGallery = createSelector([
 );
 
 const getGroupGallery = createSelector([
-  (state: RootState, id: string) => state.timelines.get(`group:${id}:media`)?.items || ImmutableOrderedSet<string>(),
+  (state: RootState, id: string) => state.timelines[`group:${id}:media`]?.items || [],
   (state: RootState) => state.statuses,
 ], (statusIds, statuses) =>
   statusIds.reduce((medias: Array<AccountGalleryAttachment>, statusId: string) => {
@@ -265,14 +261,11 @@ const makeGetReport = () => {
 
 const getAuthUserIds = createSelector(
   [(state: RootState) => state.auth.users],
-  authUsers => authUsers.reduce((userIds: ImmutableOrderedSet<string>, authUser) => {
-    try {
-      const userId = authUser.id;
-      return validId(userId) ? userIds.add(userId) : userIds;
-    } catch {
-      return userIds;
-    }
-  }, ImmutableOrderedSet<string>()));
+  authUsers => Object.values(authUsers).reduce((userIds: Array<string>, authUser) => {
+    const userId = authUser?.id;
+    if (validId(userId)) userIds.push(userId);
+    return userIds;
+  }, []));
 
 const makeGetOtherAccounts = () => createSelector([
   (state: RootState) => state.entities[Entities.ACCOUNTS]?.store as EntityStore<Account>,
@@ -317,9 +310,7 @@ const makeGetHosts = () =>
   createSelector([getSimplePolicy], (simplePolicy) => {
     const { accept, reject_deletes, report_removal, ...rest } = simplePolicy;
 
-    return Object.values(rest)
-      .reduce((acc, hosts) => acc.union(hosts), ImmutableOrderedSet())
-      .sort();
+    return [...new Set(Object.values(rest).reduce((acc, hosts) => (acc.push(...hosts), acc), []))].toSorted();
   });
 
 interface RemoteInstance {
@@ -343,9 +334,9 @@ type ColumnQuery = { type: string; prefix?: string };
 
 const makeGetStatusIds = () => createSelector([
   (state: RootState, { type, prefix }: ColumnQuery) => useSettingsStore.getState().settings.timelines[prefix || type],
-  (state: RootState, { type }: ColumnQuery) => state.timelines.get(type)?.items || ImmutableOrderedSet(),
+  (state: RootState, { type }: ColumnQuery) => state.timelines[type]?.items || [],
   (state: RootState) => state.statuses,
-], (columnSettings: any, statusIds: ImmutableOrderedSet<string>, statuses) =>
+], (columnSettings: any, statusIds: Array<string>, statuses) =>
   statusIds.filter((id: string) => {
     const status = statuses[id];
     if (!status) return true;

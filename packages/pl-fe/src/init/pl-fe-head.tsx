@@ -1,11 +1,12 @@
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
+import * as v from 'valibot';
 
 import { useLocale } from 'pl-fe/hooks/use-locale';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useTheme } from 'pl-fe/hooks/use-theme';
-import { normalizePlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
+import { plFeConfigSchema } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import { startSentry } from 'pl-fe/sentry';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { generateThemeCss } from 'pl-fe/utils/theme';
@@ -21,7 +22,7 @@ const PlFeHead = () => {
 
   const withModals = useModalsStore().modals.length > 0;
 
-  const themeCss = generateThemeCss(demo ? normalizePlFeConfig({ brandColor: '#d80482' }) : plFeConfig);
+  const themeCss = generateThemeCss(demo ? v.parse(plFeConfigSchema, { brandColor: '#d80482' }) : plFeConfig);
   const dsn = plFeConfig.sentryDsn;
 
   const bodyClass = clsx('h-full bg-white text-base antialiased black:bg-black dark:bg-gray-800', {

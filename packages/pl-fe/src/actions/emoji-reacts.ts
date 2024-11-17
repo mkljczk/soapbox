@@ -103,11 +103,5 @@ export {
   UNEMOJI_REACT_FAIL,
   emojiReact,
   unEmojiReact,
-  emojiReactRequest,
-  emojiReactSuccess,
-  emojiReactFail,
-  unEmojiReactRequest,
-  unEmojiReactSuccess,
-  unEmojiReactFail,
   type EmojiReactsAction,
 };

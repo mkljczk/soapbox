@@ -77,6 +77,14 @@ const groupUnblockFail = (groupId: string, accountId: string, error: unknown) =>
   error,
 });
 
+type GroupsAction =
+  | ReturnType<typeof fetchGroupBlocksRequest>
+  | ReturnType<typeof fetchGroupBlocksSuccess>
+  | ReturnType<typeof fetchGroupBlocksFail>
+  | ReturnType<typeof groupUnblockRequest>
+  | ReturnType<typeof groupUnblockSuccess>
+  | ReturnType<typeof groupUnblockFail>
+
 export {
   GROUP_BLOCKS_FETCH_REQUEST,
   GROUP_BLOCKS_FETCH_SUCCESS,
@@ -86,11 +94,6 @@ export {
   GROUP_UNBLOCK_FAIL,
   groupKick,
   fetchGroupBlocks,
-  fetchGroupBlocksRequest,
-  fetchGroupBlocksSuccess,
-  fetchGroupBlocksFail,
   groupUnblock,
-  groupUnblockRequest,
-  groupUnblockSuccess,
-  groupUnblockFail,
+  type GroupsAction,
 };

@@ -29,7 +29,7 @@ const HomeTimeline: React.FC = () => {
   const polling = useRef<NodeJS.Timeout | null>(null);
   const isMobile = useIsMobile();
 
-  const isPartial = useAppSelector(state => state.timelines.get('home')?.isPartial === true);
+  const isPartial = useAppSelector(state => state.timelines.home?.isPartial === true);
 
   const handleLoadMore = (maxId: string) => {
     dispatch(fetchHomeTimeline(true));

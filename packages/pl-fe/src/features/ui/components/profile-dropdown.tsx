@@ -40,7 +40,7 @@ type IMenuItem = {
 const getOtherAccounts = createSelector([
   (state: RootState) => state.auth.users,
   (state: RootState) => state.entities[Entities.ACCOUNTS]?.store,
-], (signedAccounts, accountEntities) => signedAccounts.toArray().map(([_, { id }]) => accountEntities?.[id] as AccountEntity).filter(account => account));
+], (signedAccounts, accountEntities) => Object.values(signedAccounts).map(({ id }) => accountEntities?.[id] as AccountEntity).filter(account => account));
 
 const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
   const dispatch = useAppDispatch();

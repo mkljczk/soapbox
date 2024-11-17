@@ -118,14 +118,7 @@ const useUserStream = () => {
         break;
       case 'notification':
         messages[getLocale()]().then(messages => {
-          dispatch(
-            updateNotificationsQueue(
-              event.payload,
-              messages,
-              getLocale(),
-              window.location.pathname,
-            ),
-          );
+          dispatch(updateNotificationsQueue(event.payload, messages, getLocale()));
         }).catch(error => {
           console.error(error);
         });

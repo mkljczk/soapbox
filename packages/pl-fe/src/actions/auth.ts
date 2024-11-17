@@ -113,11 +113,11 @@ const createAppToken = () =>
     const app = getState().auth.app!;
 
     const params = {
-      client_id:     app.client_id!,
+      client_id: app.client_id!,
       client_secret: app.client_secret!,
-      redirect_uri:  'urn:ietf:wg:oauth:2.0:oob',
-      grant_type:    'client_credentials',
-      scope:         getScopes(getState()),
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      grant_type: 'client_credentials',
+      scope: getScopes(getState()),
     };
 
     return dispatch(obtainOAuthToken(params)).then((token) =>
@@ -130,13 +130,13 @@ const createUserToken = (username: string, password: string) =>
     const app = getState().auth.app;
 
     const params = {
-      client_id:     app?.client_id!,
+      client_id: app?.client_id!,
       client_secret: app?.client_secret!,
-      redirect_uri:  'urn:ietf:wg:oauth:2.0:oob',
-      grant_type:    'password',
-      username:      username,
-      password:      password,
-      scope:         getScopes(getState()),
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      grant_type: 'password',
+      username: username,
+      password: password,
+      scope: getScopes(getState()),
     };
 
     return dispatch(obtainOAuthToken(params))
@@ -275,7 +275,7 @@ const logOut = () =>
     const params = {
       client_id: state.auth.app?.client_id!,
       client_secret: state.auth.app?.client_secret!,
-      token: state.auth.users.get(account.url)!.access_token,
+      token: state.auth.users[account.url]!.access_token,
     };
 
     return dispatch(revokeOAuthToken(params))
@@ -312,7 +312,7 @@ const switchAccount = (accountId: string, background = false) =>
 const fetchOwnAccounts = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    return state.auth.users.forEach((user) => {
+    return Object.values(state.auth.users).forEach((user) => {
       const account = selectAccount(state, user.id);
       if (!account) {
         dispatch(verifyCredentials(user.access_token, user.url))

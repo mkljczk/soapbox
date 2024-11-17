@@ -10,9 +10,8 @@ import { fetchDraftStatuses } from 'pl-fe/actions/draft-statuses';
 import { fetchFilters } from 'pl-fe/actions/filters';
 import { fetchMarker } from 'pl-fe/actions/markers';
 import { expandNotifications } from 'pl-fe/actions/notifications';
-import { register as registerPushNotifications } from 'pl-fe/actions/push-notifications';
+import { register as registerPushNotifications } from 'pl-fe/actions/push-notifications/registerer';
 import { fetchScheduledStatuses } from 'pl-fe/actions/scheduled-statuses';
-import { fetchSuggestionsForTimeline } from 'pl-fe/actions/suggestions';
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
 import { useUserStream } from 'pl-fe/api/hooks/streaming/use-user-stream';
 import SidebarNavigation from 'pl-fe/components/sidebar-navigation';
@@ -160,7 +159,7 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
   const { search } = useLocation();
 
   const { authenticatedProfile, cryptoAddresses } = usePlFeConfig();
-  const hasCrypto = cryptoAddresses.size > 0;
+  const hasCrypto = cryptoAddresses.length > 0;
 
   // NOTE: Mastodon and Pleroma route some basenames to the backend.
   // When adding new routes, use a basename that does NOT conflict
@@ -352,9 +351,7 @@ const UI = () => {
 
     dispatch(fetchDraftStatuses());
 
-    dispatch(fetchHomeTimeline(false, () => {
-      dispatch(fetchSuggestionsForTimeline());
-    }));
+    dispatch(fetchHomeTimeline());
 
     dispatch(expandNotifications())
       // @ts-ignore

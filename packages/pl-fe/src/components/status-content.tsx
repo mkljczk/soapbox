@@ -206,7 +206,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   }
 
   const media = withMedia && ((quote || status.card || status.media_attachments.length > 0)) && (
-    <Stack space={4}>
+    <Stack space={4} key='media'>
       {(status.media_attachments.length > 0 || (status.card && !quote)) && (
         <div className='relative'>
           <SensitiveContentOverlay status={status} />
@@ -246,7 +246,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     }
 
     if (translatable) {
-      output.push(<TranslateButton status={status} />);
+      output.push(<TranslateButton status={status} key='translate' />);
     }
 
     if (media) {

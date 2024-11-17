@@ -13,9 +13,9 @@ const PromoPanel: React.FC = () => {
   const { promoPanel } = usePlFeConfig();
   const { locale } = useSettings();
 
-  const promoItems = promoPanel.get('items');
+  const promoItems = promoPanel.items;
 
-  if (!promoItems || promoItems.isEmpty()) return null;
+  if (!promoItems || !promoItems.length) return null;
 
   return (
     <Widget title={instance.title}>
@@ -27,7 +27,7 @@ const PromoPanel: React.FC = () => {
             label={
               <HStack alignItems='center' space={2}>
                 <ForkAwesomeIcon id={item.icon} className='flex-none text-lg' fixedWidth />
-                <span>{item.textLocales.get(locale) || item.text}</span>
+                <span>{item.textLocales[locale] || item.text}</span>
               </HStack>
             }
             size='sm'

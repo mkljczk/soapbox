@@ -61,7 +61,7 @@ const ListAdderModal: React.FC<BaseModalProps & ListAdderModalProps> = ({ accoun
         <CardTitle title={intl.formatMessage(messages.subheading)} />
       </CardHeader>
       <div>
-        {listIds.map(ListId => <List key={ListId} listId={ListId} />)}
+        {listIds.map(listId => <List key={listId} listId={listId} />)}
       </div>
     </Modal>
   );

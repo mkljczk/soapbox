@@ -59,7 +59,7 @@ const LIST_ADDER_LISTS_FETCH_FAIL = 'LIST_ADDER_LISTS_FETCH_FAIL' as const;
 const fetchList = (listId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
   if (!isLoggedIn(getState)) return;
 
-  if (getState().lists.get(listId)) {
+  if (getState().lists[listId]) {
     return;
   }
 
@@ -121,10 +121,18 @@ const submitListEditor = (shouldReset?: boolean) => (dispatch: AppDispatch, getS
   }
 };
 
+interface ListEditorSetupAction {
+  type: typeof LIST_EDITOR_SETUP;
+  list: List;
+}
+
 const setupListEditor = (listId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
-  dispatch({
+  const list = getState().lists[listId];
+  if (!list) return;
+
+  dispatch<ListEditorSetupAction>({
     type: LIST_EDITOR_SETUP,
-    list: getState().lists.get(String(listId)),
+    list,
   });
 
   dispatch(fetchListAccounts(listId));
@@ -346,10 +354,18 @@ const resetListAdder = () => ({
   type: LIST_ADDER_RESET,
 });
 
+interface ListAdderSetupAction {
+  type: typeof LIST_ADDER_SETUP;
+  account: Account;
+}
+
 const setupListAdder = (accountId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
-  dispatch({
+  const account = selectAccount(getState(), accountId);
+  if (!account) return;
+
+  dispatch<ListAdderSetupAction>({
     type: LIST_ADDER_SETUP,
-    account: selectAccount(getState(), accountId),
+    account,
   });
   dispatch(fetchLists());
   dispatch(fetchAccountLists(accountId));
@@ -390,6 +406,43 @@ const removeFromListAdder = (listId: string) => (dispatch: AppDispatch, getState
   dispatch(removeFromList(listId, getState().listAdder.accountId!));
 };
 
+type ListsAction =
+  | ReturnType<typeof fetchListRequest>
+  | ReturnType<typeof fetchListSuccess>
+  | ReturnType<typeof fetchListFail>
+  | ReturnType<typeof fetchListsRequest>
+  | ReturnType<typeof fetchListsSuccess>
+  | ReturnType<typeof fetchListsFail>
+  | ListEditorSetupAction
+  | ReturnType<typeof changeListEditorTitle>
+  | ReturnType<typeof createListRequest>
+  | ReturnType<typeof createListSuccess>
+  | ReturnType<typeof createListFail>
+  | ReturnType<typeof updateListRequest>
+  | ReturnType<typeof updateListSuccess>
+  | ReturnType<typeof updateListFail>
+  | ReturnType<typeof resetListEditor>
+  | ReturnType<typeof deleteListRequest>
+  | ReturnType<typeof deleteListSuccess>
+  | ReturnType<typeof deleteListFail>
+  | ReturnType<typeof fetchListAccountsRequest>
+  | ReturnType<typeof fetchListAccountsSuccess>
+  | ReturnType<typeof fetchListAccountsFail>
+  | ReturnType<typeof fetchListSuggestionsReady>
+  | ReturnType<typeof clearListSuggestions>
+  | ReturnType<typeof changeListSuggestions>
+  | ReturnType<typeof addToListRequest>
+  | ReturnType<typeof addToListSuccess>
+  | ReturnType<typeof addToListFail>
+  | ReturnType<typeof removeFromListRequest>
+  | ReturnType<typeof removeFromListSuccess>
+  | ReturnType<typeof removeFromListFail>
+  | ReturnType<typeof resetListAdder>
+  | ListAdderSetupAction
+  | ReturnType<typeof fetchAccountListsRequest>
+  | ReturnType<typeof fetchAccountListsSuccess>
+  | ReturnType<typeof fetchAccountListsFail>;
+
 export {
   LIST_FETCH_REQUEST,
   LIST_FETCH_SUCCESS,
@@ -427,53 +480,27 @@ export {
   LIST_ADDER_LISTS_FETCH_SUCCESS,
   LIST_ADDER_LISTS_FETCH_FAIL,
   fetchList,
-  fetchListRequest,
-  fetchListSuccess,
-  fetchListFail,
   fetchLists,
-  fetchListsRequest,
-  fetchListsSuccess,
-  fetchListsFail,
   submitListEditor,
   setupListEditor,
   changeListEditorTitle,
   createList,
-  createListRequest,
-  createListSuccess,
-  createListFail,
   updateList,
-  updateListRequest,
-  updateListSuccess,
-  updateListFail,
   resetListEditor,
   deleteList,
-  deleteListRequest,
-  deleteListSuccess,
-  deleteListFail,
   fetchListAccounts,
-  fetchListAccountsRequest,
-  fetchListAccountsSuccess,
-  fetchListAccountsFail,
   fetchListSuggestions,
   fetchListSuggestionsReady,
   clearListSuggestions,
   changeListSuggestions,
   addToListEditor,
   addToList,
-  addToListRequest,
-  addToListSuccess,
-  addToListFail,
   removeFromListEditor,
   removeFromList,
-  removeFromListRequest,
-  removeFromListSuccess,
-  removeFromListFail,
   resetListAdder,
   setupListAdder,
   fetchAccountLists,
-  fetchAccountListsRequest,
-  fetchAccountListsSuccess,
-  fetchAccountListsFail,
   addToListAdder,
   removeFromListAdder,
+  type ListsAction,
 };

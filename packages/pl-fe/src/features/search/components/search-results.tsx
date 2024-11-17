@@ -1,11 +1,13 @@
 import clsx from 'clsx';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
+import { useSearchParams } from 'react-router-dom-v5-compat';
 
-import { expandSearch, setFilter, setSearchAccount } from 'pl-fe/actions/search';
-import { fetchTrendingStatuses } from 'pl-fe/actions/trending-statuses';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import { useSearchAccounts, useSearchHashtags, useSearchStatuses } from 'pl-fe/api/hooks/search/use-search';
+import { useSuggestedAccounts } from 'pl-fe/api/hooks/trends/use-suggested-accounts';
 import { useTrendingLinks } from 'pl-fe/api/hooks/trends/use-trending-links';
+import { useTrendingStatuses } from 'pl-fe/api/hooks/trends/use-trending-statuses';
 import Hashtag from 'pl-fe/components/hashtag';
 import IconButton from 'pl-fe/components/icon-button';
 import ScrollableList from 'pl-fe/components/scrollable-list';
@@ -18,11 +20,10 @@ import StatusContainer from 'pl-fe/containers/status-container';
 import PlaceholderAccount from 'pl-fe/features/placeholder/components/placeholder-account';
 import PlaceholderHashtag from 'pl-fe/features/placeholder/components/placeholder-hashtag';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
+import useTrends from 'pl-fe/queries/trends';
 
-import type { SearchFilter } from 'pl-fe/reducers/search';
+type SearchFilter = 'accounts' | 'hashtags' | 'statuses' | 'links';
 
 const messages = defineMessages({
   accounts: { id: 'search_results.accounts', defaultMessage: 'People' },
@@ -33,27 +34,47 @@ const messages = defineMessages({
 
 const SearchResults = () => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
   const features = useFeatures();
 
   const [tabKey, setTabKey] = useState(1);
 
-  const value = useAppSelector((state) => state.search.submittedValue);
-  const results = useAppSelector((state) => state.search.results);
-  const suggestions = useAppSelector((state) => state.suggestions.items);
-  const trendingStatuses = useAppSelector((state) => state.trending_statuses.items);
-  const trends = useAppSelector((state) => state.trends.items);
-  const submitted = useAppSelector((state) => state.search.submitted);
-  const selectedFilter = useAppSelector((state) => state.search.filter);
-  const filterByAccount = useAppSelector((state) => state.search.accountId || undefined);
-  const { trendingLinks } = useTrendingLinks();
-  const { account } = useAccount(filterByAccount);
+  const [params, setParams] = useSearchParams();
 
-  const handleLoadMore = () => dispatch(expandSearch(selectedFilter));
+  const value = params.get('q') || '';
+  const submitted = !!value.trim();
+  const selectedFilter = (params.get('type') || 'accounts') as SearchFilter;
+  const accountId = params.get('accountId') || undefined;
 
-  const handleUnsetAccount = () => dispatch(setSearchAccount(null));
+  const searchAccountsQuery = useSearchAccounts(selectedFilter === 'accounts' && value || '');
+  const searchStatusesQuery = useSearchStatuses(selectedFilter === 'statuses' && value || '', {
+    account_id: accountId,
+  });
+  const searchHashtagsQuery = useSearchHashtags(selectedFilter === 'hashtags' && value || '');
 
-  const selectFilter = (newActiveFilter: SearchFilter) => dispatch(setFilter(value, newActiveFilter));
+  const activeQuery = ({
+    accounts: searchAccountsQuery,
+    statuses: searchStatusesQuery,
+    hashtags: searchHashtagsQuery,
+    links: searchStatusesQuery,
+  })[selectedFilter]!;
+
+  const handleLoadMore = () => activeQuery.fetchNextPage({ cancelRefetch: false });
+
+  const selectFilter = (newActiveFilter: SearchFilter) => {
+    if (newActiveFilter === selectedFilter) activeQuery.refetch();
+    else setParams(params => ({ ...Object.fromEntries(params.entries()), type: newActiveFilter }));
+  };
+
+  const { data: suggestions } = useSuggestedAccounts();
+  const { data: trendingTags } = useTrends();
+  const { data: trendingStatuses } = useTrendingStatuses();
+  const { data: trendingLinks } = useTrendingLinks();
+  const { account } = useAccount(accountId);
+
+  const handleUnsetAccount = () => {
+    params.delete('accountId');
+    setParams(params => Object.fromEntries(params.entries()));
+  };
 
   const renderFilterBar = () => {
     const items = [];
@@ -107,27 +128,21 @@ const SearchResults = () => {
     if (element) element.focus();
   };
 
-  useEffect(() => {
-    dispatch(fetchTrendingStatuses());
-  }, []);
-
-  let searchResults;
-  let hasMore = false;
-  let loaded;
-  let noResultsMessage;
+  let searchResults: Array<JSX.Element> | undefined;
+  const hasMore = activeQuery.hasNextPage;
+  const isLoading = activeQuery.isFetching;
+  let noResultsMessage: JSX.Element | undefined;
   let placeholderComponent = PlaceholderStatus as React.ComponentType;
   let resultsIds: Array<string>;
 
   if (selectedFilter === 'accounts') {
-    hasMore = results.accountsHasMore;
-    loaded = results.accountsLoaded;
     placeholderComponent = PlaceholderAccount;
 
-    if (results.accounts && results.accounts.length > 0) {
-      searchResults = results.accounts.map(accountId => <AccountContainer key={accountId} id={accountId} />);
-    } else if (!submitted && suggestions && suggestions.length !== 0) {
+    if (searchAccountsQuery.data && searchAccountsQuery.data.length > 0) {
+      searchResults = searchAccountsQuery.data.map(accountId => <AccountContainer key={accountId} id={accountId} />);
+    } else if (suggestions && suggestions.length > 0) {
       searchResults = suggestions.map(suggestion => <AccountContainer key={suggestion.account_id} id={suggestion.account_id} />);
-    } else if (loaded) {
+    } else if (submitted && !isLoading) {
       noResultsMessage = (
         <div className='empty-column-indicator'>
           <FormattedMessage
@@ -141,11 +156,8 @@ const SearchResults = () => {
   }
 
   if (selectedFilter === 'statuses') {
-    hasMore = results.statusesHasMore;
-    loaded = results.statusesLoaded;
-
-    if (results.statuses && results.statuses.length > 0) {
-      searchResults = results.statuses.map((statusId: string) => (
+    if (searchStatusesQuery.data && searchStatusesQuery.data.length > 0) {
+      searchResults = searchStatusesQuery.data.map((statusId: string) => (
         // @ts-ignore
         <StatusContainer
           key={statusId}
@@ -154,8 +166,8 @@ const SearchResults = () => {
           onMoveDown={handleMoveDown}
         />
       ));
-      resultsIds = results.statuses;
-    } else if (!submitted && !filterByAccount && trendingStatuses && trendingStatuses.length !== 0) {
+      resultsIds = searchStatusesQuery.data;
+    } else if (!submitted && !accountId && trendingStatuses && trendingStatuses.length !== 0) {
       searchResults = trendingStatuses.map((statusId: string) => (
         // @ts-ignore
         <StatusContainer
@@ -166,7 +178,7 @@ const SearchResults = () => {
         />
       ));
       resultsIds = trendingStatuses;
-    } else if (loaded) {
+    } else if (submitted && !isLoading) {
       noResultsMessage = (
         <div className='empty-column-indicator'>
           <FormattedMessage
@@ -180,15 +192,13 @@ const SearchResults = () => {
   }
 
   if (selectedFilter === 'hashtags') {
-    hasMore = results.hashtagsHasMore;
-    loaded = results.hashtagsLoaded;
     placeholderComponent = PlaceholderHashtag;
 
-    if (results.hashtags && results.hashtags.length > 0) {
-      searchResults = results.hashtags.map(hashtag => <Hashtag key={hashtag.name} hashtag={hashtag} />);
+    if (searchHashtagsQuery.data && searchHashtagsQuery.data.length > 0) {
+      searchResults = searchHashtagsQuery.data.map(hashtag => <Hashtag key={hashtag.name} hashtag={hashtag} />);
     } else if (!submitted && suggestions && suggestions.length !== 0) {
-      searchResults = trends.map(hashtag => <Hashtag key={hashtag.name} hashtag={hashtag} />);
-    } else if (loaded) {
+      searchResults = trendingTags?.map(hashtag => <Hashtag key={hashtag.name} hashtag={hashtag} />);
+    } else if (submitted && !isLoading) {
       noResultsMessage = (
         <div className='empty-column-indicator'>
           <FormattedMessage
@@ -202,19 +212,17 @@ const SearchResults = () => {
   }
 
   if (selectedFilter === 'links') {
-    loaded = true;
-
     if (submitted) {
       selectFilter('accounts');
       setTabKey(key => ++key);
-    } else if (!submitted && trendingLinks) {
+    } else if (trendingLinks) {
       searchResults = trendingLinks.map(trendingLink => <TrendingLink trendingLink={trendingLink} />);
     }
   }
 
   return (
     <>
-      {filterByAccount ? (
+      {accountId ? (
         <HStack className='border-b border-solid border-gray-200 p-2 pb-4 dark:border-gray-800' space={2}>
           <IconButton iconClassName='h-5 w-5' src={require('@tabler/icons/outline/x.svg')} onClick={handleUnsetAccount} />
           <Text truncate>
@@ -231,8 +239,8 @@ const SearchResults = () => {
         <ScrollableList
           id='search-results'
           key={selectedFilter}
-          isLoading={submitted && !loaded}
-          showLoading={submitted && !loaded && (!searchResults || searchResults?.length === 0)}
+          isLoading={submitted && isLoading}
+          showLoading={submitted && isLoading && (searchResults?.length === 0 || activeQuery.isRefetching)}
           hasMore={hasMore}
           onLoadMore={handleLoadMore}
           placeholderComponent={placeholderComponent}

@@ -1,5 +1,4 @@
 import { Link } from '@tanstack/react-router';
-import { Map as ImmutableMap } from 'immutable';
 import debounce from 'lodash/debounce';
 import React, { useState, useRef, useCallback } from 'react';
 import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
@@ -222,12 +221,12 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
     refreshCaptcha();
   };
 
-  const onFetchCaptcha = (captcha: ImmutableMap<string, any>) => {
+  const onFetchCaptcha = (captcha: Record<string, any>) => {
     setCaptchaLoading(false);
     setParams(params => ({
       ...params,
-      captcha_token: captcha.get('token'),
-      captcha_answer_data: captcha.get('answer_data'),
+      captcha_token: captcha.token,
+      captcha_answer_data: captcha.answer_data,
     }));
   };
 

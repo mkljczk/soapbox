@@ -23,10 +23,8 @@ import instance from './instance';
 import listAdder from './list-adder';
 import listEditor from './list-editor';
 import lists from './lists';
-import locations from './locations';
 import me from './me';
 import meta from './meta';
-import mutes from './mutes';
 import notifications from './notifications';
 import onboarding from './onboarding';
 import pending_statuses from './pending-statuses';
@@ -34,15 +32,12 @@ import plfe from './pl-fe';
 import polls from './polls';
 import push_notifications from './push-notifications';
 import scheduled_statuses from './scheduled-statuses';
-import search from './search';
 import security from './security';
 import status_lists from './status-lists';
 import statuses from './statuses';
-import suggestions from './suggestions';
 import tags from './tags';
 import timelines from './timelines';
 import trending_statuses from './trending-statuses';
-import trends from './trends';
 import user_lists from './user-lists';
 
 const reducers = {
@@ -66,10 +61,8 @@ const reducers = {
   listAdder,
   listEditor,
   lists,
-  locations,
   me,
   meta,
-  mutes,
   notifications,
   onboarding,
   pending_statuses,
@@ -77,15 +70,12 @@ const reducers = {
   polls,
   push_notifications,
   scheduled_statuses,
-  search,
   security,
   status_lists,
   statuses,
-  suggestions,
   tags,
   timelines,
   trending_statuses,
-  trends,
   user_lists,
 };
 

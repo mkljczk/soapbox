@@ -2,12 +2,10 @@
 // See: https://github.com/spothq/cryptocurrency-icons/blob/master/manifest.json
 
 import manifest from 'cryptocurrency-icons/manifest.json';
-import { List as ImmutableList, Map as ImmutableMap, fromJS } from 'immutable';
 
-const manifestMap = (fromJS(manifest) as ImmutableList<ImmutableMap<string, string>>).reduce(
-  (acc: ImmutableMap<string, ImmutableMap<string, string>>, entry: ImmutableMap<string, string>) =>
-    acc.set(entry.get('symbol')!.toLowerCase(), entry),
-  ImmutableMap(),
-).toJS();
+const manifestMap = manifest.reduce((acc: Record<string, typeof manifest[0]>, entry) => {
+  acc[entry.symbol.toLowerCase()] = entry;
+  return acc;
+}, {});
 
 export { manifestMap as default };

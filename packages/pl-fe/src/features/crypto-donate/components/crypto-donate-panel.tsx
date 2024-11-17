@@ -22,9 +22,9 @@ const CryptoDonatePanel: React.FC<ICryptoDonatePanel> = ({ limit = 3 }): JSX.Ele
   const history = useHistory();
   const instance = useInstance();
 
-  const addresses = usePlFeConfig().get('cryptoAddresses');
+  const addresses = usePlFeConfig().cryptoAddresses;
 
-  if (limit === 0 || addresses.size === 0) {
+  if (limit === 0 || addresses.length === 0) {
     return null;
   }
 
@@ -36,7 +36,7 @@ const CryptoDonatePanel: React.FC<ICryptoDonatePanel> = ({ limit = 3 }): JSX.Ele
     <Widget
       title={<FormattedMessage id='crypto_donate_panel.heading' defaultMessage='Donate Cryptocurrency' />}
       onActionClick={handleAction}
-      actionTitle={intl.formatMessage(messages.actionTitle, { count: addresses.size })}
+      actionTitle={intl.formatMessage(messages.actionTitle, { count: addresses.length })}
     >
       <Text>
         <FormattedMessage

@@ -1,17 +1,17 @@
-import { Map as ImmutableMap, Record as ImmutableRecord } from 'immutable';
+import { create } from 'mutative';
 
 import { HISTORY_FETCH_REQUEST, HISTORY_FETCH_SUCCESS, HISTORY_FETCH_FAIL, type HistoryAction } from 'pl-fe/actions/history';
 
 import type { StatusEdit } from 'pl-api';
 
-const HistoryRecord = ImmutableRecord({
-  loading: false,
-  items: [] as Array<ReturnType<typeof minifyStatusEdit>>,
-});
+interface History {
+  loading: boolean;
+  items: Array<ReturnType<typeof minifyStatusEdit>>;
+}
 
-type State = ImmutableMap<string, ReturnType<typeof HistoryRecord>>;
+type State = Record<string, History>;
 
-const initialState: State = ImmutableMap();
+const initialState: State = {};
 
 const minifyStatusEdit = ({ account, ...statusEdit }: StatusEdit, i: number) => ({
   ...statusEdit, account_id: account.id, original: i === 0,
@@ -20,17 +20,23 @@ const minifyStatusEdit = ({ account, ...statusEdit }: StatusEdit, i: number) => 
 const history = (state: State = initialState, action: HistoryAction) => {
   switch (action.type) {
     case HISTORY_FETCH_REQUEST:
-      return state.update(action.statusId, HistoryRecord(), history => history!.withMutations(map => {
-        map.set('loading', true);
-        map.set('items', []);
-      }));
+      return create(state, (draft) => {
+        draft[action.statusId] = {
+          loading: true,
+          items: [],
+        };
+      });
     case HISTORY_FETCH_SUCCESS:
-      return state.update(action.statusId, HistoryRecord(), history => history!.withMutations(map => {
-        map.set('loading', false);
-        map.set('items', action.history.map(minifyStatusEdit).toReversed());
-      }));
+      return create(state, (draft) => {
+        draft[action.statusId] = {
+          loading: false,
+          items: action.history.map(minifyStatusEdit).toReversed(),
+        };
+      });
     case HISTORY_FETCH_FAIL:
-      return state.update(action.statusId, HistoryRecord(), history => history!.set('loading', false));
+      return create(state, (draft) => {
+        if (draft[action.statusId]) draft[action.statusId].loading = false;
+      });
     default:
       return state;
   }

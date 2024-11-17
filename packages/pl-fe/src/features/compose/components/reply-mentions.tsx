@@ -13,7 +13,7 @@ const ReplyMentions: React.FC<IReplyMentions> = ({ composeId }) => {
   const { openModal } = useModalsStore();
   const features = useFeatures();
   const compose = useCompose(composeId);
-  const to = compose.to.toArray();
+  const to = compose.to;
 
   if (!features.createStatusExplicitAddressing || !compose.in_reply_to || !to) {
     return null;

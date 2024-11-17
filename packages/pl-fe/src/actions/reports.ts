@@ -6,10 +6,6 @@ import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
-const REPORT_SUBMIT_REQUEST = 'REPORT_SUBMIT_REQUEST' as const;
-const REPORT_SUBMIT_SUCCESS = 'REPORT_SUBMIT_SUCCESS' as const;
-const REPORT_SUBMIT_FAIL = 'REPORT_SUBMIT_FAIL' as const;
-
 enum ReportableEntities {
   ACCOUNT = 'ACCOUNT',
   STATUS = 'STATUS'
@@ -30,38 +26,15 @@ const initReport = (entityType: ReportableEntities, account: Pick<Account, 'id'>
 };
 
 const submitReport = (accountId: string, statusIds: string[], ruleIds?: string[], comment?: string, forward?: boolean) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(submitReportRequest());
-
-    return getClient(getState()).accounts.reportAccount(accountId, {
-      status_ids: statusIds,
-      rule_ids: ruleIds,
-      comment: comment,
-      forward: forward,
-    });
-  };
-
-const submitReportRequest = () => ({
-  type: REPORT_SUBMIT_REQUEST,
-});
-
-const submitReportSuccess = () => ({
-  type: REPORT_SUBMIT_SUCCESS,
-});
-
-const submitReportFail = (error: unknown) => ({
-  type: REPORT_SUBMIT_FAIL,
-  error,
-});
+  (dispatch: AppDispatch, getState: () => RootState) => getClient(getState()).accounts.reportAccount(accountId, {
+    status_ids: statusIds,
+    rule_ids: ruleIds,
+    comment: comment,
+    forward: forward,
+  });
 
 export {
   ReportableEntities,
-  REPORT_SUBMIT_REQUEST,
-  REPORT_SUBMIT_SUCCESS,
-  REPORT_SUBMIT_FAIL,
   initReport,
   submitReport,
-  submitReportRequest,
-  submitReportSuccess,
-  submitReportFail,
 };

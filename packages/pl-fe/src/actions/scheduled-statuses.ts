@@ -19,7 +19,7 @@ const fetchScheduledStatuses = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
 
-    if (state.status_lists.get('scheduled_statuses')?.isLoading) {
+    if (state.status_lists.scheduled_statuses?.isLoading) {
       return;
     }
 
@@ -36,13 +36,29 @@ const fetchScheduledStatuses = () =>
     });
   };
 
+interface ScheduledStatusCancelRequestAction {
+  type: typeof SCHEDULED_STATUS_CANCEL_REQUEST;
+  statusId: string;
+}
+
+interface ScheduledStatusCancelSuccessAction {
+  type: typeof SCHEDULED_STATUS_CANCEL_SUCCESS;
+  statusId: string;
+}
+
+interface ScheduledStatusCancelFailAction {
+  type: typeof SCHEDULED_STATUS_CANCEL_FAIL;
+  statusId: string;
+  error: unknown;
+}
+
 const cancelScheduledStatus = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: SCHEDULED_STATUS_CANCEL_REQUEST, statusId });
+    dispatch<ScheduledStatusCancelRequestAction>({ type: SCHEDULED_STATUS_CANCEL_REQUEST, statusId });
     return getClient(getState()).scheduledStatuses.cancelScheduledStatus(statusId).then(() => {
-      dispatch({ type: SCHEDULED_STATUS_CANCEL_SUCCESS, statusId });
+      dispatch<ScheduledStatusCancelSuccessAction>({ type: SCHEDULED_STATUS_CANCEL_SUCCESS, statusId });
     }).catch(error => {
-      dispatch({ type: SCHEDULED_STATUS_CANCEL_FAIL, statusId, error });
+      dispatch<ScheduledStatusCancelFailAction>({ type: SCHEDULED_STATUS_CANCEL_FAIL, statusId, error });
     });
   };
 
@@ -63,9 +79,9 @@ const fetchScheduledStatusesFail = (error: unknown) => ({
 
 const expandScheduledStatuses = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const next = getState().status_lists.get('scheduled_statuses')?.next as any as () => Promise<PaginatedResponse<ScheduledStatus>> || null;
+    const next = getState().status_lists.scheduled_statuses?.next as any as () => Promise<PaginatedResponse<ScheduledStatus>> || null;
 
-    if (next === null || getState().status_lists.get('scheduled_statuses')?.isLoading) {
+    if (next === null || getState().status_lists.scheduled_statuses?.isLoading) {
       return;
     }
 
@@ -93,6 +109,17 @@ const expandScheduledStatusesFail = (error: unknown) => ({
   error,
 });
 
+type ScheduledStatusesAction =
+  | ScheduledStatusCancelRequestAction
+  | ScheduledStatusCancelSuccessAction
+  | ScheduledStatusCancelFailAction
+  | ReturnType<typeof fetchScheduledStatusesRequest>
+  | ReturnType<typeof fetchScheduledStatusesSuccess>
+  | ReturnType<typeof fetchScheduledStatusesFail>
+  | ReturnType<typeof expandScheduledStatusesRequest>
+  | ReturnType<typeof expandScheduledStatusesSuccess>
+  | ReturnType<typeof expandScheduledStatusesFail>
+
 export {
   SCHEDULED_STATUSES_FETCH_REQUEST,
   SCHEDULED_STATUSES_FETCH_SUCCESS,
@@ -105,11 +132,6 @@ export {
   SCHEDULED_STATUS_CANCEL_FAIL,
   fetchScheduledStatuses,
   cancelScheduledStatus,
-  fetchScheduledStatusesRequest,
-  fetchScheduledStatusesSuccess,
-  fetchScheduledStatusesFail,
   expandScheduledStatuses,
-  expandScheduledStatusesRequest,
-  expandScheduledStatusesSuccess,
-  expandScheduledStatusesFail,
+  type ScheduledStatusesAction,
 };

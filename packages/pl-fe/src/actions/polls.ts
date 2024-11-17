@@ -61,6 +61,14 @@ const fetchPollFail = (error: unknown) => ({
   error,
 });
 
+type PollsAction =
+  | ReturnType<typeof voteRequest>
+  | ReturnType<typeof voteSuccess>
+  | ReturnType<typeof voteFail>
+  | ReturnType<typeof fetchPollRequest>
+  | ReturnType<typeof fetchPollSuccess>
+  | ReturnType<typeof fetchPollFail>;
+
 export {
   POLL_VOTE_REQUEST,
   POLL_VOTE_SUCCESS,
@@ -70,10 +78,5 @@ export {
   POLL_FETCH_FAIL,
   vote,
   fetchPoll,
-  voteRequest,
-  voteSuccess,
-  voteFail,
-  fetchPollRequest,
-  fetchPollSuccess,
-  fetchPollFail,
+  type PollsAction,
 };

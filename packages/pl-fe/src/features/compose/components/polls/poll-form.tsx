@@ -55,7 +55,7 @@ const Option: React.FC<IOption> = ({
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
-  const { suggestions } = useCompose(composeId);
+  const { suggestions, modified_language: language } = useCompose(composeId);
 
   const handleOptionTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => onChange(index, event.target.value);
 
@@ -90,12 +90,13 @@ const Option: React.FC<IOption> = ({
           maxLength={maxChars}
           value={title}
           onChange={handleOptionTitleChange}
-          suggestions={suggestions.toArray()}
+          suggestions={suggestions}
           onSuggestionsFetchRequested={onSuggestionsFetchRequested}
           onSuggestionsClearRequested={onSuggestionsClearRequested}
           onSuggestionSelected={onSuggestionSelected}
           searchTokens={[':']}
           autoFocus={index === 0 || index >= 2}
+          lang={language || undefined}
         />
       </HStack>
 
@@ -121,7 +122,7 @@ const PollForm: React.FC<IPollForm> = ({ composeId }) => {
 
   const { poll, language, modified_language: modifiedLanguage } = useCompose(composeId);
 
-  const options = !modifiedLanguage || modifiedLanguage === language ? poll?.options : poll?.options_map.map((option, key) => option.get(modifiedLanguage, poll.options.get(key)!));
+  const options = !modifiedLanguage || modifiedLanguage === language ? poll?.options : poll?.options_map.map((option, key) => option[modifiedLanguage] || poll.options[key]);
   const expiresIn = poll?.expires_in;
   const isMultiple = poll?.multiple;
 
@@ -155,7 +156,7 @@ const PollForm: React.FC<IPollForm> = ({ composeId }) => {
             onChange={onChangeOption}
             onRemove={onRemoveOption}
             maxChars={maxOptionChars}
-            numOptions={options.size}
+            numOptions={options.length}
             onRemovePoll={onRemovePoll}
           />
         ))}
@@ -163,7 +164,7 @@ const PollForm: React.FC<IPollForm> = ({ composeId }) => {
         <HStack space={2}>
           <div className='w-6' />
 
-          {options.size < maxOptions && (
+          {options.length < maxOptions && (
             <Button
               theme='secondary'
               onClick={handleAddOption}

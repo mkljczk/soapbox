@@ -36,7 +36,7 @@ const getMeUrl = (state: RootState) => {
 const getMeToken = (state: RootState) => {
   // Fallback for upgrading IDs to URLs
   const accountUrl = getMeUrl(state) || state.auth.me;
-  return state.auth.users.get(accountUrl!)?.access_token;
+  return state.auth.users[accountUrl!]?.access_token;
 };
 
 interface MeFetchSkipAction {
@@ -158,11 +158,8 @@ export {
   ME_PATCH_FAIL,
   fetchMe,
   patchMe,
-  fetchMeRequest,
   fetchMeSuccess,
   fetchMeFail,
-  patchMeRequest,
   patchMeSuccess,
-  patchMeFail,
   type MeAction,
 };

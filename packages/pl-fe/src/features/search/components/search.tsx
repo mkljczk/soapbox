@@ -1,91 +1,43 @@
 import clsx from 'clsx';
 import debounce from 'lodash/debounce';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom-v5-compat';
 
-import {
-  clearSearch,
-  clearSearchResults,
-  setSearchAccount,
-  showSearch,
-  submitSearch,
-} from 'pl-fe/actions/search';
-import AutosuggestAccountInput from 'pl-fe/components/autosuggest-account-input';
 import Input from 'pl-fe/components/ui/input';
 import SvgIcon from 'pl-fe/components/ui/svg-icon';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { selectAccount } from 'pl-fe/selectors';
-import { AppDispatch, RootState } from 'pl-fe/store';
 
 const messages = defineMessages({
   placeholder: { id: 'search.placeholder', defaultMessage: 'Search' },
-  action: { id: 'search.action', defaultMessage: 'Search for “{query}”' },
 });
 
-const redirectToAccount = (accountId: string, routerHistory: any) =>
-  (_dispatch: AppDispatch, getState: () => RootState) => {
-    const acct = selectAccount(getState(), accountId)!.acct;
+const Search = () => {
+  const [params, setParams] = useSearchParams();
+  const [value, setValue] = useState(params.get('q') || '');
 
-    if (acct && routerHistory) {
-      routerHistory.push(`/@${acct}`);
-    }
-  };
-
-interface ISearch {
-  autoFocus?: boolean;
-  autoSubmit?: boolean;
-  autosuggest?: boolean;
-  openInRoute?: boolean;
-}
-
-const Search = (props: ISearch) => {
-  const submittedValue = useAppSelector((state) => state.search.submittedValue);
-  const [value, setValue] = useState(submittedValue);
-  const {
-    autoFocus = false,
-    autoSubmit = false,
-    autosuggest = false,
-    openInRoute = false,
-  } = props;
-
-  const dispatch = useAppDispatch();
-  const history = useHistory();
   const intl = useIntl();
 
-  const submitted = useAppSelector((state) => state.search.submitted);
+  const setQuery = (value: string) => {
+    setParams(params => ({ ...Object.fromEntries(params.entries()), q: value }));
+  };
 
   const debouncedSubmit = useCallback(debounce((value: string) => {
-    dispatch(submitSearch(value));
+    setQuery(value);
   }, 900), []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
 
     setValue(value);
-
-    if (autoSubmit) {
-      debouncedSubmit(value);
-    }
+    debouncedSubmit(value);
   };
 
   const handleClear = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
 
-    if (value.length > 0 || submitted) {
-      dispatch(clearSearchResults());
-    }
-  };
-
-  const handleSubmit = () => {
-    if (openInRoute) {
-      dispatch(setSearchAccount(null));
-      dispatch(submitSearch(value));
-
-      history.push('/search');
-    } else {
-      dispatch(submitSearch(value));
+    if (value.length > 0) {
+      setValue('');
+      setQuery('');
     }
   };
 
@@ -93,67 +45,32 @@ const Search = (props: ISearch) => {
     if (event.key === 'Enter') {
       event.preventDefault();
 
-      handleSubmit();
+      setQuery(value);
     } else if (event.key === 'Escape') {
       document.querySelector('.ui')?.parentElement?.focus();
     }
   };
 
-  const handleFocus = () => {
-    dispatch(showSearch());
-  };
-
-  const handleSelected = (accountId: string) => {
-    dispatch(clearSearch());
-    dispatch(redirectToAccount(accountId, history));
-  };
-
-  const makeMenu = () => [
-    {
-      text: intl.formatMessage(messages.action, { query: value }),
-      icon: require('@tabler/icons/outline/search.svg'),
-      action: handleSubmit,
-    },
-  ];
-
-  const hasValue = value.length > 0 || submitted;
-  const componentProps: any = {
-    type: 'text',
-    id: 'search',
-    placeholder: intl.formatMessage(messages.placeholder),
-    value,
-    onChange: handleChange,
-    onKeyDown: handleKeyDown,
-    onFocus: handleFocus,
-    autoFocus: autoFocus,
-    theme: 'search',
-    className: 'pr-10 rtl:pl-10 rtl:pr-3',
-  };
-
-  useEffect(() => {
-    if (value !== submittedValue) setValue(submittedValue);
-  }, [submittedValue]);
-
-  if (autosuggest) {
-    componentProps.onSelected = handleSelected;
-    componentProps.menu = makeMenu();
-    componentProps.autoSelect = false;
-  }
+  const hasValue = value.length > 0;
 
   return (
     <div
-      className={clsx('w-full', {
-        'sticky top-[76px] z-10 bg-white/90 backdrop-blur black:bg-black/80 dark:bg-primary-900/90': !openInRoute,
-      })}
+      className='sticky top-[76px] z-10 w-full bg-white/90 backdrop-blur black:bg-black/80 dark:bg-primary-900/90'
     >
       <label htmlFor='search' className='sr-only'>{intl.formatMessage(messages.placeholder)}</label>
 
       <div className='relative'>
-        {autosuggest ? (
-          <AutosuggestAccountInput {...componentProps} />
-        ) : (
-          <Input {...componentProps} />
-        )}
+        <Input
+          type='text'
+          id='search'
+          placeholder={intl.formatMessage(messages.placeholder)}
+          value={value}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          autoFocus
+          theme='search'
+          className='pr-10 rtl:pl-10 rtl:pr-3'
+        />
 
         <div
           role='button'

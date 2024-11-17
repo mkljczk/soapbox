@@ -1,19 +1,16 @@
-import { Entities } from 'pl-fe/entity-store/entities';
-import { useDeleteEntity } from 'pl-fe/entity-store/hooks/use-delete-entity';
+import { useMutation } from '@tanstack/react-query';
+
 import { useClient } from 'pl-fe/hooks/use-client';
+import { queryClient } from 'pl-fe/queries/client';
 
 const useDeleteBookmarkFolder = () => {
   const client = useClient();
 
-  const { deleteEntity, isSubmitting } = useDeleteEntity(
-    Entities.BOOKMARK_FOLDERS,
-    (folderId: string) => client.myAccount.deleteBookmarkFolder(folderId),
-  );
-
-  return {
-    deleteBookmarkFolder: deleteEntity,
-    isSubmitting,
-  };
+  return useMutation({
+    mutationKey: ['bookmarkFolders', 'delete'],
+    mutationFn: (folderId: string) => client.myAccount.deleteBookmarkFolder(folderId),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['bookmarkFolders'] }),
+  });
 };
 
 export { useDeleteBookmarkFolder };

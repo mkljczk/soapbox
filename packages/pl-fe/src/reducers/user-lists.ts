@@ -8,6 +8,7 @@ import {
   FOLLOW_REQUEST_REJECT_SUCCESS,
   PINNED_ACCOUNTS_FETCH_SUCCESS,
   BIRTHDAY_REMINDERS_FETCH_SUCCESS,
+  type AccountsAction,
 } from 'pl-fe/actions/accounts';
 import {
   DIRECTORY_FETCH_REQUEST,
@@ -16,7 +17,7 @@ import {
   DIRECTORY_EXPAND_REQUEST,
   DIRECTORY_EXPAND_SUCCESS,
   DIRECTORY_EXPAND_FAIL,
-  DirectoryAction,
+  type DirectoryAction,
 } from 'pl-fe/actions/directory';
 import {
   EVENT_PARTICIPATIONS_EXPAND_SUCCESS,
@@ -32,6 +33,7 @@ import {
   GROUP_BLOCKS_FETCH_SUCCESS,
   GROUP_BLOCKS_FETCH_FAIL,
   GROUP_UNBLOCK_SUCCESS,
+  type GroupsAction,
 } from 'pl-fe/actions/groups';
 import {
   REBLOGS_FETCH_SUCCESS,
@@ -40,9 +42,9 @@ import {
   FAVOURITES_EXPAND_SUCCESS,
   DISLIKES_FETCH_SUCCESS,
   REACTIONS_FETCH_SUCCESS,
-  InteractionsAction,
+  type InteractionsAction,
 } from 'pl-fe/actions/interactions';
-import { NOTIFICATIONS_UPDATE } from 'pl-fe/actions/notifications';
+import { NOTIFICATIONS_UPDATE, type NotificationsAction } from 'pl-fe/actions/notifications';
 
 import type { Account, EmojiReaction, Notification, PaginatedResponse } from 'pl-api';
 import type { APIEntity } from 'pl-fe/types/entities';
@@ -156,7 +158,7 @@ const normalizeFollowRequest = (state: State, notification: Notification) =>
     draft.follow_requests.items = [...new Set([notification.account.id, ...draft.follow_requests.items])];
   });
 
-const userLists = (state = initialState, action: DirectoryAction | InteractionsAction | AnyAction): State => {
+const userLists = (state = initialState, action: AccountsAction | DirectoryAction | GroupsAction | InteractionsAction | NotificationsAction | AnyAction): State => {
   switch (action.type) {
     case REBLOGS_FETCH_SUCCESS:
       return normalizeList(state, ['reblogged_by', action.statusId], action.accounts, action.next);
@@ -202,7 +204,7 @@ const userLists = (state = initialState, action: DirectoryAction | InteractionsA
     case PINNED_ACCOUNTS_FETCH_SUCCESS:
       return normalizeList(state, ['pinned', action.accountId], action.accounts, action.next);
     case BIRTHDAY_REMINDERS_FETCH_SUCCESS:
-      return normalizeList(state, ['birthday_reminders', action.accountId], action.accounts, action.next);
+      return normalizeList(state, ['birthday_reminders', action.accountId], action.accounts);
     case FAMILIAR_FOLLOWERS_FETCH_SUCCESS:
       return normalizeList(state, ['familiar_followers', action.accountId], action.accounts, action.next);
     case EVENT_PARTICIPATIONS_FETCH_SUCCESS:

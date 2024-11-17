@@ -20,7 +20,7 @@ interface IScheduledStatus {
 
 const ScheduledStatus: React.FC<IScheduledStatus> = ({ statusId, ...other }) => {
   const status = useAppSelector((state) => {
-    const scheduledStatus = state.scheduled_statuses.get(statusId);
+    const scheduledStatus = state.scheduled_statuses[statusId];
     if (!scheduledStatus) return null;
     return buildStatus(state, scheduledStatus);
   });

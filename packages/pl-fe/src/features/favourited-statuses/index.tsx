@@ -1,4 +1,3 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -34,9 +33,9 @@ const Favourites: React.FC<IFavourites> = ({ params }) => {
   const isOwnAccount = username.toLowerCase() === ownAccount?.acct?.toLowerCase();
 
   const timelineKey = isOwnAccount ? 'favourites' : `favourites:${account?.id}`;
-  const statusIds = useAppSelector(state => state.status_lists.get(timelineKey)?.items || ImmutableOrderedSet<string>());
-  const isLoading = useAppSelector(state => state.status_lists.get(timelineKey)?.isLoading === true);
-  const hasMore = useAppSelector(state => !!state.status_lists.get(timelineKey)?.next);
+  const statusIds = useAppSelector(state => state.status_lists[timelineKey]?.items || []);
+  const isLoading = useAppSelector(state => state.status_lists[timelineKey]?.isLoading === true);
+  const hasMore = useAppSelector(state => !!state.status_lists[timelineKey]?.next);
 
   const handleLoadMore = useCallback(debounce(() => {
     if (isOwnAccount) {

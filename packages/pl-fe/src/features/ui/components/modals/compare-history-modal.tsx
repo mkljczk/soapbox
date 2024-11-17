@@ -22,8 +22,8 @@ interface CompareHistoryModalProps {
 const CompareHistoryModal: React.FC<BaseModalProps & CompareHistoryModalProps> = ({ onClose, statusId }) => {
   const dispatch = useAppDispatch();
 
-  const loading = useAppSelector(state => state.history.getIn([statusId, 'loading']));
-  const versions = useAppSelector(state => state.history.get(statusId)?.items);
+  const loading = useAppSelector(state => state.history[statusId]?.loading);
+  const versions = useAppSelector(state => state.history[statusId]?.items);
 
   const status = useAppSelector(state => state.statuses[statusId]);
 

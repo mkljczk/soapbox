@@ -1,6 +1,7 @@
-import { Entities } from 'pl-fe/entity-store/entities';
-import { useCreateEntity } from 'pl-fe/entity-store/hooks/use-create-entity';
+import { useMutation } from '@tanstack/react-query';
+
 import { useClient } from 'pl-fe/hooks/use-client';
+import { queryClient } from 'pl-fe/queries/client';
 
 interface CreateBookmarkFolderParams {
   name: string;
@@ -10,16 +11,11 @@ interface CreateBookmarkFolderParams {
 const useCreateBookmarkFolder = () => {
   const client = useClient();
 
-  const { createEntity, ...rest } = useCreateEntity(
-    [Entities.BOOKMARK_FOLDERS],
-    (params: CreateBookmarkFolderParams) =>
-      client.myAccount.createBookmarkFolder(params),
-  );
-
-  return {
-    createBookmarkFolder: createEntity,
-    ...rest,
-  };
+  return useMutation({
+    mutationKey: ['bookmarkFolders', 'create'],
+    mutationFn: (params: CreateBookmarkFolderParams) => client.myAccount.createBookmarkFolder(params),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['bookmarkFolders'] }),
+  });
 };
 
 export { useCreateBookmarkFolder };

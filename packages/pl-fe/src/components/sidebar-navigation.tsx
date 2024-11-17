@@ -5,7 +5,6 @@ import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-intera
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import { useStatContext } from 'pl-fe/contexts/stat-context';
-import Search from 'pl-fe/features/search/components/search';
 import ComposeButton from 'pl-fe/features/ui/components/compose-button';
 import ProfileDropdown from 'pl-fe/features/ui/components/profile-dropdown';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
@@ -18,6 +17,7 @@ import { useSettings } from 'pl-fe/hooks/use-settings';
 
 import Account from './account';
 import DropdownMenu, { Menu } from './dropdown-menu';
+import SearchInput from './search-input';
 import SidebarNavigationLink from './sidebar-navigation-link';
 import SiteLogo from './site-logo';
 
@@ -51,8 +51,8 @@ const SidebarNavigation = () => {
   const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.length);
   const interactionRequestsCount = useInteractionRequestsCount().data || 0;
   const dashboardCount = useAppSelector((state) => state.admin.openReports.length + state.admin.awaitingApproval.length);
-  const scheduledStatusCount = useAppSelector((state) => state.scheduled_statuses.size);
-  const draftCount = useAppSelector((state) => state.draft_statuses.size);
+  const scheduledStatusCount = useAppSelector((state) => Object.keys(state.scheduled_statuses).length);
+  const draftCount = useAppSelector((state) => Object.keys(state.draft_statuses).length);
 
   const restrictUnauth = instance.pleroma.metadata.restrict_unauthenticated;
 
@@ -176,7 +176,7 @@ const SidebarNavigation = () => {
             </ProfileDropdown>
           </div>
           <div className='block w-full max-w-xs'>
-            <Search openInRoute autosuggest />
+            <SearchInput />
           </div>
         </Stack>
       )}

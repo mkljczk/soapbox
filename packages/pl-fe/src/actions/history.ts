@@ -11,7 +11,7 @@ const HISTORY_FETCH_FAIL = 'HISTORY_FETCH_FAIL' as const;
 
 const fetchHistory = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const loading = getState().history.getIn([statusId, 'loading']);
+    const loading = getState().history[statusId]?.loading;
 
     if (loading) return;
 
@@ -47,8 +47,5 @@ export {
   HISTORY_FETCH_SUCCESS,
   HISTORY_FETCH_FAIL,
   fetchHistory,
-  fetchHistoryRequest,
-  fetchHistorySuccess,
-  fetchHistoryFail,
   type HistoryAction,
 };

@@ -34,7 +34,7 @@ const ListTimeline: React.FC = () => {
   const isMobile = useIsMobile();
   const { openModal } = useModalsStore();
 
-  const list = useAppSelector((state) => state.lists.get(id));
+  const list = useAppSelector((state) => state.lists[id]);
 
   useListStream(id);
 

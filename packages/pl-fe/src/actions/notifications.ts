@@ -23,8 +23,6 @@ import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const NOTIFICATIONS_UPDATE = 'NOTIFICATIONS_UPDATE' as const;
 const NOTIFICATIONS_UPDATE_NOOP = 'NOTIFICATIONS_UPDATE_NOOP' as const;
-const NOTIFICATIONS_UPDATE_QUEUE = 'NOTIFICATIONS_UPDATE_QUEUE' as const;
-const NOTIFICATIONS_DEQUEUE = 'NOTIFICATIONS_DEQUEUE' as const;
 
 const NOTIFICATIONS_EXPAND_REQUEST = 'NOTIFICATIONS_EXPAND_REQUEST' as const;
 const NOTIFICATIONS_EXPAND_SUCCESS = 'NOTIFICATIONS_EXPAND_SUCCESS' as const;
@@ -32,12 +30,7 @@ const NOTIFICATIONS_EXPAND_FAIL = 'NOTIFICATIONS_EXPAND_FAIL' as const;
 
 const NOTIFICATIONS_FILTER_SET = 'NOTIFICATIONS_FILTER_SET' as const;
 
-const NOTIFICATIONS_CLEAR = 'NOTIFICATIONS_CLEAR' as const;
 const NOTIFICATIONS_SCROLL_TOP = 'NOTIFICATIONS_SCROLL_TOP' as const;
-
-const NOTIFICATIONS_MARK_READ_REQUEST = 'NOTIFICATIONS_MARK_READ_REQUEST' as const;
-const NOTIFICATIONS_MARK_READ_SUCCESS = 'NOTIFICATIONS_MARK_READ_SUCCESS' as const;
-const NOTIFICATIONS_MARK_READ_FAIL = 'NOTIFICATIONS_MARK_READ_FAIL' as const;
 
 const MAX_QUEUED_NOTIFICATIONS = 40;
 
@@ -66,6 +59,11 @@ const fetchRelatedRelationships = (dispatch: AppDispatch, notifications: Array<N
   }
 };
 
+interface NotificationsUpdateAction {
+  type: typeof NOTIFICATIONS_UPDATE;
+  notification: NotificationGroup;
+}
+
 const updateNotifications = (notification: BaseNotification) =>
   (dispatch: AppDispatch) => {
     const selectedFilter = useSettingsStore.getState().settings.notifications.quickFilter.active;
@@ -79,7 +77,7 @@ const updateNotifications = (notification: BaseNotification) =>
     if (showInColumn) {
       const normalizedNotification = normalizeNotification(notification);
 
-      dispatch({
+      dispatch<NotificationsUpdateAction>({
         type: NOTIFICATIONS_UPDATE,
         notification: normalizedNotification,
       });
@@ -88,7 +86,12 @@ const updateNotifications = (notification: BaseNotification) =>
     }
   };
 
-const updateNotificationsQueue = (notification: BaseNotification, intlMessages: Record<string, string>, intlLocale: string, curPath: string) =>
+interface NotificationsUpdateNoopAction {
+  type: typeof NOTIFICATIONS_UPDATE_NOOP;
+  meta: { sound: 'boop' };
+}
+
+const updateNotificationsQueue = (notification: BaseNotification, intlMessages: Record<string, string>, intlLocale: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!notification.type) return; // drop invalid notifications
     if (notification.type === 'chat_mention') return; // Drop chat notifications, handle them per-chat
@@ -99,8 +102,6 @@ const updateNotificationsQueue = (notification: BaseNotification, intlMessages: 
     const status = getNotificationStatus(notification);
 
     let filtered: boolean | null = false;
-
-    const isOnNotificationsPage = curPath === '/notifications';
 
     if (notification.type === 'mention' || notification.type === 'status') {
       const regex = regexFromFilters(filters);
@@ -133,43 +134,13 @@ const updateNotificationsQueue = (notification: BaseNotification, intlMessages: 
     }
 
     if (playSound && !filtered) {
-      dispatch({
+      dispatch<NotificationsUpdateNoopAction>({
         type: NOTIFICATIONS_UPDATE_NOOP,
         meta: { sound: 'boop' },
       });
     }
 
-    if (isOnNotificationsPage) {
-      dispatch({
-        type: NOTIFICATIONS_UPDATE_QUEUE,
-        notification,
-        intlMessages,
-        intlLocale,
-      });
-    } else {
-      dispatch(updateNotifications(notification));
-    }
-  };
-
-const dequeueNotifications = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const queuedNotifications = getState().notifications.queuedNotifications;
-    const totalQueuedNotificationsCount = getState().notifications.totalQueuedNotificationsCount;
-
-    if (totalQueuedNotificationsCount === 0) {
-      return;
-    } else if (totalQueuedNotificationsCount > 0 && totalQueuedNotificationsCount <= MAX_QUEUED_NOTIFICATIONS) {
-      queuedNotifications.forEach((block) => {
-        dispatch(updateNotifications(block.notification));
-      });
-    } else {
-      dispatch(expandNotifications());
-    }
-
-    dispatch({
-      type: NOTIFICATIONS_DEQUEUE,
-    });
-    dispatch(markReadNotifications());
+    dispatch(updateNotifications(notification));
   };
 
 const excludeTypesFromFilter = (filters: string[]) => NOTIFICATION_TYPES.filter(item => !filters.includes(item));
@@ -216,8 +187,8 @@ const expandNotifications = ({ maxId }: Record<string, any> = {}, done: () => an
       }
     }
 
-    if (!maxId && notifications.items.size > 0) {
-      params.since_id = notifications.items.first()?.page_max_id;
+    if (!maxId && notifications.items.length > 0) {
+      params.since_id = notifications.items[0]?.page_max_id;
     }
 
     dispatch(expandNotificationsRequest());
@@ -250,14 +221,23 @@ const expandNotificationsFail = (error: unknown) => ({
   error,
 });
 
+interface NotificationsScrollTopAction {
+  type: typeof NOTIFICATIONS_SCROLL_TOP;
+  top: boolean;
+}
+
 const scrollTopNotifications = (top: boolean) =>
   (dispatch: AppDispatch) => {
-    dispatch({
+    dispatch(markReadNotifications());
+    return dispatch<NotificationsScrollTopAction>({
       type: NOTIFICATIONS_SCROLL_TOP,
       top,
     });
-    dispatch(markReadNotifications());
   };
+
+interface SetFilterAction {
+  type: typeof NOTIFICATIONS_FILTER_SET;
+}
 
 const setFilter = (filterType: FilterType, abort?: boolean) =>
   (dispatch: AppDispatch) => {
@@ -266,10 +246,10 @@ const setFilter = (filterType: FilterType, abort?: boolean) =>
 
     settingsStore.changeSetting(['notifications', 'quickFilter', 'active'], filterType);
 
-    dispatch({ type: NOTIFICATIONS_FILTER_SET });
     dispatch(expandNotifications(undefined, undefined, abort));
-
     if (activeFilter !== filterType) dispatch(saveSettings());
+
+    return dispatch<SetFilterAction>({ type: NOTIFICATIONS_FILTER_SET });
   };
 
 const markReadNotifications = () =>
@@ -277,7 +257,7 @@ const markReadNotifications = () =>
     if (!isLoggedIn(getState)) return;
 
     const state = getState();
-    const topNotificationId = state.notifications.items.first()?.page_max_id;
+    const topNotificationId = state.notifications.items[0]?.page_max_id;
     const lastReadId = state.notifications.lastRead;
 
     if (topNotificationId && (lastReadId === -1 || compareId(topNotificationId, lastReadId) > 0)) {
@@ -291,30 +271,30 @@ const markReadNotifications = () =>
     }
   };
 
+type NotificationsAction =
+  | NotificationsUpdateAction
+  | NotificationsUpdateNoopAction
+  | ReturnType<typeof expandNotificationsRequest>
+  | ReturnType<typeof expandNotificationsSuccess>
+  | ReturnType<typeof expandNotificationsFail>
+  | NotificationsScrollTopAction
+  | SetFilterAction;
+
 export {
   NOTIFICATIONS_UPDATE,
   NOTIFICATIONS_UPDATE_NOOP,
-  NOTIFICATIONS_UPDATE_QUEUE,
-  NOTIFICATIONS_DEQUEUE,
   NOTIFICATIONS_EXPAND_REQUEST,
   NOTIFICATIONS_EXPAND_SUCCESS,
   NOTIFICATIONS_EXPAND_FAIL,
   NOTIFICATIONS_FILTER_SET,
-  NOTIFICATIONS_CLEAR,
   NOTIFICATIONS_SCROLL_TOP,
-  NOTIFICATIONS_MARK_READ_REQUEST,
-  NOTIFICATIONS_MARK_READ_SUCCESS,
-  NOTIFICATIONS_MARK_READ_FAIL,
   MAX_QUEUED_NOTIFICATIONS,
   type FilterType,
   updateNotifications,
   updateNotificationsQueue,
-  dequeueNotifications,
   expandNotifications,
-  expandNotificationsRequest,
-  expandNotificationsSuccess,
-  expandNotificationsFail,
   scrollTopNotifications,
   setFilter,
   markReadNotifications,
+  type NotificationsAction,
 };

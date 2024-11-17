@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, CSSProperties } from 'react';
 
 import Blurhash from 'pl-fe/components/blurhash';
 import Icon from 'pl-fe/components/icon';
@@ -12,25 +12,24 @@ import { truncateFilename } from 'pl-fe/utils/media';
 import { isIOS } from '../is-mobile';
 import { isPanoramic, isPortrait, isNonConformingRatio, minimumAspectRatio, maximumAspectRatio } from '../utils/media-aspect-ratio';
 
-import type { Property } from 'csstype';
 import type { MediaAttachment } from 'pl-api';
 
 const ATTACHMENT_LIMIT = 4;
 const MAX_FILENAME_LENGTH = 45;
 
 interface Dimensions {
-  w: Property.Width | number;
-  h: Property.Height | number;
-  t?: Property.Top;
-  r?: Property.Right;
-  b?: Property.Bottom;
-  l?: Property.Left;
-  float?: Property.Float;
-  pos?: Property.Position;
+  w: CSSProperties['width'];
+  h: CSSProperties['height'];
+  t?: CSSProperties['top'];
+  r?: CSSProperties['right'];
+  b?: CSSProperties['bottom'];
+  l?: CSSProperties['left'];
+  float?: CSSProperties['float'];
+  pos?: CSSProperties['position'];
 }
 
 interface SizeData {
-  style: React.CSSProperties;
+  style: CSSProperties;
   itemsDimensions: Dimensions[];
   size: number;
   width: number;
@@ -322,7 +321,7 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
     const panoSize = Math.floor(w / maximumAspectRatio);
     const panoSize_px = `${Math.floor(w / maximumAspectRatio)}px`;
 
-    const style: React.CSSProperties = {};
+    const style: CSSProperties = {};
     let itemsDimensions: Dimensions[] = [];
 
     const ratios = Array(size).fill(null).map((_, i) => getAspectRatio(media[i]));

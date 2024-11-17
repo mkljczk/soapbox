@@ -1,4 +1,3 @@
-import { Set as ImmutableSet } from 'immutable';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
@@ -106,7 +105,7 @@ const Preferences = () => {
   };
 
   const onSelectMultiple = (selectedList: string[], path: string[]) => {
-    dispatch(changeSetting(path, ImmutableSet(selectedList.sort((a, b) => a.localeCompare(b))), { showAlert: true }));
+    dispatch(changeSetting(path, selectedList.toSorted((a, b) => a.localeCompare(b)), { showAlert: true }));
   };
 
   const onToggleChange = (key: string[], checked: boolean) => {

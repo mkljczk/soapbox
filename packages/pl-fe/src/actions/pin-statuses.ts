@@ -51,8 +51,5 @@ export {
   PINNED_STATUSES_FETCH_SUCCESS,
   PINNED_STATUSES_FETCH_FAIL,
   fetchPinnedStatuses,
-  fetchPinnedStatusesRequest,
-  fetchPinnedStatusesSuccess,
-  fetchPinnedStatusesFail,
   type PinStatusesAction,
 };

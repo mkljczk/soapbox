@@ -99,7 +99,7 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
   placeholder,
 }, ref) => {
   const dispatch = useAppDispatch();
-  const { content_type: contentType } = useCompose(composeId);
+  const { content_type: contentType, modified_language: language } = useCompose(composeId);
   const isWysiwyg = contentType === 'wysiwyg';
   const nodes = useNodes(isWysiwyg);
   const intl = useIntl();
@@ -113,13 +113,13 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
     theme,
     editorState: dispatch((_, getState) => {
       const state = getState();
-      const compose = state.compose.get(composeId);
+      const compose = state.compose[composeId];
 
       if (!compose) return;
 
       const editorState = !compose.modified_language || compose.modified_language === compose.language
         ? compose.editorState
-        : compose.editorStateMap.get(compose.modified_language, '');
+        : compose.editorStateMap[compose.modified_language] || '';
 
       if (editorState) {
         return editorState;
@@ -128,7 +128,7 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
       return () => {
         const text = !compose.modified_language || compose.modified_language === compose.language
           ? compose.text
-          : compose.textMap.get(compose.modified_language, '');
+          : compose.textMap[compose.modified_language] || '';
 
         if (!text && navigator.userAgent.includes('Ladybird/')) {
           const paragraph = $createParagraphNode();
@@ -210,6 +210,7 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
                     'min-h-[99px]': !condensed,
                   },
                 )}
+                lang={language || undefined}
               />
             </div>
           }

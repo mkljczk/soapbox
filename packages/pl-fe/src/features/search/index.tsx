@@ -15,7 +15,7 @@ const SearchPage = () => {
   return (
     <Column label={intl.formatMessage(messages.heading)}>
       <div className='space-y-4'>
-        <Search autoFocus autoSubmit />
+        <Search />
         <SearchResults />
       </div>
     </Column>

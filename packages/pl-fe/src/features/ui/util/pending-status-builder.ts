@@ -1,4 +1,4 @@
-import { Map as ImmutableMap, List as ImmutableList } from 'immutable';
+import { create } from 'mutative';
 import { statusSchema } from 'pl-api';
 import * as v from 'valibot';
 
@@ -12,17 +12,18 @@ const getAccount = makeGetAccount();
 
 const buildMentions = (pendingStatus: PendingStatus) => {
   if (pendingStatus.in_reply_to_id) {
-    return ImmutableList(pendingStatus.to || []).map(acct => ImmutableMap({ acct }));
+    return (pendingStatus.to || []).map(acct => ({ acct }));
   } else {
-    return ImmutableList();
+    return [];
   }
 };
 
 const buildPoll = (pendingStatus: PendingStatus) => {
-  if (pendingStatus.hasIn(['poll', 'options'])) {
-    return pendingStatus.poll!.update('options', (options: ImmutableMap<string, any>) =>
-      options.map((title: string) => ImmutableMap({ title })),
-    );
+  if (pendingStatus.poll?.options) {
+    return create(pendingStatus.poll, (draft) => {
+      // @ts-ignore
+      draft.options = draft.options.map((title) => ({ title }));
+    });
   } else {
     return null;
   }
@@ -39,7 +40,7 @@ const buildStatus = (state: RootState, pendingStatus: PendingStatus, idempotency
     id: `末pending-${idempotencyKey}`,
     in_reply_to_account_id: state.statuses[inReplyToId || '']?.account_id || null,
     in_reply_to_id: inReplyToId,
-    media_attachments: (pendingStatus.media_ids || ImmutableList()).map((id: string) => ({ id })),
+    media_attachments: (pendingStatus.media_ids || []).map((id: string) => ({ id })),
     mentions: buildMentions(pendingStatus),
     poll: buildPoll(pendingStatus),
     quote: pendingStatus.quote_id ? state.statuses[pendingStatus.quote_id] : null,

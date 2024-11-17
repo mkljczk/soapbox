@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
-import { submitReport, submitReportSuccess, submitReportFail, ReportableEntities } from 'pl-fe/actions/reports';
+import { submitReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { fetchAccountTimeline } from 'pl-fe/actions/timelines';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import AttachmentThumbs from 'pl-fe/components/attachment-thumbs';
@@ -106,7 +106,6 @@ const ReportModal: React.FC<BaseModalProps & ReportModalProps> = ({ onClose, acc
       })
       .catch((error) => {
         setIsSubmitting(false);
-        dispatch(submitReportFail(error));
       });
 
     if (block && account) {
@@ -171,7 +170,6 @@ const ReportModal: React.FC<BaseModalProps & ReportModalProps> = ({ onClose, acc
         handleSubmit();
         break;
       case Steps.THREE:
-        dispatch(submitReportSuccess());
         onClose('REPORT');
         break;
       default:

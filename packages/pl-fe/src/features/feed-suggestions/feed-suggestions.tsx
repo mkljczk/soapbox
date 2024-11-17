@@ -3,12 +3,12 @@ import { defineMessages, useIntl } from 'react-intl';
 import { Link } from '@tanstack/react-router';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import { useSuggestedAccounts } from 'pl-fe/api/hooks/trends/use-suggested-accounts';
 import Card, { CardBody, CardTitle } from 'pl-fe/components/ui/card';
 import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import Emojify from '../emoji/emojify';
 import ActionButton from '../ui/components/action-button';
@@ -69,10 +69,9 @@ interface IFeedSuggesetions {
 
 const FeedSuggestions: React.FC<IFeedSuggesetions> = ({ statusId, onMoveUp, onMoveDown }) => {
   const intl = useIntl();
-  const suggestedProfiles = useAppSelector((state) => state.suggestions.items);
-  const isLoading = useAppSelector((state) => state.suggestions.isLoading);
+  const { data: suggestedProfiles, isLoading } = useSuggestedAccounts();
 
-  if (!isLoading && suggestedProfiles.length === 0) return null;
+  if (!isLoading && suggestedProfiles?.length === 0) return null;
 
   const handleHotkeyMoveUp = (e?: KeyboardEvent): void => {
     if (onMoveUp) {
@@ -107,7 +106,7 @@ const FeedSuggestions: React.FC<IFeedSuggesetions> = ({ statusId, onMoveUp, onMo
 
         <CardBody>
           <HStack space={4} alignItems='center' className='overflow-x-auto md:space-x-0 lg:overflow-x-hidden'>
-            {suggestedProfiles.slice(0, 4).map((suggestedProfile) => (
+            {suggestedProfiles?.slice(0, 4).map((suggestedProfile) => (
               <SuggestionItem key={suggestedProfile.account_id} accountId={suggestedProfile.account_id} />
             ))}
           </HStack>

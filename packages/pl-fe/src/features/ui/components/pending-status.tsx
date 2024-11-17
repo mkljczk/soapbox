@@ -47,7 +47,7 @@ const PendingStatusMedia: React.FC<IPendingStatusMedia> = ({ status }) => {
 
 const PendingStatus: React.FC<IPendingStatus> = ({ idempotencyKey, className, muted, variant = 'rounded' }) => {
   const status = useAppSelector((state) => {
-    const pendingStatus = state.pending_statuses.get(idempotencyKey);
+    const pendingStatus = state.pending_statuses[idempotencyKey];
     return pendingStatus ? buildStatus(state, pendingStatus, idempotencyKey) : null;
   });
 

@@ -93,7 +93,7 @@ const addToAliases = (account: Account) =>
       dispatch(addToAliasesSuccess);
       dispatch(fetchAliases);
     })
-      .catch(err => dispatch(fetchAliasesFail(err)));
+      .catch(err => dispatch(addToAliasesFail(err)));
   };
 
 const addToAliasesRequest = () => ({
@@ -112,13 +112,13 @@ const addToAliasesFail = (error: unknown) => ({
 const removeFromAliases = (account: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
-    dispatch(addToAliasesRequest());
+    dispatch(removeFromAliasesRequest());
 
     return getClient(getState).settings.deleteAccountAlias(account).then(() => {
       toast.success(messages.removeSuccess);
       dispatch(removeFromAliasesSuccess);
       dispatch(fetchAliases);
-    }).catch(err => dispatch(fetchAliasesFail(err)));
+    }).catch(err => dispatch(removeFromAliasesFail(err)));
   };
 
 const removeFromAliasesRequest = () => ({
@@ -162,20 +162,11 @@ export {
   ALIASES_REMOVE_SUCCESS,
   ALIASES_REMOVE_FAIL,
   fetchAliases,
-  fetchAliasesRequest,
-  fetchAliasesSuccess,
-  fetchAliasesFail,
   fetchAliasesSuggestions,
   fetchAliasesSuggestionsReady,
   clearAliasesSuggestions,
   changeAliasesSuggestions,
   addToAliases,
-  addToAliasesRequest,
-  addToAliasesSuccess,
-  addToAliasesFail,
   removeFromAliases,
-  removeFromAliasesRequest,
-  removeFromAliasesSuccess,
-  removeFromAliasesFail,
   type AliasesAction,
 };

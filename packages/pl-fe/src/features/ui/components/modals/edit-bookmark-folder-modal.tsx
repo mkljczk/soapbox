@@ -98,8 +98,8 @@ interface EditBookmarkFolderModalProps {
 const EditBookmarkFolderModal: React.FC<BaseModalProps & EditBookmarkFolderModalProps> = ({ folderId, onClose }) => {
   const intl = useIntl();
 
-  const { bookmarkFolder } = useBookmarkFolder(folderId);
-  const { updateBookmarkFolder, isSubmitting } = useUpdateBookmarkFolder(folderId);
+  const { data: bookmarkFolder } = useBookmarkFolder(folderId);
+  const { mutate: updateBookmarkFolder, isPending } = useUpdateBookmarkFolder(folderId);
 
   const [emoji, setEmoji] = useState(bookmarkFolder?.emoji || undefined);
   const [emojiUrl, setEmojiUrl] = useState(bookmarkFolder?.emoji_url || undefined);
@@ -154,7 +154,7 @@ const EditBookmarkFolderModal: React.FC<BaseModalProps & EditBookmarkFolderModal
           <Input
             type='text'
             placeholder={label}
-            disabled={isSubmitting}
+            disabled={isPending}
             {...name}
           />
         </label>

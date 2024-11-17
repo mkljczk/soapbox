@@ -18,7 +18,6 @@ import Stack from 'pl-fe/components/ui/stack';
 import EmojiPickerDropdown from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
 import { ComposeEditor } from 'pl-fe/features/ui/util/async-components';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useCompose } from 'pl-fe/hooks/use-compose';
 import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
 import { useFeatures } from 'pl-fe/hooks/use-features';
@@ -79,7 +78,6 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
   const { configuration } = useInstance();
 
   const compose = useCompose(id);
-  const showSearch = useAppSelector((state) => state.search.submitted && !state.search.hidden);
   const maxTootChars = configuration.statuses.max_characters;
   const features = useFeatures();
 
@@ -98,7 +96,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
 
   const hasPoll = !!compose.poll;
   const isEditing = compose.id !== null;
-  const anyMedia = compose.media_attachments.size > 0;
+  const anyMedia = compose.media_attachments.length > 0;
 
   const [composeFocused, setComposeFocused] = useState(false);
 
@@ -111,7 +109,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
 
   const isEmpty = !(fulltext.trim() || anyMedia);
   const condensed = shouldCondense && !isDraggedOver && !composeFocused && isEmpty && !isUploading;
-  const shouldAutoFocus = autoFocus && !showSearch;
+  const shouldAutoFocus = autoFocus;
   const canSubmit = !!editorRef.current && !isSubmitting && !isUploading && !isChangingUpload && !isEmpty && length(fulltext) <= maxTootChars;
 
   const getClickableArea = () => clickableAreaRef ? clickableAreaRef.current : formRef.current;
@@ -191,7 +189,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
     </HStack>
   ), [features, id, anyMedia]);
 
-  const showModifiers = !condensed && (compose.media_attachments.size || compose.is_uploading || compose.poll?.options.size || compose.schedule);
+  const showModifiers = !condensed && (compose.media_attachments.length || compose.is_uploading || compose.poll?.options.length || compose.schedule);
 
   const composeModifiers = showModifiers && (
     <Stack space={4} className='font-[inherit] text-sm text-gray-900'>

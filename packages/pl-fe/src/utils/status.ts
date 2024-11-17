@@ -44,7 +44,7 @@ const textForScreenReader = (
 
   const values = [
     displayName.length === 0 ? account.acct.split('@')[0] : displayName,
-    status.spoiler_text && status.hidden ? status.spoiler_text : status.search_index.slice(status.spoiler_text.length),
+    status.spoiler_text && status.hidden ? status.spoiler_text : status.search_index?.slice(status.spoiler_text.length) || '',
     intl.formatDate(status.created_at, { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }),
     account.acct,
   ];

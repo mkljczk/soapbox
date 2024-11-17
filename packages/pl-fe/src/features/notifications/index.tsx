@@ -1,14 +1,13 @@
 import clsx from 'clsx';
-import { List as ImmutableList } from 'immutable';
 import debounce from 'lodash/debounce';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createSelector } from 'reselect';
 
 import {
   expandNotifications,
+  markReadNotifications,
   scrollTopNotifications,
-  dequeueNotifications,
 } from 'pl-fe/actions/notifications';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import ScrollTopButton from 'pl-fe/components/scroll-top-button';
@@ -31,8 +30,26 @@ const messages = defineMessages({
 });
 
 const getNotifications = createSelector([
-  (state: RootState) => state.notifications.items.toList(),
-], (notifications) => notifications.filter(item => item !== null));
+  (state: RootState) => state.notifications.items,
+  (_, topNotification?: string) => topNotification,
+], (notifications, topNotificationId) => {
+  if (topNotificationId) {
+    const queuedNotificationCount = notifications.findIndex((notification) =>
+      notification.most_recent_notification_id <= topNotificationId,
+    );
+    const displayedNotifications = notifications.slice(queuedNotificationCount);
+
+    return {
+      queuedNotificationCount,
+      displayedNotifications,
+    };
+  }
+
+  return {
+    queuedNotificationCount: 0,
+    displayedNotifications: notifications,
+  };
+});
 
 const Notifications = () => {
   const dispatch = useAppDispatch();
@@ -41,39 +58,39 @@ const Notifications = () => {
 
   const showFilterBar = settings.notifications.quickFilter.show;
   const activeFilter = settings.notifications.quickFilter.active;
-  const notifications = useAppSelector(state => getNotifications(state));
+  const [topNotification, setTopNotification] = useState<string>();
+  const { queuedNotificationCount, displayedNotifications } = useAppSelector(state => getNotifications(state, topNotification));
   const isLoading = useAppSelector(state => state.notifications.isLoading);
   // const isUnread = useAppSelector(state => state.notifications.unread > 0);
   const hasMore = useAppSelector(state => state.notifications.hasMore);
-  const totalQueuedNotificationsCount = useAppSelector(state => state.notifications.totalQueuedNotificationsCount || 0);
 
-  const scrollableContentRef = useRef<ImmutableList<JSX.Element> | null>(null);
+  const scrollableContentRef = useRef<Array<JSX.Element> | null>(null);
 
   // const handleLoadGap = (maxId) => {
   //   dispatch(expandNotifications({ maxId }));
   // };
 
   const handleLoadOlder = useCallback(debounce(() => {
-    const minId = notifications.reduce<string | undefined>(
+    const minId = displayedNotifications.reduce<string | undefined>(
       (minId, notification) => minId && notification.page_min_id && notification.page_min_id > minId
         ? minId
         : notification.page_min_id,
       undefined,
     );
     dispatch(expandNotifications({ maxId: minId }));
-  }, 300, { leading: true }), [notifications]);
+  }, 300, { leading: true }), [displayedNotifications]);
 
   const handleScroll = useCallback(debounce((startIndex?: number) => {
     dispatch(scrollTopNotifications(startIndex === 0));
   }, 100), []);
 
   const handleMoveUp = (id: string) => {
-    const elementIndex = notifications.findIndex(item => item !== null && item.group_key === id) - 1;
+    const elementIndex = displayedNotifications.findIndex(item => item !== null && item.group_key === id) - 1;
     _selectChild(elementIndex);
   };
 
   const handleMoveDown = (id: string) => {
-    const elementIndex = notifications.findIndex(item => item !== null && item.group_key === id) + 1;
+    const elementIndex = displayedNotifications.findIndex(item => item !== null && item.group_key === id) + 1;
     _selectChild(elementIndex);
   };
 
@@ -85,7 +102,8 @@ const Notifications = () => {
   };
 
   const handleDequeueNotifications = useCallback(() => {
-    dispatch(dequeueNotifications());
+    setTopNotification(undefined);
+    dispatch(markReadNotifications());
   }, []);
 
   const handleRefresh = useCallback(() => dispatch(expandNotifications()), []);
@@ -101,11 +119,16 @@ const Notifications = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (topNotification || displayedNotifications.length === 0) return;
+    setTopNotification(displayedNotifications[0].most_recent_notification_id);
+  }, [displayedNotifications.length]);
+
   const emptyMessage = activeFilter === 'all'
     ? <FormattedMessage id='empty_column.notifications' defaultMessage="You don't have any notifications yet. Interact with others to start the conversation." />
     : <FormattedMessage id='empty_column.notifications_filtered' defaultMessage="You don't have any notifications of this type yet." />;
 
-  let scrollableContent: ImmutableList<JSX.Element> | null = null;
+  let scrollableContent: Array<JSX.Element> | null = null;
 
   const filterBarContainer = showFilterBar
     ? (<FilterBar />)
@@ -113,8 +136,8 @@ const Notifications = () => {
 
   if (isLoading && scrollableContentRef.current) {
     scrollableContent = scrollableContentRef.current;
-  } else if (notifications.size > 0 || hasMore) {
-    scrollableContent = notifications.map((item) => (
+  } else if (displayedNotifications.length > 0 || hasMore) {
+    scrollableContent = displayedNotifications.map((item) => (
       <Notification
         key={item.group_key}
         notification={item}
@@ -131,7 +154,7 @@ const Notifications = () => {
   const scrollContainer = (
     <ScrollableList
       isLoading={isLoading}
-      showLoading={isLoading && notifications.size === 0}
+      showLoading={isLoading && displayedNotifications.length === 0}
       hasMore={hasMore}
       emptyMessage={emptyMessage}
       placeholderComponent={PlaceholderNotification}
@@ -139,10 +162,10 @@ const Notifications = () => {
       onLoadMore={handleLoadOlder}
       onScroll={handleScroll}
       listClassName={clsx('divide-y divide-solid divide-gray-200 black:divide-gray-800 dark:divide-primary-800', {
-        'animate-pulse': notifications.size === 0,
+        'animate-pulse': displayedNotifications.length === 0,
       })}
     >
-      {scrollableContent as ImmutableList<JSX.Element>}
+      {scrollableContent!}
     </ScrollableList>
   );
 
@@ -153,7 +176,7 @@ const Notifications = () => {
       <Portal>
         <ScrollTopButton
           onClick={handleDequeueNotifications}
-          count={totalQueuedNotificationsCount}
+          count={queuedNotificationCount}
           message={messages.queue}
         />
       </Portal>

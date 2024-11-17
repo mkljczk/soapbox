@@ -1,20 +1,17 @@
-import { Map as ImmutableMap, fromJS } from 'immutable';
-
 import tintify from 'pl-fe/utils/colors';
 import { generateAccent, generateNeutral } from 'pl-fe/utils/theme';
 
 import type { TailwindColorPalette } from 'pl-fe/types/colors';
 
-type PlFeConfig = ImmutableMap<string, any>;
-type PlFeColors = ImmutableMap<string, any>;
+type PlFeColors = Record<string, Record<string, string>>;
 
 /** Check if the value is a valid hex color */
 const isHex = (value: any): boolean => /^#([0-9A-F]{3}){1,2}$/i.test(value);
 
 /** Expand hex colors into tints */
-const expandPalette = (palette: TailwindColorPalette): TailwindColorPalette => {
+const expandPalette = (palette: TailwindColorPalette): TailwindColorPalette =>
   // Generate palette only for present colors
-  return Object.entries(palette).reduce((result: TailwindColorPalette, colorData) => {
+  Object.entries(palette).reduce((result: TailwindColorPalette, colorData) => {
     const [colorName, color] = colorData;
 
     // Conditionally handle hex color and Tailwind color object
@@ -26,32 +23,36 @@ const expandPalette = (palette: TailwindColorPalette): TailwindColorPalette => {
 
     return result;
   }, {});
-};
 
 // Generate accent color only if brandColor is present
-const maybeGenerateAccentColor = (brandColor: any): string | null =>
+const maybeGenerateAccentColor = (brandColor: string): string | null =>
   isHex(brandColor) ? generateAccent(brandColor) : null;
 
 /** Build a color object from legacy colors */
-const fromLegacyColors = (plFeConfig: PlFeConfig): TailwindColorPalette => {
-  const brandColor = plFeConfig.get('brandColor');
-  const accentColor = plFeConfig.get('accentColor');
-  const accent = isHex(accentColor) ? accentColor : maybeGenerateAccentColor(brandColor);
+const fromLegacyColors = ({ brandColor, accentColor }: {
+  brandColor: string;
+  accentColor: string | null;
+}): TailwindColorPalette => {
+  const accent = typeof accentColor === 'string' && isHex(accentColor) ? accentColor : maybeGenerateAccentColor(brandColor);
 
   return expandPalette({
     primary: isHex(brandColor) ? brandColor : null,
     secondary: accent,
     accent,
-    gray: (isHex(brandColor) ? generateNeutral(brandColor) : null) as any,
+    gray: (isHex(brandColor) ? generateNeutral(brandColor) : null),
   });
 };
 
 /** Convert pl-fe Config into Tailwind colors */
-const toTailwind = (plFeConfig: PlFeConfig): PlFeConfig => {
-  const colors: PlFeColors = ImmutableMap(plFeConfig.get('colors'));
-  const legacyColors = ImmutableMap(fromJS(fromLegacyColors(plFeConfig))) as PlFeColors;
+const toTailwind = (config: {
+  brandColor: string;
+  accentColor: string | null;
+  colors: Record<string, Record<string, string>>;
+}): Record<string, Record<string, string> | string> => {
+  const colors: PlFeColors = config.colors;
+  const legacyColors = fromLegacyColors(config);
 
-  return plFeConfig.set('colors', legacyColors.mergeDeep(colors));
+  return Object.fromEntries(Object.entries(legacyColors).map(([key, value]) => [key, typeof value === 'string' ? colors[key] || value : { ...value, ...colors[key] }]));
 };
 
 export {

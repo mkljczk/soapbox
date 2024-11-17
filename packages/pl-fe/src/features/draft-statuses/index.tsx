@@ -31,7 +31,7 @@ const DraftStatuses = () => {
         emptyMessage={emptyMessage}
         listClassName='divide-y divide-solid divide-gray-200 dark:divide-gray-800'
       >
-        {drafts.toOrderedSet().reverse().map((draft) => <DraftStatus key={draft.draft_id} draftStatus={draft} />)}
+        {Object.values(drafts).toReversed().map((draft) => <DraftStatus key={draft.draft_id} draftStatus={draft} />)}
       </ScrollableList>
     </Column>
   );
