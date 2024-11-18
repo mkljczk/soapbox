@@ -23,7 +23,7 @@ const isFiveMinutesFromNow = (time: Date) => {
 };
 
 const messages = defineMessages({
-  schedule: { id: 'schedule.post_time', defaultMessage: 'Post Date/Time' },
+  schedule: { id: 'schedule.post_time', defaultMessage: 'Post date/time' },
   remove: { id: 'schedule.remove', defaultMessage: 'Remove schedule' },
 });
 

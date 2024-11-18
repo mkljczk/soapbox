@@ -31,7 +31,7 @@ const Groups: React.FC = () => {
         <Text size='2xl' weight='bold' tag='h2' align='center'>
           <FormattedMessage
             id='groups.empty.title'
-            defaultMessage='No Groups yet'
+            defaultMessage='No groups yet'
           />
         </Text>
 

@@ -19,7 +19,7 @@ Includes following features:
 */
 
 const messages = defineMessages({
-  heading: { id: 'column.mfa', defaultMessage: 'Multi-Factor Authentication' },
+  heading: { id: 'column.mfa', defaultMessage: 'Multi-factor authentication' },
 });
 
 const MfaForm: React.FC = () => {

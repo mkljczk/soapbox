@@ -9,7 +9,7 @@ import { useInstance } from 'pl-fe/hooks/use-instance';
 import SiteWallet from './components/site-wallet';
 
 const messages = defineMessages({
-  heading: { id: 'column.crypto_donate', defaultMessage: 'Donate Cryptocurrency' },
+  heading: { id: 'column.crypto_donate', defaultMessage: 'Donate cryptocurrency' },
 });
 
 const CryptoDonate: React.FC = (): JSX.Element => {

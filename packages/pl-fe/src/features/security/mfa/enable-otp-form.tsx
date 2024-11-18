@@ -13,7 +13,7 @@ import toast from 'pl-fe/toast';
 
 const messages = defineMessages({
   mfaCancelButton: { id: 'column.mfa_cancel', defaultMessage: 'Cancel' },
-  mfaSetupButton: { id: 'column.mfa_setup', defaultMessage: 'Proceed to Setup' },
+  mfaSetupButton: { id: 'column.mfa_setup', defaultMessage: 'Proceed to setup' },
   codesFail: { id: 'security.codes.fail', defaultMessage: 'Failed to fetch backup codes' },
 });
 

@@ -34,7 +34,7 @@ const CryptoDonatePanel: React.FC<ICryptoDonatePanel> = ({ limit = 3 }): JSX.Ele
 
   return (
     <Widget
-      title={<FormattedMessage id='crypto_donate_panel.heading' defaultMessage='Donate Cryptocurrency' />}
+      title={<FormattedMessage id='crypto_donate_panel.heading' defaultMessage='Donate cryptocurrency' />}
       onActionClick={handleAction}
       actionTitle={intl.formatMessage(messages.actionTitle, { count: addresses.length })}
     >

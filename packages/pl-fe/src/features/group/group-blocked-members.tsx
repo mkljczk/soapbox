@@ -19,7 +19,7 @@ import ColumnForbidden from '../ui/components/column-forbidden';
 type RouteParams = { groupId: string };
 
 const messages = defineMessages({
-  heading: { id: 'column.group_blocked_members', defaultMessage: 'Banned Members' },
+  heading: { id: 'column.group_blocked_members', defaultMessage: 'Banned members' },
   unblock: { id: 'group.group_mod_unblock', defaultMessage: 'Unban' },
   unblocked: { id: 'group.group_mod_unblock.success', defaultMessage: 'Unbanned @{name} from group' },
 });
