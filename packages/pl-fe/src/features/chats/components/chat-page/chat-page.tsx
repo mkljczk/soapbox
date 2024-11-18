@@ -1,14 +1,11 @@
+import { Outlet } from '@tanstack/react-router';
 import clsx from 'clsx';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { matchPath, Route, Switch, useHistory } from 'react-router-dom';
+import { matchPath, useHistory } from 'react-router-dom';
 
 import Stack from 'pl-fe/components/ui/stack';
 
-import ChatPageMain from './components/chat-page-main';
-import ChatPageNew from './components/chat-page-new';
-import ChatPageSettings from './components/chat-page-settings';
 import ChatPageSidebar from './components/chat-page-sidebar';
-import { Outlet } from '@tanstack/react-router';
 
 interface IChatPage {
   chatId?: string;
@@ -76,17 +73,6 @@ const ChatPage: React.FC<IChatPage> = ({ chatId }) => {
           })}
         >
           <Outlet />
-          {/* <Switch>
-            <Route path='/chats/new'>
-              <ChatPageNew />
-            </Route>
-            <Route path='/chats/settings'>
-              <ChatPageSettings />
-            </Route>
-            <Route>
-              <ChatPageMain />
-            </Route>
-          </Switch> */}
         </Stack>
       </div>
     </div>

@@ -13,6 +13,9 @@ export const BookmarkFolders = lazy(() => import('pl-fe/features/bookmark-folder
 export const Bookmarks = lazy(() => import('pl-fe/features/bookmarks'));
 export const BubbleTimeline = lazy(() => import('pl-fe/features/bubble-timeline'));
 export const ChatIndex = lazy(() => import('pl-fe/features/chats'));
+export const ChatPageMain = lazy(() => import('pl-fe/features/chats/components/chat-page/components/chat-page-main'));
+export const ChatPageNew = lazy(() => import('pl-fe/features/chats/components/chat-page/components/chat-page-new'));
+export const ChatPageSettings = lazy(() => import('pl-fe/features/chats/components/chat-page/components/chat-page-settings'));
 export const Circle = lazy(() => import('pl-fe/features/circle'));
 export const CommunityTimeline = lazy(() => import('pl-fe/features/community-timeline'));
 export const ComposeEditor = lazy(() => import('pl-fe/features/compose/editor'));

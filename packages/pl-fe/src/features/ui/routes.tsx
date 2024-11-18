@@ -61,6 +61,9 @@ import {
   Bookmarks,
   BubbleTimeline,
   ChatIndex,
+  ChatPageMain,
+  ChatPageNew,
+  ChatPageSettings,
   ChatWidget,
   Circle,
   CommunityTimeline,
@@ -221,15 +224,6 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
       <WrappedRoute path='/login' layout={DefaultLayout} component={LoginPage} publicRoute exact />
       <WrappedRoute path='/reset-password' layout={DefaultLayout} component={PasswordReset} publicRoute exact />
       <WrappedRoute path='/invite/:token' layout={DefaultLayout} component={RegisterInvite} publicRoute exact />
-
-      <WrappedRoute path='/@:username' publicRoute exact layout={ProfileLayout} component={AccountTimeline} content={children} />
-      <WrappedRoute path='/@:username/with_replies' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={AccountTimeline} content={children} componentParams={{ withReplies: true }} />
-      <WrappedRoute path='/@:username/followers' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={Followers} content={children} />
-      <WrappedRoute path='/@:username/following' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={Following} content={children} />
-      <WrappedRoute path='/@:username/media' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={AccountGallery} content={children} />
-      <WrappedRoute path='/@:username/tagged/:tag' exact layout={ProfileLayout} component={AccountTimeline} content={children} />
-      <WrappedRoute path='/@:username/favorites' layout={ProfileLayout} component={FavouritedStatuses} content={children} />
-      <WrappedRoute path='/@:username/pins' layout={ProfileLayout} component={PinnedStatuses} content={children} />
 
       <WrappedRoute path='/@:username/posts/:statusId' publicRoute exact layout={StatusLayout} component={Status} content={children} />
       <WrappedRoute path='/@:username/posts/:statusId/quotes' publicRoute layout={StatusLayout} component={Quotes} content={children} />
@@ -562,9 +556,23 @@ export const chatsRoute = {
   route: createRoute({ getParentRoute: () => layouts.chats, path: '/chats', component: ChatIndex }),
   condition: ({ features }: ConditionParam) => features.chats,
 };
-// {features.chats && <WrappedRoute path='/chats/new' layout={ChatsLayout} component={ChatIndex} content={children} />;}
-// {features.chats && <WrappedRoute path='/chats/settings' layout={ChatsLayout} component={ChatIndex} content={children} />;}
-// {features.chats && <WrappedRoute path='/chats/:chatId' layout={ChatsLayout} component={ChatIndex} content={children} />;}
+
+export const newChatRoute = createRoute({ getParentRoute: () => chatsRoute.route, path: '/chats/new', component: ChatPageNew });
+export const chatsSettingsRoute = createRoute({ getParentRoute: () => chatsRoute.route, path: '/chats/settings', component: ChatPageSettings });
+export const chatRoute = createRoute({ getParentRoute: () => chatsRoute.route, path: '/chats/$chatId', component: ChatPageMain });
+export const chatsMainRoute = createRoute({ getParentRoute: () => chatsRoute.route, path: '/chats', component: ChatPageMain });
+
+chatsRoute.route.addChildren([newChatRoute, chatsSettingsRoute, chatRoute, chatsMainRoute]);
+
+export const accountTimelineRoute = { route: createRoute({ getParentRoute: () => layouts.profile, path: '/@$username', component: AccountTimeline }) };
+{/* <WrappedRoute path='/@:username' publicRoute exact layout={ProfileLayout} component={AccountTimeline} content={children} />
+<WrappedRoute path='/@:username/with_replies' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={AccountTimeline} content={children} componentParams={{ withReplies: true }} />
+<WrappedRoute path='/@:username/followers' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={Followers} content={children} />
+<WrappedRoute path='/@:username/following' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={Following} content={children} />
+<WrappedRoute path='/@:username/media' publicRoute={!authenticatedProfile} layout={ProfileLayout} component={AccountGallery} content={children} />
+<WrappedRoute path='/@:username/tagged/:tag' exact layout={ProfileLayout} component={AccountTimeline} content={children} />
+<WrappedRoute path='/@:username/favorites' layout={ProfileLayout} component={FavouritedStatuses} content={children} />
+<WrappedRoute path='/@:username/pins' layout={ProfileLayout} component={PinnedStatuses} content={children} /> */}
 
 // is this even legal lol
 const useRouter = () => {
