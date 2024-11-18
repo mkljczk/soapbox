@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import * as v from 'valibot';
 
-import { useLocale } from 'pl-fe/hooks/use-locale';
+import { useLocale, useLocaleDirection } from 'pl-fe/hooks/use-locale';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useTheme } from 'pl-fe/hooks/use-theme';
@@ -15,7 +15,8 @@ const Helmet = React.lazy(() => import('pl-fe/components/helmet'));
 
 /** Injects metadata into site head with Helmet. */
 const PlFeHead = () => {
-  const { locale, direction } = useLocale();
+  const locale = useLocale();
+  const direction = useLocaleDirection(locale);
   const { demo, reduceMotion, underlineLinks, demetricator, systemFont } = useSettings();
   const plFeConfig = usePlFeConfig();
   const theme = useTheme();

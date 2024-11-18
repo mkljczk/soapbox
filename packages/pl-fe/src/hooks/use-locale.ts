@@ -1,27 +1,16 @@
-import { getLocale } from 'pl-fe/actions/settings';
+import messages from 'pl-fe/messages';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 
 /** Locales which should be presented in right-to-left. */
 const RTL_LOCALES = ['ar', 'ckb', 'fa', 'he'];
 
-interface UseLocaleResult {
-  locale: string;
-  direction: 'ltr' | 'rtl';
-}
-
 /** Get valid locale from settings. */
-const useLocale = (fallback = 'en'): UseLocaleResult => {
-  // TODO use useSettingsStore directly
-  const locale = getLocale(fallback);
-
-  const direction: 'ltr' | 'rtl' =
-    RTL_LOCALES.includes(locale)
-      ? 'rtl'
-      : 'ltr';
-
-  return {
-    locale,
-    direction,
-  };
+const useLocale = (fallback = 'en') => {
+  const localeWithVariant = useSettingsStore().settings.locale.replace('_', '-');
+  const localeFirstPart = localeWithVariant.split('-')[0];
+  return Object.keys(messages).includes(localeWithVariant) ? localeWithVariant : Object.keys(messages).includes(localeFirstPart) ? localeFirstPart : fallback;
 };
 
-export { useLocale };
+const useLocaleDirection = (locale = 'en') => RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
+
+export { useLocale, useLocaleDirection };

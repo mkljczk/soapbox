@@ -65,6 +65,7 @@ const useSettingsStore = create<State>()(mutative((set) => ({
     changeSetting(state.userSettings, path, value);
 
     mergeSettings(state);
+    console.log(JSON.parse(JSON.stringify(state.userSettings)));
   }),
 
   rememberEmojiUse: (emoji: Emoji) => set((state: State) => {

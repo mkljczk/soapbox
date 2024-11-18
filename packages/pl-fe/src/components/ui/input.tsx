@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { useLocale } from 'pl-fe/hooks/use-locale';
+import { useLocale, useLocaleDirection } from 'pl-fe/hooks/use-locale';
 import { getTextDirection } from 'pl-fe/utils/rtl';
 
 import Icon from './icon';
@@ -48,7 +48,7 @@ interface IInput extends Pick<React.InputHTMLAttributes<HTMLInputElement>, 'maxL
 const Input = React.forwardRef<HTMLInputElement, IInput>(
   (props, ref) => {
     const intl = useIntl();
-    const locale = useLocale();
+    const direction = useLocaleDirection(useLocale());
 
     const { type = 'text', icon, className, outerClassName, append, prepend, theme = 'normal', ...filteredProps } = props;
 
@@ -98,7 +98,7 @@ const Input = React.forwardRef<HTMLInputElement, IInput>(
             'pl-8': typeof icon !== 'undefined',
             'pl-16': typeof prepend !== 'undefined',
           }, className)}
-          dir={typeof props.value === 'string' ? getTextDirection(props.value, { fallback: locale.direction }) : undefined}
+          dir={typeof props.value === 'string' ? getTextDirection(props.value, { fallback: direction }) : undefined}
         />
 
         {append ? (
