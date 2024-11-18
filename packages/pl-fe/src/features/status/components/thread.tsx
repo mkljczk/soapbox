@@ -67,7 +67,7 @@ const makeGetDescendantsIds = () => createSelector([
     }
 
     if (replies) {
-      replies.reverse().forEach((reply: string) => {
+      replies.toReversed().forEach((reply: string) => {
         ids.unshift(reply);
       });
     }
