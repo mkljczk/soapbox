@@ -544,7 +544,7 @@ export const composeEventRoute = {
   condition: ({ features }: ConditionParam) => features.events,
 };
 export const eventsRoute = {
-  route: createRoute({ getParentRoute: () => layouts.events, path: '/events/new', component: Events }),
+  route: createRoute({ getParentRoute: () => layouts.events, path: '/events', component: Events }),
   condition: ({ features }: ConditionParam) => features.events,
 };
 export const editEventRoute = {
@@ -557,10 +557,10 @@ export const chatsRoute = {
   condition: ({ features }: ConditionParam) => features.chats,
 };
 
-export const newChatRoute = createRoute({ getParentRoute: () => chatsRoute.route, path: '/chats/new', component: ChatPageNew });
-export const chatsSettingsRoute = createRoute({ getParentRoute: () => chatsRoute.route, path: '/chats/settings', component: ChatPageSettings });
-export const chatRoute = createRoute({ getParentRoute: () => chatsRoute.route, path: '/chats/$chatId', component: ChatPageMain });
-export const chatsMainRoute = createRoute({ getParentRoute: () => chatsRoute.route, path: '/chats', component: ChatPageMain });
+export const newChatRoute = createRoute({ getParentRoute: () => chatsRoute.route, path: '/new', component: ChatPageNew });
+export const chatsSettingsRoute = createRoute({ getParentRoute: () => chatsRoute.route, path: '/settings', component: ChatPageSettings });
+export const chatRoute = createRoute({ getParentRoute: () => chatsRoute.route, path: '/$chatId', component: ChatPageMain });
+export const chatsMainRoute = createRoute({ getParentRoute: () => chatsRoute.route, path: '/', component: ChatPageMain });
 
 chatsRoute.route.addChildren([newChatRoute, chatsSettingsRoute, chatRoute, chatsMainRoute]);
 
@@ -602,6 +602,7 @@ const useRouter = () => {
         publicTimelineRoute,
         bubbleTimelineRoute,
       ])),
+      layouts.profile.addChildren(filterRoutes([accountTimelineRoute])),
       layouts.remoteInstance.addChildren(filterRoutes([remoteTimelineRoute])),
       layouts.search.addChildren(filterRoutes([searchRoute])),
     ]);
