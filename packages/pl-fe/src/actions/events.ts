@@ -200,7 +200,7 @@ const leaveEvent = (statusId: string) =>
       dispatch(importEntities({ statuses: [data] }));
       dispatch(leaveEventSuccess(status.id));
     }).catch((error) => {
-      dispatch(leaveEventFail(error, status.id));
+      dispatch(leaveEventFail(error, status.id, status?.event?.join_state || null));
     });
   };
 
@@ -214,10 +214,11 @@ const leaveEventSuccess = (statusId: string) => ({
   statusId,
 });
 
-const leaveEventFail = (error: unknown, statusId: string) => ({
+const leaveEventFail = (error: unknown, statusId: string, previousState: string | null) => ({
   type: EVENT_LEAVE_FAIL,
   statusId,
   error,
+  previousState,
 });
 
 const fetchEventParticipations = (statusId: string) =>
