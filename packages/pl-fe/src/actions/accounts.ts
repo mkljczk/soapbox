@@ -495,7 +495,7 @@ const fetchPinnedAccountsRequest = (accountId: string) => ({
   accountId,
 });
 
-const fetchPinnedAccountsSuccess = (accountId: string, accounts: Array<Account>, next: string | null) => ({
+const fetchPinnedAccountsSuccess = (accountId: string, accounts: Array<Account>, next: null) => ({
   type: PINNED_ACCOUNTS_FETCH_SUCCESS,
   accountId,
   accounts,
@@ -576,7 +576,7 @@ interface BirthdayRemindersFetchSuccessAction {
   type: typeof BIRTHDAY_REMINDERS_FETCH_SUCCESS;
   day: number;
   month: number;
-  accountId: Me;
+  accountId: string;
   accounts: Array<Account>;
 }
 
@@ -591,7 +591,7 @@ const fetchBirthdayReminders = (month: number, day: number) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
-    const me = getState().me;
+    const me = getState().me as string;
 
     dispatch<BirthdayRemindersFetchRequestAction>({ type: BIRTHDAY_REMINDERS_FETCH_REQUEST, day, month, accountId: me });
 

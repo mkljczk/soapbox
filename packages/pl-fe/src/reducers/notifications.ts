@@ -9,8 +9,8 @@ import {
 } from '../actions/accounts';
 import {
   MARKER_FETCH_SUCCESS,
-  MARKER_SAVE_REQUEST,
   MARKER_SAVE_SUCCESS,
+  type MarkersAction,
 } from '../actions/markers';
 import {
   NOTIFICATIONS_UPDATE,
@@ -23,8 +23,7 @@ import {
 } from '../actions/notifications';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
-import type { Notification as BaseNotification, Markers, NotificationGroup, PaginatedResponse, Relationship } from 'pl-api';
-import type { AnyAction } from 'redux';
+import type { GroupedNotificationsResults, Markers, NotificationGroup, PaginatedResponse, Relationship } from 'pl-api';
 
 interface State {
   items: Array<NotificationGroup>;
@@ -75,7 +74,7 @@ const importNotification = (state: State, notification: NotificationGroup) =>
     draft.items = [notification, ...draft.items].toSorted(comparator).filter(filterUnique);
   });
 
-const expandNormalizedNotifications = (state: State, notifications: NotificationGroup[], next: (() => Promise<PaginatedResponse<BaseNotification>>) | null) =>
+const expandNormalizedNotifications = (state: State, notifications: NotificationGroup[], next: (() => Promise<PaginatedResponse<GroupedNotificationsResults, false>>) | null) =>
   create(state, (draft) => {
     draft.items = [...notifications, ...draft.items].toSorted(comparator).filter(filterUnique);
 
@@ -122,14 +121,14 @@ const importMarker = (state: State, marker: Markers) => {
   });
 };
 
-const notifications = (state: State = initialState, action: AccountsAction | AnyAction | NotificationsAction | TimelineAction): State => {
+const notifications = (state: State = initialState, action: AccountsAction | MarkersAction | NotificationsAction | TimelineAction): State => {
   switch (action.type) {
     case NOTIFICATIONS_EXPAND_REQUEST:
       return create(state, (draft) => {
         draft.isLoading = true;
       });
     case NOTIFICATIONS_EXPAND_FAIL:
-      if (action.error?.message === 'canceled') return state;
+      if ((action.error as any)?.message === 'canceled') return state;
       return create(state, (draft) => {
         draft.isLoading = false;
       });
@@ -152,7 +151,6 @@ const notifications = (state: State = initialState, action: AccountsAction | Any
     case FOLLOW_REQUEST_REJECT_SUCCESS:
       return filterNotificationIds(state, [action.accountId], 'follow_request');
     case MARKER_FETCH_SUCCESS:
-    case MARKER_SAVE_REQUEST:
     case MARKER_SAVE_SUCCESS:
       return importMarker(state, action.marker);
     case TIMELINE_DELETE:

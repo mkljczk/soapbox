@@ -1,5 +1,4 @@
 import { create } from 'mutative';
-import { AnyAction } from 'redux';
 
 import {
   FOLLOW_REQUESTS_FETCH_SUCCESS,
@@ -26,8 +25,9 @@ import {
   EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS,
   EVENT_PARTICIPATION_REQUEST_AUTHORIZE_SUCCESS,
   EVENT_PARTICIPATION_REQUEST_REJECT_SUCCESS,
+  type EventsAction,
 } from 'pl-fe/actions/events';
-import { FAMILIAR_FOLLOWERS_FETCH_SUCCESS } from 'pl-fe/actions/familiar-followers';
+import { FAMILIAR_FOLLOWERS_FETCH_SUCCESS, type FamiliarFollowersAction } from 'pl-fe/actions/familiar-followers';
 import {
   GROUP_BLOCKS_FETCH_REQUEST,
   GROUP_BLOCKS_FETCH_SUCCESS,
@@ -46,8 +46,7 @@ import {
 } from 'pl-fe/actions/interactions';
 import { NOTIFICATIONS_UPDATE, type NotificationsAction } from 'pl-fe/actions/notifications';
 
-import type { Account, EmojiReaction, Notification, PaginatedResponse } from 'pl-api';
-import type { APIEntity } from 'pl-fe/types/entities';
+import type { Account, NotificationGroup, PaginatedResponse } from 'pl-api';
 
 interface List {
   next: (() => Promise<PaginatedResponse<Account>>) | null;
@@ -57,9 +56,9 @@ interface List {
 
 interface Reaction {
   accounts: Array<string>;
-  count: number;
+  count: number | null;
   name: string;
-  url: string | null;
+  url: string | undefined;
 }
 
 interface ReactionList {
@@ -153,12 +152,12 @@ const removeFromList = (state: State, path: NestedListPath | ListPath, accountId
     list.items = list.items.filter(item => item !== accountId);
   });
 
-const normalizeFollowRequest = (state: State, notification: Notification) =>
+const normalizeFollowRequest = (state: State, notification: NotificationGroup) =>
   create(state, (draft) => {
-    draft.follow_requests.items = [...new Set([notification.account.id, ...draft.follow_requests.items])];
+    draft.follow_requests.items = [...new Set([...notification.sample_account_ids, ...draft.follow_requests.items])];
   });
 
-const userLists = (state = initialState, action: AccountsAction | DirectoryAction | GroupsAction | InteractionsAction | NotificationsAction | AnyAction): State => {
+const userLists = (state = initialState, action: AccountsAction | DirectoryAction | EventsAction | FamiliarFollowersAction | GroupsAction | InteractionsAction | NotificationsAction): State => {
   switch (action.type) {
     case REBLOGS_FETCH_SUCCESS:
       return normalizeList(state, ['reblogged_by', action.statusId], action.accounts, action.next);
@@ -173,7 +172,7 @@ const userLists = (state = initialState, action: AccountsAction | DirectoryActio
     case REACTIONS_FETCH_SUCCESS:
       return create(state, (draft) => {
         draft.reactions[action.statusId] = {
-          items: action.reactions.map((reaction: EmojiReaction) => ({ ...reaction, accounts: reaction.accounts.map(({ id }) => id) })),
+          items: action.reactions.map((reaction) => ({ ...reaction, accounts: reaction.accounts.map(({ id }) => id) })),
           next: null,
           isLoading: false,
         };
@@ -206,7 +205,7 @@ const userLists = (state = initialState, action: AccountsAction | DirectoryActio
     case BIRTHDAY_REMINDERS_FETCH_SUCCESS:
       return normalizeList(state, ['birthday_reminders', action.accountId], action.accounts);
     case FAMILIAR_FOLLOWERS_FETCH_SUCCESS:
-      return normalizeList(state, ['familiar_followers', action.accountId], action.accounts, action.next);
+      return normalizeList(state, ['familiar_followers', action.accountId], action.accounts);
     case EVENT_PARTICIPATIONS_FETCH_SUCCESS:
       return normalizeList(state, ['event_participations', action.statusId], action.accounts, action.next);
     case EVENT_PARTICIPATIONS_EXPAND_SUCCESS:
@@ -215,7 +214,7 @@ const userLists = (state = initialState, action: AccountsAction | DirectoryActio
       return create(state, (draft) => {
         draft.event_participation_requests[action.statusId] = {
           next: action.next,
-          items: action.participations.map(({ account, participation_message }: APIEntity) => ({
+          items: action.participations.map(({ account, participation_message }) => ({
             account: account.id,
             participation_message,
           })),
@@ -226,7 +225,7 @@ const userLists = (state = initialState, action: AccountsAction | DirectoryActio
       return create(state, (draft) => {
         const list = draft.event_participation_requests[action.statusId];
         list.next = action.next;
-        list.items = [...list.items, ...action.participations.map(({ account, participation_message }: APIEntity) => ({
+        list.items = [...list.items, ...action.participations.map(({ account, participation_message }) => ({
           account: account.id,
           participation_message,
         }))];
@@ -236,7 +235,7 @@ const userLists = (state = initialState, action: AccountsAction | DirectoryActio
     case EVENT_PARTICIPATION_REQUEST_REJECT_SUCCESS:
       return create(state, (draft) => {
         const list = draft.event_participation_requests[action.statusId];
-        if (list.items) list.items = list.items.filter(item => item !== action.accountId);
+        if (list.items) list.items = list.items.filter(item => item.account !== action.accountId);
       });
     case GROUP_BLOCKS_FETCH_SUCCESS:
       return normalizeList(state, ['group_blocks', action.groupId], action.accounts, action.next);

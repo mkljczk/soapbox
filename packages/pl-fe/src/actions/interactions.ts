@@ -698,9 +698,13 @@ type InteractionsAction =
   | ReturnType<typeof fetchReblogsRequest>
   | ReturnType<typeof fetchReblogsSuccess>
   | ReturnType<typeof fetchReblogsFail>
+  | ReturnType<typeof expandReblogsSuccess>
+  | ReturnType<typeof expandReblogsFail>
   | ReturnType<typeof fetchFavouritesRequest>
   | ReturnType<typeof fetchFavouritesSuccess>
   | ReturnType<typeof fetchFavouritesFail>
+  | ReturnType<typeof expandFavouritesSuccess>
+  | ReturnType<typeof expandFavouritesFail>
   | ReturnType<typeof fetchDislikesRequest>
   | ReturnType<typeof fetchDislikesSuccess>
   | ReturnType<typeof fetchDislikesFail>

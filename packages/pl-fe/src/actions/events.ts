@@ -489,6 +489,35 @@ const fetchJoinedEvents = () =>
   };
 
 type EventsAction =
+  | ReturnType<typeof submitEventRequest>
+  | ReturnType<typeof submitEventSuccess>
+  | ReturnType<typeof submitEventFail>
+  | ReturnType<typeof joinEventRequest>
+  | ReturnType<typeof joinEventSuccess>
+  | ReturnType<typeof joinEventFail>
+  | ReturnType<typeof leaveEventRequest>
+  | ReturnType<typeof leaveEventSuccess>
+  | ReturnType<typeof leaveEventFail>
+  | ReturnType<typeof fetchEventParticipationsRequest>
+  | ReturnType<typeof fetchEventParticipationsSuccess>
+  | ReturnType<typeof fetchEventParticipationsFail>
+  | ReturnType<typeof expandEventParticipationsRequest>
+  | ReturnType<typeof expandEventParticipationsSuccess>
+  | ReturnType<typeof expandEventParticipationsFail>
+  | ReturnType<typeof fetchEventParticipationRequestsRequest>
+  | ReturnType<typeof fetchEventParticipationRequestsSuccess>
+  | ReturnType<typeof fetchEventParticipationRequestsFail>
+  | ReturnType<typeof expandEventParticipationRequestsRequest>
+  | ReturnType<typeof expandEventParticipationRequestsSuccess>
+  | ReturnType<typeof expandEventParticipationRequestsFail>
+  | ReturnType<typeof expandEventParticipationRequestsSuccess>
+  | ReturnType<typeof expandEventParticipationRequestsFail>
+  | ReturnType<typeof authorizeEventParticipationRequestRequest>
+  | ReturnType<typeof authorizeEventParticipationRequestSuccess>
+  | ReturnType<typeof authorizeEventParticipationRequestFail>
+  | ReturnType<typeof rejectEventParticipationRequestRequest>
+  | ReturnType<typeof rejectEventParticipationRequestSuccess>
+  | ReturnType<typeof rejectEventParticipationRequestFail>
   | ReturnType<typeof cancelEventCompose>
   | EventFormSetAction;
 
