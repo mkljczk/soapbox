@@ -654,7 +654,7 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/admin/groups/:group_id/unsuspend
      * @see DELETE /api/v1/admin/groups/:group_id
      */
-    groups: instance.api_versions['pleroma:groups.pleroma.pl-api'] >= 1,
+    groups: instance.api_versions['groups.pleroma.pl-api'] >= 1,
 
     /**
      * Can hide follows/followers lists and counts.
