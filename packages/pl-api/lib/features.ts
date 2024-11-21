@@ -1001,12 +1001,13 @@ const getFeatures = (instance: Instance) => {
      * @see PATCH /api/v1/accounts/update_credentials
      */
     profileFields: any([
+      v.software === DITTO,
+      v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
       v.software === MASTODON,
+      v.software === MITRA,
       v.software === PLEROMA,
       v.software === TAKAHE && gte(v.version, '0.7.0'),
-      v.software === MITRA,
-      v.software === GOTOSOCIAL,
     ]),
 
     /**
@@ -1121,10 +1122,11 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v2/search
      */
     searchFromAccount: any([
+      v.software === DITTO,
+      v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
       v.software === MASTODON,
       v.software === PLEROMA,
-      v.software === GOTOSOCIAL,
     ]),
 
     /**
