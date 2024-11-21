@@ -52,7 +52,6 @@ const AutosuggestInput: React.FC<IAutosuggestInput> = ({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-
   const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const [tokenStart, token] = textAtCursorMatchesToken(
       e.target.value,
