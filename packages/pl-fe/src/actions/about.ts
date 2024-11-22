@@ -23,7 +23,7 @@ interface FetchAboutPageFailAction {
   type: typeof FETCH_ABOUT_PAGE_FAIL;
   slug: string;
   locale?: string;
-  error: any;
+  error: unknown;
 }
 
 const fetchAboutPage = (slug = 'index', locale?: string) => (dispatch: AppDispatch, getState: () => RootState) => {

@@ -174,7 +174,7 @@ interface VerifyCredentialsSuccessAction {
 interface VerifyCredentialsFailAction {
   type: typeof VERIFY_CREDENTIALS_FAIL;
   token: string;
-  error: any;
+  error: unknown;
 }
 
 const verifyCredentials = (token: string, accountUrl?: string) =>
@@ -220,7 +220,7 @@ interface AuthAccountRememberSuccessAction {
 
 interface AuthAccountRememberFailAction {
   type: typeof AUTH_ACCOUNT_REMEMBER_FAIL;
-  error: any;
+  error: unknown;
   accountUrl: string;
   skipAlert: boolean;
 }

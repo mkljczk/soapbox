@@ -6,7 +6,17 @@ import { getClient } from '../api';
 
 import { importEntities } from './importer';
 
-import type { PaginatedResponse, Status as BaseStatus, PublicTimelineParams, HomeTimelineParams, ListTimelineParams, HashtagTimelineParams, GetAccountStatusesParams, GroupTimelineParams } from 'pl-api';
+import type {
+  Account as BaseAccount,
+  GetAccountStatusesParams,
+  GroupTimelineParams,
+  HashtagTimelineParams,
+  HomeTimelineParams,
+  ListTimelineParams,
+  PaginatedResponse,
+  PublicTimelineParams,
+  Status as BaseStatus,
+} from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const TIMELINE_UPDATE = 'TIMELINE_UPDATE' as const;
@@ -133,20 +143,16 @@ const parseTags = (tags: Record<string, any[]> = {}, mode: 'any' | 'all' | 'none
   (tags[mode] || []).map((tag) => tag.value);
 
 const deduplicateStatuses = (statuses: Array<BaseStatus>) => {
-  const deduplicatedStatuses: any[] = [];
+  const deduplicatedStatuses: Array<BaseStatus & { accounts: Array<BaseAccount> }> = [];
 
   for (const status of statuses) {
     const reblogged = status.reblog && deduplicatedStatuses.find((deduplicatedStatus) => deduplicatedStatus.reblog?.id === status.reblog?.id);
 
     if (reblogged) {
-      if (reblogged.accounts) {
-        reblogged.accounts.push(status.account);
-      } else {
-        reblogged.accounts = [reblogged.account, status.account];
-      }
+      reblogged.accounts.push(status.account);
       reblogged.id += ':' + status.id;
     } else if (!deduplicatedStatuses.find((deduplicatedStatus) => deduplicatedStatus.reblog?.id === status.id)) {
-      deduplicatedStatuses.push(status);
+      deduplicatedStatuses.push({ accounts: [status.account], ...status });
     }
   }
 

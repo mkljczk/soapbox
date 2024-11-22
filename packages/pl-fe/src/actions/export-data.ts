@@ -27,15 +27,16 @@ const messages = defineMessages({
 
 type ExportDataAction = {
   type: typeof EXPORT_FOLLOWS_REQUEST
-  | typeof EXPORT_FOLLOWS_SUCCESS
-  | typeof EXPORT_FOLLOWS_FAIL
   | typeof EXPORT_BLOCKS_REQUEST
-  | typeof EXPORT_BLOCKS_SUCCESS
-  | typeof EXPORT_BLOCKS_FAIL
   | typeof EXPORT_MUTES_REQUEST
-  | typeof EXPORT_MUTES_SUCCESS
+  | typeof EXPORT_FOLLOWS_SUCCESS
+  | typeof EXPORT_BLOCKS_SUCCESS
+  | typeof EXPORT_MUTES_SUCCESS;
+} | {
+  type:  typeof EXPORT_FOLLOWS_FAIL
+  | typeof EXPORT_BLOCKS_FAIL
   | typeof EXPORT_MUTES_FAIL;
-  error?: any;
+  error?: unknown;
 }
 
 const fileExport = (content: string, fileName: string) => {

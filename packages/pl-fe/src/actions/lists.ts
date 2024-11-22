@@ -310,7 +310,7 @@ const addToListSuccess = (listId: string, accountId: string) => ({
   accountId,
 });
 
-const addToListFail = (listId: string, accountId: string, error: any) => ({
+const addToListFail = (listId: string, accountId: string, error: unknown) => ({
   type: LIST_EDITOR_ADD_FAIL,
   listId,
   accountId,

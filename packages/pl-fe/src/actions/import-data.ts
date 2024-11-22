@@ -20,16 +20,18 @@ const IMPORT_MUTES_FAIL = 'IMPORT_MUTES_FAIL' as const;
 
 type ImportDataActions = {
   type: typeof IMPORT_FOLLOWS_REQUEST
-  | typeof IMPORT_FOLLOWS_SUCCESS
-  | typeof IMPORT_FOLLOWS_FAIL
   | typeof IMPORT_BLOCKS_REQUEST
+  | typeof IMPORT_MUTES_REQUEST;
+} | {
+  type: typeof IMPORT_FOLLOWS_SUCCESS
   | typeof IMPORT_BLOCKS_SUCCESS
-  | typeof IMPORT_BLOCKS_FAIL
-  | typeof IMPORT_MUTES_REQUEST
-  | typeof IMPORT_MUTES_SUCCESS
-  | typeof IMPORT_MUTES_FAIL;
-  error?: any;
+  | typeof IMPORT_MUTES_SUCCESS;
   response?: string;
+} | {
+  type: | typeof IMPORT_FOLLOWS_FAIL
+  | typeof IMPORT_BLOCKS_FAIL
+  | typeof IMPORT_MUTES_FAIL;
+  error?: unknown;
 }
 
 const messages = defineMessages({

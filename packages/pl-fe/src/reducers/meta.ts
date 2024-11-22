@@ -8,7 +8,7 @@ const initialState = {
 const meta = (state = initialState, action: InstanceAction): typeof initialState => {
   switch (action.type) {
     case INSTANCE_FETCH_FAIL:
-      if (action.error?.response?.status === 404) {
+      if ((action.error as any)?.response?.status === 404) {
         return { instance_fetch_failed: true };
       }
       return state;
