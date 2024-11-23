@@ -5,7 +5,7 @@ import { accountSchema } from './account';
 import { ruleSchema } from './rule';
 import { coerceObject, filteredArray, mimeSchema } from './utils';
 
-const getApiVersions = (instance: any) => ({
+const getApiVersions = (instance: any): Record<string, number> => ({
   ...Object.fromEntries(instance.pleroma?.metadata?.features?.map((feature: string) => {
     let string = `${feature}.pleroma.pl-api`;
     if (string.startsWith('pleroma:') || string.startsWith('pleroma_')) string = string.slice(8);
@@ -306,7 +306,7 @@ const instanceSchema = v.pipe(
 
     if (data.domain) return { account_domain: data.domain, ...data, api_versions: apiVersions };
 
-    return instanceV1ToV2({ ...data, api_versions: apiVersions });
+    return { ...instanceV1ToV2(data), api_versions: apiVersions };
   }),
   coerceObject({
     account_domain: v.fallback(v.string(), ''),

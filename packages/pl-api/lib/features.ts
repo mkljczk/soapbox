@@ -656,6 +656,8 @@ const getFeatures = (instance: Instance) => {
      */
     groups: instance.api_versions['groups.pleroma.pl-api'] >= 1,
 
+    groupsSlugs: instance.api_versions['groups.pleroma.pl-api'] >= 1,
+
     /**
      * Can hide follows/followers lists and counts.
      * @see PATCH /api/v1/accounts/update_credentials
