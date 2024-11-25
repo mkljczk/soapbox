@@ -39,7 +39,7 @@ const Avatar = (props: IAvatar) => {
           width: size,
           height: size,
         }}
-        className={clsx('flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-900', className)}
+        className={clsx('flex items-center justify-center rounded-lg bg-gray-200 dark:bg-gray-900', className)}
       >
         <Icon
           src={require('@tabler/icons/outline/photo-off.svg')}
@@ -51,7 +51,7 @@ const Avatar = (props: IAvatar) => {
 
   return (
     <StillImage
-      className={clsx('rounded-full', className)}
+      className={clsx('rounded-lg', className)}
       style={style}
       src={src}
       alt={alt || intl.formatMessage(messages.avatar)}

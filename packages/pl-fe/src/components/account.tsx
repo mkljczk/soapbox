@@ -203,7 +203,7 @@ const Account = ({
     <div data-testid='account' className='group block w-full shrink-0' ref={overflowRef}>
       <HStack alignItems={actionAlignment} space={3} justifyContent='between'>
         <HStack alignItems='center' space={3} className='overflow-hidden'>
-          <div className='rounded-full'>
+          <div className='rounded-lg'>
             <Avatar src={account.avatar} size={avatarSize} alt={account.avatar_description} />
             {emoji && (
               <Emoji
@@ -259,7 +259,7 @@ const Account = ({
               condition={showAccountHoverCard}
               wrapper={(children) => <HoverAccountWrapper className='relative' accountId={account.id} element='span'>{children}</HoverAccountWrapper>}
             >
-              <LinkEl className='rounded-full' {...linkProps}>
+              <LinkEl className='rounded-lg' {...linkProps}>
                 <Avatar src={account.avatar} size={avatarSize} alt={account.avatar_description} />
                 {emoji && (
                   <Emoji

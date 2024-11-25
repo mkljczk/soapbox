@@ -73,13 +73,13 @@ const AvatarSelectionStep = ({ onNext }: { onNext: () => void }) => {
       subtitle={<FormattedMessage id='onboarding.avatar.subtitle' defaultMessage='Just have fun with it.' />}
     >
       <Stack space={10}>
-        <div className='relative mx-auto rounded-full bg-gray-200'>
+        <div className='relative mx-auto rounded-lg bg-gray-200'>
           {account && (
             <Avatar src={selectedFile || account.avatar} alt={account.avatar_description} size={175} />
           )}
 
           {isSubmitting && (
-            <div className='absolute inset-0 flex items-center justify-center rounded-full bg-white/80 dark:bg-primary-900/80'>
+            <div className='absolute inset-0 flex items-center justify-center rounded-lg bg-white/80 dark:bg-primary-900/80'>
               <Spinner withText={false} />
             </div>
           )}
@@ -88,7 +88,7 @@ const AvatarSelectionStep = ({ onNext }: { onNext: () => void }) => {
             onClick={openFilePicker}
             type='button'
             className={clsx({
-              'absolute bottom-3 right-2 p-1 bg-primary-600 rounded-full ring-2 ring-white dark:ring-primary-900 hover:bg-primary-700': true,
+              'absolute bottom-3 right-2 p-1 bg-primary-600 rounded-lg ring-2 ring-white dark:ring-primary-900 hover:bg-primary-700': true,
               'opacity-50 pointer-events-none': isSubmitting,
             })}
             disabled={isSubmitting}
