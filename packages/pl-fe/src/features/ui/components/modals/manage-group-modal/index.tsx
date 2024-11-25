@@ -29,6 +29,7 @@ const CreateGroupModal: React.FC<BaseModalProps> = ({ onClose }) => {
 
   const [group, setGroup] = useState<Group | null>(null);
   const [params, setParams] = useState<CreateGroupParams>({
+    slug: '',
     display_name: '',
   });
   const [currentStep, setCurrentStep] = useState<Steps>(Steps.ONE);

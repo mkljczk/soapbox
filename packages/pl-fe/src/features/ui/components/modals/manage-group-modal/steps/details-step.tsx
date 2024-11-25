@@ -9,13 +9,15 @@ import AvatarPicker from 'pl-fe/features/edit-profile/components/avatar-picker';
 import HeaderPicker from 'pl-fe/features/edit-profile/components/header-picker';
 import { usePreview } from 'pl-fe/hooks/forms/use-preview';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
 import resizeImage from 'pl-fe/utils/resize-image';
 
 import type { CreateGroupParams } from 'pl-api';
 
 const messages = defineMessages({
-  groupNamePlaceholder: { id: 'manage_group.fields.name_placeholder', defaultMessage: 'Group Name' },
+  groupSlugPlaceholder: { id: 'manage_group.fields.slug_placeholder', defaultMessage: 'Group slug' },
+  groupNamePlaceholder: { id: 'manage_group.fields.name_placeholder', defaultMessage: 'Group name' },
   groupDescriptionPlaceholder: { id: 'manage_group.fields.description_placeholder', defaultMessage: 'Description' },
   hashtagPlaceholder: { id: 'manage_group.fields.hashtag_placeholder', defaultMessage: 'Add a topic' },
 });
@@ -26,12 +28,14 @@ interface IDetailsStep {
 }
 
 const DetailsStep: React.FC<IDetailsStep> = ({ params, onChange }) => {
+  const features = useFeatures();
   const intl = useIntl();
   const instance = useInstance();
 
   const {
     display_name: displayName = '',
     note = '',
+    slug = '',
   } = params;
 
   const avatarSrc = usePreview(params.avatar);
@@ -69,10 +73,19 @@ const DetailsStep: React.FC<IDetailsStep> = ({ params, onChange }) => {
         <AvatarPicker src={avatarSrc} accept={attachmentTypes} onChange={handleImageChange('avatar', 400 * 400)} />
       </div>
 
-      <FormGroup
-        labelText={<FormattedMessage id='manage_group.fields.name_label' defaultMessage='Group name (required)' />}
-        hintText={<FormattedMessage id='manage_group.fields.name_help' defaultMessage='This cannot be changed after the group is created.' />}
-      >
+      {features.groupsSlugs && (
+        <FormGroup labelText={<FormattedMessage id='manage_group.fields.name_required_label' defaultMessage='Slug (required)' />}>
+          <Input
+            type='text'
+            placeholder={intl.formatMessage(messages.groupSlugPlaceholder)}
+            value={slug}
+            onChange={handleTextChange('slug')}
+            // maxLength={Number(instance.configuration.groups.max_characters_name)}
+          />
+        </FormGroup>
+      )}
+
+      <FormGroup labelText={<FormattedMessage id='manage_group.fields.name_required_label' defaultMessage='Group name (required)' />}>
         <Input
           type='text'
           placeholder={intl.formatMessage(messages.groupNamePlaceholder)}
@@ -82,9 +95,7 @@ const DetailsStep: React.FC<IDetailsStep> = ({ params, onChange }) => {
         />
       </FormGroup>
 
-      <FormGroup
-        labelText={<FormattedMessage id='manage_group.fields.description_label' defaultMessage='Description' />}
-      >
+      <FormGroup labelText={<FormattedMessage id='manage_group.fields.description_label' defaultMessage='Description' />}>
         <Textarea
           autoComplete='off'
           placeholder={intl.formatMessage(messages.groupDescriptionPlaceholder)}
