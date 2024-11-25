@@ -33,6 +33,7 @@ const settingsSchema = v.object({
   autoloadTimelines: v.fallback(v.boolean(), true),
   autoloadMore: v.fallback(v.boolean(), true),
   preserveSpoilers: v.fallback(v.boolean(), false),
+  forceImplicitAddressing: v.fallback(v.boolean(), false),
   autoTranslate: v.fallback(v.boolean(), false),
   knownLanguages: v.fallback(v.array(v.string()), []),
   showWrenchButton: v.fallback(v.boolean(), false),

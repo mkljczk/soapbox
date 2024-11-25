@@ -20,7 +20,7 @@ import { uploadFile, updateMedia } from './media';
 import { createStatus } from './statuses';
 
 import type { EditorState } from 'lexical';
-import type { Account as BaseAccount, BackendVersion, CreateStatusParams, Group, MediaAttachment, Status as BaseStatus, Tag, Poll, ScheduledStatus } from 'pl-api';
+import type { Account as BaseAccount, CreateStatusParams, Group, MediaAttachment, Status as BaseStatus, Tag, Poll, ScheduledStatus } from 'pl-api';
 import type { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import type { Emoji } from 'pl-fe/features/emoji';
 import type { Account } from 'pl-fe/normalizers/account';
@@ -118,7 +118,6 @@ interface ComposeSetStatusAction {
   explicitAddressing: boolean;
   spoilerText?: string;
   contentType?: string | false;
-  v: BackendVersion;
   withRedraft?: boolean;
   draftId?: string;
   editorState?: string | null;
@@ -135,8 +134,8 @@ const setComposeToStatus = (
   editorState?: string | null,
 ) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const client = getClient(getState);
-    const { createStatusExplicitAddressing: explicitAddressing, version: v } = client.features;
+    const { features } = getClient(getState);
+    const explicitAddressing = features.createStatusExplicitAddressing && !useSettingsStore.getState().settings.forceImplicitAddressing;
 
     dispatch<ComposeSetStatusAction>({
       type: COMPOSE_SET_STATUS,
@@ -147,7 +146,6 @@ const setComposeToStatus = (
       explicitAddressing,
       spoilerText,
       contentType,
-      v,
       withRedraft,
       draftId,
       editorState,
@@ -178,9 +176,9 @@ const replyCompose = (
 ) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const client = getClient(state);
-    const { createStatusExplicitAddressing: explicitAddressing } = client.features;
-    const preserveSpoilers = useSettingsStore.getState().settings.preserveSpoilers;
+    const { features } = getClient(getState);
+    const { forceImplicitAddressing, preserveSpoilers } = useSettingsStore.getState().settings;
+    const explicitAddressing = features.createStatusExplicitAddressing && !forceImplicitAddressing;
     const account = selectOwnAccount(state);
 
     if (!account) return;
@@ -214,7 +212,8 @@ interface ComposeQuoteAction {
 const quoteCompose = (status: ComposeQuoteAction['status']) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const { createStatusExplicitAddressing: explicitAddressing } = state.auth.client.features;
+    const { forceImplicitAddressing } = useSettingsStore.getState().settings;
+    const explicitAddressing = state.auth.client.features.createStatusExplicitAddressing && !forceImplicitAddressing;
 
     dispatch<ComposeQuoteAction>({
       type: COMPOSE_QUOTE,
@@ -347,10 +346,13 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
 
     const compose = state.compose[composeId]!;
 
+
     const status = compose.text;
     const media = compose.media_attachments;
     const statusId = compose.id;
     let to = compose.to;
+    const { forceImplicitAddressing } = useSettingsStore.getState().settings;
+    const explicitAddressing = state.auth.client.features.createStatusExplicitAddressing && !forceImplicitAddressing;
 
     if (!validateSchedule(state, composeId)) {
       toast.error(messages.scheduleError);
@@ -399,7 +401,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
       content_type: contentType,
       scheduled_at: compose.schedule?.toISOString(),
       language: compose.language || compose.suggested_language || undefined,
-      to: to.length ? to : undefined,
+      to: explicitAddressing && to.length ? to : undefined,
       local_only: !compose.federated,
     };
 
@@ -897,7 +899,8 @@ interface ComposeEventReplyAction {
 const eventDiscussionCompose = (composeId: string, status: ComposeEventReplyAction['status']) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const { createStatusExplicitAddressing: explicitAddressing } = state.auth.client.features;
+    const { forceImplicitAddressing } = useSettingsStore.getState().settings;
+    const explicitAddressing = state.auth.client.features.createStatusExplicitAddressing && !forceImplicitAddressing;
 
     return dispatch({
       type: COMPOSE_EVENT_REPLY,

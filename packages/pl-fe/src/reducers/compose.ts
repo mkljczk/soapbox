@@ -1,10 +1,9 @@
 import { create } from 'mutative';
-import { PLEROMA, type CredentialAccount, type Instance, type MediaAttachment, type Tag } from 'pl-api';
+import { type CredentialAccount, type Instance, type MediaAttachment, type Tag } from 'pl-api';
 
 import { INSTANCE_FETCH_SUCCESS, InstanceAction } from 'pl-fe/actions/instance';
 import { isNativeEmoji, type Emoji } from 'pl-fe/features/emoji';
 import { tagHistory } from 'pl-fe/settings';
-import { hasIntegerMediaIds } from 'pl-fe/utils/status';
 
 import {
   COMPOSE_CHANGE,
@@ -546,11 +545,7 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
         compose.quote = action.status.quote_id;
         compose.group_id = action.status.group_id;
 
-        if (action.v?.software === PLEROMA && action.withRedraft && hasIntegerMediaIds(action.status)) {
-          compose.media_attachments = [];
-        } else {
-          compose.media_attachments = action.status.media_attachments;
-        }
+        compose.media_attachments = action.status.media_attachments;
 
         if (action.status.spoiler_text.length > 0) {
           compose.spoiler_text = action.status.spoiler_text;

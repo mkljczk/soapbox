@@ -29,6 +29,7 @@ Changes made since the project forked from Soapbox in April 2024.
 - Language detection is done client-side for composed posts, utilizing `fasttext.wasm.js`.
 - Draft posts. They are stored locally only and work with any backend.
 - New visibility scopes are supported – local-only and list-only for Pleroma. Local-only is a separate switch on GoToSocial.
+- On backends that support explicit mentioning, you can choose to include mentions in your replies body.
 
 **Features:**
 - The most recent scrobble is displayed on user profile/card.

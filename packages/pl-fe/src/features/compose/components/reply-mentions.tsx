@@ -4,6 +4,7 @@ import { FormattedList, FormattedMessage } from 'react-intl';
 import { useCompose } from 'pl-fe/hooks/use-compose';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useModalsStore } from 'pl-fe/stores/modals';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 
 interface IReplyMentions {
   composeId: string;
@@ -15,7 +16,10 @@ const ReplyMentions: React.FC<IReplyMentions> = ({ composeId }) => {
   const compose = useCompose(composeId);
   const to = compose.to;
 
-  if (!features.createStatusExplicitAddressing || !compose.in_reply_to || !to) {
+  const { forceImplicitAddressing } = useSettingsStore().settings;
+  const explicitAddressing = features.createStatusExplicitAddressing && !forceImplicitAddressing;
+
+  if (!explicitAddressing || !compose.in_reply_to || !to) {
     return null;
   }
 

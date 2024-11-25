@@ -203,6 +203,12 @@ const Preferences = () => {
           </ListItem>
         )}
 
+        {features.createStatusExplicitAddressing && (
+          <ListItem label={<FormattedMessage id='preferences.fields.implicit_addressing_label' defaultMessage='Include mentions in post content when replying' />}>
+            <SettingToggle settings={settings} settingPath={['forceImplicitAddressing']} onChange={onToggleChange} />
+          </ListItem>
+        )}
+
         <ListItem label={<FormattedMessage id='preferences.notifications.advanced' defaultMessage='Show all notification categories' />}>
           <SettingToggle settings={settings} settingPath={['notifications', 'quickFilter', 'advanced']} onChange={onToggleChange} />
         </ListItem>
