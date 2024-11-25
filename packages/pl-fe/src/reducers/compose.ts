@@ -1,7 +1,7 @@
 import { create } from 'mutative';
 import { type CredentialAccount, type Instance, type MediaAttachment, type Tag } from 'pl-api';
 
-import { INSTANCE_FETCH_SUCCESS, InstanceAction } from 'pl-fe/actions/instance';
+import { INSTANCE_FETCH_SUCCESS, type InstanceAction } from 'pl-fe/actions/instance';
 import { isNativeEmoji, type Emoji } from 'pl-fe/features/emoji';
 import { tagHistory } from 'pl-fe/settings';
 
@@ -62,7 +62,7 @@ import {
   type ComposeSuggestionSelectAction,
 } from '../actions/compose';
 import { EVENT_COMPOSE_CANCEL, EVENT_FORM_SET, type EventsAction } from '../actions/events';
-import { ME_FETCH_SUCCESS, ME_PATCH_SUCCESS, MeAction } from '../actions/me';
+import { ME_FETCH_SUCCESS, ME_PATCH_SUCCESS, type MeAction } from '../actions/me';
 import { FE_NAME } from '../actions/settings';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 import { unescapeHTML } from '../utils/html';

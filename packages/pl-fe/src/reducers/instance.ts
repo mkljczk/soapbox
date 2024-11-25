@@ -3,7 +3,7 @@ import { type Instance, instanceSchema, PleromaConfig } from 'pl-api';
 import * as v from 'valibot';
 
 import { ADMIN_CONFIG_UPDATE_REQUEST, ADMIN_CONFIG_UPDATE_SUCCESS } from 'pl-fe/actions/admin';
-import { INSTANCE_FETCH_FAIL, INSTANCE_FETCH_SUCCESS, InstanceAction } from 'pl-fe/actions/instance';
+import { INSTANCE_FETCH_FAIL, INSTANCE_FETCH_SUCCESS, type InstanceAction } from 'pl-fe/actions/instance';
 import { PLEROMA_PRELOAD_IMPORT, type PreloadAction } from 'pl-fe/actions/preload';
 import KVStore from 'pl-fe/storage/kv-store';
 import ConfigDB from 'pl-fe/utils/config-db';

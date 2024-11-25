@@ -3,7 +3,7 @@ import { mediaAttachmentSchema } from 'pl-api';
 import * as v from 'valibot';
 
 import { COMPOSE_SUBMIT_SUCCESS, type ComposeAction } from 'pl-fe/actions/compose';
-import { DRAFT_STATUSES_FETCH_SUCCESS, PERSIST_DRAFT_STATUS, CANCEL_DRAFT_STATUS, DraftStatusesAction } from 'pl-fe/actions/draft-statuses';
+import { DRAFT_STATUSES_FETCH_SUCCESS, PERSIST_DRAFT_STATUS, CANCEL_DRAFT_STATUS, type DraftStatusesAction } from 'pl-fe/actions/draft-statuses';
 import { filteredArray } from 'pl-fe/schemas/utils';
 import KVStore from 'pl-fe/storage/kv-store';
 
