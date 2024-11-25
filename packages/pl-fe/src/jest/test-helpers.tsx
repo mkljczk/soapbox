@@ -7,7 +7,7 @@ import { Toaster } from 'react-hot-toast';
 import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import { Action, applyMiddleware, createStore } from 'redux';
+import { applyMiddleware, createStore } from 'redux';
 import { thunk } from 'redux-thunk';
 
 import { ChatProvider } from 'pl-fe/contexts/chat-context';
@@ -17,7 +17,7 @@ import { queryClient } from 'pl-fe/queries/client';
 import { default as rootReducer } from '../reducers';
 
 import type { AppDispatch } from 'pl-fe/store';
-import type { AnyAction } from 'redux';
+import type { Action, AnyAction } from 'redux';
 
 // Mock Redux
 // https://redux.js.org/recipes/writing-tests/
