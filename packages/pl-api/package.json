@@ -29,7 +29,7 @@
     "eslint": "8.57.1",
     "eslint-import-resolver-typescript": "^3.6.3",
     "eslint-plugin-compat": "^6.0.1",
-    "eslint-plugin-import": "^2.30.0",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-promise": "^6.0.0",
     "typedoc": "^0.26.10",
     "typedoc-material-theme": "^1.1.0",
