@@ -69,23 +69,23 @@ const ADMIN_USER_INDEX_QUERY_SET = 'ADMIN_USER_INDEX_QUERY_SET' as const;
 
 const fetchConfig = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: ADMIN_CONFIG_FETCH_REQUEST });
+    dispatch<AdminActions>({ type: ADMIN_CONFIG_FETCH_REQUEST });
     return getClient(getState).admin.config.getPleromaConfig()
       .then((data) => {
-        dispatch({ type: ADMIN_CONFIG_FETCH_SUCCESS, configs: data.configs, needsReboot: data.need_reboot });
+        dispatch<AdminActions>({ type: ADMIN_CONFIG_FETCH_SUCCESS, configs: data.configs, needsReboot: data.need_reboot });
       }).catch(error => {
-        dispatch({ type: ADMIN_CONFIG_FETCH_FAIL, error });
+        dispatch<AdminActions>({ type: ADMIN_CONFIG_FETCH_FAIL, error });
       });
   };
 
 const updateConfig = (configs: PleromaConfig['configs']) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: ADMIN_CONFIG_UPDATE_REQUEST, configs });
+    dispatch<AdminActions>({ type: ADMIN_CONFIG_UPDATE_REQUEST, configs });
     return getClient(getState).admin.config.updatePleromaConfig(configs)
       .then((data) => {
-        dispatch({ type: ADMIN_CONFIG_UPDATE_SUCCESS, configs: data.configs, needsReboot: data.need_reboot });
+        dispatch<AdminActions>({ type: ADMIN_CONFIG_UPDATE_SUCCESS, configs: data.configs, needsReboot: data.need_reboot });
       }).catch(error => {
-        dispatch({ type: ADMIN_CONFIG_UPDATE_FAIL, error, configs });
+        dispatch<AdminActions>({ type: ADMIN_CONFIG_UPDATE_FAIL, error, configs });
       });
   };
 
@@ -312,6 +312,14 @@ const expandUserIndex = () =>
       });
   };
 
+type AdminActions =
+  | { type: typeof ADMIN_CONFIG_FETCH_REQUEST }
+  | { type: typeof ADMIN_CONFIG_FETCH_SUCCESS; configs: PleromaConfig['configs']; needsReboot: boolean }
+  | { type: typeof ADMIN_CONFIG_FETCH_FAIL; error: unknown }
+  | { type: typeof ADMIN_CONFIG_UPDATE_REQUEST; configs: PleromaConfig['configs'] }
+  | { type: typeof ADMIN_CONFIG_UPDATE_SUCCESS; configs: PleromaConfig['configs']; needsReboot: boolean }
+  | { type: typeof ADMIN_CONFIG_UPDATE_FAIL; error: unknown; configs: PleromaConfig['configs'] }
+
 export {
   ADMIN_CONFIG_FETCH_REQUEST,
   ADMIN_CONFIG_FETCH_SUCCESS,
@@ -378,4 +386,5 @@ export {
   setUserIndexQuery,
   fetchUserIndex,
   expandUserIndex,
+  type AdminActions,
 };

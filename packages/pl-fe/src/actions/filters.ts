@@ -5,7 +5,7 @@ import { isLoggedIn } from 'pl-fe/utils/auth';
 
 import { getClient } from '../api';
 
-import type { FilterContext } from 'pl-api';
+import type { Filter, FilterContext } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const FILTERS_FETCH_REQUEST = 'FILTERS_FETCH_REQUEST' as const;
@@ -39,16 +39,16 @@ const fetchFilters = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
-    dispatch({
+    dispatch<FiltersAction>({
       type: FILTERS_FETCH_REQUEST,
     });
 
     return getClient(getState).filtering.getFilters()
-      .then((data) => dispatch({
+      .then((data) => dispatch<FiltersAction>({
         type: FILTERS_FETCH_SUCCESS,
         filters: data,
       }))
-      .catch(err => dispatch({
+      .catch(err => dispatch<FiltersAction>({
         type: FILTERS_FETCH_FAIL,
         err,
         skipAlert: true,
@@ -57,11 +57,11 @@ const fetchFilters = () =>
 
 const fetchFilter = (filterId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: FILTER_FETCH_REQUEST });
+    dispatch<FiltersAction>({ type: FILTER_FETCH_REQUEST });
 
     return getClient(getState).filtering.getFilter(filterId)
       .then((data) => {
-        dispatch({
+        dispatch<FiltersAction>({
           type: FILTER_FETCH_SUCCESS,
           filter: data,
         });
@@ -69,7 +69,7 @@ const fetchFilter = (filterId: string) =>
         return data;
       })
       .catch(err => {
-        dispatch({
+        dispatch<FiltersAction>({
           type: FILTER_FETCH_FAIL,
           err,
           skipAlert: true,
@@ -79,7 +79,7 @@ const fetchFilter = (filterId: string) =>
 
 const createFilter = (title: string, expires_in: number | undefined, context: Array<FilterContext>, hide: boolean, keywords_attributes: FilterKeywords) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: FILTERS_CREATE_REQUEST });
+    dispatch<FiltersAction>({ type: FILTERS_CREATE_REQUEST });
 
     return getClient(getState).filtering.createFilter({
       title,
@@ -88,18 +88,18 @@ const createFilter = (title: string, expires_in: number | undefined, context: Ar
       expires_in,
       keywords_attributes,
     }).then(response => {
-      dispatch({ type: FILTERS_CREATE_SUCCESS, filter: response });
+      dispatch<FiltersAction>({ type: FILTERS_CREATE_SUCCESS, filter: response });
       toast.success(messages.added);
 
       return response;
     }).catch(error => {
-      dispatch({ type: FILTERS_CREATE_FAIL, error });
+      dispatch<FiltersAction>({ type: FILTERS_CREATE_FAIL, error });
     });
   };
 
 const updateFilter = (filterId: string, title: string, expires_in: number | undefined, context: Array<FilterContext>, hide: boolean, keywords_attributes: FilterKeywords) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: FILTERS_UPDATE_REQUEST });
+    dispatch<FiltersAction>({ type: FILTERS_UPDATE_REQUEST });
 
     return getClient(getState).filtering.updateFilter(filterId, {
       title,
@@ -108,27 +108,44 @@ const updateFilter = (filterId: string, title: string, expires_in: number | unde
       expires_in,
       keywords_attributes,
     }).then(response => {
-      dispatch({ type: FILTERS_UPDATE_SUCCESS, filter: response });
+      dispatch<FiltersAction>({ type: FILTERS_UPDATE_SUCCESS, filter: response });
       toast.success(messages.added);
 
       return response;
     }).catch(error => {
-      dispatch({ type: FILTERS_UPDATE_FAIL, filterId, error });
+      dispatch<FiltersAction>({ type: FILTERS_UPDATE_FAIL, filterId, error });
     });
   };
 
 const deleteFilter = (filterId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: FILTERS_DELETE_REQUEST });
+    dispatch<FiltersAction>({ type: FILTERS_DELETE_REQUEST });
     return getClient(getState).filtering.deleteFilter(filterId).then(response => {
-      dispatch({ type: FILTERS_DELETE_SUCCESS, filterId });
+      dispatch<FiltersAction>({ type: FILTERS_DELETE_SUCCESS, filterId });
       toast.success(messages.removed);
 
       return response;
     }).catch(error => {
-      dispatch({ type: FILTERS_DELETE_FAIL, filterId, error });
+      dispatch<FiltersAction>({ type: FILTERS_DELETE_FAIL, filterId, error });
     });
   };
+
+type FiltersAction =
+  | { type: typeof FILTERS_FETCH_REQUEST }
+  | { type: typeof FILTERS_FETCH_SUCCESS; filters: Array<Filter> }
+  | { type: typeof FILTERS_FETCH_FAIL; error: unknown; skipAlert: true }
+  | { type: typeof FILTER_FETCH_REQUEST }
+  | { type: typeof FILTER_FETCH_SUCCESS; filter: Filter }
+  | { type: typeof FILTER_FETCH_FAIL; error: unknown; skipAlert: true }
+  | { type: typeof FILTERS_CREATE_REQUEST }
+  | { type: typeof FILTERS_CREATE_SUCCESS; filter: Filter }
+  | { type: typeof FILTERS_CREATE_FAIL; error: unknown }
+  | { type: typeof FILTERS_UPDATE_REQUEST }
+  | { type: typeof FILTERS_UPDATE_SUCCESS; filter: Filter }
+  | { type: typeof FILTERS_UPDATE_FAIL; filterId: string; error: unknown }
+  | { type: typeof FILTERS_DELETE_REQUEST }
+  | { type: typeof FILTERS_DELETE_SUCCESS; filterId: string }
+  | { type: typeof FILTERS_DELETE_FAIL; filterId: string; error: unknown }
 
 export {
   FILTERS_FETCH_REQUEST,
@@ -151,4 +168,5 @@ export {
   createFilter,
   updateFilter,
   deleteFilter,
+  type FiltersAction,
 };

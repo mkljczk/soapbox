@@ -2,13 +2,11 @@ import { create } from 'mutative';
 import { type Instance, instanceSchema, PleromaConfig } from 'pl-api';
 import * as v from 'valibot';
 
-import { ADMIN_CONFIG_UPDATE_REQUEST, ADMIN_CONFIG_UPDATE_SUCCESS } from 'pl-fe/actions/admin';
+import { ADMIN_CONFIG_UPDATE_REQUEST, ADMIN_CONFIG_UPDATE_SUCCESS, type AdminActions } from 'pl-fe/actions/admin';
 import { INSTANCE_FETCH_FAIL, INSTANCE_FETCH_SUCCESS, type InstanceAction } from 'pl-fe/actions/instance';
 import { PLEROMA_PRELOAD_IMPORT, type PreloadAction } from 'pl-fe/actions/preload';
 import KVStore from 'pl-fe/storage/kv-store';
 import ConfigDB from 'pl-fe/utils/config-db';
-
-import type { AnyAction } from 'redux';
 
 const initialState: State = v.parse(instanceSchema, {});
 
@@ -85,7 +83,7 @@ const handleInstanceFetchFail = (state: State, error: any) => {
   }
 };
 
-const instance = (state = initialState, action: AnyAction | InstanceAction | PreloadAction): State => {
+const instance = (state = initialState, action: AdminActions | InstanceAction | PreloadAction): State => {
   switch (action.type) {
     case PLEROMA_PRELOAD_IMPORT:
       return create(state, (draft) => preloadImport(draft, action, '/api/v1/instance'));
