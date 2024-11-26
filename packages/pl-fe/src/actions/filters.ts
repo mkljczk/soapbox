@@ -48,9 +48,9 @@ const fetchFilters = () =>
         type: FILTERS_FETCH_SUCCESS,
         filters: data,
       }))
-      .catch(err => dispatch<FiltersAction>({
+      .catch(error => dispatch<FiltersAction>({
         type: FILTERS_FETCH_FAIL,
-        err,
+        error,
         skipAlert: true,
       }));
   };
@@ -68,10 +68,10 @@ const fetchFilter = (filterId: string) =>
 
         return data;
       })
-      .catch(err => {
+      .catch(error => {
         dispatch<FiltersAction>({
           type: FILTER_FETCH_FAIL,
-          err,
+          error,
           skipAlert: true,
         });
       });
