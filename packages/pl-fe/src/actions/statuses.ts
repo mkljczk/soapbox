@@ -9,7 +9,7 @@ import { setComposeToStatus } from './compose';
 import { importEntities } from './importer';
 import { deleteFromTimelines } from './timelines';
 
-import type { CreateStatusParams, Status as BaseStatus } from 'pl-api';
+import type { CreateStatusParams, Status as BaseStatus, ScheduledStatus, Translation } from 'pl-api';
 import type { Status } from 'pl-fe/normalizers/status';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 import type { IntlShape } from 'react-intl';
@@ -59,7 +59,7 @@ const STATUS_LANGUAGE_CHANGE = 'STATUS_LANGUAGE_CHANGE' as const;
 
 const createStatus = (params: CreateStatusParams, idempotencyKey: string, statusId: string | null) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: STATUS_CREATE_REQUEST, params, idempotencyKey, editing: !!statusId });
+    dispatch<StatusesAction>({ type: STATUS_CREATE_REQUEST, params, idempotencyKey, editing: !!statusId });
 
     return (statusId === null ? getClient(getState()).statuses.createStatus(params) : getClient(getState()).statuses.editStatus(statusId, params))
       .then((status) => {
@@ -67,7 +67,7 @@ const createStatus = (params: CreateStatusParams, idempotencyKey: string, status
         const expectsCard = status.scheduled_at === null && !status.card && shouldHaveCard(status);
 
         if (status.scheduled_at === null) dispatch(importEntities({ statuses: [{ ...status, expectsCard }] }, { idempotencyKey, withParents: true }));
-        dispatch({ type: STATUS_CREATE_SUCCESS, status, params, idempotencyKey, editing: !!statusId });
+        dispatch<StatusesAction>({ type: STATUS_CREATE_SUCCESS, status, params, idempotencyKey, editing: !!statusId });
 
         // Poll the backend for the updated card
         if (expectsCard) {
@@ -88,7 +88,7 @@ const createStatus = (params: CreateStatusParams, idempotencyKey: string, status
 
         return status;
       }).catch(error => {
-        dispatch({ type: STATUS_CREATE_FAIL, error, params, idempotencyKey, editing: !!statusId });
+        dispatch<StatusesAction>({ type: STATUS_CREATE_FAIL, error, params, idempotencyKey, editing: !!statusId });
         throw error;
       });
   };
@@ -188,11 +188,11 @@ const muteStatus = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
-    dispatch({ type: STATUS_MUTE_REQUEST, statusId });
+    dispatch<StatusesAction>({ type: STATUS_MUTE_REQUEST, statusId });
     return getClient(getState()).statuses.muteStatus(statusId).then((status) => {
-      dispatch({ type: STATUS_MUTE_SUCCESS, statusId });
+      dispatch<StatusesAction>({ type: STATUS_MUTE_SUCCESS, statusId });
     }).catch(error => {
-      dispatch({ type: STATUS_MUTE_FAIL, statusId, error });
+      dispatch<StatusesAction>({ type: STATUS_MUTE_FAIL, statusId, error });
     });
   };
 
@@ -200,11 +200,11 @@ const unmuteStatus = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
-    dispatch({ type: STATUS_UNMUTE_REQUEST, statusId });
+    dispatch<StatusesAction>({ type: STATUS_UNMUTE_REQUEST, statusId });
     return getClient(getState()).statuses.unmuteStatus(statusId).then(() => {
-      dispatch({ type: STATUS_UNMUTE_SUCCESS, statusId });
+      dispatch<StatusesAction>({ type: STATUS_UNMUTE_SUCCESS, statusId });
     }).catch(error => {
-      dispatch({ type: STATUS_UNMUTE_FAIL, statusId, error });
+      dispatch<StatusesAction>({ type: STATUS_UNMUTE_FAIL, statusId, error });
     });
   };
 
@@ -277,7 +277,7 @@ const translateStatus = (statusId: string, targetLanguage: string, lazy?: boolea
     const client = getClient(getState);
     const features = client.features;
 
-    dispatch({ type: STATUS_TRANSLATE_REQUEST, statusId });
+    dispatch<StatusesAction>({ type: STATUS_TRANSLATE_REQUEST, statusId });
 
     const handleTranslateMany = () => {
       const copy = [...TRANSLATIONS_QUEUE];
@@ -286,7 +286,7 @@ const translateStatus = (statusId: string, targetLanguage: string, lazy?: boolea
 
       return client.statuses.translateStatuses(copy, targetLanguage).then((response) => {
         response.forEach((translation) => {
-          dispatch({
+          dispatch<StatusesAction>({
             type: STATUS_TRANSLATE_SUCCESS,
             statusId: translation.id,
             translation: translation,
@@ -294,13 +294,13 @@ const translateStatus = (statusId: string, targetLanguage: string, lazy?: boolea
 
           copy
             .filter((statusId) => !response.some(({ id }) => id === statusId))
-            .forEach((statusId) => dispatch({
+            .forEach((statusId) => dispatch<StatusesAction>({
               type: STATUS_TRANSLATE_FAIL,
               statusId,
             }));
         });
       }).catch(error => {
-        dispatch({
+        dispatch<StatusesAction>({
           type: STATUS_TRANSLATE_FAIL,
           statusId,
           error,
@@ -351,6 +351,27 @@ const changeStatusLanguage = (statusId: string, language: string) => ({
 });
 
 type StatusesAction =
+  | { type: typeof STATUS_CREATE_REQUEST; params: CreateStatusParams; idempotencyKey: string; editing: boolean }
+  | { type: typeof STATUS_CREATE_SUCCESS; status: BaseStatus | ScheduledStatus; params: CreateStatusParams; idempotencyKey: string; editing: boolean }
+  | { type: typeof STATUS_CREATE_FAIL; error: unknown; params: CreateStatusParams; idempotencyKey: string; editing: boolean }
+// editStatus,
+// fetchStatus,
+// deleteStatus,
+// updateStatus,
+// fetchContext,
+  | { type: typeof STATUS_MUTE_REQUEST; statusId: string }
+  | { type: typeof STATUS_MUTE_SUCCESS; statusId: string }
+  | { type: typeof STATUS_MUTE_FAIL; statusId: string; error: unknown }
+  | { type: typeof STATUS_UNMUTE_REQUEST; statusId: string }
+  | { type: typeof STATUS_UNMUTE_SUCCESS; statusId: string }
+  | { type: typeof STATUS_UNMUTE_FAIL; statusId: string; error: unknown }
+  | ReturnType<typeof hideStatusMedia>
+  | ReturnType<typeof revealStatusMedia>
+  | ReturnType<typeof collapseStatusSpoiler>
+  | ReturnType<typeof expandStatusSpoiler>
+  | { type: typeof STATUS_TRANSLATE_REQUEST; statusId: string }
+  | { type: typeof STATUS_TRANSLATE_SUCCESS; statusId: string | null; translation: Translation }
+  | { type: typeof STATUS_TRANSLATE_FAIL; statusId: string; error?: unknown }
   | ReturnType<typeof undoStatusTranslation>
   | ReturnType<typeof unfilterStatus>
   | ReturnType<typeof changeStatusLanguage>;
