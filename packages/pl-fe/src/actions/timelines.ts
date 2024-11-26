@@ -114,16 +114,16 @@ interface TimelineDeleteAction {
   type: typeof TIMELINE_DELETE;
   statusId: string;
   accountId: string;
-  references: Record<string, readonly [statusId: string, accountId: string]>;
+  references: Array<[string, string]>;
   reblogOf: string | null;
 }
 
 const deleteFromTimelines = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const accountId = getState().statuses[statusId]?.account?.id!;
-    const references = Object.fromEntries(Object.entries(getState().statuses)
+    const references: Array<[string, string]> = Object.entries(getState().statuses)
       .filter(([key, status]) => [key, status.reblog_id === statusId])
-      .map(([key, status]) => [key, [status.id, status.account_id] as const]));
+      .map(([key, status]) => [key, status.account_id]);
     const reblogOf = getState().statuses[statusId]?.reblog_id || null;
 
     dispatch<TimelineDeleteAction>({

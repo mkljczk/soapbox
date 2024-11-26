@@ -52,8 +52,7 @@ import {
 } from '../actions/statuses';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
-import type { Status as BaseStatus, Translation } from 'pl-api';
-import type { AnyAction } from 'redux';
+import type { Status as BaseStatus, CreateStatusParams, Translation } from 'pl-api';
 
 type State = Record<string, MinifiedStatus>;
 
@@ -91,7 +90,7 @@ const importStatuses = (state: State, statuses: Array<BaseStatus>) =>{
   statuses.forEach(status => importStatus(state, status));
 };
 
-const deleteStatus = (state: State, statusId: string, references: Array<string>) => {
+const deleteStatus = (state: State, statusId: string, references: Array<[string, string]>) => {
   references.forEach(ref => {
     deleteStatus(state, ref[0], []);
   });
@@ -99,28 +98,28 @@ const deleteStatus = (state: State, statusId: string, references: Array<string>)
   delete state[statusId];
 };
 
-const incrementReplyCount = (state: State, { in_reply_to_id, quote }: BaseStatus) => {
+const incrementReplyCount = (state: State, { in_reply_to_id, quote_id }: Pick<BaseStatus | CreateStatusParams, 'in_reply_to_id' | 'quote_id'>) => {
   if (in_reply_to_id && state[in_reply_to_id]) {
     const parent = state[in_reply_to_id];
     parent.replies_count = (typeof parent.replies_count === 'number' ? parent.replies_count : 0) + 1;
   }
 
-  if (quote?.id && state[quote.id]) {
-    const parent = state[quote.id];
+  if (quote_id && state[quote_id]) {
+    const parent = state[quote_id];
     parent.quotes_count = (typeof parent.quotes_count === 'number' ? parent.quotes_count : 0) + 1;
   }
 
   return state;
 };
 
-const decrementReplyCount = (state: State, { in_reply_to_id, quote }: BaseStatus) => {
+const decrementReplyCount = (state: State, { in_reply_to_id, quote_id }: Pick<BaseStatus | CreateStatusParams, 'in_reply_to_id' | 'quote_id'>) => {
   if (in_reply_to_id && state[in_reply_to_id]) {
     const parent = state[in_reply_to_id];
     parent.replies_count = Math.max(0, parent.replies_count - 1);
   }
 
-  if (quote?.id) {
-    const parent = state[quote.id];
+  if (quote_id) {
+    const parent = state[quote_id];
     parent.quotes_count = Math.max(0, parent.quotes_count - 1);
   }
 
@@ -177,7 +176,7 @@ const deleteTranslation = (state: State, statusId: string) => {
 
 const initialState: State = {};
 
-const statuses = (state = initialState, action: AnyAction | EmojiReactsAction | EventsAction | ImporterAction | InteractionsAction | StatusesAction | TimelineAction): State => {
+const statuses = (state = initialState, action: EmojiReactsAction | EventsAction | ImporterAction | InteractionsAction | StatusesAction | TimelineAction): State => {
   switch (action.type) {
     case STATUS_IMPORT:
       return create(state, (draft) => importStatus(draft, action.status));
@@ -317,7 +316,7 @@ const statuses = (state = initialState, action: AnyAction | EmojiReactsAction | 
         }
       });
     case STATUS_TRANSLATE_SUCCESS:
-      return create(state, (draft) => importTranslation(draft, action.statusId, action.translation));
+      return action.statusId !== null ? create(state, (draft) => importTranslation(draft, action.statusId!, action.translation)) : state;
     case STATUS_TRANSLATE_FAIL:
       return create(state, (draft) => {
         const status = draft[action.statusId];

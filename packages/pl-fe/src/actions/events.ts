@@ -179,7 +179,7 @@ const joinEventSuccess = (statusId: string) => ({
   statusId,
 });
 
-const joinEventFail = (error: unknown, statusId: string, previousState: string | null) => ({
+const joinEventFail = (error: unknown, statusId: string, previousState: Exclude<Status['event'], null>['join_state'] | null) => ({
   type: EVENT_JOIN_FAIL,
   error,
   statusId,
@@ -214,7 +214,7 @@ const leaveEventSuccess = (statusId: string) => ({
   statusId,
 });
 
-const leaveEventFail = (error: unknown, statusId: string, previousState: string | null) => ({
+const leaveEventFail = (error: unknown, statusId: string, previousState: Exclude<Status['event'], null>['join_state'] | null) => ({
   type: EVENT_LEAVE_FAIL,
   statusId,
   error,

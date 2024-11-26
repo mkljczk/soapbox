@@ -99,20 +99,20 @@ const editStatus = (statusId: string) => (dispatch: AppDispatch, getState: () =>
   const status = state.statuses[statusId]!;
   const poll = status.poll_id ? state.polls[status.poll_id] : undefined;
 
-  dispatch({ type: STATUS_FETCH_SOURCE_REQUEST });
+  dispatch<StatusesAction>({ type: STATUS_FETCH_SOURCE_REQUEST });
 
   return getClient(state).statuses.getStatusSource(statusId).then(response => {
-    dispatch({ type: STATUS_FETCH_SOURCE_SUCCESS });
+    dispatch<StatusesAction>({ type: STATUS_FETCH_SOURCE_SUCCESS });
     dispatch(setComposeToStatus(status, poll, response.text, response.spoiler_text, response.content_type, false));
     useModalsStore.getState().openModal('COMPOSE');
   }).catch(error => {
-    dispatch({ type: STATUS_FETCH_SOURCE_FAIL, error });
+    dispatch<StatusesAction>({ type: STATUS_FETCH_SOURCE_FAIL, error });
   });
 };
 
 const fetchStatus = (statusId: string, intl?: IntlShape) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: STATUS_FETCH_REQUEST, statusId });
+    dispatch<StatusesAction>({ type: STATUS_FETCH_REQUEST, statusId });
 
     const params = intl && useSettingsStore.getState().settings.autoTranslate ? {
       language: intl.locale,
@@ -120,10 +120,10 @@ const fetchStatus = (statusId: string, intl?: IntlShape) =>
 
     return getClient(getState()).statuses.getStatus(statusId, params).then(status => {
       dispatch(importEntities({ statuses: [status] }));
-      dispatch({ type: STATUS_FETCH_SUCCESS, status });
+      dispatch<StatusesAction>({ type: STATUS_FETCH_SUCCESS, status });
       return status;
     }).catch(error => {
-      dispatch({ type: STATUS_FETCH_FAIL, statusId, error, skipAlert: true });
+      dispatch<StatusesAction>({ type: STATUS_FETCH_FAIL, statusId, error, skipAlert: true });
     });
   };
 
@@ -136,10 +136,10 @@ const deleteStatus = (statusId: string, withRedraft = false) =>
     const status = state.statuses[statusId]!;
     const poll = status.poll_id ? state.polls[status.poll_id] : undefined;
 
-    dispatch({ type: STATUS_DELETE_REQUEST, params: status });
+    dispatch<StatusesAction>({ type: STATUS_DELETE_REQUEST, params: status });
 
     return getClient(state).statuses.deleteStatus(statusId).then(response => {
-      dispatch({ type: STATUS_DELETE_SUCCESS, statusId });
+      dispatch<StatusesAction>({ type: STATUS_DELETE_SUCCESS, statusId });
       dispatch(deleteFromTimelines(statusId));
 
       if (withRedraft) {
@@ -148,7 +148,7 @@ const deleteStatus = (statusId: string, withRedraft = false) =>
       }
     })
       .catch(error => {
-        dispatch({ type: STATUS_DELETE_FAIL, params: status, error });
+        dispatch<StatusesAction>({ type: STATUS_DELETE_FAIL, params: status, error });
       });
   };
 
@@ -157,7 +157,7 @@ const updateStatus = (status: BaseStatus) => (dispatch: AppDispatch) =>
 
 const fetchContext = (statusId: string, intl?: IntlShape) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch({ type: CONTEXT_FETCH_REQUEST, statusId });
+    dispatch<StatusesAction>({ type: CONTEXT_FETCH_REQUEST, statusId });
 
     const params = intl && useSettingsStore.getState().settings.autoTranslate ? {
       language: intl.locale,
@@ -167,14 +167,14 @@ const fetchContext = (statusId: string, intl?: IntlShape) =>
       const { ancestors, descendants } = context;
       const statuses = ancestors.concat(descendants);
       dispatch(importEntities({ statuses }));
-      dispatch({ type: CONTEXT_FETCH_SUCCESS, statusId, ancestors, descendants });
+      dispatch<StatusesAction>({ type: CONTEXT_FETCH_SUCCESS, statusId, ancestors, descendants });
       return context;
     }).catch(error => {
       if (error.response?.status === 404) {
         dispatch(deleteFromTimelines(statusId));
       }
 
-      dispatch({ type: CONTEXT_FETCH_FAIL, statusId, error, skipAlert: true });
+      dispatch<StatusesAction>({ type: CONTEXT_FETCH_FAIL, statusId, error, skipAlert: true });
     });
   };
 
@@ -319,13 +319,13 @@ const translateStatus = (statusId: string, targetLanguage: string, lazy?: boolea
       handleTranslateMany();
     } else {
       return client.statuses.translateStatus(statusId, targetLanguage).then(response => {
-        dispatch({
+        dispatch<StatusesAction>({
           type: STATUS_TRANSLATE_SUCCESS,
           statusId,
           translation: response,
         });
       }).catch(error => {
-        dispatch({
+        dispatch<StatusesAction>({
           type: STATUS_TRANSLATE_FAIL,
           statusId,
           error,
@@ -354,11 +354,18 @@ type StatusesAction =
   | { type: typeof STATUS_CREATE_REQUEST; params: CreateStatusParams; idempotencyKey: string; editing: boolean }
   | { type: typeof STATUS_CREATE_SUCCESS; status: BaseStatus | ScheduledStatus; params: CreateStatusParams; idempotencyKey: string; editing: boolean }
   | { type: typeof STATUS_CREATE_FAIL; error: unknown; params: CreateStatusParams; idempotencyKey: string; editing: boolean }
-// editStatus,
-// fetchStatus,
-// deleteStatus,
-// updateStatus,
-// fetchContext,
+  | { type: typeof STATUS_FETCH_SOURCE_REQUEST }
+  | { type: typeof STATUS_FETCH_SOURCE_SUCCESS }
+  | { type: typeof STATUS_FETCH_SOURCE_FAIL; error: unknown }
+  | { type: typeof STATUS_FETCH_REQUEST; statusId: string }
+  | { type: typeof STATUS_FETCH_SUCCESS; status: BaseStatus }
+  | { type: typeof STATUS_FETCH_FAIL; statusId: string; error: unknown; skipAlert: true }
+  | { type: typeof STATUS_DELETE_REQUEST; params: Pick<Status, 'in_reply_to_id' | 'quote_id'> }
+  | { type: typeof STATUS_DELETE_SUCCESS; statusId: string }
+  | { type: typeof STATUS_DELETE_FAIL; params: Pick<Status, 'in_reply_to_id' | 'quote_id'>; error: unknown }
+  | { type: typeof CONTEXT_FETCH_REQUEST; statusId: string }
+  | { type: typeof CONTEXT_FETCH_SUCCESS; statusId: string; ancestors: Array<BaseStatus>; descendants: Array<BaseStatus> }
+  | { type: typeof CONTEXT_FETCH_FAIL; statusId: string; error: unknown; skipAlert: true }
   | { type: typeof STATUS_MUTE_REQUEST; statusId: string }
   | { type: typeof STATUS_MUTE_SUCCESS; statusId: string }
   | { type: typeof STATUS_MUTE_FAIL; statusId: string; error: unknown }

@@ -12,7 +12,6 @@ import {
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
 import type { Status } from 'pl-api';
-import type { AnyAction } from 'redux';
 
 interface State {
   inReplyTos: Record<string, string>;
@@ -36,7 +35,7 @@ const importStatus = (state: State, status: Pick<Status, 'id' | 'in_reply_to_id'
   state.inReplyTos[id] = inReplyToId;
 
   if (idempotencyKey) {
-    deletePendingStatus(state, status, idempotencyKey);
+    deletePendingStatus(state, status.in_reply_to_id, idempotencyKey);
   }
 };
 
@@ -150,16 +149,14 @@ const filterContexts = (
 };
 
 /** Add a fake status ID for a pending status. */
-const importPendingStatus = (state: State, params: Pick<Status, 'id' | 'in_reply_to_id'>, idempotencyKey: string) => {
+const importPendingStatus = (state: State, inReplyToId: string | null | undefined, idempotencyKey: string) => {
   const id = `末pending-${idempotencyKey}`;
-  const { in_reply_to_id } = params;
-  return importStatus(state, { id, in_reply_to_id });
+  return importStatus(state, { id, in_reply_to_id: inReplyToId || null });
 };
 
 /** Delete a pending status from the reducer. */
-const deletePendingStatus = (state: State, params: Pick<Status, 'id' | 'in_reply_to_id'>, idempotencyKey: string) => {
+const deletePendingStatus = (state: State, inReplyToId: string | null | undefined, idempotencyKey: string) => {
   const id = `末pending-${idempotencyKey}`;
-  const { in_reply_to_id: inReplyToId } = params;
 
   delete state.inReplyTos[id];
 
@@ -171,7 +168,7 @@ const deletePendingStatus = (state: State, params: Pick<Status, 'id' | 'in_reply
 };
 
 /** Contexts reducer. Used for building a nested tree structure for threads. */
-const replies = (state = initialState, action: AccountsAction | AnyAction | ImporterAction | StatusesAction | TimelineAction): State => {
+const replies = (state = initialState, action: AccountsAction | ImporterAction | StatusesAction | TimelineAction): State => {
   switch (action.type) {
     case ACCOUNT_BLOCK_SUCCESS:
     case ACCOUNT_MUTE_SUCCESS:
@@ -181,9 +178,9 @@ const replies = (state = initialState, action: AccountsAction | AnyAction | Impo
     case TIMELINE_DELETE:
       return create(state, (draft) => deleteStatuses(draft, [action.statusId]));
     case STATUS_CREATE_REQUEST:
-      return create(state, (draft) => importPendingStatus(draft, action.params, action.idempotencyKey));
+      return create(state, (draft) => importPendingStatus(draft, action.params.in_reply_to_id, action.idempotencyKey));
     case STATUS_CREATE_SUCCESS:
-      return create(state, (draft) => deletePendingStatus(draft, action.status, action.idempotencyKey));
+      return create(state, (draft) => deletePendingStatus(draft, 'in_reply_to_id' in action.status ? action.status.in_reply_to_id : null, action.idempotencyKey));
     case STATUS_IMPORT:
       return create(state, (draft) => importStatus(draft, action.status, action.idempotencyKey));
     case STATUSES_IMPORT:
