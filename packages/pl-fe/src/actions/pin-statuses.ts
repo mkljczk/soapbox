@@ -4,7 +4,7 @@ import { getClient } from '../api';
 
 import { importEntities } from './importer';
 
-import type { Status } from 'pl-api';
+import type { PaginatedResponse, Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const PINNED_STATUSES_FETCH_REQUEST = 'PINNED_STATUSES_FETCH_REQUEST' as const;
@@ -20,7 +20,7 @@ const fetchPinnedStatuses = () =>
 
     return getClient(getState()).accounts.getAccountStatuses(me as string, { pinned: true }).then(response => {
       dispatch(importEntities({ statuses: response.items }));
-      dispatch(fetchPinnedStatusesSuccess(response.items, null));
+      dispatch(fetchPinnedStatusesSuccess(response.items, response.next));
     }).catch(error => {
       dispatch(fetchPinnedStatusesFail(error));
     });
@@ -30,7 +30,7 @@ const fetchPinnedStatusesRequest = () => ({
   type: PINNED_STATUSES_FETCH_REQUEST,
 });
 
-const fetchPinnedStatusesSuccess = (statuses: Array<Status>, next: string | null) => ({
+const fetchPinnedStatusesSuccess = (statuses: Array<Status>, next: (() => Promise<PaginatedResponse<Status>>) | null) => ({
   type: PINNED_STATUSES_FETCH_SUCCESS,
   statuses,
   next,

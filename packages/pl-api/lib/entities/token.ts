@@ -10,7 +10,7 @@ const tokenSchema = v.object({
   scope: v.string(),
   created_at: v.fallback(v.optional(v.number()), undefined),
 
-  id: v.fallback(v.optional(v.number()), undefined),
+  id: v.fallback(v.optional(v.pipe(v.unknown(), v.transform(String))), undefined),
   refresh_token: v.fallback(v.optional(v.string()), undefined),
   expires_in: v.fallback(v.optional(v.number()), undefined),
   me: v.fallback(v.optional(v.string()), undefined),

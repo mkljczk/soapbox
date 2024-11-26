@@ -9,9 +9,9 @@
 import {
   credentialAccountSchema,
   PlApiClient,
-  type Application,
   type CreateAccountParams,
   type CredentialAccount,
+  type CredentialApplication,
   type Token,
 } from 'pl-api';
 import { defineMessages } from 'react-intl';
@@ -75,7 +75,7 @@ const createAppAndToken = () =>
 
 interface AuthAppCreatedAction {
   type: typeof AUTH_APP_CREATED;
-  app: Application;
+  app: CredentialApplication;
 }
 
 /** Create an auth app, or use it from build config */
@@ -104,7 +104,7 @@ const createAuthApp = () =>
 
 interface AuthAppAuthorizedAction {
   type: typeof AUTH_APP_AUTHORIZED;
-  app: Application;
+  app: CredentialApplication;
   token: Token;
 }
 
@@ -295,18 +295,19 @@ const logOut = () =>
 
 interface SwitchAccountAction {
   type: typeof SWITCH_ACCOUNT;
-  account?: Account;
-  background: boolean;
+  account: Account;
 }
 
-const switchAccount = (accountId: string, background = false) =>
+const switchAccount = (accountId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const account = selectAccount(getState(), accountId);
+    if (!account) return;
+
     // Clear all stored cache from React Query
     queryClient.invalidateQueries();
     queryClient.clear();
 
-    return dispatch<SwitchAccountAction>({ type: SWITCH_ACCOUNT, account, background });
+    return dispatch<SwitchAccountAction>({ type: SWITCH_ACCOUNT, account });
   };
 
 const fetchOwnAccounts = () =>

@@ -77,7 +77,7 @@ const persistInstance = (instance: { domain: string }, host: string | null = get
   }
 };
 
-const handleInstanceFetchFail = (state: State, error: Record<string, any>) => {
+const handleInstanceFetchFail = (state: State, error: any) => {
   if (error.response?.status === 401) {
     return handleAuthFetch(state);
   } else {

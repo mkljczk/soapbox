@@ -1,17 +1,6 @@
 import { create } from 'mutative';
 
 import {
-  STATUS_QUOTES_EXPAND_FAIL,
-  STATUS_QUOTES_EXPAND_REQUEST,
-  STATUS_QUOTES_EXPAND_SUCCESS,
-  STATUS_QUOTES_FETCH_FAIL,
-  STATUS_QUOTES_FETCH_REQUEST,
-  STATUS_QUOTES_FETCH_SUCCESS,
-  type StatusQuotesAction,
-} from 'pl-fe/actions/status-quotes';
-import { STATUS_CREATE_SUCCESS } from 'pl-fe/actions/statuses';
-
-import {
   BOOKMARKED_STATUSES_FETCH_REQUEST,
   BOOKMARKED_STATUSES_FETCH_SUCCESS,
   BOOKMARKED_STATUSES_FETCH_FAIL,
@@ -19,7 +8,7 @@ import {
   BOOKMARKED_STATUSES_EXPAND_SUCCESS,
   BOOKMARKED_STATUSES_EXPAND_FAIL,
   type BookmarksAction,
-} from '../actions/bookmarks';
+} from 'pl-fe/actions/bookmarks';
 import {
   RECENT_EVENTS_FETCH_REQUEST,
   RECENT_EVENTS_FETCH_SUCCESS,
@@ -28,7 +17,7 @@ import {
   JOINED_EVENTS_FETCH_SUCCESS,
   JOINED_EVENTS_FETCH_FAIL,
   type EventsAction,
-} from '../actions/events';
+} from 'pl-fe/actions/events';
 import {
   FAVOURITED_STATUSES_FETCH_REQUEST,
   FAVOURITED_STATUSES_FETCH_SUCCESS,
@@ -43,7 +32,7 @@ import {
   ACCOUNT_FAVOURITED_STATUSES_EXPAND_SUCCESS,
   ACCOUNT_FAVOURITED_STATUSES_EXPAND_FAIL,
   type FavouritesAction,
-} from '../actions/favourites';
+} from 'pl-fe/actions/favourites';
 import {
   FAVOURITE_SUCCESS,
   UNFAVOURITE_SUCCESS,
@@ -52,8 +41,8 @@ import {
   PIN_SUCCESS,
   UNPIN_SUCCESS,
   type InteractionsAction,
-} from '../actions/interactions';
-import { PINNED_STATUSES_FETCH_SUCCESS, type PinStatusesAction } from '../actions/pin-statuses';
+} from 'pl-fe/actions/interactions';
+import { PINNED_STATUSES_FETCH_SUCCESS, type PinStatusesAction } from 'pl-fe/actions/pin-statuses';
 import {
   SCHEDULED_STATUSES_FETCH_REQUEST,
   SCHEDULED_STATUSES_FETCH_SUCCESS,
@@ -63,10 +52,20 @@ import {
   SCHEDULED_STATUSES_EXPAND_FAIL,
   SCHEDULED_STATUS_CANCEL_REQUEST,
   SCHEDULED_STATUS_CANCEL_SUCCESS,
-} from '../actions/scheduled-statuses';
+  type ScheduledStatusesAction,
+} from 'pl-fe/actions/scheduled-statuses';
+import {
+  STATUS_QUOTES_EXPAND_FAIL,
+  STATUS_QUOTES_EXPAND_REQUEST,
+  STATUS_QUOTES_EXPAND_SUCCESS,
+  STATUS_QUOTES_FETCH_FAIL,
+  STATUS_QUOTES_FETCH_REQUEST,
+  STATUS_QUOTES_FETCH_SUCCESS,
+  type StatusQuotesAction,
+} from 'pl-fe/actions/status-quotes';
+import { STATUS_CREATE_SUCCESS, type StatusesAction } from 'pl-fe/actions/statuses';
 
 import type { PaginatedResponse, ScheduledStatus, Status } from 'pl-api';
-import type { AnyAction } from 'redux';
 
 interface StatusList {
   next: (() => Promise<PaginatedResponse<Status>>) | null;
@@ -156,7 +155,7 @@ const removeBookmarkFromLists = (state: State, status: Pick<Status, 'id' | 'book
   }
 };
 
-const statusLists = (state = initialState, action: AnyAction | BookmarksAction | EventsAction | FavouritesAction | InteractionsAction | PinStatusesAction | StatusQuotesAction): State => {
+const statusLists = (state = initialState, action: BookmarksAction | EventsAction | FavouritesAction | InteractionsAction | PinStatusesAction | ScheduledStatusesAction | StatusesAction | StatusQuotesAction): State => {
   switch (action.type) {
     case FAVOURITED_STATUSES_FETCH_REQUEST:
     case FAVOURITED_STATUSES_EXPAND_REQUEST:
@@ -209,9 +208,9 @@ const statusLists = (state = initialState, action: AnyAction | BookmarksAction |
     case SCHEDULED_STATUSES_EXPAND_FAIL:
       return create(state, draft => setLoading(draft, 'scheduled_statuses', false));
     case SCHEDULED_STATUSES_FETCH_SUCCESS:
-      return create(state, draft => normalizeList(draft, 'scheduled_statuses', action.statuses, action.next));
+      return create(state, draft => normalizeList(draft, 'scheduled_statuses', action.statuses, action.next as any));
     case SCHEDULED_STATUSES_EXPAND_SUCCESS:
-      return create(state, draft => appendToList(draft, 'scheduled_statuses', action.statuses, action.next));
+      return create(state, draft => appendToList(draft, 'scheduled_statuses', action.statuses, action.next as any));
     case SCHEDULED_STATUS_CANCEL_REQUEST:
     case SCHEDULED_STATUS_CANCEL_SUCCESS:
       return create(state, draft => removeOneFromList(draft, 'scheduled_statuses', action.statusId));

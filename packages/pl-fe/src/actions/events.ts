@@ -436,7 +436,7 @@ const initEventEdit = (statusId: string) => (dispatch: AppDispatch, getState: ()
 
   return getClient(getState()).statuses.getStatusSource(statusId).then(response => {
     dispatch({ type: STATUS_FETCH_SOURCE_SUCCESS, statusId });
-    dispatch({
+    dispatch<EventFormSetAction>({
       type: EVENT_FORM_SET,
       composeId: `compose-event-modal-${statusId}`,
       text: response.text,
@@ -453,19 +453,19 @@ const fetchRecentEvents = () =>
       return;
     }
 
-    dispatch({ type: RECENT_EVENTS_FETCH_REQUEST });
+    dispatch<EventsAction>({ type: RECENT_EVENTS_FETCH_REQUEST });
 
     return getClient(getState()).timelines.publicTimeline({
       only_events: true,
     }).then(response => {
       dispatch(importEntities({ statuses: response.items }));
-      dispatch({
+      dispatch<EventsAction>({
         type: RECENT_EVENTS_FETCH_SUCCESS,
         statuses: response.items,
         next: response.next,
       });
     }).catch(error => {
-      dispatch({ type: RECENT_EVENTS_FETCH_FAIL, error });
+      dispatch<EventsAction>({ type: RECENT_EVENTS_FETCH_FAIL, error });
     });
   };
 
@@ -475,17 +475,17 @@ const fetchJoinedEvents = () =>
       return;
     }
 
-    dispatch({ type: JOINED_EVENTS_FETCH_REQUEST });
+    dispatch<EventsAction>({ type: JOINED_EVENTS_FETCH_REQUEST });
 
     getClient(getState).events.getJoinedEvents().then(response => {
       dispatch(importEntities({ statuses: response.items }));
-      dispatch({
+      dispatch<EventsAction>({
         type: JOINED_EVENTS_FETCH_SUCCESS,
         statuses: response.items,
         next: response.next,
       });
     }).catch(error => {
-      dispatch({ type: JOINED_EVENTS_FETCH_FAIL, error });
+      dispatch<EventsAction>({ type: JOINED_EVENTS_FETCH_FAIL, error });
     });
   };
 
@@ -520,7 +520,13 @@ type EventsAction =
   | ReturnType<typeof rejectEventParticipationRequestSuccess>
   | ReturnType<typeof rejectEventParticipationRequestFail>
   | ReturnType<typeof cancelEventCompose>
-  | EventFormSetAction;
+  | EventFormSetAction
+  | { type: typeof RECENT_EVENTS_FETCH_REQUEST }
+  | { type: typeof RECENT_EVENTS_FETCH_SUCCESS; statuses: Array<Status>; next: (() => Promise<PaginatedResponse<Status>>) | null }
+  | { type: typeof RECENT_EVENTS_FETCH_FAIL; error: unknown }
+  | { type: typeof JOINED_EVENTS_FETCH_REQUEST }
+  | { type: typeof JOINED_EVENTS_FETCH_SUCCESS; statuses: Array<Status>; next: (() => Promise<PaginatedResponse<Status>>) | null }
+  | { type: typeof JOINED_EVENTS_FETCH_FAIL; error: unknown }
 
 export {
   EVENT_SUBMIT_REQUEST,
