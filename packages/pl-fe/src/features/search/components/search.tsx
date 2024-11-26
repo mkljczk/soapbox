@@ -1,6 +1,5 @@
 import clsx from 'clsx';
-import debounce from 'lodash/debounce';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useSearchParams } from 'react-router-dom-v5-compat';
 
@@ -21,15 +20,10 @@ const Search = () => {
     setParams(params => ({ ...Object.fromEntries(params.entries()), q: value }));
   };
 
-  const debouncedSubmit = useCallback(debounce((value: string) => {
-    setQuery(value);
-  }, 900), []);
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
 
     setValue(value);
-    debouncedSubmit(value);
   };
 
   const handleClear = (event: React.MouseEvent<HTMLDivElement>) => {
