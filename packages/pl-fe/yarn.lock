@@ -7615,17 +7615,17 @@ pkg-dir@^4.1.0:
   dependencies:
     find-up "^4.0.0"
 
-pl-api@^0.1.11:
-  version "0.1.11"
-  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-0.1.11.tgz#35044f703bd213a5a5d17d16824653588a64d29e"
-  integrity sha512-KASKZuAateAflNoG2jgAXK6yMVaImcZDsSWOAojFoLi/lDI7tJFwty9C1a7BsuFhWtIwwA9YtLidVxrBGBvGpw==
+pl-api@^0.1.12:
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-0.1.12.tgz#f2bb7e91c85b0be12826eb7d315fe652cbf53c85"
+  integrity sha512-bwXi47LywwQ4UF1qllDsSQ/xr830idD1qFx4eDff1V6iRyVImHJYSVeVzKa8XxOwDRMjiZX8bGMQ2FLuE/mE/g==
   dependencies:
     blurhash "^2.0.5"
     http-link-header "^1.1.3"
     lodash.omit "^4.5.0"
     lodash.pick "^4.4.0"
     object-to-formdata "^4.5.1"
-    query-string "^9.1.0"
+    query-string "^9.1.1"
     semver "^7.6.3"
     valibot "^0.42.1"
 
@@ -8003,15 +8003,6 @@ qrcode.react@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/qrcode.react/-/qrcode.react-4.1.0.tgz#ff15dc9edb135f735bb303a8356938c1e8dcc4c8"
   integrity sha512-uqXVIIVD/IPgWLYxbOczCNAQw80XCM/LulYDADF+g2xDsPj5OoRwSWtIS4jGyp295wyjKstfG1qIv/I2/rNWpQ==
-
-query-string@^9.1.0:
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/query-string/-/query-string-9.1.0.tgz#5f12a4653a4ba56021e113b5cf58e56581823e7a"
-  integrity sha512-t6dqMECpCkqfyv2FfwVS1xcB6lgXW/0XZSaKdsCNGYkqMO76AFiJEg4vINzoDKcZa6MS7JX+OHIjwh06K5vczw==
-  dependencies:
-    decode-uri-component "^0.4.1"
-    filter-obj "^5.1.0"
-    split-on-first "^3.0.0"
 
 query-string@^9.1.1:
   version "9.1.1"

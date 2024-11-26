@@ -2153,17 +2153,17 @@ pkg-types@^1.0.3, pkg-types@^1.1.1:
     mlly "^1.7.1"
     pathe "^1.1.2"
 
-pl-api@^0.1.10:
-  version "0.1.10"
-  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-0.1.10.tgz#f4abbc6b2b175a0acd2bc97fcf4019f094f386c8"
-  integrity sha512-KXUbCGLhlck5nBHFpbxUnNA1+b4WENO3+pq1YRK+4bi+L8sRRrF6OTN3A86v6ltBJxcZSOyMQUu34Nfp6CCFYw==
+pl-api@^0.1.12:
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-0.1.12.tgz#f2bb7e91c85b0be12826eb7d315fe652cbf53c85"
+  integrity sha512-bwXi47LywwQ4UF1qllDsSQ/xr830idD1qFx4eDff1V6iRyVImHJYSVeVzKa8XxOwDRMjiZX8bGMQ2FLuE/mE/g==
   dependencies:
     blurhash "^2.0.5"
     http-link-header "^1.1.3"
     lodash.omit "^4.5.0"
     lodash.pick "^4.4.0"
     object-to-formdata "^4.5.1"
-    query-string "^9.1.0"
+    query-string "^9.1.1"
     semver "^7.6.3"
     valibot "^0.42.1"
 
@@ -2191,10 +2191,10 @@ punycode@^2.1.0:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.1.tgz#027422e2faec0b25e1549c3e1bd8309b9133b6e5"
   integrity sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==
 
-query-string@^9.1.0:
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/query-string/-/query-string-9.1.0.tgz#5f12a4653a4ba56021e113b5cf58e56581823e7a"
-  integrity sha512-t6dqMECpCkqfyv2FfwVS1xcB6lgXW/0XZSaKdsCNGYkqMO76AFiJEg4vINzoDKcZa6MS7JX+OHIjwh06K5vczw==
+query-string@^9.1.1:
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/query-string/-/query-string-9.1.1.tgz#dbfebb4196aeb2919915f2b2b81b91b965cf03a0"
+  integrity sha512-MWkCOVIcJP9QSKU52Ngow6bsAWAPlPK2MludXvcrS2bGZSl+T1qX9MZvRIkqUIkGLJquMJHWfsT6eRqUpp4aWg==
   dependencies:
     decode-uri-component "^0.4.1"
     filter-obj "^5.1.0"
