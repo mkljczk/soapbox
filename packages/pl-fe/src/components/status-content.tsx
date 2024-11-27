@@ -171,7 +171,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
         <span className={clsx({ 'line-clamp-3': !expanded && lineClamp })} ref={spoilerNode}>
           <Emojify text={spoilerText} emojis={status.emojis} />
         </span>
-        {status.content && expandable && (
+        {expandable && (
           <Button
             className='ml-2 align-middle'
             type='button'
