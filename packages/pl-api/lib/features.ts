@@ -48,6 +48,14 @@ const GOTOSOCIAL = 'GoToSocial';
 const ICESHRIMP = 'Iceshrimp';
 
 /**
+ * Iceshrimp.NET, a decentralized and federated social networking service, powered by .NET.
+ *
+ * @category Software
+ * @see {@link https://iceshrimp.dev/}
+ */
+const ICESHRIMP_NET = 'Iceshrimp.NET';
+
+/**
  * Mastodon, the software upon which this is all based.
  *
  * @category Software
@@ -1285,7 +1293,7 @@ interface Backend {
 
 /** Get information about the software from its version string */
 const parseVersion = (version: string): Backend => {
-  const regex = /^([\w+.-]*)(?: \(compatible; ([\w]*) (.*)\))?$/;
+  const regex = /^([\w+.-]*)(?: \(compatible; ([\w.]*) (.*)\))?$/;
   const match = regex.exec(version.replace('/', ' '));
 
   const semverString = match && (match[3] || match[1]);
@@ -1318,6 +1326,7 @@ export {
   FRIENDICA,
   GOTOSOCIAL,
   ICESHRIMP,
+  ICESHRIMP_NET,
   MASTODON,
   MITRA,
   PIXELFED,
