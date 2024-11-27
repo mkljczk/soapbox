@@ -39,7 +39,7 @@ const UserIndex: React.FC = () => {
     updateQuery();
   }, []);
 
-  const hasMore = items.length < total && !!next;
+  const hasMore = (total === undefined || items.length < total) && !!next;
 
   const showLoading = isLoading && !items.length;
 

@@ -10,12 +10,12 @@ import {
   ADMIN_USER_DELETE_SUCCESS,
   ADMIN_USER_APPROVE_REQUEST,
   ADMIN_USER_APPROVE_SUCCESS,
+  type AdminActions,
 } from 'pl-fe/actions/admin';
-import { normalizeAdminReport, type AdminReport } from 'pl-fe/normalizers/admin-report';
+import { normalizeAdminReport, type AdminReport as MinifiedReport } from 'pl-fe/normalizers/admin-report';
 
-import type { AdminAccount, AdminGetAccountsParams, AdminReport as BaseAdminReport } from 'pl-api';
+import type { AdminAccount, AdminGetAccountsParams, AdminReport } from 'pl-api';
 import type { Config } from 'pl-fe/utils/config-db';
-import type { AnyAction } from 'redux';
 
 interface State {
   reports: Record<string, MinifiedReport>;
@@ -59,7 +59,7 @@ const minifyUser = (user: AdminAccount) => omit(user, ['account']);
 
 type MinifiedUser = ReturnType<typeof minifyUser>;
 
-const importUsers = (state: State, users: Array<AdminAccount>, params: AdminGetAccountsParams) => {
+const importUsers = (state: State, users: Array<AdminAccount>, params?: AdminGetAccountsParams) => {
   maybeImportUnapproved(state, users, params);
   maybeImportLatest(state, users, params);
 
@@ -80,16 +80,9 @@ const approveUser = (state: State, user: AdminAccount) => {
   state.users[user.id] = normalizedUser;
 };
 
-const minifyReport = (report: AdminReport) => omit(
-  report,
-  ['account', 'target_account', 'action_taken_by_account', 'assigned_account', 'statuses'],
-);
-
-type MinifiedReport = ReturnType<typeof minifyReport>;
-
-const importReports = (state: State, reports: Array<BaseAdminReport>) => {
+const importReports = (state: State, reports: Array<AdminReport>) => {
   reports.forEach(report => {
-    const minifiedReport = minifyReport(normalizeAdminReport(report));
+    const minifiedReport = normalizeAdminReport(report);
     if (!minifiedReport.action_taken) {
       state.openReports = [...new Set([...state.openReports, report.id])];
     }
@@ -97,7 +90,7 @@ const importReports = (state: State, reports: Array<BaseAdminReport>) => {
   });
 };
 
-const handleReportDiffs = (state: State, report: MinifiedReport) => {
+const handleReportDiffs = (state: State, report: AdminReport) => {
   // Note: the reports here aren't full report objects
   // hence the need for a new function.
   switch (report.action_taken) {
@@ -113,7 +106,7 @@ const importConfigs = (state: State, configs: any) => {
   state.configs = configs;
 };
 
-const admin = (state = initialState, action: AnyAction): State => {
+const admin = (state = initialState, action: AdminActions): State => {
   switch (action.type) {
     case ADMIN_CONFIG_FETCH_SUCCESS:
     case ADMIN_CONFIG_UPDATE_SUCCESS:

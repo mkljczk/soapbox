@@ -8,9 +8,9 @@ import {
   ADMIN_USER_INDEX_FETCH_REQUEST,
   ADMIN_USER_INDEX_FETCH_SUCCESS,
   ADMIN_USER_INDEX_QUERY_SET,
+  type AdminActions,
 } from 'pl-fe/actions/admin';
 
-import type { AnyAction } from '@reduxjs/toolkit';
 import type { AdminAccount, AdminGetAccountsParams, PaginatedResponse } from 'pl-api';
 import type { APIEntity } from 'pl-fe/types/entities';
 
@@ -18,7 +18,7 @@ type State = {
   isLoading: boolean;
   loaded: boolean;
   items: Array<string>;
-  total: number;
+  total?: number;
   page: number;
   query: string;
   next: (() => Promise<PaginatedResponse<AdminAccount>>) | null;
@@ -36,7 +36,7 @@ const initialState: State = {
   params: null,
 };
 
-const admin_user_index = (state: State = initialState, action: AnyAction): State => {
+const admin_user_index = (state: State = initialState, action: AdminActions): State => {
   switch (action.type) {
     case ADMIN_USER_INDEX_QUERY_SET:
       return create(state, draft => {
@@ -47,7 +47,7 @@ const admin_user_index = (state: State = initialState, action: AnyAction): State
         draft.isLoading = true;
         draft.loaded = true;
         draft.items = [];
-        draft.total = action.total;
+        draft.total = Infinity;
         draft.page = 0;
         draft.next = null;
       });
