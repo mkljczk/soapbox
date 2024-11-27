@@ -11,6 +11,7 @@ import { useInstance } from 'pl-fe/hooks/use-instance';
 const messages = defineMessages({
   content_type_plaintext: { id: 'preferences.options.content_type_plaintext', defaultMessage: 'Plain text' },
   content_type_markdown: { id: 'preferences.options.content_type_markdown', defaultMessage: 'Markdown' },
+  content_type_mfm: { id: 'preferences.options.content_type_mfm', defaultMessage: 'MFM' },
   content_type_html: { id: 'preferences.options.content_type_html', defaultMessage: 'HTML' },
   content_type_wysiwyg: { id: 'preferences.options.content_type_wysiwyg', defaultMessage: 'WYSIWYG' },
   change_content_type: { id: 'compose_form.content_type.change', defaultMessage: 'Change content type' },
@@ -29,7 +30,7 @@ const ContentTypeButton: React.FC<IContentTypeButton> = ({ composeId }) => {
 
   const handleChange = (contentType: string) => () => dispatch(changeComposeContentType(composeId, contentType));
 
-  const postFormats = instance.pleroma.metadata.post_formats;
+  const postFormats = instance.configuration.statuses.supported_mime_types;
 
   const options = [];
 
@@ -46,6 +47,14 @@ const ContentTypeButton: React.FC<IContentTypeButton> = ({ composeId }) => {
       icon: require('@tabler/icons/outline/markdown.svg'),
       text: intl.formatMessage(messages.content_type_markdown),
       value: 'text/markdown',
+    });
+  }
+
+  if (postFormats.includes('text/x.misskeymarkdown')) {
+    options.push({
+      icon: require('@tabler/icons/outline/sparkles.svg'),
+      text: intl.formatMessage(messages.content_type_mfm),
+      value: 'text/x.misskeymarkdown',
     });
   }
 
@@ -86,7 +95,6 @@ const ContentTypeButton: React.FC<IContentTypeButton> = ({ composeId }) => {
       />
     </DropdownMenu>
   );
-
 };
 
 export { ContentTypeButton as default };

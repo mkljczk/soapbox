@@ -311,7 +311,7 @@ const importAccount = (compose: Compose, account: CredentialAccount) => {
 // };
 
 const updateDefaultContentType = (compose: Compose, instance: Instance) => {
-  const postFormats = instance.pleroma.metadata.post_formats;
+  const postFormats = instance.configuration.statuses.supported_mime_types;
 
   compose.content_type = postFormats.includes(compose.content_type) ? compose.content_type : postFormats.includes('text/markdown') ? 'text/markdown' : postFormats[0];
 };
