@@ -1271,6 +1271,7 @@
   "preferences.notifications.advanced": "Show all notification categories",
   "preferences.options.content_type_html": "HTML",
   "preferences.options.content_type_markdown": "Markdown",
+  "preferences.options.content_type_mfm": "MFM",
   "preferences.options.content_type_plaintext": "Plain text",
   "preferences.options.content_type_wysiwyg": "WYSIWYG",
   "preferences.options.privacy_followers_only": "Followers-only",
