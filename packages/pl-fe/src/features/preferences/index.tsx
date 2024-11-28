@@ -125,7 +125,7 @@ const Preferences = () => {
   }), [settings.locale]);
 
   const defaultContentTypeOptions = React.useMemo(() => {
-    const postFormats = instance.configuration.statuses.supported_mime_types;
+    const postFormats = instance.pleroma.metadata.post_formats;
 
     const options = Object.entries({
       'text/plain': intl.formatMessage(messages.content_type_plaintext),

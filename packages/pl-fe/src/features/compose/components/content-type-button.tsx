@@ -30,7 +30,7 @@ const ContentTypeButton: React.FC<IContentTypeButton> = ({ composeId }) => {
 
   const handleChange = (contentType: string) => () => dispatch(changeComposeContentType(composeId, contentType));
 
-  const postFormats = instance.configuration.statuses.supported_mime_types;
+  const postFormats = instance.pleroma.metadata.post_formats;
 
   const options = [];
 
