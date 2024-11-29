@@ -1,5 +1,8 @@
 import type { PaginationParams } from './common';
 
+/**
+ * @category Request params
+ */
 interface GetGroupedNotificationsParams extends PaginationParams {
   /** Types to include in the result. */
   types?: Array<string>;
@@ -15,6 +18,9 @@ interface GetGroupedNotificationsParams extends PaginationParams {
   include_filtered?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 interface GetUnreadNotificationGroupCountParams {
   /** Maximum number of results to return. Defaults to 100 notifications. Max 1000 notifications. */
   limit?: number;

@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 import { datetimeSchema } from '../utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Admin_IpBlock/} */
+/**
+ * @category Admin schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Admin_IpBlock/}
+ */
 const adminIpBlockSchema = v.object({
   id: v.string(),
   ip: v.pipe(v.string(), v.ip()),
@@ -12,6 +15,9 @@ const adminIpBlockSchema = v.object({
   expires_at: v.fallback(v.nullable(datetimeSchema), null),
 });
 
+/**
+ * @category Admin types
+ */
 type AdminIpBlock = v.InferOutput<typeof adminIpBlockSchema>;
 
 export {

@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 import { datetimeSchema } from '../utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Admin_EmailDomainBlock/} */
+/**
+ * @category Admin schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Admin_EmailDomainBlock/}
+ */
 const adminEmailDomainBlockSchema = v.object({
   id: v.string(),
   domain: v.string(),
@@ -14,6 +17,9 @@ const adminEmailDomainBlockSchema = v.object({
   })),
 });
 
+/**
+ * @category Admin types
+ */
 type AdminEmailDomainBlock = v.InferOutput<typeof adminEmailDomainBlockSchema>;
 
 export {

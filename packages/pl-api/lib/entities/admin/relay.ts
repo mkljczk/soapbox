@@ -10,6 +10,9 @@ const adminRelaySchema = v.pipe(
   }),
 );
 
+/**
+ * @category Admin types
+ */
 type AdminRelay = v.InferOutput<typeof adminRelaySchema>
 
 export { adminRelaySchema, type AdminRelay };

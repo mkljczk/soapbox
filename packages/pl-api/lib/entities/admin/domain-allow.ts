@@ -2,13 +2,19 @@ import * as v from 'valibot';
 
 import { datetimeSchema } from '../utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Admin_DomainAllow/} */
+/**
+ * @category Admin schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Admin_DomainAllow/}
+ */
 const adminDomainAllowSchema = v.object({
   id: v.string(),
   domain: v.string(),
   created_at: datetimeSchema,
 });
 
+/**
+ * @category Admin types
+ */
 type AdminDomainAllow = v.InferOutput<typeof adminDomainAllowSchema>;
 
 export {

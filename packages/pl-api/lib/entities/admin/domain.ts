@@ -10,6 +10,9 @@ const adminDomainSchema = v.object({
   last_checked_at: v.fallback(v.nullable(datetimeSchema), null),
 });
 
+/**
+ * @category Admin types
+ */
 type AdminDomain = v.InferOutput<typeof adminDomainSchema>
 
 export { adminDomainSchema, type AdminDomain };

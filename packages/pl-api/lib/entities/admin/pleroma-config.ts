@@ -1,7 +1,7 @@
 import * as v from 'valibot';
 
 /**
- * @category Schemas
+ * @category Admin schemas
  */
 const pleromaConfigSchema = v.object({
   configs: v.array(v.object({
@@ -12,6 +12,9 @@ const pleromaConfigSchema = v.object({
   need_reboot: v.boolean(),
 });
 
+/**
+ * @category Admin types
+ */
 type PleromaConfig = v.InferOutput<typeof pleromaConfigSchema>
 
 export { pleromaConfigSchema, type PleromaConfig };

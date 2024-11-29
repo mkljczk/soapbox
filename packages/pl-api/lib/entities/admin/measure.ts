@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 import { datetimeSchema } from '../utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Admin_Measure/} */
+/**
+ * @category Admin schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Admin_Measure/}
+ */
 const adminMeasureSchema = v.object({
   key: v.string(),
   unit: v.fallback(v.nullable(v.string()), null),
@@ -15,6 +18,9 @@ const adminMeasureSchema = v.object({
   })),
 });
 
+/**
+ * @category Admin types
+ */
 type AdminMeasure = v.InferOutput<typeof adminMeasureSchema>;
 
 export {

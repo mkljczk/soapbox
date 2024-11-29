@@ -1,6 +1,9 @@
 import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Admin_Dimension/} */
+/**
+ * @category Admin schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Admin_Dimension/}
+ */
 const adminDimensionSchema = v.object({
   key: v.string(),
   data: v.object({
@@ -12,6 +15,9 @@ const adminDimensionSchema = v.object({
   }),
 });
 
+/**
+ * @category Admin types
+ */
 type AdminDimension = v.InferOutput<typeof adminDimensionSchema>;
 
 export {
