@@ -22,6 +22,8 @@ interface Params {
 
 /**
  * @category Clients
+ * 
+ * joinmastodon.org-compatible server directory client.
  */
 class PlApiDirectoryClient {
 
@@ -33,6 +35,9 @@ class PlApiDirectoryClient {
   baseURL: string;
   public request = request.bind(this) as typeof request;
 
+  /**
+   * @param baseURL Server directory URL. e.g. `https://joinmastodon.org`
+   */
   constructor(baseURL: string) {
     this.baseURL = baseURL;
   }

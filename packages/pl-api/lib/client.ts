@@ -241,8 +241,23 @@ import type { PaginatedResponse } from './responses';
 
 const GROUPED_TYPES = ['favourite', 'reblog', 'emoji_reaction', 'event_reminder', 'participation_accepted', 'participation_request'];
 
+interface PlApiClientConstructorOpts {
+  /** Instance object to use by default, to be populated eg. from cache */
+  instance?: Instance;
+  /** Fetch instance after constructing */
+  fetchInstance?: boolean;
+  /** Abort signal which can be used to cancel the callbacks */
+  fetchInstanceSignal?: AbortSignal;
+  /** Executed after the initial instance fetch */
+  onInstanceFetchSuccess?: (instance: Instance) => void;
+  /** Executed when the initial instance fetch failed */
+  onInstanceFetchError?: (error?: any) => void;
+}
+
 /**
  * @category Clients
+ * 
+ * Mastodon API client.
  */
 class PlApiClient {
 
@@ -259,17 +274,18 @@ class PlApiClient {
     close: () => void;
   };
 
+  /**
+   *
+   * @param baseURL Mastodon API-compatible server URL
+   * @param accessToken OAuth token for an authorized user
+   */
   constructor(baseURL: string, accessToken?: string, {
     instance,
     fetchInstance,
+    fetchInstanceSignal,
     onInstanceFetchSuccess,
     onInstanceFetchError,
-  }: {
-    instance?: Instance;
-    fetchInstance?: boolean;
-    onInstanceFetchSuccess?: (instance: Instance) => void;
-    onInstanceFetchError?: (error?: any) => void;
-  } = {}) {
+  }: PlApiClientConstructorOpts = {}) {
     this.baseURL = baseURL;
     this.#accessToken = accessToken;
 
@@ -277,7 +293,13 @@ class PlApiClient {
       this.#setInstance(instance);
     }
     if (fetchInstance) {
-      this.instance.getInstance().then(onInstanceFetchSuccess).catch(onInstanceFetchError);
+      this.instance.getInstance().then((instance) => {
+        if (fetchInstanceSignal?.aborted) return;
+        onInstanceFetchSuccess?.(instance);
+      }).catch((error) => {
+        if (fetchInstanceSignal?.aborted) return;
+        onInstanceFetchError?.(error);
+      });
     }
   }
 
