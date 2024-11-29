@@ -37,7 +37,6 @@ import status_lists from './status-lists';
 import statuses from './statuses';
 import tags from './tags';
 import timelines from './timelines';
-import trending_statuses from './trending-statuses';
 import user_lists from './user-lists';
 
 const reducers = {
@@ -75,7 +74,6 @@ const reducers = {
   statuses,
   tags,
   timelines,
-  trending_statuses,
   user_lists,
 };
 

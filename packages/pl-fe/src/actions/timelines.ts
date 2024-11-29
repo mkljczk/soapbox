@@ -30,8 +30,6 @@ const TIMELINE_EXPAND_REQUEST = 'TIMELINE_EXPAND_REQUEST' as const;
 const TIMELINE_EXPAND_SUCCESS = 'TIMELINE_EXPAND_SUCCESS' as const;
 const TIMELINE_EXPAND_FAIL = 'TIMELINE_EXPAND_FAIL' as const;
 
-const TIMELINE_INSERT = 'TIMELINE_INSERT' as const;
-
 const MAX_QUEUED_ITEMS = 40;
 
 const processTimelineUpdate = (timeline: string, status: BaseStatus) =>
@@ -329,8 +327,6 @@ const scrollTopTimeline = (timeline: string, top: boolean) => ({
   top,
 });
 
-const insertSuggestionsIntoTimeline = () => ({ type: TIMELINE_INSERT, timeline: 'home' });
-
 // TODO: other actions
 type TimelineAction =
   | ReturnType<typeof updateTimeline>
@@ -341,8 +337,7 @@ type TimelineAction =
   | ReturnType<typeof scrollTopTimeline>
   | ReturnType<typeof expandTimelineRequest>
   | ReturnType<typeof expandTimelineSuccess>
-  | ReturnType<typeof expandTimelineFail>
-  | ReturnType<typeof insertSuggestionsIntoTimeline>;
+  | ReturnType<typeof expandTimelineFail>;
 
 export {
   TIMELINE_UPDATE,
@@ -354,11 +349,8 @@ export {
   TIMELINE_EXPAND_REQUEST,
   TIMELINE_EXPAND_SUCCESS,
   TIMELINE_EXPAND_FAIL,
-  TIMELINE_INSERT,
   MAX_QUEUED_ITEMS,
   processTimelineUpdate,
-  updateTimeline,
-  updateTimelineQueue,
   dequeueTimeline,
   deleteFromTimelines,
   clearTimeline,
@@ -371,6 +363,5 @@ export {
   fetchHashtagTimeline,
   expandTimelineSuccess,
   scrollTopTimeline,
-  insertSuggestionsIntoTimeline,
   type TimelineAction,
 };

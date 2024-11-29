@@ -1,4 +1,3 @@
-import sample from 'lodash/sample';
 import { create } from 'mutative';
 
 import { ACCOUNT_BLOCK_SUCCESS, ACCOUNT_MUTE_SUCCESS, type AccountsAction } from '../actions/accounts';
@@ -15,7 +14,6 @@ import {
   TIMELINE_DEQUEUE,
   MAX_QUEUED_ITEMS,
   TIMELINE_SCROLL_TOP,
-  TIMELINE_INSERT,
   type TimelineAction,
 } from '../actions/timelines';
 
@@ -333,21 +331,6 @@ const timelines = (state: State = initialState, action: AccountsAction | Interac
     //   return filterTimeline(state, 'home', action.relationship, action.statuses);
     case TIMELINE_SCROLL_TOP:
       return create(state, (draft) => updateTop(state, action.timeline, action.top));
-    case TIMELINE_INSERT:
-      return create(state, (draft) => updateTimeline(draft, action.timeline, (timeline) => {
-        let oldIdsArray = timeline.items;
-        const existingSuggestionId = oldIdsArray.find(key => key.includes('末suggestions'));
-
-        if (existingSuggestionId) {
-          oldIdsArray = oldIdsArray.slice(1);
-        }
-        const positionInTimeline = sample([5, 6, 7, 8, 9]) as number;
-        if (timeline.items.at(-1)) {
-          oldIdsArray.splice(positionInTimeline, 0, `末suggestions-${timeline.items.at(-1)}`);
-        }
-
-        timeline.items = oldIdsArray;
-      }));
     case PIN_SUCCESS:
       return create(state, (draft) => updateTimeline(draft, `account:${action.accountId}:with_replies:pinned`, (timeline) => {
         timeline.items = [...new Set([action.statusId, ...timeline.items])];

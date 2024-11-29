@@ -95,8 +95,6 @@ const plFeConfigSchema = v.pipe(coerceObject({
   linkFooterMessage: v.fallback(v.string(), ''),
   links: v.fallback(v.record(v.string(), v.string()), {}),
   displayCta: v.fallback(v.boolean(), false),
-  /** Whether to inject suggested profiles into the Home feed. */
-  feedInjection: v.fallback(v.boolean(), true),
   tileServer: v.fallback(v.string(), ''),
   tileServerAttribution: v.fallback(v.string(), ''),
   redirectRootNoLogin: v.fallback(v.pipe(v.string(), v.transform((url: string) => {

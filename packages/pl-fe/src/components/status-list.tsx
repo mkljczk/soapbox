@@ -8,10 +8,8 @@ import ScrollableList, { type IScrollableListWithContainer } from 'pl-fe/compone
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import StatusContainer from 'pl-fe/containers/status-container';
-import FeedSuggestions from 'pl-fe/features/feed-suggestions/feed-suggestions';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import PendingStatus from 'pl-fe/features/ui/components/pending-status';
-import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
 interface IStatusList extends Omit<IScrollableListWithContainer, 'onLoadMore' | 'children'> {
   /** Unique key to preserve the scroll position when navigating back. */
@@ -54,8 +52,6 @@ const StatusList: React.FC<IStatusList> = ({
   className,
   ...other
 }) => {
-  const plFeConfig = usePlFeConfig();
-
   const getFeaturedStatusCount = () => featuredStatusIds?.length || 0;
 
   const getCurrentStatusIndex = (id: string, featured: boolean): number => {
@@ -79,7 +75,7 @@ const StatusList: React.FC<IStatusList> = ({
   const handleLoadOlder = useCallback(debounce(() => {
     const maxId = lastStatusId || statusIds.at(-1);
     if (onLoadMore && maxId) {
-      onLoadMore(maxId.replace('末suggestions-', ''));
+      onLoadMore(maxId);
     }
   }, 300, { leading: true }), [onLoadMore, lastStatusId, statusIds.at(-1)]);
 
@@ -149,15 +145,6 @@ const StatusList: React.FC<IStatusList> = ({
     ));
   };
 
-  const renderFeedSuggestions = (statusId: string): React.ReactNode => (
-    <FeedSuggestions
-      key='suggestions'
-      statusId={statusId}
-      onMoveUp={handleMoveUp}
-      onMoveDown={handleMoveDown}
-    />
-  );
-
   const renderStatuses = (): React.ReactNode[] => {
     if (isLoading || statusIds.length > 0) {
       return statusIds.reduce((acc, statusId, index) => {
@@ -165,10 +152,6 @@ const StatusList: React.FC<IStatusList> = ({
           const gap = renderLoadGap(index);
           if (gap) {
             acc.push(gap);
-          }
-        } else if (statusId.startsWith('末suggestions-')) {
-          if (plFeConfig.feedInjection) {
-            acc.push(renderFeedSuggestions(statusId));
           }
         } else if (statusId.startsWith('末pending-')) {
           acc.push(renderPendingStatus(statusId));
