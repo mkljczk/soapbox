@@ -8,6 +8,9 @@ enum GroupRoles {
   USER = 'user'
 }
 
+/**
+ * @category Entity types
+ */
 type GroupRole =`${GroupRoles}`;
 
 /**

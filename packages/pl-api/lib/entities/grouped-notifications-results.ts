@@ -149,6 +149,9 @@ const groupedNotificationsResultsSchema = v.object({
   notification_groups: filteredArray(notificationGroupSchema),
 });
 
+/**
+ * @category Entity types
+ */
 type GroupedNotificationsResults = v.InferOutput<typeof groupedNotificationsResultsSchema>;
 
 export { notificationGroupSchema, groupedNotificationsResultsSchema, type NotificationGroup, type GroupedNotificationsResults };
