@@ -29,6 +29,12 @@ Some sort of documentation is available on https://pl.mkljczk.pl/pl-api-docs
 
 > This project should be considered unstable before the 1.0.0 release. I will not provide any changelog or information on breaking changes until then.
 
+## Supported projects
+
+Currently, `pl-api` includes compatibility definitions for 12 independent Mastodon API implementations and 5 variants of them (like, forks). As the combination of software name and version is not the only way `pl-api` infers feature availability, some feature definitions will also work on other software.
+
+For unsupported projects, it falls back to a basic feature set, though every method of PlApiClient may be used anyway.
+
 ## Projects using `pl-api`
 
 * [`pl-fe`](https://github.com/mkljczk/pl-fe/tree/develop/packages/pl-fe) is a web client for Mastodon-compatible servers forked from Soapbox. It uses `pl-api` for API interactions.
