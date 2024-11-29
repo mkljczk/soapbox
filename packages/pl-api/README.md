@@ -31,7 +31,8 @@ Some sort of documentation is available on https://pl.mkljczk.pl/pl-api-docs
 
 ## Projects using `pl-api`
 
-[`pl-fe`](https://github.com/mkljczk/pl-fe) is a web client for Mastodon-compatible servers forked from Soapbox. It uses `pl-api` for API interactions.
+* [`pl-fe`](https://github.com/mkljczk/pl-fe/tree/develop/packages/pl-fe) is a web client for Mastodon-compatible servers forked from Soapbox. It uses `pl-api` for API interactions.
+* [`pl-hooks`](https://github.com/mkljczk/pl-fe/tree/develop/packages/pl-hooks) is a work-in-progress library utilizing `pl-api`.
 
 ## License
 
