@@ -35,7 +35,7 @@ Some sort of documentation is available on https://pl.mkljczk.pl/pl-api-docs
 
 ## License
 
-`pl-api` utilizes code from [Soapbox](https://gitlab.com/soapbox-pub/soapbox) and bases off official [Mastodon documentation](https://docs.joinmastodon.org).
+`pl-api` utilizes parts of code from [Soapbox](https://gitlab.com/soapbox-pub/soapbox) and bases off official [Mastodon documentation](https://docs.joinmastodon.org).
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
