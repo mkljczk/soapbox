@@ -13,6 +13,9 @@ const announcementReactionSchema = v.object({
   announcement_id: v.fallback(v.string(), ''),
 });
 
+/**
+ * @category Entity types
+ */
 type AnnouncementReaction = v.InferOutput<typeof announcementReactionSchema>;
 
 export { announcementReactionSchema, type AnnouncementReaction };

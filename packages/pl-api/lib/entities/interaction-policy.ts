@@ -4,6 +4,9 @@ import { coerceObject } from './utils';
 
 const interactionPolicyEntrySchema = v.picklist(['public', 'followers', 'following', 'mutuals', 'mentioned', 'author', 'me']);
 
+/**
+ * @category Entity types
+ */
 type InteractionPolicyEntry = v.InferOutput<typeof interactionPolicyEntrySchema>;
 
 const interactionPolicyRuleSchema = coerceObject({
@@ -21,6 +24,9 @@ const interactionPolicySchema = coerceObject({
   can_reply: interactionPolicyRuleSchema,
 });
 
+/**
+ * @category Entity types
+ */
 type InteractionPolicy = v.InferOutput<typeof interactionPolicySchema>;
 
 /**
@@ -33,6 +39,9 @@ const interactionPoliciesSchema = coerceObject({
   direct: interactionPolicySchema,
 });
 
+/**
+ * @category Entity types
+ */
 type InteractionPolicies = v.InferOutput<typeof interactionPoliciesSchema>;
 
 export { interactionPolicySchema, interactionPoliciesSchema, type InteractionPolicyEntry, type InteractionPolicy, type InteractionPolicies };

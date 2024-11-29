@@ -18,7 +18,7 @@ const adminEmailDomainBlockSchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminEmailDomainBlock = v.InferOutput<typeof adminEmailDomainBlockSchema>;
 

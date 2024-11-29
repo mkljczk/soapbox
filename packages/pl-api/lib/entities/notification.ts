@@ -110,6 +110,9 @@ const notificationSchema: v.BaseSchema<any, Notification, v.BaseIssue<unknown>> 
     eventParticipationRequestNotificationSchema,
   ])) as any;
 
+/**
+ * @category Entity types
+ */
 type Notification = v.InferOutput<
 | typeof accountNotificationSchema
 | typeof mentionNotificationSchema

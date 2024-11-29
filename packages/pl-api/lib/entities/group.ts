@@ -31,6 +31,9 @@ const groupSchema = v.object({
   header_description: v.fallback(v.string(), ''),
 });
 
+/**
+ * @category Entity types
+ */
 type Group = v.InferOutput<typeof groupSchema>;
 
 export { groupSchema, type Group };

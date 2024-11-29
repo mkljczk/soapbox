@@ -16,6 +16,9 @@ const tokenSchema = v.object({
   me: v.fallback(v.optional(v.string()), undefined),
 });
 
+/**
+ * @category Entity types
+ */
 type Token = v.InferOutput<typeof tokenSchema>;
 
 export { tokenSchema, type Token };

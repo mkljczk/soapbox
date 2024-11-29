@@ -20,7 +20,7 @@ const directoryServerSchema = v.object({
 });
 
 /**
- * @category Directory types
+ * @category Directory entity types
  */
 type DirectoryServer = v.InferOutput<typeof directoryServerSchema>;
 

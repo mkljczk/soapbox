@@ -1,5 +1,8 @@
 import * as v from 'valibot';
 
+/**
+ * @category Admin schemas
+ */
 const adminRelaySchema = v.pipe(
   v.any(),
   v.transform((data: any) => ({ id: data.actor, ...data })),
@@ -11,7 +14,7 @@ const adminRelaySchema = v.pipe(
 );
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminRelay = v.InferOutput<typeof adminRelaySchema>
 

@@ -12,7 +12,7 @@ const adminIpSchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminIp = v.InferOutput<typeof adminIpSchema>;
 

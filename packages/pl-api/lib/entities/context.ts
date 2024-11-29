@@ -11,6 +11,9 @@ const contextSchema = v.object({
   descendants: v.array(statusSchema),
 });
 
+/**
+ * @category Entity types
+ */
 type Context = v.InferOutput<typeof contextSchema>;
 
 export { contextSchema, type Context };

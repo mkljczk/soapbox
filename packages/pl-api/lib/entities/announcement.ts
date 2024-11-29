@@ -32,6 +32,9 @@ const announcementSchema = v.object({
   updated_at: v.fallback(datetimeSchema, new Date().toISOString()),
 });
 
+/**
+ * @category Entity types
+ */
 type Announcement = v.InferOutput<typeof announcementSchema>;
 
 export { announcementSchema, type Announcement };

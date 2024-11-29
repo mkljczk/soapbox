@@ -13,6 +13,9 @@ const roleSchema = v.object({
   highlighted: v.fallback(v.boolean(), true),
 });
 
+/**
+ * @category Entity types
+ */
 type Role = v.InferOutput<typeof roleSchema>;
 
 export {

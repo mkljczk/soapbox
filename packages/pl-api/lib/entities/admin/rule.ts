@@ -12,7 +12,7 @@ const adminRuleSchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminRule = v.InferOutput<typeof adminRuleSchema>;
 

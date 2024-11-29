@@ -16,7 +16,7 @@ const adminIpBlockSchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminIpBlock = v.InferOutput<typeof adminIpBlockSchema>;
 

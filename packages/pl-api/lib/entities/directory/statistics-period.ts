@@ -11,7 +11,7 @@ const directoryStatisticsPeriodSchema = v.object({
 });
 
 /**
- * @category Directory types
+ * @category Directory entity types
  */
 type DirectoryStatisticsPeriod = v.InferOutput<typeof directoryStatisticsPeriodSchema>;
 

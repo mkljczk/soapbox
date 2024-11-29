@@ -2,6 +2,9 @@ import * as v from 'valibot';
 
 import { datetimeSchema } from '../utils';
 
+/**
+ * @category Admin schemas
+ */
 const adminDomainSchema = v.object({
   domain: v.fallback(v.string(), ''),
   id: v.pipe(v.unknown(), v.transform(String)),
@@ -11,7 +14,7 @@ const adminDomainSchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminDomain = v.InferOutput<typeof adminDomainSchema>
 

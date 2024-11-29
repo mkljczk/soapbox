@@ -20,6 +20,9 @@ const tagSchema = v.object({
   following: v.fallback(v.optional(v.boolean()), undefined),
 });
 
+/**
+ * @category Entity types
+ */
 type Tag = v.InferOutput<typeof tagSchema>;
 
 export { historySchema, tagSchema, type Tag };

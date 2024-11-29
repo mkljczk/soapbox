@@ -49,7 +49,7 @@ const adminReportSchema = v.pipe(
 );
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminReport = v.InferOutput<typeof adminReportSchema>;
 

@@ -16,7 +16,7 @@ const adminDimensionSchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminDimension = v.InferOutput<typeof adminDimensionSchema>;
 

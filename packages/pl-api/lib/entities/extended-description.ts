@@ -11,6 +11,9 @@ const extendedDescriptionSchema = v.object({
   content: v.string(),
 });
 
+/**
+ * @category Entity types
+ */
 type ExtendedDescription = v.InferOutput<typeof extendedDescriptionSchema>;
 
 export { extendedDescriptionSchema, type ExtendedDescription };

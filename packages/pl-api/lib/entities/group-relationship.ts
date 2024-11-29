@@ -12,6 +12,9 @@ const groupRelationshipSchema = v.object({
   requested: v.fallback(v.boolean(), false),
 });
 
+/**
+ * @category Entity types
+ */
 type GroupRelationship = v.InferOutput<typeof groupRelationshipSchema>;
 
 export { groupRelationshipSchema, type GroupRelationship };

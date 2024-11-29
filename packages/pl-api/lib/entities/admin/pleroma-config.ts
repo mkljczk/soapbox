@@ -13,7 +13,7 @@ const pleromaConfigSchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type PleromaConfig = v.InferOutput<typeof pleromaConfigSchema>
 

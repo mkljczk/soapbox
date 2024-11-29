@@ -122,6 +122,9 @@ const notificationGroupSchema: v.BaseSchema<any, NotificationGroup, v.BaseIssue<
     eventParticipationRequestNotificationGroupSchema,
   ])) as any;
 
+/**
+ * @category Entity types
+ */
 type NotificationGroup = v.InferOutput<
   | typeof accountNotificationGroupSchema
   | typeof mentionNotificationGroupSchema

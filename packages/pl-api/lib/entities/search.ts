@@ -17,6 +17,9 @@ const searchSchema = v.object({
   groups: filteredArray(groupSchema),
 });
 
+/**
+ * @category Entity types
+ */
 type Search = v.InferOutput<typeof searchSchema>;
 
 export { searchSchema, type Search };

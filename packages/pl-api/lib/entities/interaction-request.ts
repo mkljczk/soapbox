@@ -20,6 +20,9 @@ const interactionRequestSchema = v.object({
   uri: v.fallback(v.nullable(v.string()), null),
 });
 
+/**
+ * @category Entity types
+ */
 type InteractionRequest = v.InferOutput<typeof interactionRequestSchema>;
 
 export { interactionRequestSchema, type InteractionRequest };

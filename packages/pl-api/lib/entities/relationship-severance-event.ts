@@ -14,6 +14,9 @@ const relationshipSeveranceEventSchema = v.object({
   created_at: datetimeSchema,
 });
 
+/**
+ * @category Entity types
+ */
 type RelationshipSeveranceEvent = v.InferOutput<typeof relationshipSeveranceEventSchema>;
 
 export { relationshipSeveranceEventSchema, type RelationshipSeveranceEvent };

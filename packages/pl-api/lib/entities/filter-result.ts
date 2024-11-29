@@ -12,6 +12,9 @@ const filterResultSchema = v.object({
   status_matches: v.fallback(v.nullable(v.string()), null),
 });
 
+/**
+ * @category Entity types
+ */
 type FilterResult = v.InferOutput<typeof filterResultSchema>;
 
 export { filterResultSchema, type FilterResult };

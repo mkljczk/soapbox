@@ -17,7 +17,7 @@ const adminCohortSchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminCohort = v.InferOutput<typeof adminCohortSchema>;
 

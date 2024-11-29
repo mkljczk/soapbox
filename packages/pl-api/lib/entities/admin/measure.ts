@@ -19,7 +19,7 @@ const adminMeasureSchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminMeasure = v.InferOutput<typeof adminMeasureSchema>;
 

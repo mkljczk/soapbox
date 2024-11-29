@@ -20,6 +20,9 @@ const relationshipSchema = v.object({
   showing_reblogs: v.fallback(v.boolean(), false),
 });
 
+/**
+ * @category Entity types
+ */
 type Relationship = v.InferOutput<typeof relationshipSchema>;
 
 export { relationshipSchema, type Relationship };

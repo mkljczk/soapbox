@@ -42,6 +42,9 @@ const suggestionSchema = v.pipe(
   }),
 );
 
+/**
+ * @category Entity types
+ */
 type Suggestion = v.InferOutput<typeof suggestionSchema>;
 
 export { suggestionSchema, type Suggestion };

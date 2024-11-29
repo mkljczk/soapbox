@@ -11,6 +11,9 @@ const webPushSubscriptionSchema = v.object({
   server_key: v.string(),
 });
 
+/**
+ * @category Entity types
+ */
 type WebPushSubscription = v.InferOutput<typeof webPushSubscriptionSchema>;
 
 export { webPushSubscriptionSchema, type WebPushSubscription };

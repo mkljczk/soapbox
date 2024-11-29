@@ -19,6 +19,9 @@ const groupMemberSchema = v.object({
   role: v.enum(GroupRoles),
 });
 
+/**
+ * @category Entity types
+ */
 type GroupMember = v.InferOutput<typeof groupMemberSchema>;
 
 export { groupMemberSchema, type GroupMember, GroupRoles, type GroupRole };

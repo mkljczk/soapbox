@@ -15,6 +15,9 @@ const backupSchema = v.object({
   url: v.fallback(v.string(), ''),
 });
 
+/**
+ * @category Entity types
+ */
 type Backup = v.InferOutput<typeof backupSchema>;
 
 export { backupSchema, type Backup };

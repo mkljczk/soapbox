@@ -332,6 +332,9 @@ const instanceSchema = v.pipe(
   }),
 );
 
+/**
+ * @category Entity types
+ */
 type Instance = v.InferOutput<typeof instanceSchema>;
 
 export { instanceSchema, type Instance };

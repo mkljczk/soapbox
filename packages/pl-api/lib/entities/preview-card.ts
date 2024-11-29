@@ -28,6 +28,9 @@ const previewCardSchema = v.object({
   width: v.fallback(v.number(), 0),
 });
 
+/**
+ * @category Entity types
+ */
 type PreviewCard = v.InferOutput<typeof previewCardSchema>;
 
 export { previewCardSchema, type PreviewCard };

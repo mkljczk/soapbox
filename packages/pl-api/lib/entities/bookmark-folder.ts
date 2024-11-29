@@ -10,6 +10,9 @@ const bookmarkFolderSchema = v.object({
   emoji_url: v.fallback(v.nullable(v.string()), null),
 });
 
+/**
+ * @category Entity types
+ */
 type BookmarkFolder = v.InferOutput<typeof bookmarkFolderSchema>;
 
 export { bookmarkFolderSchema, type BookmarkFolder };

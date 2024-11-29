@@ -10,7 +10,7 @@ const adminCanonicalEmailBlockSchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminCanonicalEmailBlock = v.InferOutput<typeof adminCanonicalEmailBlockSchema>;
 

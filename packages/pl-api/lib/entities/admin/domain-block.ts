@@ -20,7 +20,7 @@ const adminDomainBlockSchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminDomainBlock = v.InferOutput<typeof adminDomainBlockSchema>;
 

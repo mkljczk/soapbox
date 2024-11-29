@@ -9,7 +9,7 @@ const directoryCategorySchema = v.object({
 });
 
 /**
- * @category Directory types
+ * @category Directory entity types
  */
 type DirectoryCategory = v.InferOutput<typeof directoryCategorySchema>;
 

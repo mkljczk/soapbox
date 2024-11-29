@@ -114,6 +114,9 @@ const mediaAttachmentSchema = v.pipe(
   ]),
 );
 
+/**
+ * @category Entity types
+ */
 type MediaAttachment = v.InferOutput<typeof mediaAttachmentSchema>;
 
 export { blurhashSchema, mediaAttachmentSchema, type MediaAttachment };

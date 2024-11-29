@@ -20,7 +20,7 @@ const adminAnnouncementSchema = v.pipe(
 );
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminAnnouncement = v.InferOutput<typeof adminAnnouncementSchema>;
 

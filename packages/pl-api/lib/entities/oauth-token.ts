@@ -19,6 +19,9 @@ const oauthTokenSchema = v.pipe(
   }),
 );
 
+/**
+ * @category Entity types
+ */
 type OauthToken = v.InferOutput<typeof oauthTokenSchema>;
 
 export { oauthTokenSchema, type OauthToken };

@@ -12,7 +12,7 @@ const adminModerationLogEntrySchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminModerationLogEntry = v.InferOutput<typeof adminModerationLogEntrySchema>
 

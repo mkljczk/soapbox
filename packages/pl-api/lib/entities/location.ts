@@ -21,6 +21,9 @@ const locationSchema = v.object({
   })), null),
 });
 
+/**
+ * @category Entity types
+ */
 type Location = v.InferOutput<typeof locationSchema>;
 
 export { locationSchema, type Location };

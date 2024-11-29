@@ -11,6 +11,9 @@ const listSchema = v.object({
   exclusive: v.fallback(v.optional(v.boolean()), undefined),
 });
 
+/**
+ * @category Entity types
+ */
 type List = v.InferOutput<typeof listSchema>;
 
 export { listSchema, type List };

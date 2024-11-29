@@ -10,7 +10,7 @@ const directoryLanguageSchema = v.object({
 });
 
 /**
- * @category Directory types
+ * @category Directory entity types
  */
 type DirectoryLanguage = v.InferOutput<typeof directoryLanguageSchema>;
 

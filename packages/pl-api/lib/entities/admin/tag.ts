@@ -15,7 +15,7 @@ const adminTagSchema = v.object({
 });
 
 /**
- * @category Admin types
+ * @category Admin entity types
  */
 type AdminTag = v.InferOutput<typeof adminTagSchema>;
 

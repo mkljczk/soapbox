@@ -164,6 +164,9 @@ type WithMoved = {
   moved: Account | null;
 };
 
+/**
+ * @category Entity types
+ */
 type Account = v.InferOutput<typeof accountWithMovedAccountSchema> & WithMoved;
 
 /**
@@ -200,6 +203,9 @@ const untypedCredentialAccountSchema = v.pipe(v.any(), preprocessAccount, v.obje
   })), undefined),
 }));
 
+/**
+ * @category Entity types
+ */
 type CredentialAccount = v.InferOutput<typeof untypedCredentialAccountSchema> & WithMoved;
 
 /**
@@ -212,6 +218,9 @@ const untypedMutedAccountSchema = v.pipe(v.any(), preprocessAccount, v.object({
   mute_expires_at: v.fallback(v.nullable(datetimeSchema), null),
 }));
 
+/**
+ * @category Entity types
+ */
 type MutedAccount = v.InferOutput<typeof untypedMutedAccountSchema> & WithMoved;
 
 /**
