@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useSearchParams } from 'react-router-dom-v5-compat';
@@ -26,12 +25,16 @@ const Search = () => {
     setValue(value);
   };
 
-  const handleClear = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
 
-    if (value.length > 0) {
-      setValue('');
-      setQuery('');
+    if (params.get('q') === value) {
+      if (value.length > 0) {
+        setValue('');
+        setQuery('');
+      }
+    } else {
+      setQuery(value);
     }
   };
 
@@ -44,8 +47,6 @@ const Search = () => {
       document.querySelector('.ui')?.parentElement?.focus();
     }
   };
-
-  const hasValue = value.length > 0;
 
   return (
     <div
@@ -70,18 +71,21 @@ const Search = () => {
           role='button'
           tabIndex={0}
           className='absolute inset-y-0 right-0 flex cursor-pointer items-center px-3 rtl:left-0 rtl:right-auto'
-          onClick={handleClear}
+          onClick={handleClick}
         >
-          <SvgIcon
-            src={require('@tabler/icons/outline/search.svg')}
-            className={clsx('size-4 text-gray-600', { hidden: hasValue })}
-          />
+          {params.get('q') === value ? (
+            <SvgIcon
+              src={require('@tabler/icons/outline/x.svg')}
+              className='size-4 text-gray-600'
+              aria-label={intl.formatMessage(messages.placeholder)}
+            />
+          ) : (
+            <SvgIcon
+              src={require('@tabler/icons/outline/search.svg')}
+              className='size-4 text-gray-600'
+            />
+          )}
 
-          <SvgIcon
-            src={require('@tabler/icons/outline/x.svg')}
-            className={clsx('size-4 text-gray-600', { hidden: !hasValue })}
-            aria-label={intl.formatMessage(messages.placeholder)}
-          />
         </div>
       </div>
     </div>
