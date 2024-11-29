@@ -1,3 +1,4 @@
+import { WebSocket } from 'isows';
 import omit from 'lodash.omit';
 import pick from 'lodash.pick';
 import * as v from 'valibot';
