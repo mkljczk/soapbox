@@ -1795,6 +1795,11 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
+isows@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/isows/-/isows-1.0.6.tgz#0da29d706fa51551c663c627ace42769850f86e7"
+  integrity sha512-lPHCayd40oW98/I0uvgaHKWCSvkzY27LjWLbtzOm64yQ+G3Q5npjjbdppU65iZXkK1Zt+kH9pfegli0AYfwYYw==
+
 jju@~1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/jju/-/jju-1.4.0.tgz#a3abe2718af241a2b2904f84a625970f389ae32a"
@@ -2153,13 +2158,14 @@ pkg-types@^1.0.3, pkg-types@^1.1.1:
     mlly "^1.7.1"
     pathe "^1.1.2"
 
-pl-api@^0.1.13:
-  version "0.1.13"
-  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-0.1.13.tgz#1d3ac8a9bbb28ee438f3160151d8a49c90d4fd59"
-  integrity sha512-1evbdXQW8Co6B0IxrOsubcDtXibbSU3Ofvuo6c0UZG4NjSHBWNmBEiq8VxDOOvwWn45HT6NmgqL73X0Agts6Kg==
+pl-api@^1.0.0-rc.1:
+  version "1.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-1.0.0-rc.1.tgz#e5b1ead42230ed86e57ebaf020f3a2114da3bce0"
+  integrity sha512-bwV831HoATajRlmZg4USIzQvHgZC9MBAg0/sN/T5uXrM5tcUzfM+qU5ZQIzk+r5gSQ0ZCwqkjbajvhbn9tRcBA==
   dependencies:
     blurhash "^2.0.5"
     http-link-header "^1.1.3"
+    isows "^1.0.6"
     lodash.omit "^4.5.0"
     lodash.pick "^4.4.0"
     object-to-formdata "^4.5.1"
