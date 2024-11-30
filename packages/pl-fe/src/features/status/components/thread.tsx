@@ -7,7 +7,6 @@ import { useHistory } from 'react-router-dom';
 
 import { type ComposeReplyAction, mentionCompose, replyCompose } from 'pl-fe/actions/compose';
 import { reblog, toggleFavourite, unreblog } from 'pl-fe/actions/interactions';
-import { toggleStatusMediaHidden } from 'pl-fe/actions/statuses';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import StatusActionBar from 'pl-fe/components/status-action-bar';
 import Tombstone from 'pl-fe/components/tombstone';
@@ -20,6 +19,7 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { RootState } from 'pl-fe/store';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { textForScreenReader } from 'pl-fe/utils/status';
 
 import DetailedStatus from './detailed-status';
@@ -113,6 +113,7 @@ const Thread: React.FC<IThread> = ({
   const history = useHistory();
   const intl = useIntl();
 
+  const { toggleStatusMediaHidden } = useStatusMetaStore();
   const { openModal } = useModalsStore();
   const { settings } = useSettingsStore();
 
@@ -159,7 +160,7 @@ const Thread: React.FC<IThread> = ({
   const handleMentionClick = (account: Pick<Account, 'acct'>) => dispatch(mentionCompose(account));
 
   const handleHotkeyOpenMedia = (e?: KeyboardEvent) => {
-    const media = status?.media_attachments;
+    const media = status.media_attachments;
 
     e?.preventDefault();
 
@@ -175,43 +176,43 @@ const Thread: React.FC<IThread> = ({
   };
 
   const handleHotkeyMoveUp = () => {
-    handleMoveUp(status!.id);
+    handleMoveUp(status.id);
   };
 
   const handleHotkeyMoveDown = () => {
-    handleMoveDown(status!.id);
+    handleMoveDown(status.id);
   };
 
   const handleHotkeyReply = (e?: KeyboardEvent) => {
     e?.preventDefault();
-    handleReplyClick(status!);
+    handleReplyClick(status);
   };
 
   const handleHotkeyFavourite = () => {
-    handleFavouriteClick(status!);
+    handleFavouriteClick(status);
   };
 
   const handleHotkeyBoost = () => {
-    handleReblogClick(status!);
+    handleReblogClick(status);
   };
 
   const handleHotkeyMention = (e?: KeyboardEvent) => {
     e?.preventDefault();
-    const { account } = status!;
+    const { account } = status;
     if (!account || typeof account !== 'object') return;
     handleMentionClick(account);
   };
 
   const handleHotkeyOpenProfile = () => {
-    history.push(`/@${status!.account.acct}`);
+    history.push(`/@${status.account.acct}`);
   };
 
   const handleHotkeyToggleSensitive = () => {
-    dispatch(toggleStatusMediaHidden(status));
+    toggleStatusMediaHidden(status.id);
   };
 
   const handleMoveUp = (id: string) => {
-    if (id === status?.id) {
+    if (id === status.id) {
       _selectChild(ancestorsIds.length - 1);
     } else {
       let index = ancestorsIds.indexOf(id);
@@ -226,7 +227,7 @@ const Thread: React.FC<IThread> = ({
   };
 
   const handleMoveDown = (id: string) => {
-    if (id === status?.id) {
+    if (id === status.id) {
       _selectChild(ancestorsIds.length + 1);
     } else {
       let index = ancestorsIds.indexOf(id);
@@ -269,7 +270,7 @@ const Thread: React.FC<IThread> = ({
     <ThreadStatus
       key={id}
       id={id}
-      focusedStatusId={status!.id}
+      focusedStatusId={status.id}
       onMoveUp={handleMoveUp}
       onMoveDown={handleMoveDown}
       contextType='thread'

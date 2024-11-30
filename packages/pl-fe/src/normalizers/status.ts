@@ -18,8 +18,6 @@ type StatusVisibility = 'public' | 'unlisted' | 'private' | 'direct' | 'group' |
 
 type CalculatedValues = {
   search_index: string;
-  expanded?: boolean | null;
-  hidden?: boolean | null;
   currentLanguage?: string;
 };
 
@@ -56,11 +54,11 @@ const buildSearchContent = (status: Pick<BaseStatus, 'poll' | 'mentions' | 'spoi
 const calculateStatus = (status: BaseStatus, oldStatus?: OldStatus): CalculatedValues => {
   if (oldStatus && oldStatus.content === status.content && oldStatus.spoiler_text === status.spoiler_text) {
     const {
-      search_index, hidden, expanded, currentLanguage,
+      search_index, currentLanguage,
     } = oldStatus;
 
     return {
-      search_index, hidden, expanded, currentLanguage,
+      search_index, currentLanguage,
     };
   } else {
     const searchContent = buildSearchContent(status);
@@ -135,8 +133,6 @@ const normalizeStatus = (status: BaseStatus & {
     account: normalizeAccount(status.account),
     accounts: status.accounts?.map(normalizeAccount),
     mentions,
-    expanded: null,
-    hidden: null,
     filtered: status.filtered?.map(result => result.filter.title),
     event,
     group,

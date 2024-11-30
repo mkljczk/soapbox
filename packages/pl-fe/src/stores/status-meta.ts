@@ -2,25 +2,39 @@ import { create } from 'zustand';
 import { mutative } from 'zustand-mutative';
 
 type State = {
-  statuses: Record<string, { visible?: boolean; targetLanguage?: string }>;
-  revealStatus: (statusId: string) => void;
-  hideStatus: (statusId: string) => void;
+  statuses: Record<string, { expanded?: boolean; mediaVisible?: boolean; targetLanguage?: string }>;
+  expandStatus: (statusId: string) => void;
+  collapseStatus: (statusId: string) => void;
+  revealStatusMedia: (statusId: string) => void;
+  hideStatusMedia: (statusId: string) => void;
+  toggleStatusMediaHidden: (statusId: string) => void;
   fetchTranslation: (statusId: string, targetLanguage: string) => void;
   hideTranslation: (statusId: string) => void;
 };
 
 const useStatusMetaStore = create<State>()(mutative((set) => ({
   statuses: {},
-  revealStatus: (statusId) => set((state: State) => {
+  expandStatus: (statusId) => set((state: State) => {
     if (!state.statuses[statusId]) state.statuses[statusId] = {};
 
-    state.statuses[statusId].visible = true;
+    state.statuses[statusId].expanded = true;
   }),
-  hideStatus: (statusId) => set((state: State) => {
+  collapseStatus: (statusId) => set((state: State) => {
     if (!state.statuses[statusId]) state.statuses[statusId] = {};
 
-    state.statuses[statusId].visible = false;
+    state.statuses[statusId].expanded = false;
   }),
+  revealStatusMedia: (statusId) => set((state: State) => {
+    if (!state.statuses[statusId]) state.statuses[statusId] = {};
+
+    state.statuses[statusId].mediaVisible = true;
+  }),
+  hideStatusMedia: (statusId) => set((state: State) => {
+    if (!state.statuses[statusId]) state.statuses[statusId] = {};
+
+    state.statuses[statusId].mediaVisible = false;
+  }),
+  toggleStatusMediaHidden: (statusId) => (state: State) => state[state.statuses[statusId].mediaVisible ? 'hideStatusMedia' : 'revealStatusMedia'](statusId),
   fetchTranslation: (statusId, targetLanguage) => set((state: State) => {
     if (!state.statuses[statusId]) state.statuses[statusId] = {};
 

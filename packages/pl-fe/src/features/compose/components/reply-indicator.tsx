@@ -12,7 +12,7 @@ import type { Status } from 'pl-fe/normalizers/status';
 
 interface IReplyIndicator {
   className?: string;
-  status?: Pick<Status, 'account_id' | 'content' | 'created_at' | 'emojis' | 'hidden' | 'media_attachments' | 'mentions' | 'search_index' | 'sensitive' | 'spoiler_text' | 'quote_id'>;
+  status?: Pick<Status, 'account_id' | 'content' | 'created_at' | 'emojis' | 'media_attachments' | 'mentions' | 'search_index' | 'sensitive' | 'spoiler_text' | 'quote_id'>;
   onCancel?: () => void;
   hideActions: boolean;
 }

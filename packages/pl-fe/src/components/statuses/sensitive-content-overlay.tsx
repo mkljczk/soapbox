@@ -2,27 +2,29 @@ import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { hideStatusMedia, revealStatusMedia } from 'pl-fe/actions/statuses';
 import Button from 'pl-fe/components/ui/button';
 import HStack from 'pl-fe/components/ui/hstack';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
 import type { Status } from 'pl-fe/normalizers/status';
 
-const isMediaVisible = (status: Pick<Status, 'media_attachments' | 'sensitive' | 'spoiler_text'> & { hidden?: boolean | null }, displayMedia: 'default' | 'show_all' | 'hide_all') => {
+const useMediaVisible = (status: Pick<Status, 'media_attachments' | 'sensitive' | 'spoiler_text'> & { id?: string }, displayMedia: 'default' | 'show_all' | 'hide_all') => {
   let visible = !(status.sensitive || status.spoiler_text);
 
-  if (status.hidden !== null) visible = !status.hidden;
+  const statusesMeta = useStatusMetaStore().statuses;
+  const mediaVisible = status.id ? statusesMeta[status.id]?.mediaVisible : undefined;
+
+  if (mediaVisible !== undefined) visible = mediaVisible;
   else if (displayMedia === 'show_all') visible = true;
   else if (displayMedia === 'hide_all' && status.media_attachments.length) visible = false;
 
   return visible;
 };
 
-const showOverlay = (status: Pick<Status, 'hidden' | 'media_attachments' | 'sensitive' | 'spoiler_text'>, displayMedia: 'default' | 'show_all' | 'hide_all') => {
-  const visible = isMediaVisible(status, displayMedia);
+const useShowOverlay = (status: Pick<Status, 'id' | 'media_attachments' | 'sensitive' | 'spoiler_text'>, displayMedia: 'default' | 'show_all' | 'hide_all') => {
+  const visible = useMediaVisible(status, displayMedia);
 
   const showHideButton = status.sensitive || (status.media_attachments.length && displayMedia === 'hide_all');
 
@@ -41,26 +43,27 @@ const messages = defineMessages({
 });
 
 interface ISensitiveContentOverlay {
-  status: Pick<Status, 'id' | 'sensitive' | 'spoiler_text' | 'hidden' | 'media_attachments' | 'currentLanguage'>;
+  status: Pick<Status, 'id' | 'sensitive' | 'spoiler_text' | 'media_attachments' | 'currentLanguage'>;
 }
 
 const SensitiveContentOverlay = React.forwardRef<HTMLDivElement, ISensitiveContentOverlay>((props, ref) => {
   const { status } = props;
 
-  const dispatch = useAppDispatch();
   const intl = useIntl();
   const { displayMedia } = useSettings();
 
-  const visible = isMediaVisible(status, displayMedia);
+  const visible = useMediaVisible(status, displayMedia);
+
+  const { hideStatusMedia, revealStatusMedia } = useStatusMetaStore();
 
   const toggleVisibility = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
 
-    if (visible) dispatch(hideStatusMedia(status.id));
-    else dispatch(revealStatusMedia(status.id));
+    if (visible) hideStatusMedia(status.id);
+    else revealStatusMedia(status.id);
   };
 
-  if (!showOverlay(status, displayMedia)) return null;
+  if (!useShowOverlay(status, displayMedia)) return null;
 
   return (
     <div
@@ -110,4 +113,4 @@ const SensitiveContentOverlay = React.forwardRef<HTMLDivElement, ISensitiveConte
   );
 });
 
-export { SensitiveContentOverlay as default, isMediaVisible };
+export { SensitiveContentOverlay as default, useMediaVisible };

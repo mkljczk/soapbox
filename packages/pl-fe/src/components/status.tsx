@@ -5,7 +5,7 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { mentionCompose, replyCompose } from 'pl-fe/actions/compose';
 import { toggleFavourite, toggleReblog } from 'pl-fe/actions/interactions';
-import { toggleStatusMediaHidden, unfilterStatus } from 'pl-fe/actions/statuses';
+import { unfilterStatus } from 'pl-fe/actions/statuses';
 import Card from 'pl-fe/components/ui/card';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
@@ -19,6 +19,7 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { makeGetStatus, type SelectedStatus } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { textForScreenReader } from 'pl-fe/utils/status';
 
 import EventPreview from './event-preview';
@@ -77,6 +78,7 @@ const Status: React.FC<IStatus> = (props) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
 
+  const { toggleStatusMediaHidden } = useStatusMetaStore();
   const { openModal } = useModalsStore();
   const { boostModal } = useSettings();
   const didShowCard = useRef(false);
@@ -96,7 +98,7 @@ const Status: React.FC<IStatus> = (props) => {
     didShowCard.current = Boolean(!muted && !hidden && status?.card);
   }, []);
 
-  const handleClick = (e?: React.MouseEvent): void => {
+  const handleClick = (e?: React.MouseEvent) => {
     e?.stopPropagation();
 
     // If the user is selecting text, don't focus the status.
@@ -115,7 +117,7 @@ const Status: React.FC<IStatus> = (props) => {
     }
   };
 
-  const handleHotkeyOpenMedia = (e?: KeyboardEvent): void => {
+  const handleHotkeyOpenMedia = (e?: KeyboardEvent) => {
     const status = actualStatus;
     const firstAttachment = status.media_attachments[0];
 
@@ -130,17 +132,17 @@ const Status: React.FC<IStatus> = (props) => {
     }
   };
 
-  const handleHotkeyReply = (e?: KeyboardEvent): void => {
+  const handleHotkeyReply = (e?: KeyboardEvent) => {
     e?.preventDefault();
     dispatch(replyCompose(actualStatus, status.reblog_id ? status.account : undefined));
   };
 
-  const handleHotkeyFavourite = (e?: KeyboardEvent): void => {
+  const handleHotkeyFavourite = (e?: KeyboardEvent) => {
     e?.preventDefault();
     dispatch(toggleFavourite(actualStatus));
   };
 
-  const handleHotkeyBoost = (e?: KeyboardEvent): void => {
+  const handleHotkeyBoost = (e?: KeyboardEvent) => {
     const modalReblog = () => dispatch(toggleReblog(actualStatus));
     if ((e && e.shiftKey) || !boostModal) {
       modalReblog();
@@ -149,36 +151,36 @@ const Status: React.FC<IStatus> = (props) => {
     }
   };
 
-  const handleHotkeyMention = (e?: KeyboardEvent): void => {
+  const handleHotkeyMention = (e?: KeyboardEvent) => {
     e?.preventDefault();
     dispatch(mentionCompose(actualStatus.account));
   };
 
-  const handleHotkeyOpen = (): void => {
+  const handleHotkeyOpen = () => {
     history.push(statusUrl);
   };
 
-  const handleHotkeyOpenProfile = (): void => {
+  const handleHotkeyOpenProfile = () => {
     history.push(`/@${actualStatus.account.acct}`);
   };
 
-  const handleHotkeyMoveUp = (e?: KeyboardEvent): void => {
+  const handleHotkeyMoveUp = (e?: KeyboardEvent) => {
     if (onMoveUp) {
       onMoveUp(status.id, featured);
     }
   };
 
-  const handleHotkeyMoveDown = (e?: KeyboardEvent): void => {
+  const handleHotkeyMoveDown = (e?: KeyboardEvent) => {
     if (onMoveDown) {
       onMoveDown(status.id, featured);
     }
   };
 
-  const handleHotkeyToggleSensitive = (): void => {
-    dispatch(toggleStatusMediaHidden(actualStatus));
+  const handleHotkeyToggleSensitive = () => {
+    toggleStatusMediaHidden(actualStatus.id);
   };
 
-  const handleHotkeyReact = (): void => {
+  const handleHotkeyReact = () => {
     (node.current?.querySelector('.emoji-picker-dropdown') as HTMLButtonElement)?.click();
   };
 

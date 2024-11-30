@@ -708,7 +708,7 @@ const MenuButton: React.FC<IMenuButton> = ({
     });
   };
 
-  const handleOpenReactionsModal = (): void => {
+  const handleOpenReactionsModal = () => {
     openModal('REACTIONS', { statusId: status.id });
   };
 

@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import React, { useState, useRef, useLayoutEffect, useMemo, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { collapseStatusSpoiler, expandStatusSpoiler } from 'pl-fe/actions/statuses';
 import { useStatusTranslation } from 'pl-fe/api/hooks/statuses/use-status-translation';
 import Icon from 'pl-fe/components/icon';
 import Button from 'pl-fe/components/ui/button';
@@ -10,7 +9,6 @@ import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { onlyEmoji as isOnlyEmoji } from 'pl-fe/utils/rich-content';
@@ -83,7 +81,6 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   preview,
   withMedia,
 }) => {
-  const dispatch = useAppDispatch();
   const { displaySpoilers } = useSettings();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -93,8 +90,9 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   const node = useRef<HTMLDivElement>(null);
   const spoilerNode = useRef<HTMLSpanElement>(null);
 
-  const { statuses: statusesMeta } = useStatusMetaStore();
-  const { data: translation } = useStatusTranslation(status.id, statusesMeta[status.id]?.targetLanguage);
+  const { statuses: statusesMeta, collapseStatus, expandStatus } = useStatusMetaStore();
+  const statusMeta = statusesMeta[status.id] || {};
+  const { data: translation } = useStatusTranslation(status.id, statusMeta.targetLanguage);
 
   const maybeSetCollapsed = (): void => {
     if (!node.current) return;
@@ -120,8 +118,8 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     e.preventDefault();
     e.stopPropagation();
 
-    if (expanded) dispatch(collapseStatusSpoiler(status.id));
-    else dispatch(expandStatusSpoiler(status.id));
+    if (expanded) collapseStatus(status.id);
+    else expandStatus(status.id);
   };
 
   useLayoutEffect(() => {
@@ -166,7 +164,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   });
 
   const expandable = !displaySpoilers;
-  const expanded = !withSpoiler || status.expanded || false;
+  const expanded = !withSpoiler || statusMeta.expanded || false;
 
   const output = [];
 

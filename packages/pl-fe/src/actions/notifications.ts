@@ -71,7 +71,7 @@ const updateNotifications = (notification: BaseNotification) =>
 
     dispatch(importEntities({
       accounts: [notification.account, notification.type === 'move' ? notification.target : undefined],
-      statuses: [getNotificationStatus(notification)],
+      statuses: [getNotificationStatus(notification) as any],
     }));
 
     if (showInColumn) {

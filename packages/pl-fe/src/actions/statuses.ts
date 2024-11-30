@@ -42,12 +42,6 @@ const STATUS_UNMUTE_REQUEST = 'STATUS_UNMUTE_REQUEST' as const;
 const STATUS_UNMUTE_SUCCESS = 'STATUS_UNMUTE_SUCCESS' as const;
 const STATUS_UNMUTE_FAIL = 'STATUS_UNMUTE_FAIL' as const;
 
-const STATUS_REVEAL_MEDIA = 'STATUS_REVEAL_MEDIA' as const;
-const STATUS_HIDE_MEDIA = 'STATUS_HIDE_MEDIA' as const;
-
-const STATUS_EXPAND_SPOILER = 'STATUS_EXPAND_SPOILER' as const;
-const STATUS_COLLAPSE_SPOILER = 'STATUS_COLLAPSE_SPOILER' as const;
-
 const STATUS_UNFILTER = 'STATUS_UNFILTER' as const;
 
 const STATUS_LANGUAGE_CHANGE = 'STATUS_LANGUAGE_CHANGE' as const;
@@ -212,58 +206,6 @@ const toggleMuteStatus = (status: Pick<Status, 'id' | 'muted'>) =>
     }
   };
 
-const hideStatusMedia = (statusIds: string[] | string) => {
-  if (!Array.isArray(statusIds)) {
-    statusIds = [statusIds];
-  }
-
-  return {
-    type: STATUS_HIDE_MEDIA,
-    statusIds,
-  };
-};
-
-const revealStatusMedia = (statusIds: string[] | string) => {
-  if (!Array.isArray(statusIds)) {
-    statusIds = [statusIds];
-  }
-
-  return {
-    type: STATUS_REVEAL_MEDIA,
-    statusIds,
-  };
-};
-
-const toggleStatusMediaHidden = (status: Pick<Status, 'id' | 'hidden'>) => {
-  if (status.hidden) {
-    return revealStatusMedia(status.id);
-  } else {
-    return hideStatusMedia(status.id);
-  }
-};
-
-const collapseStatusSpoiler = (statusIds: string[] | string) => {
-  if (!Array.isArray(statusIds)) {
-    statusIds = [statusIds];
-  }
-
-  return {
-    type: STATUS_COLLAPSE_SPOILER,
-    statusIds,
-  };
-};
-
-const expandStatusSpoiler = (statusIds: string[] | string) => {
-  if (!Array.isArray(statusIds)) {
-    statusIds = [statusIds];
-  }
-
-  return {
-    type: STATUS_EXPAND_SPOILER,
-    statusIds,
-  };
-};
-
 // let TRANSLATIONS_QUEUE: Set<string> = new Set();
 // let TRANSLATIONS_TIMEOUT: NodeJS.Timeout | null = null;
 
@@ -346,10 +288,6 @@ type StatusesAction =
   | { type: typeof STATUS_UNMUTE_REQUEST; statusId: string }
   | { type: typeof STATUS_UNMUTE_SUCCESS; statusId: string }
   | { type: typeof STATUS_UNMUTE_FAIL; statusId: string; error: unknown }
-  | ReturnType<typeof hideStatusMedia>
-  | ReturnType<typeof revealStatusMedia>
-  | ReturnType<typeof collapseStatusSpoiler>
-  | ReturnType<typeof expandStatusSpoiler>
   | ReturnType<typeof unfilterStatus>
   | ReturnType<typeof changeStatusLanguage>;
 
@@ -375,10 +313,6 @@ export {
   STATUS_UNMUTE_REQUEST,
   STATUS_UNMUTE_SUCCESS,
   STATUS_UNMUTE_FAIL,
-  STATUS_REVEAL_MEDIA,
-  STATUS_HIDE_MEDIA,
-  STATUS_EXPAND_SPOILER,
-  STATUS_COLLAPSE_SPOILER,
   STATUS_UNFILTER,
   STATUS_LANGUAGE_CHANGE,
   createStatus,
@@ -391,11 +325,6 @@ export {
   muteStatus,
   unmuteStatus,
   toggleMuteStatus,
-  hideStatusMedia,
-  revealStatusMedia,
-  toggleStatusMediaHidden,
-  expandStatusSpoiler,
-  collapseStatusSpoiler,
   unfilterStatus,
   changeStatusLanguage,
   type StatusesAction,

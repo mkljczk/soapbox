@@ -36,14 +36,10 @@ import {
   STATUS_CREATE_FAIL,
   STATUS_DELETE_REQUEST,
   STATUS_DELETE_FAIL,
-  STATUS_HIDE_MEDIA,
   STATUS_MUTE_SUCCESS,
-  STATUS_REVEAL_MEDIA,
   STATUS_UNFILTER,
   STATUS_UNMUTE_SUCCESS,
   STATUS_LANGUAGE_CHANGE,
-  STATUS_COLLAPSE_SPOILER,
-  STATUS_EXPAND_SPOILER,
   type StatusesAction,
 } from '../actions/statuses';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
@@ -250,42 +246,6 @@ const statuses = (state = initialState, action: EmojiReactsAction | EventsAction
         if (status) {
           status.muted = false;
         }
-      });
-    case STATUS_REVEAL_MEDIA:
-      return create(state, (draft) => {
-        action.statusIds.forEach((id: string) => {
-          const status = draft[id];
-          if (status) {
-            status.hidden = false;
-          }
-        });
-      });
-    case STATUS_HIDE_MEDIA:
-      return create(state, (draft) => {
-        action.statusIds.forEach((id: string) => {
-          const status = draft[id];
-          if (status) {
-            status.hidden = true;
-          }
-        });
-      });
-    case STATUS_EXPAND_SPOILER:
-      return create(state, (draft) => {
-        action.statusIds.forEach((id: string) => {
-          const status = draft[id];
-          if (status) {
-            status.expanded = true;
-          }
-        });
-      });
-    case STATUS_COLLAPSE_SPOILER:
-      return create(state, (draft) => {
-        action.statusIds.forEach((id: string) => {
-          const status = draft[id];
-          if (status) {
-            status.expanded = false;
-          }
-        });
       });
     case STATUS_DELETE_REQUEST:
       return create(state, (draft) => decrementReplyCount(draft, action.params));
