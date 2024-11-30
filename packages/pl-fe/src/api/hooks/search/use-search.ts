@@ -14,26 +14,22 @@ const useSearchAccounts = (
   const client = useClient();
   const dispatch = useAppDispatch();
 
-  const searchQuery = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey: ['search', 'accounts', query, params],
-    queryFn: ({ pageParam, signal }) => client.search.search(query!, {
+    queryFn: ({ pageParam: offset, signal }) => client.search.search(query!, {
       with_relationships: true,
       ...params,
-      offset: pageParam ? data?.length : 0,
+      offset,
       type: 'accounts',
     }, { signal }).then(({ accounts }) => {
       dispatch(importEntities({ accounts }));
       return accounts.map(({ id }) => id);
     }),
     enabled: !!query?.trim(),
-    initialPageParam: [''],
-    getNextPageParam: (page) => page.length ? page : undefined,
-    select: (data => data.pages.flat()),
+    initialPageParam: 0,
+    getNextPageParam: (_, allPages) => allPages.flat().length,
+    select: (data) => data.pages.flat(),
   });
-
-  const data: Array<string> | undefined = searchQuery.data;
-
-  return searchQuery;
 };
 
 const useSearchStatuses = (
@@ -57,7 +53,7 @@ const useSearchStatuses = (
     enabled: !!query?.trim(),
     initialPageParam: 0,
     getNextPageParam: (_, allPages) => allPages.flat().length,
-    select: (data => data.pages.flat()),
+    select: (data) => data.pages.flat(),
   });
 };
 
@@ -77,7 +73,7 @@ const useSearchHashtags = (
     enabled: !!query?.trim(),
     initialPageParam: 0,
     getNextPageParam: (_, allPages) => allPages.flat().length,
-    select: (data => data.pages.flat()),
+    select: (data) => data.pages.flat(),
   });
 };
 
@@ -101,7 +97,7 @@ const useSearchGroups = (
     enabled: !!query?.trim(),
     initialPageParam: 0,
     getNextPageParam: (_, allPages) => allPages.flat().length,
-    select: (data => data.pages.flat()),
+    select: (data) => data.pages.flat(),
   });
 };
 
