@@ -8,26 +8,20 @@ const useDirectory = (order: 'active' | 'new', local: boolean = false) => {
   const { client } = usePlHooksApiClient();
   const queryClient = usePlHooksQueryClient();
 
-  const directoryQuery = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey: ['accountsLists', 'directory', order, local],
-    queryFn: ({ pageParam }) => client.instance.profileDirectory({
+    queryFn: ({ pageParam: offset }) => client.instance.profileDirectory({
       order,
       local,
-      offset: pageParam ? data?.length : 0,
+      offset,
     }).then((accounts) => {
       importEntities({ accounts });
       return accounts.map(({ id }) => id);
     }),
-    initialPageParam: [''],
-    getNextPageParam: (page) => page.length ? page : undefined,
+    initialPageParam: 0,
+    getNextPageParam: (_, allPages) => allPages.at(-1)?.length === 0 ? undefined : allPages.flat().length,
+    select: (data) => data?.pages.flat(),
   }, queryClient);
-
-  const data: Array<string> | undefined = directoryQuery.data?.pages.flat();
-
-  return {
-    ...directoryQuery,
-    data,
-  };
 };
 
 export { useDirectory };
