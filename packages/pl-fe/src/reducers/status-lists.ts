@@ -54,15 +54,6 @@ import {
   SCHEDULED_STATUS_CANCEL_SUCCESS,
   type ScheduledStatusesAction,
 } from 'pl-fe/actions/scheduled-statuses';
-import {
-  STATUS_QUOTES_EXPAND_FAIL,
-  STATUS_QUOTES_EXPAND_REQUEST,
-  STATUS_QUOTES_EXPAND_SUCCESS,
-  STATUS_QUOTES_FETCH_FAIL,
-  STATUS_QUOTES_FETCH_REQUEST,
-  STATUS_QUOTES_FETCH_SUCCESS,
-  type StatusQuotesAction,
-} from 'pl-fe/actions/status-quotes';
 import { STATUS_CREATE_SUCCESS, type StatusesAction } from 'pl-fe/actions/statuses';
 
 import type { PaginatedResponse, ScheduledStatus, Status } from 'pl-api';
@@ -155,7 +146,7 @@ const removeBookmarkFromLists = (state: State, status: Pick<Status, 'id' | 'book
   }
 };
 
-const statusLists = (state = initialState, action: BookmarksAction | EventsAction | FavouritesAction | InteractionsAction | PinStatusesAction | ScheduledStatusesAction | StatusesAction | StatusQuotesAction): State => {
+const statusLists = (state = initialState, action: BookmarksAction | EventsAction | FavouritesAction | InteractionsAction | PinStatusesAction | ScheduledStatusesAction | StatusesAction): State => {
   switch (action.type) {
     case FAVOURITED_STATUSES_FETCH_REQUEST:
     case FAVOURITED_STATUSES_EXPAND_REQUEST:
@@ -214,16 +205,6 @@ const statusLists = (state = initialState, action: BookmarksAction | EventsActio
     case SCHEDULED_STATUS_CANCEL_REQUEST:
     case SCHEDULED_STATUS_CANCEL_SUCCESS:
       return create(state, draft => removeOneFromList(draft, 'scheduled_statuses', action.statusId));
-    case STATUS_QUOTES_FETCH_REQUEST:
-    case STATUS_QUOTES_EXPAND_REQUEST:
-      return create(state, draft => setLoading(draft, `quotes:${action.statusId}`, true));
-    case STATUS_QUOTES_FETCH_FAIL:
-    case STATUS_QUOTES_EXPAND_FAIL:
-      return create(state, draft => setLoading(draft, `quotes:${action.statusId}`, false));
-    case STATUS_QUOTES_FETCH_SUCCESS:
-      return create(state, draft => normalizeList(draft, `quotes:${action.statusId}`, action.statuses, action.next));
-    case STATUS_QUOTES_EXPAND_SUCCESS:
-      return create(state, draft => appendToList(draft, `quotes:${action.statusId}`, action.statuses, action.next));
     case RECENT_EVENTS_FETCH_REQUEST:
       return create(state, draft => setLoading(draft, 'recent_events', true));
     case RECENT_EVENTS_FETCH_FAIL:

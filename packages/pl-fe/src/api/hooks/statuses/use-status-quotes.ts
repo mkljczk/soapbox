@@ -1,14 +1,12 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { usePlHooksApiClient } from 'pl-hooks/contexts/api-client';
-import { usePlHooksQueryClient } from 'pl-hooks/contexts/query-client';
-import { minifyStatusList } from 'pl-hooks/normalizers/status-list';
+import { minifyStatusList } from 'pl-fe/api/normalizers/status-list';
+import { useClient } from 'pl-fe/hooks/use-client';
 
 import type { PaginatedResponse } from 'pl-api';
 
 const useStatusQuotes = (statusId: string) => {
-  const queryClient = usePlHooksQueryClient();
-  const { client } = usePlHooksApiClient();
+  const client = useClient();
 
   return useInfiniteQuery({
     queryKey: ['statusLists', 'quotes', statusId],
@@ -16,7 +14,7 @@ const useStatusQuotes = (statusId: string) => {
     initialPageParam: { previous: null, next: null, items: [], partial: false } as PaginatedResponse<string>,
     getNextPageParam: (page) => page.next ? page : undefined,
     select: (data) => data.pages.map(page => page.items).flat(),
-  }, queryClient);
+  });
 };
 
 export { useStatusQuotes };
