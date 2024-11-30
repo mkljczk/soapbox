@@ -10,15 +10,6 @@ import {
   type AccountsAction,
 } from 'pl-fe/actions/accounts';
 import {
-  DIRECTORY_FETCH_REQUEST,
-  DIRECTORY_FETCH_SUCCESS,
-  DIRECTORY_FETCH_FAIL,
-  DIRECTORY_EXPAND_REQUEST,
-  DIRECTORY_EXPAND_SUCCESS,
-  DIRECTORY_EXPAND_FAIL,
-  type DirectoryAction,
-} from 'pl-fe/actions/directory';
-import {
   EVENT_PARTICIPATIONS_EXPAND_SUCCESS,
   EVENT_PARTICIPATIONS_FETCH_SUCCESS,
   EVENT_PARTICIPATION_REQUESTS_EXPAND_SUCCESS,
@@ -78,7 +69,7 @@ interface ParticipationRequestList {
   isLoading: boolean;
 }
 
-type ListKey = 'follow_requests' | 'directory';
+type ListKey = 'follow_requests';
 type NestedListKey = 'reblogged_by' | 'favourited_by' | 'disliked_by' | 'pinned' | 'birthday_reminders' | 'familiar_followers' | 'event_participations' | 'membership_requests' | 'group_blocks';
 
 type State = Record<ListKey, List> & Record<NestedListKey, Record<string, List>> & {
@@ -92,7 +83,6 @@ const initialState: State = {
   disliked_by: {},
   reactions: {},
   follow_requests: { next: null, items: [], isLoading: false },
-  directory: { next: null, items: [], isLoading: true },
   pinned: {},
   birthday_reminders: {},
   familiar_followers: {},
@@ -157,7 +147,7 @@ const normalizeFollowRequest = (state: State, notification: NotificationGroup) =
     draft.follow_requests.items = [...new Set([...notification.sample_account_ids, ...draft.follow_requests.items])];
   });
 
-const userLists = (state = initialState, action: AccountsAction | DirectoryAction | EventsAction | FamiliarFollowersAction | GroupsAction | InteractionsAction | NotificationsAction): State => {
+const userLists = (state = initialState, action: AccountsAction | EventsAction | FamiliarFollowersAction | GroupsAction | InteractionsAction | NotificationsAction): State => {
   switch (action.type) {
     case REBLOGS_FETCH_SUCCESS:
       return normalizeList(state, ['reblogged_by', action.statusId], action.accounts, action.next);
@@ -186,20 +176,6 @@ const userLists = (state = initialState, action: AccountsAction | DirectoryActio
     case FOLLOW_REQUEST_AUTHORIZE_SUCCESS:
     case FOLLOW_REQUEST_REJECT_SUCCESS:
       return removeFromList(state, ['follow_requests'], action.accountId);
-    case DIRECTORY_FETCH_SUCCESS:
-      return normalizeList(state, ['directory'], action.accounts);
-    case DIRECTORY_EXPAND_SUCCESS:
-      return appendToList(state, ['directory'], action.accounts, null);
-    case DIRECTORY_FETCH_REQUEST:
-    case DIRECTORY_EXPAND_REQUEST:
-      return create(state, (draft) => {
-        draft.directory.isLoading = true;
-      });
-    case DIRECTORY_FETCH_FAIL:
-    case DIRECTORY_EXPAND_FAIL:
-      return create(state, (draft) => {
-        draft.directory.isLoading = false;
-      });
     case PINNED_ACCOUNTS_FETCH_SUCCESS:
       return normalizeList(state, ['pinned', action.accountId], action.accounts, action.next);
     case BIRTHDAY_REMINDERS_FETCH_SUCCESS:
