@@ -7,17 +7,18 @@ import { fetchConfig, fetchReports, fetchUsers } from 'pl-fe/actions/admin';
 import { fetchCustomEmojis } from 'pl-fe/actions/custom-emojis';
 import { fetchDraftStatuses } from 'pl-fe/actions/draft-statuses';
 import { fetchFilters } from 'pl-fe/actions/filters';
-import { fetchMarker } from 'pl-fe/actions/markers';
 import { expandNotifications } from 'pl-fe/actions/notifications';
 import { register as registerPushNotifications } from 'pl-fe/actions/push-notifications/registerer';
 import { fetchScheduledStatuses } from 'pl-fe/actions/scheduled-statuses';
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
+import { prefetchMarker } from 'pl-fe/api/hooks/markers/use-markers';
 import { useUserStream } from 'pl-fe/api/hooks/streaming/use-user-stream';
 import SidebarNavigation from 'pl-fe/components/sidebar-navigation';
 import ThumbNavigation from 'pl-fe/components/thumb-navigation';
 import Layout from 'pl-fe/components/ui/layout';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useClient } from 'pl-fe/hooks/use-client';
 import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
@@ -355,6 +356,7 @@ interface IUI {
 }
 
 const UI: React.FC<IUI> = ({ children }) => {
+  const client = useClient();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const node = useRef<HTMLDivElement | null>(null);
@@ -391,7 +393,9 @@ const UI: React.FC<IUI> = ({ children }) => {
 
     dispatch(expandNotifications())
       // @ts-ignore
-      .then(() => dispatch(fetchMarker(['notifications'])))
+      .then(() => {
+        prefetchMarker(client, 'notifications');
+      })
       .catch(console.error);
 
     if (account.is_admin || account.is_moderator) {

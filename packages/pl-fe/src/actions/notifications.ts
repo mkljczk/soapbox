@@ -8,14 +8,12 @@ import { normalizeNotification } from 'pl-fe/normalizers/notification';
 import { getFilters, regexFromFilters } from 'pl-fe/selectors';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { isLoggedIn } from 'pl-fe/utils/auth';
-import { compareId } from 'pl-fe/utils/comparators';
 import { unescapeHTML } from 'pl-fe/utils/html';
 import { EXCLUDE_TYPES, NOTIFICATION_TYPES } from 'pl-fe/utils/notification';
 import { joinPublicPath } from 'pl-fe/utils/static';
 
 import { fetchRelationships } from './accounts';
 import { importEntities } from './importer';
-import { saveMarker } from './markers';
 import { saveSettings } from './settings';
 
 import type { Notification as BaseNotification, GetGroupedNotificationsParams, GroupedNotificationsResults, NotificationGroup, PaginatedResponse } from 'pl-api';
@@ -29,8 +27,6 @@ const NOTIFICATIONS_EXPAND_SUCCESS = 'NOTIFICATIONS_EXPAND_SUCCESS' as const;
 const NOTIFICATIONS_EXPAND_FAIL = 'NOTIFICATIONS_EXPAND_FAIL' as const;
 
 const NOTIFICATIONS_FILTER_SET = 'NOTIFICATIONS_FILTER_SET' as const;
-
-const NOTIFICATIONS_SCROLL_TOP = 'NOTIFICATIONS_SCROLL_TOP' as const;
 
 const MAX_QUEUED_NOTIFICATIONS = 40;
 
@@ -221,20 +217,6 @@ const expandNotificationsFail = (error: unknown) => ({
   error,
 });
 
-interface NotificationsScrollTopAction {
-  type: typeof NOTIFICATIONS_SCROLL_TOP;
-  top: boolean;
-}
-
-const scrollTopNotifications = (top: boolean) =>
-  (dispatch: AppDispatch) => {
-    dispatch(markReadNotifications());
-    return dispatch<NotificationsScrollTopAction>({
-      type: NOTIFICATIONS_SCROLL_TOP,
-      top,
-    });
-  };
-
 interface SetFilterAction {
   type: typeof NOTIFICATIONS_FILTER_SET;
 }
@@ -252,32 +234,12 @@ const setFilter = (filterType: FilterType, abort?: boolean) =>
     return dispatch<SetFilterAction>({ type: NOTIFICATIONS_FILTER_SET });
   };
 
-const markReadNotifications = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
-
-    const state = getState();
-    const topNotificationId = state.notifications.items[0]?.page_max_id;
-    const lastReadId = state.notifications.lastRead;
-
-    if (topNotificationId && (lastReadId === -1 || compareId(topNotificationId, lastReadId) > 0)) {
-      const marker = {
-        notifications: {
-          last_read_id: topNotificationId,
-        },
-      };
-
-      dispatch(saveMarker(marker));
-    }
-  };
-
 type NotificationsAction =
   | NotificationsUpdateAction
   | NotificationsUpdateNoopAction
   | ReturnType<typeof expandNotificationsRequest>
   | ReturnType<typeof expandNotificationsSuccess>
   | ReturnType<typeof expandNotificationsFail>
-  | NotificationsScrollTopAction
   | SetFilterAction;
 
 export {
@@ -287,14 +249,11 @@ export {
   NOTIFICATIONS_EXPAND_SUCCESS,
   NOTIFICATIONS_EXPAND_FAIL,
   NOTIFICATIONS_FILTER_SET,
-  NOTIFICATIONS_SCROLL_TOP,
   MAX_QUEUED_NOTIFICATIONS,
   type FilterType,
   updateNotifications,
   updateNotificationsQueue,
   expandNotifications,
-  scrollTopNotifications,
   setFilter,
-  markReadNotifications,
   type NotificationsAction,
 };

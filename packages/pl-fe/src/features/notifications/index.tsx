@@ -4,11 +4,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createSelector } from 'reselect';
 
-import {
-  expandNotifications,
-  markReadNotifications,
-  scrollTopNotifications,
-} from 'pl-fe/actions/notifications';
+import { expandNotifications } from 'pl-fe/actions/notifications';
+import { useMarker } from 'pl-fe/api/hooks/markers/use-markers';
+import { useUpdateMarkerMutation } from 'pl-fe/api/hooks/markers/use-update-marker-mutation';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import ScrollTopButton from 'pl-fe/components/scroll-top-button';
 import ScrollableList from 'pl-fe/components/scrollable-list';
@@ -18,6 +16,7 @@ import PlaceholderNotification from 'pl-fe/features/placeholder/components/place
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { compareId } from 'pl-fe/utils/comparators';
 
 import FilterBar from './components/filter-bar';
 import Notification from './components/notification';
@@ -56,6 +55,9 @@ const Notifications = () => {
   const intl = useIntl();
   const settings = useSettings();
 
+  const markerQuery = useMarker('notifications');
+  const updateMarkerMutation = useUpdateMarkerMutation('notifications');
+
   const showFilterBar = settings.notifications.quickFilter.show;
   const activeFilter = settings.notifications.quickFilter.active;
   const [topNotification, setTopNotification] = useState<string>();
@@ -80,8 +82,19 @@ const Notifications = () => {
     dispatch(expandNotifications({ maxId: minId }));
   }, 300, { leading: true }), [displayedNotifications]);
 
+  const handleScrollToTop = () => {
+    const topNotificationId = displayedNotifications[0].most_recent_notification_id;
+    const lastReadId = markerQuery.data?.last_read_id || -1;
+
+    if (topNotificationId && (lastReadId === -1 || compareId(topNotificationId, lastReadId) > 0)) {
+      updateMarkerMutation.mutate(topNotificationId);
+    }
+  };
+
   const handleScroll = useCallback(debounce((startIndex?: number) => {
-    dispatch(scrollTopNotifications(startIndex === 0));
+    if (startIndex !== 0) return;
+
+    handleScrollToTop();
   }, 100), []);
 
   const handleMoveUp = (id: string) => {
@@ -103,19 +116,18 @@ const Notifications = () => {
 
   const handleDequeueNotifications = useCallback(() => {
     setTopNotification(undefined);
-    dispatch(markReadNotifications());
+    handleScrollToTop();
   }, []);
 
   const handleRefresh = useCallback(() => dispatch(expandNotifications()), []);
 
   useEffect(() => {
     handleDequeueNotifications();
-    dispatch(scrollTopNotifications(true));
+    handleScrollToTop();
 
     return () => {
       handleLoadOlder.cancel();
       handleScroll.cancel();
-      dispatch(scrollTopNotifications(false));
     };
   }, []);
 
