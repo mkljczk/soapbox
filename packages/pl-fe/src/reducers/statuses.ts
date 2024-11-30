@@ -39,7 +39,6 @@ import {
   STATUS_MUTE_SUCCESS,
   STATUS_UNFILTER,
   STATUS_UNMUTE_SUCCESS,
-  STATUS_LANGUAGE_CHANGE,
   type StatusesAction,
 } from '../actions/statuses';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
@@ -256,13 +255,6 @@ const statuses = (state = initialState, action: EmojiReactsAction | EventsAction
         const status = draft[action.statusId];
         if (status) {
           status.showFiltered = false;
-        }
-      });
-    case STATUS_LANGUAGE_CHANGE:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.currentLanguage = action.language;
         }
       });
     case TIMELINE_DELETE:

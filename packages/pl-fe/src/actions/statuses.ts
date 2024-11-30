@@ -44,8 +44,6 @@ const STATUS_UNMUTE_FAIL = 'STATUS_UNMUTE_FAIL' as const;
 
 const STATUS_UNFILTER = 'STATUS_UNFILTER' as const;
 
-const STATUS_LANGUAGE_CHANGE = 'STATUS_LANGUAGE_CHANGE' as const;
-
 const createStatus = (params: CreateStatusParams, idempotencyKey: string, statusId: string | null) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch<StatusesAction>({ type: STATUS_CREATE_REQUEST, params, idempotencyKey, editing: !!statusId });
@@ -260,12 +258,6 @@ const unfilterStatus = (statusId: string) => ({
   statusId,
 });
 
-const changeStatusLanguage = (statusId: string, language: string) => ({
-  type: STATUS_LANGUAGE_CHANGE,
-  statusId,
-  language,
-});
-
 type StatusesAction =
   | { type: typeof STATUS_CREATE_REQUEST; params: CreateStatusParams; idempotencyKey: string; editing: boolean }
   | { type: typeof STATUS_CREATE_SUCCESS; status: BaseStatus | ScheduledStatus; params: CreateStatusParams; idempotencyKey: string; editing: boolean }
@@ -289,7 +281,6 @@ type StatusesAction =
   | { type: typeof STATUS_UNMUTE_SUCCESS; statusId: string }
   | { type: typeof STATUS_UNMUTE_FAIL; statusId: string; error: unknown }
   | ReturnType<typeof unfilterStatus>
-  | ReturnType<typeof changeStatusLanguage>;
 
 export {
   STATUS_CREATE_REQUEST,
@@ -314,7 +305,6 @@ export {
   STATUS_UNMUTE_SUCCESS,
   STATUS_UNMUTE_FAIL,
   STATUS_UNFILTER,
-  STATUS_LANGUAGE_CHANGE,
   createStatus,
   editStatus,
   fetchStatus,
@@ -326,6 +316,5 @@ export {
   unmuteStatus,
   toggleMuteStatus,
   unfilterStatus,
-  changeStatusLanguage,
   type StatusesAction,
 };

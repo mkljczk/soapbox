@@ -17,14 +17,15 @@ type Selected = Record<number, boolean>;
 
 interface IPoll {
   id: string;
-  status?: Pick<Status, 'url' | 'currentLanguage'>;
+  status?: Pick<Status, 'url'>;
+  language?: string;
 }
 
 const messages = defineMessages({
   multiple: { id: 'poll.choose_multiple', defaultMessage: 'Choose as many as you\'d like.' },
 });
 
-const Poll: React.FC<IPoll> = ({ id, status }): JSX.Element | null => {
+const Poll: React.FC<IPoll> = ({ id, status, language }): JSX.Element | null => {
   const { openModal } = useModalsStore();
   const dispatch = useAppDispatch();
   const intl = useIntl();
@@ -87,7 +88,7 @@ const Poll: React.FC<IPoll> = ({ id, status }): JSX.Element | null => {
               showResults={showResults}
               active={!!selected[i]}
               onToggle={toggleOption}
-              language={status?.currentLanguage}
+              language={language}
             />
           ))}
         </Stack>

@@ -16,12 +16,7 @@ const domParser = new DOMParser();
 type StatusApprovalStatus = Exclude<BaseStatus['approval_status'], null>;
 type StatusVisibility = 'public' | 'unlisted' | 'private' | 'direct' | 'group' | 'mutuals_only' | 'local';
 
-type CalculatedValues = {
-  search_index: string;
-  currentLanguage?: string;
-};
-
-type OldStatus = Pick<BaseStatus, 'content' | 'spoiler_text'> & CalculatedValues;
+type OldStatus = Pick<BaseStatus, 'content' | 'spoiler_text'> & { search_index: string };
 
 // Gets titles of poll options from status
 const getPollOptionTitles = ({ poll }: Pick<BaseStatus, 'poll'>): readonly string[] => {
@@ -51,28 +46,20 @@ const buildSearchContent = (status: Pick<BaseStatus, 'poll' | 'mentions' | 'spoi
   return unescapeHTML(fields.join('\n\n')) || '';
 };
 
-const calculateStatus = (status: BaseStatus, oldStatus?: OldStatus): CalculatedValues => {
+const getSearchIndex = (status: BaseStatus, oldStatus?: OldStatus) => {
   if (oldStatus && oldStatus.content === status.content && oldStatus.spoiler_text === status.spoiler_text) {
-    const {
-      search_index, currentLanguage,
-    } = oldStatus;
-
-    return {
-      search_index, currentLanguage,
-    };
+    return oldStatus.search_index;
   } else {
     const searchContent = buildSearchContent(status);
 
-    return {
-      search_index: domParser.parseFromString(searchContent, 'text/html').documentElement.textContent || '',
-    };
+    return domParser.parseFromString(searchContent, 'text/html').documentElement.textContent || '';
   }
 };
 
 const normalizeStatus = (status: BaseStatus & {
   accounts?: Array<BaseAccount>;
 }, oldStatus?: OldStatus) => {
-  const calculated = calculateStatus(status, oldStatus);
+  const searchIndex = getSearchIndex(status, oldStatus);
 
   // Sort the replied-to mention to the top
   let mentions = status.mentions.toSorted((a, _b) => {
@@ -137,7 +124,7 @@ const normalizeStatus = (status: BaseStatus & {
     event,
     group,
     media_attachments,
-    ...calculated,
+    search_index: searchIndex,
   };
 };
 

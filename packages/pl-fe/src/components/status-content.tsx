@@ -130,10 +130,10 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   const content = useMemo(
     (): string => translation
       ? translation.content
-      : (status.content_map && status.currentLanguage)
-        ? (status.content_map[status.currentLanguage] || status.content)
+      : (status.content_map && statusMeta.currentLanguage)
+        ? (status.content_map[statusMeta.currentLanguage] || status.content)
         : status.content,
-    [status.content, translation, status.currentLanguage],
+    [status.content, translation, statusMeta.currentLanguage],
   );
 
   const { content: parsedContent, hashtags } = useMemo(() => parseContent({
@@ -149,8 +149,8 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
 
   const withSpoiler = status.spoiler_text.length > 0;
 
-  const spoilerText = status.spoiler_text_map && status.currentLanguage
-    ? status.spoiler_text_map[status.currentLanguage] || status.spoiler_text
+  const spoilerText = status.spoiler_text_map && statusMeta.currentLanguage
+    ? status.spoiler_text_map[statusMeta.currentLanguage] || status.spoiler_text
     : status.spoiler_text;
 
   const direction = getTextDirection(status.search_index);
@@ -245,7 +245,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     }
 
     if (status.poll_id) {
-      output.push(<Poll id={status.poll_id} key='poll' status={status} />);
+      output.push(<Poll id={status.poll_id} key='poll' status={status} language={statusMeta.currentLanguage} />);
     }
 
     if (translatable) {
@@ -283,7 +283,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     }
 
     if (status.poll_id) {
-      output.push(<Poll id={status.poll_id} key='poll' status={status} />);
+      output.push(<Poll id={status.poll_id} key='poll' status={status} language={statusMeta.currentLanguage} />);
     }
 
     if (translatable) {

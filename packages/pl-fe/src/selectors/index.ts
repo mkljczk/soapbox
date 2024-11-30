@@ -162,13 +162,6 @@ const makeGetStatus = () => createSelector(
       poll,
       filtered,
     };
-    // if (map.currentLanguage === null && map.content_map?.size) {
-    //   let currentLanguage: string | null = null;
-    //   if (map.content_map.has(locale)) currentLanguage = locale;
-    //   else if (map.language && map.content_map.has(map.language)) currentLanguage = map.language;
-    //   else currentLanguage = map.content_map.keySeq().first();
-    //   map.set('currentLanguage', currentLanguage);
-    // }
   },
 );
 

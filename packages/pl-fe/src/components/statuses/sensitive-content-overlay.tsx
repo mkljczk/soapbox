@@ -43,7 +43,7 @@ const messages = defineMessages({
 });
 
 interface ISensitiveContentOverlay {
-  status: Pick<Status, 'id' | 'sensitive' | 'spoiler_text' | 'media_attachments' | 'currentLanguage'>;
+  status: Pick<Status, 'id' | 'sensitive' | 'spoiler_text' | 'media_attachments'>;
 }
 
 const SensitiveContentOverlay = React.forwardRef<HTMLDivElement, ISensitiveContentOverlay>((props, ref) => {
