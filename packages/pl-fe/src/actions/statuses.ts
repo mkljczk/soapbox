@@ -9,7 +9,7 @@ import { setComposeToStatus } from './compose';
 import { importEntities } from './importer';
 import { deleteFromTimelines } from './timelines';
 
-import type { CreateStatusParams, Status as BaseStatus, ScheduledStatus, Translation } from 'pl-api';
+import type { CreateStatusParams, Status as BaseStatus, ScheduledStatus } from 'pl-api';
 import type { Status } from 'pl-fe/normalizers/status';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 import type { IntlShape } from 'react-intl';
@@ -47,11 +47,6 @@ const STATUS_HIDE_MEDIA = 'STATUS_HIDE_MEDIA' as const;
 
 const STATUS_EXPAND_SPOILER = 'STATUS_EXPAND_SPOILER' as const;
 const STATUS_COLLAPSE_SPOILER = 'STATUS_COLLAPSE_SPOILER' as const;
-
-const STATUS_TRANSLATE_REQUEST = 'STATUS_TRANSLATE_REQUEST' as const;
-const STATUS_TRANSLATE_SUCCESS = 'STATUS_TRANSLATE_SUCCESS' as const;
-const STATUS_TRANSLATE_FAIL = 'STATUS_TRANSLATE_FAIL' as const;
-const STATUS_TRANSLATE_UNDO = 'STATUS_TRANSLATE_UNDO' as const;
 
 const STATUS_UNFILTER = 'STATUS_UNFILTER' as const;
 
@@ -269,75 +264,54 @@ const expandStatusSpoiler = (statusIds: string[] | string) => {
   };
 };
 
-let TRANSLATIONS_QUEUE: Set<string> = new Set();
-let TRANSLATIONS_TIMEOUT: NodeJS.Timeout | null = null;
+// let TRANSLATIONS_QUEUE: Set<string> = new Set();
+// let TRANSLATIONS_TIMEOUT: NodeJS.Timeout | null = null;
 
-const translateStatus = (statusId: string, targetLanguage: string, lazy?: boolean) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const client = getClient(getState);
-    const features = client.features;
+// const translateStatus = (statusId: string, targetLanguage: string, lazy?: boolean) =>
+//   (dispatch: AppDispatch, getState: () => RootState) => {
+//     const client = getClient(getState);
+//     const features = client.features;
 
-    dispatch<StatusesAction>({ type: STATUS_TRANSLATE_REQUEST, statusId });
+//     const handleTranslateMany = () => {
+//       const copy = [...TRANSLATIONS_QUEUE];
+//       TRANSLATIONS_QUEUE = new Set();
+//       if (TRANSLATIONS_TIMEOUT) clearTimeout(TRANSLATIONS_TIMEOUT);
 
-    const handleTranslateMany = () => {
-      const copy = [...TRANSLATIONS_QUEUE];
-      TRANSLATIONS_QUEUE = new Set();
-      if (TRANSLATIONS_TIMEOUT) clearTimeout(TRANSLATIONS_TIMEOUT);
+//       return client.statuses.translateStatuses(copy, targetLanguage).then((response) => {
+//         response.forEach((translation) => {
+//           dispatch<StatusesAction>({
+//             type: STATUS_TRANSLATE_SUCCESS,
+//             statusId: translation.id,
+//             translation: translation,
+//           });
 
-      return client.statuses.translateStatuses(copy, targetLanguage).then((response) => {
-        response.forEach((translation) => {
-          dispatch<StatusesAction>({
-            type: STATUS_TRANSLATE_SUCCESS,
-            statusId: translation.id,
-            translation: translation,
-          });
+//           copy
+//             .filter((statusId) => !response.some(({ id }) => id === statusId))
+//             .forEach((statusId) => dispatch<StatusesAction>({
+//               type: STATUS_TRANSLATE_FAIL,
+//               statusId,
+//             }));
+//         });
+//       }).catch(error => {
+//         dispatch<StatusesAction>({
+//           type: STATUS_TRANSLATE_FAIL,
+//           statusId,
+//           error,
+//         });
+//       });
+//     };
 
-          copy
-            .filter((statusId) => !response.some(({ id }) => id === statusId))
-            .forEach((statusId) => dispatch<StatusesAction>({
-              type: STATUS_TRANSLATE_FAIL,
-              statusId,
-            }));
-        });
-      }).catch(error => {
-        dispatch<StatusesAction>({
-          type: STATUS_TRANSLATE_FAIL,
-          statusId,
-          error,
-        });
-      });
-    };
+//     if (features.lazyTranslations && lazy) {
+//       TRANSLATIONS_QUEUE.add(statusId);
 
-    if (features.lazyTranslations && lazy) {
-      TRANSLATIONS_QUEUE.add(statusId);
+//       if (TRANSLATIONS_TIMEOUT) clearTimeout(TRANSLATIONS_TIMEOUT);
+//       TRANSLATIONS_TIMEOUT = setTimeout(() => handleTranslateMany(), 3000);
+//     } else if (features.lazyTranslations && TRANSLATIONS_QUEUE.size) {
+//       TRANSLATIONS_QUEUE.add(statusId);
 
-      if (TRANSLATIONS_TIMEOUT) clearTimeout(TRANSLATIONS_TIMEOUT);
-      TRANSLATIONS_TIMEOUT = setTimeout(() => handleTranslateMany(), 3000);
-    } else if (features.lazyTranslations && TRANSLATIONS_QUEUE.size) {
-      TRANSLATIONS_QUEUE.add(statusId);
-
-      handleTranslateMany();
-    } else {
-      return client.statuses.translateStatus(statusId, targetLanguage).then(response => {
-        dispatch<StatusesAction>({
-          type: STATUS_TRANSLATE_SUCCESS,
-          statusId,
-          translation: response,
-        });
-      }).catch(error => {
-        dispatch<StatusesAction>({
-          type: STATUS_TRANSLATE_FAIL,
-          statusId,
-          error,
-        });
-      });
-    }
-  };
-
-const undoStatusTranslation = (statusId: string) => ({
-  type: STATUS_TRANSLATE_UNDO,
-  statusId,
-});
+//       handleTranslateMany();
+//     }
+//   };
 
 const unfilterStatus = (statusId: string) => ({
   type: STATUS_UNFILTER,
@@ -376,10 +350,6 @@ type StatusesAction =
   | ReturnType<typeof revealStatusMedia>
   | ReturnType<typeof collapseStatusSpoiler>
   | ReturnType<typeof expandStatusSpoiler>
-  | { type: typeof STATUS_TRANSLATE_REQUEST; statusId: string }
-  | { type: typeof STATUS_TRANSLATE_SUCCESS; statusId: string | null; translation: Translation }
-  | { type: typeof STATUS_TRANSLATE_FAIL; statusId: string; error?: unknown }
-  | ReturnType<typeof undoStatusTranslation>
   | ReturnType<typeof unfilterStatus>
   | ReturnType<typeof changeStatusLanguage>;
 
@@ -409,10 +379,6 @@ export {
   STATUS_HIDE_MEDIA,
   STATUS_EXPAND_SPOILER,
   STATUS_COLLAPSE_SPOILER,
-  STATUS_TRANSLATE_REQUEST,
-  STATUS_TRANSLATE_SUCCESS,
-  STATUS_TRANSLATE_FAIL,
-  STATUS_TRANSLATE_UNDO,
   STATUS_UNFILTER,
   STATUS_LANGUAGE_CHANGE,
   createStatus,
@@ -430,8 +396,6 @@ export {
   toggleStatusMediaHidden,
   expandStatusSpoiler,
   collapseStatusSpoiler,
-  translateStatus,
-  undoStatusTranslation,
   unfilterStatus,
   changeStatusLanguage,
   type StatusesAction,

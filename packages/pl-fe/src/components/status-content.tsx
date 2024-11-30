@@ -3,6 +3,7 @@ import React, { useState, useRef, useLayoutEffect, useMemo, useEffect } from 're
 import { FormattedMessage } from 'react-intl';
 
 import { collapseStatusSpoiler, expandStatusSpoiler } from 'pl-fe/actions/statuses';
+import { useStatusTranslation } from 'pl-fe/api/hooks/statuses/use-status-translation';
 import Icon from 'pl-fe/components/icon';
 import Button from 'pl-fe/components/ui/button';
 import Stack from 'pl-fe/components/ui/stack';
@@ -11,6 +12,7 @@ import Emojify from 'pl-fe/features/emoji/emojify';
 import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { onlyEmoji as isOnlyEmoji } from 'pl-fe/utils/rich-content';
 
 import { getTextDirection } from '../utils/rtl';
@@ -91,6 +93,9 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   const node = useRef<HTMLDivElement>(null);
   const spoilerNode = useRef<HTMLSpanElement>(null);
 
+  const { statuses: statusesMeta } = useStatusMetaStore();
+  const { data: translation } = useStatusTranslation(status.id, statusesMeta[status.id]?.targetLanguage);
+
   const maybeSetCollapsed = (): void => {
     if (!node.current) return;
 
@@ -125,12 +130,12 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   });
 
   const content = useMemo(
-    (): string => translatable && status.translation
-      ? status.translation.content!
+    (): string => translation
+      ? translation.content
       : (status.content_map && status.currentLanguage)
         ? (status.content_map[status.currentLanguage] || status.content)
         : status.content,
-    [status.content, status.translation, status.currentLanguage],
+    [status.content, translation, status.currentLanguage],
   );
 
   const { content: parsedContent, hashtags } = useMemo(() => parseContent({

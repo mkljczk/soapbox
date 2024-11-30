@@ -3,7 +3,7 @@
  * Converts API statuses into our internal format.
  * @see {@link https://docs.joinmastodon.org/entities/status/}
  */
-import { type Account as BaseAccount, type Status as BaseStatus, type MediaAttachment, mentionSchema, type Translation } from 'pl-api';
+import { type Account as BaseAccount, type Status as BaseStatus, type MediaAttachment, mentionSchema } from 'pl-api';
 import * as v from 'valibot';
 
 import { unescapeHTML } from 'pl-fe/utils/html';
@@ -20,7 +20,6 @@ type CalculatedValues = {
   search_index: string;
   expanded?: boolean | null;
   hidden?: boolean | null;
-  translation?: Translation | null | false;
   currentLanguage?: string;
 };
 
@@ -57,11 +56,11 @@ const buildSearchContent = (status: Pick<BaseStatus, 'poll' | 'mentions' | 'spoi
 const calculateStatus = (status: BaseStatus, oldStatus?: OldStatus): CalculatedValues => {
   if (oldStatus && oldStatus.content === status.content && oldStatus.spoiler_text === status.spoiler_text) {
     const {
-      search_index, hidden, expanded, translation, currentLanguage,
+      search_index, hidden, expanded, currentLanguage,
     } = oldStatus;
 
     return {
-      search_index, hidden, expanded, translation, currentLanguage,
+      search_index, hidden, expanded, currentLanguage,
     };
   } else {
     const searchContent = buildSearchContent(status);
@@ -129,7 +128,6 @@ const normalizeStatus = (status: BaseStatus & {
     reblog_id: status.reblog?.id || null,
     poll_id: status.poll?.id || null,
     group_id: status.group?.id || null,
-    translating: false,
     expectsCard: false,
     showFiltered: null as null | boolean,
     ...status,
@@ -144,7 +142,6 @@ const normalizeStatus = (status: BaseStatus & {
     group,
     media_attachments,
     ...calculated,
-    translation: (status.translation || calculated.translation || null) as Translation | null | false,
   };
 };
 

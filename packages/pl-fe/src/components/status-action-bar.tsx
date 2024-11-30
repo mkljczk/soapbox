@@ -11,7 +11,7 @@ import { toggleBookmark, toggleDislike, toggleFavourite, togglePin, toggleReblog
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { changeSetting } from 'pl-fe/actions/settings';
-import { deleteStatus, editStatus, toggleMuteStatus, translateStatus, undoStatusTranslation } from 'pl-fe/actions/statuses';
+import { deleteStatus, editStatus, toggleMuteStatus } from 'pl-fe/actions/statuses';
 import { deleteFromTimelines } from 'pl-fe/actions/timelines';
 import { useBlockGroupMember } from 'pl-fe/api/hooks/groups/use-block-group-member';
 import { useDeleteGroupStatus } from 'pl-fe/api/hooks/groups/use-delete-group-status';
@@ -33,6 +33,7 @@ import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
 import { RootState } from 'pl-fe/store';
 import { useModalsStore } from 'pl-fe/stores/modals';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import toast from 'pl-fe/toast';
 import copy from 'pl-fe/utils/copy';
 
@@ -574,7 +575,6 @@ interface IMenuButton extends IActionButton {
 const MenuButton: React.FC<IMenuButton> = ({
   status,
   statusActionButtonTheme,
-  withLabels,
   me,
   expandable,
   fromBookmarks,
@@ -585,6 +585,8 @@ const MenuButton: React.FC<IMenuButton> = ({
   const match = useRouteMatch<{ groupId: string }>('/groups/:groupId');
   const { boostModal } = useSettings();
 
+  const { statuses: statusesMeta, fetchTranslation, hideTranslation } = useStatusMetaStore();
+  const targetLanguage = statusesMeta[status.id]?.targetLanguage;
   const { openModal } = useModalsStore();
   const { group } = useGroup((status.group as Group)?.id as string);
   const deleteGroupStatus = useDeleteGroupStatus(group as Group, status.id);
@@ -774,10 +776,10 @@ const MenuButton: React.FC<IMenuButton> = ({
   };
 
   const handleTranslate = () => {
-    if (status.translation) {
-      dispatch(undoStatusTranslation(status.id));
+    if (targetLanguage) {
+      hideTranslation(status.id);
     } else {
-      dispatch(translateStatus(status.id, intl.locale));
+      fetchTranslation(status.id, intl.locale);
     }
   };
 
@@ -941,7 +943,7 @@ const MenuButton: React.FC<IMenuButton> = ({
     }
 
     if (autoTranslating) {
-      if (status.translation) {
+      if (targetLanguage) {
         menu.push({
           text: intl.formatMessage(messages.hideTranslation),
           action: handleTranslate,
