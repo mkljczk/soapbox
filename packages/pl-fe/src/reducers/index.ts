@@ -18,7 +18,6 @@ import domain_lists from './domain-lists';
 import draft_statuses from './draft-statuses';
 import filters from './filters';
 import followed_tags from './followed-tags';
-import history from './history';
 import instance from './instance';
 import listAdder from './list-adder';
 import listEditor from './list-editor';
@@ -55,7 +54,6 @@ const reducers = {
   entities,
   filters,
   followed_tags,
-  history,
   instance,
   listAdder,
   listEditor,
