@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 
 import { updateConversations } from 'pl-fe/actions/conversations';
 import { fetchFilters } from 'pl-fe/actions/filters';
-import { MARKER_FETCH_SUCCESS } from 'pl-fe/actions/markers';
 import { updateNotificationsQueue } from 'pl-fe/actions/notifications';
 import { getLocale } from 'pl-fe/actions/settings';
 import { updateStatus } from 'pl-fe/actions/statuses';
@@ -161,7 +160,9 @@ const useUserStream = () => {
         deleteAnnouncement(event.payload);
         break;
       case 'marker':
-        dispatch({ type: MARKER_FETCH_SUCCESS, marker: event.payload });
+        Object.entries(event.payload).forEach(([timeline, marker]) => {
+          queryClient.setQueryData(['markers', timeline], marker);
+        });
         break;
     }
   }, []);
