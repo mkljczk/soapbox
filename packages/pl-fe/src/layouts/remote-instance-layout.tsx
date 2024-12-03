@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Layout from 'pl-fe/components/ui/layout';
 import LinkFooter from 'pl-fe/features/ui/components/link-footer';
 import {
@@ -11,6 +10,7 @@ import {
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { federationRestrictionsDisclosed } from 'pl-fe/utils/state';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 
 interface IRemoteInstanceLayout {
   params?: {
