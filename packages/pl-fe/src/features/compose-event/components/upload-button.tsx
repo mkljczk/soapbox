@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Icon from 'pl-fe/components/icon';
 import HStack from 'pl-fe/components/ui/hstack';
 import Text from 'pl-fe/components/ui/text';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 interface IUploadButton {
   disabled?: boolean;
@@ -14,7 +14,7 @@ interface IUploadButton {
 const UploadButton: React.FC<IUploadButton> = ({ disabled, onSelectFile }) => {
   const fileElement = useRef<HTMLInputElement>(null);
 
-  const attachmentTypes = useInstance().data.configuration.media_attachments.supported_mime_types
+  const attachmentTypes = useAppSelector(state => state.instance.configuration.media_attachments.supported_mime_types)
     ?.filter((type) => type.startsWith('image/'));
 
   let accept = attachmentTypes?.join(',');

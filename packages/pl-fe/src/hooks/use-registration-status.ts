@@ -1,9 +1,8 @@
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
-
 import { useFeatures } from './use-features';
+import { useInstance } from './use-instance';
 
 const useRegistrationStatus = () => {
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const features = useFeatures();
 
   return {

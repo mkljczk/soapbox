@@ -18,6 +18,7 @@ import domain_lists from './domain-lists';
 import draft_statuses from './draft-statuses';
 import filters from './filters';
 import followed_tags from './followed-tags';
+import instance from './instance';
 import listAdder from './list-adder';
 import listEditor from './list-editor';
 import lists from './lists';
@@ -53,6 +54,7 @@ const reducers = {
   entities,
   filters,
   followed_tags,
+  instance,
   listAdder,
   listEditor,
   lists,
@@ -85,8 +87,8 @@ const logOut = (state: AppState): ReturnType<typeof appReducer> => {
 
   const newState = rootReducer(undefined, { type: '' });
 
-  const { plfe, custom_emojis, auth } = state;
-  return { ...newState, plfe, custom_emojis, auth };
+  const { instance, plfe, custom_emojis, auth } = state;
+  return { ...newState, instance, plfe, custom_emojis, auth };
 };
 
 const rootReducer: typeof appReducer = (state, action) => {

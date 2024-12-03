@@ -1,15 +1,15 @@
 import React from 'react';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import ForkAwesomeIcon from 'pl-fe/components/fork-awesome-icon';
 import List, { ListItem } from 'pl-fe/components/list';
 import HStack from 'pl-fe/components/ui/hstack';
 import Widget from 'pl-fe/components/ui/widget';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 
 const PromoPanel: React.FC = () => {
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const { promoPanel } = usePlFeConfig();
   const { locale } = useSettings();
 

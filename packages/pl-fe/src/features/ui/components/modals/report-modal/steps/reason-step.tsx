@@ -2,11 +2,11 @@ import clsx from 'clsx';
 import React, { useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import FormGroup from 'pl-fe/components/ui/form-group';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Textarea from 'pl-fe/components/ui/textarea';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import type { Account } from 'pl-fe/normalizers/account';
 
@@ -33,7 +33,7 @@ const ReasonStep: React.FC<IReasonStep> = ({ comment, setComment, ruleIds, setRu
   const [isNearBottom, setNearBottom] = useState<boolean>(false);
   const [isNearTop, setNearTop] = useState<boolean>(true);
 
-  const { rules } = useInstance().data;
+  const { rules } = useInstance();
   const shouldRequireRule = rules.length > 0;
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {

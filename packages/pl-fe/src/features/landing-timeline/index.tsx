@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { fetchPublicTimeline } from 'pl-fe/actions/timelines';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { useCommunityStream } from 'pl-fe/api/hooks/streaming/use-community-stream';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import Column from 'pl-fe/components/ui/column';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
 import { useTheme } from 'pl-fe/hooks/use-theme';
 
@@ -17,7 +17,7 @@ import { SiteBanner } from './components/site-banner';
 
 const LandingTimeline = () => {
   const dispatch = useAppDispatch();
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const theme = useTheme();
   const isMobile = useIsMobile();
 

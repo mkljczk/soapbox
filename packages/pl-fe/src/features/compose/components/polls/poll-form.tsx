@@ -2,7 +2,6 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { addPollOption, changePollOption, changePollSettings, clearComposeSuggestions, fetchComposeSuggestions, removePoll, removePollOption, selectComposeSuggestion } from 'pl-fe/actions/compose';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import AutosuggestInput from 'pl-fe/components/autosuggest-input';
 import Button from 'pl-fe/components/ui/button';
 import Divider from 'pl-fe/components/ui/divider';
@@ -12,6 +11,7 @@ import Text from 'pl-fe/components/ui/text';
 import Toggle from 'pl-fe/components/ui/toggle';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import DurationSelector from './duration-selector';
 
@@ -118,7 +118,7 @@ interface IPollForm {
 const PollForm: React.FC<IPollForm> = ({ composeId }) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
-  const { configuration } = useInstance().data;
+  const { configuration } = useInstance();
 
   const { poll, language, modified_language: modifiedLanguage } = useCompose(composeId);
 

@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom';
 
 import { changeSetting } from 'pl-fe/actions/settings';
 import { fetchPublicTimeline } from 'pl-fe/actions/timelines';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { usePublicStream } from 'pl-fe/api/hooks/streaming/use-public-stream';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import Accordion from 'pl-fe/components/ui/accordion';
 import Column from 'pl-fe/components/ui/column';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useTheme } from 'pl-fe/hooks/use-theme';
@@ -27,7 +27,7 @@ const CommunityTimeline = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
 
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const settings = useSettings();
   const onlyMedia = settings.timelines.public?.other.onlyMedia ?? false;
 

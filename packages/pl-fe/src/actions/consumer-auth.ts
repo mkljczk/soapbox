@@ -1,19 +1,17 @@
-import { Instance } from 'pl-api';
 import queryString from 'query-string';
 
 import * as BuildConfig from 'pl-fe/build-config';
-import { queryClient } from 'pl-fe/queries/client';
 import { isURL } from 'pl-fe/utils/auth';
 import sourceCode from 'pl-fe/utils/code';
-import { getInstanceScopes } from 'pl-fe/utils/scopes';
+import { getScopes } from 'pl-fe/utils/scopes';
 
 import { createApp } from './apps';
 
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
-const createProviderApp = (instance: Instance) =>
+const createProviderApp = () =>
   async(dispatch: AppDispatch, getState: () => RootState) => {
-    const scopes = getInstanceScopes(instance);
+    const scopes = getScopes(getState());
 
     const params = {
       client_name: `${sourceCode.displayName} (${new URL(window.origin).host})`,
@@ -29,9 +27,8 @@ const prepareRequest = (provider: string) =>
   async(dispatch: AppDispatch, getState: () => RootState) => {
     const baseURL = isURL(BuildConfig.BACKEND_URL) ? BuildConfig.BACKEND_URL : '';
 
-    const instance = queryClient.getQueryData<Instance>(['instance', 'instanceInformation', baseURL])!;
-    const scopes = getInstanceScopes(instance);
-    const app = await dispatch(createProviderApp(instance));
+    const scopes = getScopes(getState());
+    const app = await dispatch(createProviderApp());
     const { client_id, redirect_uri } = app;
 
     localStorage.setItem('plfe:external:app', JSON.stringify(app));

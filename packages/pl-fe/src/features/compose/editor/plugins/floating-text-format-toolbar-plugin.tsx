@@ -39,8 +39,8 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Icon from 'pl-fe/components/ui/icon';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import { getDOMRangeRect } from '../utils/get-dom-range-rect';
 import { getSelectedNode } from '../utils/get-selected-node';
@@ -109,7 +109,7 @@ const BlockTypeDropdown = ({ editor, anchorElem, blockType, icon }: {
   blockType: keyof typeof blockTypeToBlockName;
   icon: string;
 }) => {
-  const { data: instance } = useInstance();
+  const instance = useInstance();
 
   const [showDropDown, setShowDropDown] = useState(false);
 

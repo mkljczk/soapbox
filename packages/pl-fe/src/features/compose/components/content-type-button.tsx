@@ -2,11 +2,11 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { changeComposeContentType } from 'pl-fe/actions/compose';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import Button from 'pl-fe/components/ui/button';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 const messages = defineMessages({
   content_type_plaintext: { id: 'preferences.options.content_type_plaintext', defaultMessage: 'Plain text' },
@@ -24,7 +24,7 @@ interface IContentTypeButton {
 const ContentTypeButton: React.FC<IContentTypeButton> = ({ composeId }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const { data: instance } = useInstance();
+  const instance = useInstance();
 
   const contentType = useCompose(composeId).content_type;
 

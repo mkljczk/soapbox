@@ -4,7 +4,6 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { mentionCompose } from 'pl-fe/actions/compose';
 import { reblog, favourite, unreblog, unfavourite } from 'pl-fe/actions/interactions';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
 import Icon from 'pl-fe/components/icon';
 import RelativeTimestamp from 'pl-fe/components/relative-timestamp';
@@ -17,6 +16,7 @@ import Emojify from 'pl-fe/features/emoji/emojify';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { makeGetNotification } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
@@ -212,7 +212,7 @@ const Notification: React.FC<INotification> = (props) => {
 
   const history = useHistory();
   const intl = useIntl();
-  const { data: instance } = useInstance();
+  const instance = useInstance();
 
   const type = notification.type;
   const { accounts } = notification;

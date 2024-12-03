@@ -5,7 +5,6 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { accountLookup } from 'pl-fe/actions/accounts';
 import { register, verifyCredentials } from 'pl-fe/actions/auth';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import BirthdayInput from 'pl-fe/components/birthday-input';
 import Button from 'pl-fe/components/ui/button';
 import Checkbox from 'pl-fe/components/ui/checkbox';
@@ -18,6 +17,7 @@ import Textarea from 'pl-fe/components/ui/textarea';
 import CaptchaField from 'pl-fe/features/auth-login/components/captcha';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
@@ -52,7 +52,7 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
 
   const { locale } = useSettings();
   const features = useFeatures();
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const { openModal } = useModalsStore();
 
   const needsConfirmation = instance.pleroma.metadata.account_activation_required;

@@ -1,5 +1,7 @@
 import { create } from 'mutative';
+import { type CredentialAccount, type Instance, type MediaAttachment, type Tag } from 'pl-api';
 
+import { INSTANCE_FETCH_SUCCESS, type InstanceAction } from 'pl-fe/actions/instance';
 import { isNativeEmoji, type Emoji } from 'pl-fe/features/emoji';
 import { tagHistory } from 'pl-fe/settings';
 
@@ -65,7 +67,6 @@ import { FE_NAME } from '../actions/settings';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 import { unescapeHTML } from '../utils/html';
 
-import type { CredentialAccount, MediaAttachment, Tag } from 'pl-api';
 import type { Language } from 'pl-fe/features/preferences';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';
@@ -309,11 +310,11 @@ const importAccount = (compose: Compose, account: CredentialAccount) => {
 //   }
 // };
 
-// const updateDefaultContentType = (compose: Compose, instance: Instance) => {
-//   const postFormats = instance.pleroma.metadata.post_formats;
+const updateDefaultContentType = (compose: Compose, instance: Instance) => {
+  const postFormats = instance.pleroma.metadata.post_formats;
 
-//   compose.content_type = postFormats.includes(compose.content_type) ? compose.content_type : postFormats.includes('text/markdown') ? 'text/markdown' : postFormats[0];
-// };
+  compose.content_type = postFormats.includes(compose.content_type) ? compose.content_type : postFormats.includes('text/markdown') ? 'text/markdown' : postFormats[0];
+};
 
 const updateCompose = (state: State, key: string, updater: (compose: Compose) => void) =>
   create(state, draft => {
@@ -326,7 +327,7 @@ const initialState: State = {
   default: newCompose({ idempotencyKey: crypto.randomUUID(), resetFileKey: getResetFileKey() }),
 };
 
-const compose = (state = initialState, action: ComposeAction | EventsAction | MeAction | TimelineAction): State => {
+const compose = (state = initialState, action: ComposeAction | EventsAction | InstanceAction | MeAction | TimelineAction): State => {
   switch (action.type) {
     case COMPOSE_TYPE_CHANGE:
       return updateCompose(state, action.composeId, compose => {
@@ -687,6 +688,8 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | Me
       return updateCompose(state, action.composeId, compose => {
         compose.federated = !compose.federated;
       });
+    case INSTANCE_FETCH_SUCCESS:
+      return updateCompose(state, 'default', (compose) => updateDefaultContentType(compose, action.instance));
     default:
       return state;
   }

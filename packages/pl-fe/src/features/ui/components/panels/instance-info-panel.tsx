@@ -2,7 +2,6 @@ import React from 'react';
 import { useIntl, defineMessages } from 'react-intl';
 
 import { pinHost, unpinHost } from 'pl-fe/actions/remote-timeline';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Widget from 'pl-fe/components/ui/widget';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
@@ -27,9 +26,8 @@ const InstanceInfoPanel: React.FC<IInstanceInfoPanel> = ({ host }) => {
   const dispatch = useAppDispatch();
 
   const settings = useSettings();
+  const remoteInstance: any = useAppSelector(state => getRemoteInstance(state, host));
   const pinned = settings.remote_timeline.pinnedHosts.includes(host);
-  const { data: instance } = useInstance();
-  const remoteInstance = useAppSelector(state => getRemoteInstance(state, host, instance));
 
   const handlePinHost = () => {
     if (!pinned) {

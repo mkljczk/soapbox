@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { IntlProvider } from 'react-intl';
 
+import { fetchInstance } from 'pl-fe/actions/instance';
 import { fetchMe } from 'pl-fe/actions/me';
 import { loadPlFeConfig } from 'pl-fe/actions/pl-fe';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import LoadingScreen from 'pl-fe/components/loading-screen';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
@@ -17,6 +17,8 @@ const loadInitial = () => {
   return async(dispatch, getState) => {
     // Await for authenticated fetch
     await dispatch(fetchMe());
+    // Await for feature detection
+    await dispatch(fetchInstance());
     // Await for configuration
     await dispatch(loadPlFeConfig());
   };
@@ -29,7 +31,6 @@ interface IPlFeLoad {
 /** Initial data loader. */
 const PlFeLoad: React.FC<IPlFeLoad> = ({ children }) => {
   const dispatch = useAppDispatch();
-  const { isLoading: isLoadingInstance } = useInstance();
 
   const me = useAppSelector(state => state.me);
   const { account } = useOwnAccount();
@@ -45,7 +46,6 @@ const PlFeLoad: React.FC<IPlFeLoad> = ({ children }) => {
     me && !account,
     !isLoaded,
     localeLoading,
-    isLoadingInstance,
   ].some(Boolean);
 
   // Load the user's locale

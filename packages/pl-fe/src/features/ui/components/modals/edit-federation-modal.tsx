@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { updateMrf } from 'pl-fe/actions/mrf';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import List, { ListItem } from 'pl-fe/components/list';
 import Modal from 'pl-fe/components/ui/modal';
 import Toggle from 'pl-fe/components/ui/toggle';
@@ -31,9 +30,8 @@ const EditFederationModal: React.FC<BaseModalProps & EditFederationModalProps> =
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
-  const { data: instance } = useInstance();
   const getRemoteInstance = useCallback(makeGetRemoteInstance(), []);
-  const remoteInstance = useAppSelector(state => getRemoteInstance(state, host, instance));
+  const remoteInstance = useAppSelector(state => getRemoteInstance(state, host));
 
   const [data, setData] = useState<Record<string, any>>({});
 

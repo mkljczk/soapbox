@@ -1,7 +1,6 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Form from 'pl-fe/components/ui/form';
 import FormGroup from 'pl-fe/components/ui/form-group';
 import Input from 'pl-fe/components/ui/input';
@@ -9,6 +8,8 @@ import Textarea from 'pl-fe/components/ui/textarea';
 import AvatarPicker from 'pl-fe/features/edit-profile/components/avatar-picker';
 import HeaderPicker from 'pl-fe/features/edit-profile/components/header-picker';
 import { usePreview } from 'pl-fe/hooks/forms/use-preview';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import resizeImage from 'pl-fe/utils/resize-image';
 
 import type { CreateGroupParams } from 'pl-api';
@@ -26,7 +27,7 @@ interface IDetailsStep {
 
 const DetailsStep: React.FC<IDetailsStep> = ({ params, onChange }) => {
   const intl = useIntl();
-  const { data: instance } = useInstance();
+  const instance = useInstance();
 
   const {
     display_name: displayName = '',
@@ -36,7 +37,7 @@ const DetailsStep: React.FC<IDetailsStep> = ({ params, onChange }) => {
   const avatarSrc = usePreview(params.avatar);
   const headerSrc = usePreview(params.header);
 
-  const attachmentTypes = useInstance().data.configuration.media_attachments.supported_mime_types
+  const attachmentTypes = useAppSelector(state => state.instance.configuration.media_attachments.supported_mime_types)
     ?.filter((type) => type.startsWith('image/'))
     .join(',');
 

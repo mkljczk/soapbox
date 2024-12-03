@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Accordion from 'pl-fe/components/ui/accordion';
 import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import SiteWallet from './components/site-wallet';
 
@@ -14,7 +14,7 @@ const messages = defineMessages({
 
 const CryptoDonate: React.FC = (): JSX.Element => {
   const intl = useIntl();
-  const { data: instance } = useInstance();
+  const instance = useInstance();
 
   const [explanationBoxExpanded, toggleExplanationBox] = useState(true);
 

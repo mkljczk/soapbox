@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { Redirect } from 'react-router-dom';
 
 import { logIn, switchAccount, verifyCredentials } from 'pl-fe/actions/auth';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
+import { fetchInstance } from 'pl-fe/actions/instance';
 import Button from 'pl-fe/components/ui/button';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
@@ -12,6 +12,7 @@ import OtpAuthForm from 'pl-fe/features/auth-login/components/otp-auth-form';
 import ExternalLoginForm from 'pl-fe/features/external-login/components/external-login-form';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
 import { getRedirectUrl } from 'pl-fe/utils/redirect';
 import { isStandalone } from 'pl-fe/utils/state';
@@ -20,7 +21,7 @@ import type { PlfeResponse } from 'pl-fe/api';
 
 const SignUpPanel = () => {
   const dispatch = useAppDispatch();
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const { isOpen } = useRegistrationStatus();
   const me = useAppSelector((state) => state.me);
   const standalone = useAppSelector(isStandalone);
@@ -41,6 +42,11 @@ const SignUpPanel = () => {
     const { username, password } = getFormData(event.target as HTMLFormElement);
     dispatch(logIn(username, password))
       .then(({ access_token }) => dispatch(verifyCredentials(access_token as string)))
+      // Refetch the instance for authenticated fetch
+      .then(async (account) => {
+        await dispatch(fetchInstance());
+        return account;
+      })
       .then((account: { id: string }) => {
         if (typeof me === 'string') {
           dispatch(switchAccount(account.id));

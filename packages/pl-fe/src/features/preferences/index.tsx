@@ -2,13 +2,13 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { changeSetting } from 'pl-fe/actions/settings';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import List, { ListItem } from 'pl-fe/components/list';
 import Form from 'pl-fe/components/ui/form';
 import { Mutliselect, SelectDropdown } from 'pl-fe/features/forms';
 import SettingToggle from 'pl-fe/features/notifications/components/setting-toggle';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 
 import ThemeToggle from '../ui/components/theme-toggle';
@@ -98,7 +98,7 @@ const Preferences = () => {
   const dispatch = useAppDispatch();
   const features = useFeatures();
   const settings = useSettings();
-  const { data: instance } = useInstance();
+  const instance = useInstance();
 
   const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>, path: string[]) => {
     dispatch(changeSetting(path, event.target.value, { showAlert: true }));

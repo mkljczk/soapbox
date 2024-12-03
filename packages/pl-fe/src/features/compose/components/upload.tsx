@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 
 import { undoUploadCompose, changeUploadCompose } from 'pl-fe/actions/compose';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Upload from 'pl-fe/components/upload';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 interface IUploadCompose {
   id: string;
@@ -17,7 +17,7 @@ interface IUploadCompose {
 
 const UploadCompose: React.FC<IUploadCompose> = ({ composeId, id, onSubmit, onDragStart, onDragEnter, onDragEnd }) => {
   const dispatch = useAppDispatch();
-  const { pleroma: { metadata: { description_limit: descriptionLimit } } } = useInstance().data;
+  const { pleroma: { metadata: { description_limit: descriptionLimit } } } = useInstance();
 
   const media = useCompose(composeId).media_attachments.find(item => item.id === id)!;
 

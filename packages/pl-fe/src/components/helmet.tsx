@@ -1,9 +1,9 @@
 import React from 'react';
 import { Helmet as ReactHelmet } from 'react-helmet-async';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { useStatContext } from 'pl-fe/contexts/stat-context';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { RootState } from 'pl-fe/store';
 import FaviconService from 'pl-fe/utils/favicon-service';
@@ -22,7 +22,7 @@ interface IHelmet {
 }
 
 const Helmet: React.FC<IHelmet> = ({ children }) => {
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const { unreadChatsCount } = useStatContext();
   const unreadCount = useAppSelector((state) => getNotifTotals(state) + unreadChatsCount);
   const { demetricator } = useSettings();

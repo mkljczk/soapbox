@@ -2,9 +2,9 @@ import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Text from 'pl-fe/components/ui/text';
 import Widget from 'pl-fe/components/ui/widget';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
 import SiteWallet from './site-wallet';
@@ -20,7 +20,7 @@ interface ICryptoDonatePanel {
 const CryptoDonatePanel: React.FC<ICryptoDonatePanel> = ({ limit = 3 }): JSX.Element | null => {
   const intl = useIntl();
   const history = useHistory();
-  const { data: instance } = useInstance();
+  const instance = useInstance();
 
   const addresses = usePlFeConfig().cryptoAddresses;
 

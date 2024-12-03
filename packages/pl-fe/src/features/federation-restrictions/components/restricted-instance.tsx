@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import React, { useState } from 'react';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Icon from 'pl-fe/components/icon';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetRemoteInstance } from 'pl-fe/selectors';
@@ -15,8 +14,7 @@ interface IRestrictedInstance {
 }
 
 const RestrictedInstance: React.FC<IRestrictedInstance> = ({ host }) => {
-  const { data: instance } = useInstance();
-  const remoteInstance: any = useAppSelector((state) => getRemoteInstance(state, host, instance));
+  const remoteInstance: any = useAppSelector((state) => getRemoteInstance(state, host));
 
   const [expanded, setExpanded] = useState(false);
 

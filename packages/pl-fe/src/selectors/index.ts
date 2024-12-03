@@ -8,7 +8,7 @@ import { validId } from 'pl-fe/utils/auth';
 import ConfigDB from 'pl-fe/utils/config-db';
 import { shouldFilter } from 'pl-fe/utils/timelines';
 
-import type { Account as BaseAccount, Filter, Instance, MediaAttachment, NotificationGroup, Relationship } from 'pl-api';
+import type { Account as BaseAccount, Filter, MediaAttachment, NotificationGroup, Relationship } from 'pl-api';
 import type { EntityStore } from 'pl-fe/entity-store/types';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Group } from 'pl-fe/normalizers/group';
@@ -275,7 +275,7 @@ const makeGetOtherAccounts = () => createSelector([
 
 const getSimplePolicy = createSelector([
   (state: RootState) => state.admin.configs,
-  (_state: RootState, instance: Instance) => instance.pleroma.metadata.federation.mrf_simple,
+  (state: RootState) => state.instance.pleroma.metadata.federation.mrf_simple,
 ], (configs, instancePolicy) => ({
   ...instancePolicy,
   ...ConfigDB.toSimplePolicy(configs),
@@ -291,8 +291,8 @@ type HostFederation = {
   [key in keyof MRFSimple]: boolean;
 };
 
-const getRemoteInstanceFederation = (state: RootState, host: string, instance: Instance): HostFederation => {
-  const simplePolicy = getSimplePolicy(state, instance);
+const getRemoteInstanceFederation = (state: RootState, host: string): HostFederation => {
+  const simplePolicy = getSimplePolicy(state);
 
   return Object.fromEntries(
     Object.entries(simplePolicy).map(([key, hosts]) => [key, hosts.includes(host)]),

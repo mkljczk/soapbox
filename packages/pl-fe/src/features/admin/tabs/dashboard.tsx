@@ -1,12 +1,12 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import List, { ListItem } from 'pl-fe/components/list';
 import { CardTitle } from 'pl-fe/components/ui/card';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import sourceCode from 'pl-fe/utils/code';
 
@@ -14,7 +14,7 @@ import { DashCounter, DashCounters } from '../components/dashcounter';
 import RegistrationModePicker from '../components/registration-mode-picker';
 
 const Dashboard: React.FC = () => {
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const features = useFeatures();
   const { account } = useOwnAccount();
 

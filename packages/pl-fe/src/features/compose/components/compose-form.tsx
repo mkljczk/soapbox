@@ -12,7 +12,6 @@ import {
   selectComposeSuggestion,
   uploadCompose,
 } from 'pl-fe/actions/compose';
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Button from 'pl-fe/components/ui/button';
 import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
@@ -22,6 +21,7 @@ import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useCompose } from 'pl-fe/hooks/use-compose';
 import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
 import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import QuotedStatusContainer from '../containers/quoted-status-container';
 import ReplyIndicatorContainer from '../containers/reply-indicator-container';
@@ -75,7 +75,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
   const history = useHistory();
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const { configuration } = useInstance().data;
+  const { configuration } = useInstance();
 
   const compose = useCompose(id);
   const maxTootChars = configuration.statuses.max_characters;

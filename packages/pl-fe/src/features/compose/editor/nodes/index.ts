@@ -11,7 +11,7 @@ import { ListItemNode, ListNode } from '@lexical/list';
 import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import { EmojiNode } from './emoji-node';
 import { ImageNode } from './image-node';
@@ -20,7 +20,7 @@ import { MentionNode } from './mention-node';
 import type { Klass, LexicalNode } from 'lexical';
 
 const useNodes = (isWysiwyg?: boolean) => {
-  const { data: instance } = useInstance();
+  const instance = useInstance();
 
   const nodes: Array<Klass<LexicalNode>> = [
     AutoLinkNode,

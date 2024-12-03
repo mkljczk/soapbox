@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { useTranslationLanguages } from 'pl-fe/api/hooks/instance/use-translation-languages';
 import { useStatusTranslation } from 'pl-fe/api/hooks/statuses/use-status-translation';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -10,6 +9,7 @@ import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
@@ -22,7 +22,7 @@ interface ITranslateButton {
 const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
   const intl = useIntl();
   const features = useFeatures();
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const settings = useSettings();
   const autoTranslate = settings.autoTranslate;
   const knownLanguages = autoTranslate ? [...settings.knownLanguages, intl.locale] : [intl.locale];

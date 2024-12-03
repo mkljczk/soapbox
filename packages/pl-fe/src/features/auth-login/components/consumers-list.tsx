@@ -1,11 +1,11 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Card from 'pl-fe/components/ui/card';
 import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import ConsumerButton from './consumer-button';
 
@@ -14,7 +14,7 @@ interface IConsumersList {
 
 /** Displays OAuth consumers to log in with. */
 const ConsumersList: React.FC<IConsumersList> = () => {
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const providers = instance.pleroma.oauth_consumer_strategies;
 
   if (providers.length > 0) {

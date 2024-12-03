@@ -1,7 +1,6 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
@@ -10,6 +9,7 @@ import ComposeButton from 'pl-fe/features/ui/components/compose-button';
 import ProfileDropdown from 'pl-fe/features/ui/components/profile-dropdown';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useLogo } from 'pl-fe/hooks/use-logo';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
@@ -40,7 +40,7 @@ const SidebarNavigation = () => {
   const intl = useIntl();
   const { unreadChatsCount } = useStatContext();
 
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const features = useFeatures();
   const { isDeveloper } = useSettings();
   const { account } = useOwnAccount();

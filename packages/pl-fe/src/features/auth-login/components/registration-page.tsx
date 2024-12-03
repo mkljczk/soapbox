@@ -1,15 +1,15 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { BigCard } from 'pl-fe/components/big-card';
 import Text from 'pl-fe/components/ui/text';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
 
 import RegistrationForm from './registration-form';
 
 const RegistrationPage: React.FC = () => {
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const { isOpen } = useRegistrationStatus();
 
   if (!isOpen) {

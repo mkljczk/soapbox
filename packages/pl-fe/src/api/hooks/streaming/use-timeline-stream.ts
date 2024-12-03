@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 
-import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useClient } from 'pl-fe/hooks/use-client';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 import { getAccessToken } from 'pl-fe/utils/auth';
 
 import type { StreamingEvent } from 'pl-api';
@@ -12,7 +12,7 @@ const useTimelineStream = (stream: string, params: { list?: string; tag?: string
 
   const client = useClient();
 
-  const { data: instance } = useInstance();
+  const instance = useInstance();
   const socket = useRef<({
     listen: (listener: any, stream?: string) => number;
     unlisten: (listener: any) => void;
