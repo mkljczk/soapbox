@@ -3,6 +3,7 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
@@ -11,7 +12,6 @@ import Timeline from 'pl-fe/features/ui/components/timeline';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
 import { useTheme } from 'pl-fe/hooks/use-theme';
 
@@ -23,7 +23,7 @@ const HomeTimeline: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const features = useFeatures();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
   const theme = useTheme();
 
   const polling = useRef<NodeJS.Timeout | null>(null);

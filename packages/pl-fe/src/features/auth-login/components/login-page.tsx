@@ -3,7 +3,6 @@ import { FormattedMessage } from 'react-intl';
 import { Redirect } from 'react-router-dom';
 
 import { logIn, verifyCredentials, switchAccount } from 'pl-fe/actions/auth';
-import { fetchInstance } from 'pl-fe/actions/instance';
 import { BigCard } from 'pl-fe/components/big-card';
 import Button from 'pl-fe/components/ui/button';
 import Stack from 'pl-fe/components/ui/stack';
@@ -43,11 +42,6 @@ const LoginPage = () => {
     const { username, password } = getFormData(event.target as HTMLFormElement);
     dispatch(logIn(username, password))
       .then(({ access_token }) => dispatch(verifyCredentials(access_token)))
-      // Refetch the instance for authenticated fetch
-      .then(async (account) => {
-        await dispatch(fetchInstance());
-        return account;
-      })
       .then((account: { id: string }) => {
         closeModal();
         if (typeof me === 'string') {

@@ -12,6 +12,7 @@ import { expandNotifications } from 'pl-fe/actions/notifications';
 import { register as registerPushNotifications } from 'pl-fe/actions/push-notifications/registerer';
 import { fetchScheduledStatuses } from 'pl-fe/actions/scheduled-statuses';
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { useUserStream } from 'pl-fe/api/hooks/streaming/use-user-stream';
 import SidebarNavigation from 'pl-fe/components/sidebar-navigation';
 import ThumbNavigation from 'pl-fe/components/thumb-navigation';
@@ -20,7 +21,6 @@ import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
@@ -41,7 +41,6 @@ import RemoteInstanceLayout from 'pl-fe/layouts/remote-instance-layout';
 import SearchLayout from 'pl-fe/layouts/search-layout';
 import StatusLayout from 'pl-fe/layouts/status-layout';
 import { useUiStore } from 'pl-fe/stores/ui';
-import { getVapidKey } from 'pl-fe/utils/auth';
 import { isStandalone } from 'pl-fe/utils/state';
 
 import BackgroundShapes from './components/background-shapes';
@@ -146,13 +145,14 @@ import { WrappedRoute } from './util/react-router-helpers';
 // Dummy import, to make sure that <Status /> ends up in the application bundle.
 // Without this it ends up in ~8 very commonly used bundles.
 import 'pl-fe/components/status';
+import { useVapidKey } from 'pl-fe/hooks/use-vapid-key';
 
 interface ISwitchingColumnsArea {
   children: React.ReactNode;
 }
 
 const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => {
-  const instance = useInstance();
+  const { data: instance } = useInstance();
   const features = useFeatures();
   const { search } = useLocation();
   const { isLoggedIn } = useLoggedIn();
@@ -361,7 +361,7 @@ const UI: React.FC<IUI> = ({ children }) => {
   const me = useAppSelector(state => state.me);
   const { account } = useOwnAccount();
   const features = useFeatures();
-  const vapidKey = useAppSelector(state => getVapidKey(state));
+  const vapidKey = useVapidKey();
 
   const { isDropdownMenuOpen } = useUiStore();
   const standalone = useAppSelector(isStandalone);
@@ -447,7 +447,7 @@ const UI: React.FC<IUI> = ({ children }) => {
   }, [!!account]);
 
   useEffect(() => {
-    dispatch(registerPushNotifications());
+    dispatch(registerPushNotifications(vapidKey));
   }, [vapidKey]);
 
   // Wait for login to succeed or fail

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useIntl, defineMessages, FormattedMessage } from 'react-intl';
 
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import Widget from 'pl-fe/components/ui/widget';
 import InstanceRestrictions from 'pl-fe/features/federation-restrictions/components/instance-restrictions';
@@ -25,8 +26,9 @@ const InstanceModerationPanel: React.FC<IInstanceModerationPanel> = ({ host }) =
   const intl = useIntl();
   const { openModal } = useModalsStore();
 
+  const { data: instance } = useInstance();
   const { account } = useOwnAccount();
-  const remoteInstance = useAppSelector(state => getRemoteInstance(state, host));
+  const remoteInstance = useAppSelector(state => getRemoteInstance(state, host, instance));
 
   const handleEditFederation = () => {
     openModal('EDIT_FEDERATION', { host });

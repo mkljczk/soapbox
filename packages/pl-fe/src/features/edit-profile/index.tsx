@@ -5,6 +5,7 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
 import { updateNotificationSettings } from 'pl-fe/actions/accounts';
 import { patchMe } from 'pl-fe/actions/me';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import BirthdayInput from 'pl-fe/components/birthday-input';
 import List, { ListItem } from 'pl-fe/components/list';
 import Button from 'pl-fe/components/ui/button';
@@ -21,7 +22,6 @@ import { useImageField } from 'pl-fe/hooks/forms/use-image-field';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import toast from 'pl-fe/toast';
 import { isDefaultAvatar, isDefaultHeader } from 'pl-fe/utils/accounts';
@@ -173,7 +173,7 @@ const ProfileField: StreamfieldComponent<AccountCredentialsField> = ({ index, va
 const EditProfile: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
 
   const { account } = useOwnAccount();
   const features = useFeatures();
@@ -181,8 +181,7 @@ const EditProfile: React.FC = () => {
     ? instance.configuration.accounts.max_profile_fields
     : instance.pleroma.metadata.fields_limits.max_fields;
 
-  const attachmentTypes = useAppSelector(
-    state => state.instance.configuration.media_attachments.supported_mime_types)
+  const attachmentTypes = useInstance().data.configuration.media_attachments.supported_mime_types
     ?.filter(type => type.startsWith('image/'))
     .join(',');
 

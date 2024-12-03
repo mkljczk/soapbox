@@ -1,7 +1,8 @@
 import { Features } from 'pl-api';
 
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
+
 import { useAppSelector } from './use-app-selector';
-import { useInstance } from './use-instance';
 
 /** Get features for the current instance. */
 const useFeatures = (): Features => {

@@ -1,5 +1,6 @@
 import { defineMessages, type IntlShape } from 'react-intl';
 
+import { queryClient } from 'pl-fe/queries/client';
 import toast from 'pl-fe/toast';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 import { formatBytes, getVideoDuration } from 'pl-fe/utils/media';
@@ -7,7 +8,7 @@ import resizeImage from 'pl-fe/utils/resize-image';
 
 import { getClient } from '../api';
 
-import type { MediaAttachment, UploadMediaParams } from 'pl-api';
+import type { Instance, MediaAttachment, UploadMediaParams } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const messages = defineMessages({
@@ -35,9 +36,11 @@ const uploadFile = (
   changeTotal: (value: number) => void = () => {},
 ) => async (dispatch: AppDispatch, getState: () => RootState) => {
   if (!isLoggedIn(getState)) return;
-  const maxImageSize = getState().instance.configuration.media_attachments.image_size_limit;
-  const maxVideoSize = getState().instance.configuration.media_attachments.video_size_limit;
-  const maxVideoDuration = getState().instance.configuration.media_attachments.video_duration_limit;
+  const instance = queryClient.getQueryData<Instance>(['instance', 'instanceInformation', getState().auth.client.baseURL])!;
+
+  const {
+    image_size_limit: maxImageSize, video_size_limit: maxVideoSize, video_duration_limit: maxVideoDuration,
+  } = instance.configuration.media_attachments;
 
   const isImage = file.type.match(/image.*/);
   const isVideo = file.type.match(/video.*/);

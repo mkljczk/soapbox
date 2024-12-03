@@ -10,6 +10,7 @@ import {
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { federationRestrictionsDisclosed } from 'pl-fe/utils/state';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 
 interface IRemoteInstanceLayout {
   params?: {
@@ -23,7 +24,8 @@ const RemoteInstanceLayout: React.FC<IRemoteInstanceLayout> = ({ children, param
   const host = params!.instance!;
 
   const { account } = useOwnAccount();
-  const disclosed = useAppSelector(federationRestrictionsDisclosed);
+  const { data: instance } = useInstance();
+  const disclosed = federationRestrictionsDisclosed(instance);
 
   return (
     <>

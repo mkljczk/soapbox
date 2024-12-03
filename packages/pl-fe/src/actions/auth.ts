@@ -93,7 +93,7 @@ const createAuthApp = () =>
     const params = {
       client_name: `${sourceCode.displayName} (${new URL(window.origin).host})`,
       redirect_uris: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: getScopes(getState()),
+      scopes: getScopes(),
       website: sourceCode.homepage,
     };
 
@@ -117,7 +117,7 @@ const createAppToken = () =>
       client_secret: app.client_secret!,
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       grant_type: 'client_credentials',
-      scope: getScopes(getState()),
+      scope: getScopes(),
     };
 
     return dispatch(obtainOAuthToken(params)).then((token) =>
@@ -136,7 +136,7 @@ const createUserToken = (username: string, password: string) =>
       grant_type: 'password',
       username: username,
       password: password,
-      scope: getScopes(getState()),
+      scope: getScopes(),
     };
 
     return dispatch(obtainOAuthToken(params))
@@ -156,7 +156,7 @@ const otpVerify = (code: string, mfa_token: string) =>
       code: code,
       challenge_type: 'totp',
       // redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      // scope: getScopes(getState()),
+      // scope: getScopes(),
     }).then((token) => dispatch(authLoggedIn(token)));
   };
 

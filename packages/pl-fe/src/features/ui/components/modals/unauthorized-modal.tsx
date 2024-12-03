@@ -3,6 +3,7 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { remoteInteraction } from 'pl-fe/actions/interactions';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Button from 'pl-fe/components/ui/button';
 import Form from 'pl-fe/components/ui/form';
 import Input from 'pl-fe/components/ui/input';
@@ -12,7 +13,6 @@ import Text from 'pl-fe/components/ui/text';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
 import { selectAccount } from 'pl-fe/selectors';
 import toast from 'pl-fe/toast';
@@ -40,7 +40,7 @@ const UnauthorizedModal: React.FC<UnauthorizedModalProps & BaseModalProps> = ({ 
   const intl = useIntl();
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
   const { isOpen } = useRegistrationStatus();
 
   const username = useAppSelector(state => selectAccount(state, accountId!)?.display_name);

@@ -23,8 +23,8 @@ import { createPortal } from 'react-dom';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { uploadFile } from 'pl-fe/actions/compose';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import { $createImageNode } from '../nodes/image-node';
 import { setFloatingElemPosition } from '../utils/set-floating-elem-position';
@@ -42,7 +42,7 @@ interface IUploadButton {
 
 const UploadButton: React.FC<IUploadButton> = ({ onSelectFile }) => {
   const intl = useIntl();
-  const { configuration } = useInstance();
+  const { configuration } = useInstance().data;
   const dispatch = useAppDispatch();
   const [disabled, setDisabled] = useState(false);
 
@@ -101,7 +101,7 @@ const BlockTypeFloatingToolbar = ({
  }): JSX.Element => {
   const intl = useIntl();
   const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
-  const instance = useInstance();
+  const { data: instance } = useInstance();
 
   const allowInlineImages = instance.pleroma.metadata.markup.allow_inline_images;
 

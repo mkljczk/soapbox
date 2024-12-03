@@ -1,5 +1,6 @@
 import { fetchRelationships } from 'pl-fe/actions/accounts';
 import { importEntities } from 'pl-fe/actions/importer';
+import { queryClient } from 'pl-fe/queries/client';
 import { filterBadges, getTagDiff } from 'pl-fe/utils/badges';
 
 import { getClient } from '../api';
@@ -83,6 +84,7 @@ const updateConfig = (configs: PleromaConfig['configs']) =>
     dispatch<AdminActions>({ type: ADMIN_CONFIG_UPDATE_REQUEST, configs });
     return getClient(getState).admin.config.updatePleromaConfig(configs)
       .then((data) => {
+        queryClient.invalidateQueries({ queryKey: ['instance', 'instanceInformation'] });
         dispatch<AdminActions>({ type: ADMIN_CONFIG_UPDATE_SUCCESS, configs: data.configs, needsReboot: data.need_reboot });
       }).catch(error => {
         dispatch<AdminActions>({ type: ADMIN_CONFIG_UPDATE_FAIL, error, configs });

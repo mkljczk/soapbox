@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Accordion from 'pl-fe/components/ui/accordion';
 import Column from 'pl-fe/components/ui/column';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import { makeGetHosts } from 'pl-fe/selectors';
 import { federationRestrictionsDisclosed } from 'pl-fe/utils/state';
 
@@ -21,12 +21,12 @@ const messages = defineMessages({
 
 const FederationRestrictions = () => {
   const intl = useIntl();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
 
   const getHosts = useCallback(makeGetHosts(), []);
 
-  const hosts = useAppSelector((state) => getHosts(state));
-  const disclosed = useAppSelector((state) => federationRestrictionsDisclosed(state));
+  const hosts = useAppSelector((state) => getHosts(state, instance));
+  const disclosed = federationRestrictionsDisclosed(instance);
 
   const [explanationBoxExpanded, setExplanationBoxExpanded] = useState(true);
 

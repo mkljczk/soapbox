@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import IconButton from 'pl-fe/components/icon-button';
 import { DatePicker } from 'pl-fe/features/ui/util/async-components';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 
 const messages = defineMessages({
   birthdayPlaceholder: { id: 'edit_profile.fields.birthday_placeholder', defaultMessage: 'Your birthday' },
@@ -23,7 +23,7 @@ interface IBirthdayInput {
 const BirthdayInput: React.FC<IBirthdayInput> = ({ value, onChange, required }) => {
   const intl = useIntl();
   const features = useFeatures();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
 
   const supportsBirthdays = features.birthdays;
   const minAge = instance.pleroma.metadata.birthday_min_age;

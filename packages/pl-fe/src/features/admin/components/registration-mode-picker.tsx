@@ -3,9 +3,9 @@ import React from 'react';
 import { useIntl, defineMessages, FormattedMessage } from 'react-intl';
 
 import { updateConfig } from 'pl-fe/actions/admin';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { RadioGroup, RadioItem } from 'pl-fe/components/radio';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import toast from 'pl-fe/toast';
 
 type RegistrationMode = 'open' | 'approval' | 'closed';
@@ -37,7 +37,7 @@ const modeFromInstance = ({ registrations }: Instance): RegistrationMode => {
 const RegistrationModePicker: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
 
   const mode = modeFromInstance(instance);
 

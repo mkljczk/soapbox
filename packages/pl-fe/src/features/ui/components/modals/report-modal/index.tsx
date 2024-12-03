@@ -5,6 +5,7 @@ import { blockAccount } from 'pl-fe/actions/accounts';
 import { submitReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { fetchAccountTimeline } from 'pl-fe/actions/timelines';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import AttachmentThumbs from 'pl-fe/components/attachment-thumbs';
 import StatusContent from 'pl-fe/components/status-content';
 import Modal from 'pl-fe/components/ui/modal';
@@ -14,7 +15,6 @@ import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import ConfirmationStep from './steps/confirmation-step';
 import OtherActionsStep from './steps/other-actions-step';
@@ -83,7 +83,7 @@ const ReportModal: React.FC<BaseModalProps & ReportModalProps> = ({ onClose, acc
 
   const [block, setBlock] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { rules } = useInstance();
+  const { rules } = useInstance().data;
   const [ruleIds, setRuleIds] = useState<Array<string>>([]);
   const [selectedStatusIds, setSelectedStatusIds] = useState(statusIds);
   const [comment, setComment] = useState('');

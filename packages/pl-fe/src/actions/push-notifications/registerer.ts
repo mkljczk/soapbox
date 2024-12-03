@@ -1,6 +1,5 @@
 import { createPushSubscription, updatePushSubscription } from 'pl-fe/actions/push-subscriptions';
 import { pushNotificationsSetting } from 'pl-fe/settings';
-import { getVapidKey } from 'pl-fe/utils/auth';
 import { decode as decodeBase64 } from 'pl-fe/utils/base64';
 
 import { setBrowserSupport, setSubscription, clearSubscription } from './setter';
@@ -30,10 +29,10 @@ const getPushSubscription = (registration: ServiceWorkerRegistration) =>
   registration.pushManager.getSubscription()
     .then(subscription => ({ registration, subscription }));
 
-const subscribe = (registration: ServiceWorkerRegistration, getState: () => RootState) =>
+const subscribe = (registration: ServiceWorkerRegistration, vapidKey: string) =>
   registration.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(getVapidKey(getState())),
+    applicationServerKey: urlBase64ToUint8Array(vapidKey),
   });
 
 const unsubscribe = ({ registration, subscription }: {
@@ -61,10 +60,9 @@ const sendSubscriptionToBackend = (subscription: PushSubscription, me: Me) =>
 // eslint-disable-next-line compat/compat
 const supportsPushNotifications = ('serviceWorker' in navigator && 'PushManager' in window && 'getKey' in PushSubscription.prototype);
 
-const register = () =>
+const register = (vapidKey?: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const me = getState().me;
-    const vapidKey = getVapidKey(getState());
 
     dispatch(setBrowserSupport(supportsPushNotifications));
 
@@ -95,13 +93,13 @@ const register = () =>
           } else {
             // Something went wrong, try to subscribe again
             return unsubscribe({ registration, subscription })
-              .then((registration) => subscribe(registration, getState))
+              .then((registration) => subscribe(registration, vapidKey))
               .then((pushSubscription) => dispatch(sendSubscriptionToBackend(pushSubscription, me)));
           }
         }
 
         // No subscription, try to subscribe
-        return subscribe(registration, getState)
+        return subscribe(registration, vapidKey)
           .then((pushSubscription) => dispatch(sendSubscriptionToBackend(pushSubscription, me)));
       })
       .then((subscription) => {

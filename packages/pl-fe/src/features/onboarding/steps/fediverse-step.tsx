@@ -1,18 +1,18 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Account from 'pl-fe/components/account';
 import Button from 'pl-fe/components/ui/button';
 import Card, { CardBody } from 'pl-fe/components/ui/card';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 
 const FediverseStep = ({ onNext }: { onNext: () => void }) => {
   const { account } = useOwnAccount();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
 
   return (
     <Card variant='rounded' size='xl'>

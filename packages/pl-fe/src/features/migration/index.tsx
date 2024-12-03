@@ -3,6 +3,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { moveAccount } from 'pl-fe/actions/security';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Button from 'pl-fe/components/ui/button';
 import Column from 'pl-fe/components/ui/column';
 import Form from 'pl-fe/components/ui/form';
@@ -11,7 +12,6 @@ import FormGroup from 'pl-fe/components/ui/form-group';
 import Input from 'pl-fe/components/ui/input';
 import Text from 'pl-fe/components/ui/text';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({
@@ -28,7 +28,7 @@ const messages = defineMessages({
 const Migration = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
 
   const cooldownPeriod = instance.pleroma.metadata.migration_cooldown_period;
 

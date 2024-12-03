@@ -3,6 +3,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import { useUpdateGroup } from 'pl-fe/api/hooks/groups/use-update-group';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Button from 'pl-fe/components/ui/button';
 import Column from 'pl-fe/components/ui/column';
 import Form from 'pl-fe/components/ui/form';
@@ -14,8 +15,6 @@ import Spinner from 'pl-fe/components/ui/spinner';
 import Textarea from 'pl-fe/components/ui/textarea';
 import { useImageField } from 'pl-fe/hooks/forms/use-image-field';
 import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import toast from 'pl-fe/toast';
 import { isDefaultAvatar, isDefaultHeader } from 'pl-fe/utils/accounts';
 import { unescapeHTML } from 'pl-fe/utils/html';
@@ -41,7 +40,7 @@ interface IEditGroup {
 
 const EditGroup: React.FC<IEditGroup> = ({ params: { groupId } }) => {
   const intl = useIntl();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
 
   const { group, isLoading } = useGroup(groupId);
   const { updateGroup } = useUpdateGroup(groupId);
@@ -57,7 +56,7 @@ const EditGroup: React.FC<IEditGroup> = ({ params: { groupId } }) => {
   const maxName = Number(instance.configuration.groups.max_characters_name);
   const maxNote = Number(instance.configuration.groups.max_characters_description);
 
-  const attachmentTypes = useAppSelector(state => state.instance.configuration.media_attachments.supported_mime_types)
+  const attachmentTypes = useInstance().data.configuration.media_attachments.supported_mime_types
     ?.filter((type) => type.startsWith('image/'))
     .join(',');
 

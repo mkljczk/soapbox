@@ -6,6 +6,7 @@ import { Link, NavLink } from 'react-router-dom';
 
 import { fetchOwnAccounts, logOut, switchAccount } from 'pl-fe/actions/auth';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import Account from 'pl-fe/components/account';
 import Divider from 'pl-fe/components/ui/divider';
@@ -17,7 +18,6 @@ import ProfileStats from 'pl-fe/features/ui/components/profile-stats';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
 import { makeGetOtherAccounts } from 'pl-fe/selectors';
 import { useSettingsStore } from 'pl-fe/stores/settings';
@@ -106,7 +106,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const touchEnd = useRef<number | null>(null);
   const { isOpen } = useRegistrationStatus();
 
-  const instance = useInstance();
+  const { data: instance } = useInstance();
   const restrictUnauth = instance.pleroma.metadata.restrict_unauthenticated;
 
   const containerRef = React.useRef<HTMLDivElement>(null);

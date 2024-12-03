@@ -1,11 +1,11 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Icon from 'pl-fe/components/icon';
 import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import type { RemoteInstance } from 'pl-fe/selectors';
 
@@ -34,7 +34,7 @@ interface IInstanceRestrictions {
 }
 
 const InstanceRestrictions: React.FC<IInstanceRestrictions> = ({ remoteInstance }) => {
-  const instance = useInstance();
+  const { data: instance } = useInstance();
 
   const renderRestrictions = () => {
     const items = [];

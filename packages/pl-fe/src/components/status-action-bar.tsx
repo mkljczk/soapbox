@@ -17,6 +17,7 @@ import { useBlockGroupMember } from 'pl-fe/api/hooks/groups/use-block-group-memb
 import { useDeleteGroupStatus } from 'pl-fe/api/hooks/groups/use-delete-group-status';
 import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import { useGroupRelationship } from 'pl-fe/api/hooks/groups/use-group-relationship';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { useTranslationLanguages } from 'pl-fe/api/hooks/instance/use-translation-languages';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import StatusActionButton from 'pl-fe/components/status-action-button';
@@ -27,7 +28,6 @@ import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useCanInteract } from 'pl-fe/hooks/use-can-interact';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
@@ -595,7 +595,7 @@ const MenuButton: React.FC<IMenuButton> = ({
 
   const { groupRelationship } = useGroupRelationship(status.group_id || undefined);
   const features = useFeatures();
-  const instance = useInstance();
+  const { data: instance } = useInstance();
   const { autoTranslate, deleteModal, knownLanguages } = useSettings();
 
   const { translationLanguages } = useTranslationLanguages();

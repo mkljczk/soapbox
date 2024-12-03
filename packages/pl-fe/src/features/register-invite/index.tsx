@@ -2,9 +2,9 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import { BigCard } from 'pl-fe/components/big-card';
 import RegistrationForm from 'pl-fe/features/auth-login/components/registration-form';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 
 interface RegisterInviteParams {
   token: string;
@@ -12,7 +12,7 @@ interface RegisterInviteParams {
 
 /** Page to register with an invitation. */
 const RegisterInvite: React.FC = () => {
-  const instance = useInstance();
+  const { data: instance } = useInstance();
   const { token } = useParams<RegisterInviteParams>();
 
   const title = (

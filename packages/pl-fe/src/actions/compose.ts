@@ -20,7 +20,7 @@ import { uploadFile, updateMedia } from './media';
 import { createStatus } from './statuses';
 
 import type { EditorState } from 'lexical';
-import type { Account as BaseAccount, CreateStatusParams, Group, MediaAttachment, Status as BaseStatus, Tag, Poll, ScheduledStatus } from 'pl-api';
+import type { Account as BaseAccount, CreateStatusParams, Group, MediaAttachment, Status as BaseStatus, Tag, Poll, ScheduledStatus, Instance } from 'pl-api';
 import type { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import type { Emoji } from 'pl-fe/features/emoji';
 import type { Account } from 'pl-fe/normalizers/account';
@@ -467,7 +467,8 @@ const submitComposeFail = (composeId: string, error: unknown) => ({
 const uploadCompose = (composeId: string, files: FileList, intl: IntlShape) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
-    const attachmentLimit = getState().instance.configuration.statuses.max_media_attachments;
+    const instance = queryClient.getQueryData<Instance>(['instance', 'instanceInformation', getState().auth.client.baseURL]);
+    const attachmentLimit = instance!.configuration.statuses.max_media_attachments;
 
     const media = getState().compose[composeId]?.media_attachments;
     const progress = new Array(files.length).fill(0);

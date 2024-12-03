@@ -9,14 +9,15 @@ import { isPrerendered } from 'pl-fe/precheck';
 import { selectOwnAccount } from 'pl-fe/selectors';
 import { isURL } from 'pl-fe/utils/auth';
 
+import type { Instance } from 'pl-api';
 import type { RootState } from 'pl-fe/store';
 
 /** Whether to display the fqn instead of the acct. */
 const displayFqn = (state: RootState): boolean => getPlFeConfig(state).displayFqn;
 
 /** Whether the instance exposes instance blocks through the API. */
-const federationRestrictionsDisclosed = (state: RootState): boolean =>
-  !!state.instance.pleroma.metadata.federation.mrf_policies;
+const federationRestrictionsDisclosed = (instance: Instance): boolean =>
+  !!instance.pleroma.metadata.federation.mrf_policies;
 
 /**
  * Determine whether pl-fe is running in standalone mode.

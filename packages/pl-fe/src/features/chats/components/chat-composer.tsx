@@ -3,6 +3,7 @@ import { defineMessages, IntlShape, useIntl } from 'react-intl';
 
 import { unblockAccount } from 'pl-fe/actions/accounts';
 import { useRelationship } from 'pl-fe/api/hooks/accounts/use-relationship';
+import { useInstance } from 'pl-fe/api/hooks/instance/use-instance';
 import Button from 'pl-fe/components/ui/button';
 import Combobox, { ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from 'pl-fe/components/ui/combobox';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -13,7 +14,6 @@ import { useChatContext } from 'pl-fe/contexts/chat-context';
 import UploadButton from 'pl-fe/features/compose/components/upload-button';
 import emojiSearch from 'pl-fe/features/emoji/search';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { textAtCursorMatchesToken } from 'pl-fe/utils/suggestions';
 
@@ -85,7 +85,7 @@ const ChatComposer = React.forwardRef<HTMLTextAreaElement | null, IChatComposer>
   const isBlocked = relationship?.blocked_by && false;
   const isBlocking = relationship?.blocking && false;
 
-  const maxCharacterCount = useInstance().configuration.chats.max_characters;
+  const maxCharacterCount = useInstance().data.configuration.chats.max_characters;
 
   const [suggestions, setSuggestions] = useState<Suggestion>(initialSuggestionState);
   const isSuggestionsAvailable = suggestions.list.length > 0;
