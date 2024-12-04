@@ -1,13 +1,10 @@
-import debounce from 'lodash/debounce';
 import React from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
-import { fetchFollowRequests, expandFollowRequests } from 'pl-fe/actions/accounts';
+import { useFollowRequests } from 'pl-fe/api/hooks/account-lists/use-follow-requests';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Column from 'pl-fe/components/ui/column';
 import Spinner from 'pl-fe/components/ui/spinner';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import AccountAuthorize from './components/account-authorize';
 
@@ -15,20 +12,10 @@ const messages = defineMessages({
   heading: { id: 'column.follow_requests', defaultMessage: 'Follow requests' },
 });
 
-const handleLoadMore = debounce((dispatch) => {
-  dispatch(expandFollowRequests());
-}, 300, { leading: true });
-
 const FollowRequests: React.FC = () => {
-  const dispatch = useAppDispatch();
   const intl = useIntl();
 
-  const accountIds = useAppSelector((state) => state.user_lists.follow_requests.items);
-  const hasMore = useAppSelector((state) => !!state.user_lists.follow_requests.next);
-
-  React.useEffect(() => {
-    dispatch(fetchFollowRequests());
-  }, []);
+  const { data: accountIds, isLoading, hasNextPage, fetchNextPage } = useFollowRequests();
 
   if (!accountIds) {
     return (
@@ -43,8 +30,9 @@ const FollowRequests: React.FC = () => {
   return (
     <Column label={intl.formatMessage(messages.heading)}>
       <ScrollableList
-        onLoadMore={() => handleLoadMore(dispatch)}
-        hasMore={hasMore}
+        hasMore={hasNextPage}
+        isLoading={typeof isLoading === 'boolean' ? isLoading : true}
+        onLoadMore={() => fetchNextPage({ cancelRefetch: false })}
         emptyMessage={emptyMessage}
       >
         {accountIds.map(id =>

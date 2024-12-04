@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import React, { Suspense, lazy, useEffect, useRef } from 'react';
 import { Redirect, Switch, useHistory, useLocation } from 'react-router-dom';
 
-import { fetchFollowRequests } from 'pl-fe/actions/accounts';
 import { fetchConfig, fetchReports, fetchUsers } from 'pl-fe/actions/admin';
 import { fetchCustomEmojis } from 'pl-fe/actions/custom-emojis';
 import { fetchDraftStatuses } from 'pl-fe/actions/draft-statuses';
@@ -12,12 +11,14 @@ import { expandNotifications } from 'pl-fe/actions/notifications';
 import { register as registerPushNotifications } from 'pl-fe/actions/push-notifications/registerer';
 import { fetchScheduledStatuses } from 'pl-fe/actions/scheduled-statuses';
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
+import { prefetchFollowRequests } from 'pl-fe/api/hooks/account-lists/use-follow-requests';
 import { useUserStream } from 'pl-fe/api/hooks/streaming/use-user-stream';
 import SidebarNavigation from 'pl-fe/components/sidebar-navigation';
 import ThumbNavigation from 'pl-fe/components/thumb-navigation';
 import Layout from 'pl-fe/components/ui/layout';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useClient } from 'pl-fe/hooks/use-client';
 import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
@@ -362,6 +363,7 @@ const UI: React.FC<IUI> = ({ children }) => {
   const { account } = useOwnAccount();
   const features = useFeatures();
   const vapidKey = useAppSelector(state => getVapidKey(state));
+  const client = useClient();
 
   const { isDropdownMenuOpen } = useUiStore();
   const standalone = useAppSelector(isStandalone);
@@ -409,7 +411,7 @@ const UI: React.FC<IUI> = ({ children }) => {
     setTimeout(() => dispatch(fetchFilters()), 500);
 
     if (account.locked) {
-      setTimeout(() => dispatch(fetchFollowRequests()), 700);
+      setTimeout(() => prefetchFollowRequests(client), 700);
     }
 
     setTimeout(() => dispatch(fetchScheduledStatuses()), 900);

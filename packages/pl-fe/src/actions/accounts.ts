@@ -3,7 +3,6 @@ import {
   type UpdateNotificationSettingsParams,
   type Account,
   type CreateAccountParams,
-  type PaginatedResponse,
   type PlApiClient,
   type Relationship,
   type Token,
@@ -50,22 +49,6 @@ const ACCOUNT_SEARCH_FAIL = 'ACCOUNT_SEARCH_FAIL' as const;
 const ACCOUNT_LOOKUP_REQUEST = 'ACCOUNT_LOOKUP_REQUEST' as const;
 const ACCOUNT_LOOKUP_SUCCESS = 'ACCOUNT_LOOKUP_SUCCESS' as const;
 const ACCOUNT_LOOKUP_FAIL = 'ACCOUNT_LOOKUP_FAIL' as const;
-
-const FOLLOW_REQUESTS_FETCH_REQUEST = 'FOLLOW_REQUESTS_FETCH_REQUEST' as const;
-const FOLLOW_REQUESTS_FETCH_SUCCESS = 'FOLLOW_REQUESTS_FETCH_SUCCESS' as const;
-const FOLLOW_REQUESTS_FETCH_FAIL = 'FOLLOW_REQUESTS_FETCH_FAIL' as const;
-
-const FOLLOW_REQUESTS_EXPAND_REQUEST = 'FOLLOW_REQUESTS_EXPAND_REQUEST' as const;
-const FOLLOW_REQUESTS_EXPAND_SUCCESS = 'FOLLOW_REQUESTS_EXPAND_SUCCESS' as const;
-const FOLLOW_REQUESTS_EXPAND_FAIL = 'FOLLOW_REQUESTS_EXPAND_FAIL' as const;
-
-const FOLLOW_REQUEST_AUTHORIZE_REQUEST = 'FOLLOW_REQUEST_AUTHORIZE_REQUEST' as const;
-const FOLLOW_REQUEST_AUTHORIZE_SUCCESS = 'FOLLOW_REQUEST_AUTHORIZE_SUCCESS' as const;
-const FOLLOW_REQUEST_AUTHORIZE_FAIL = 'FOLLOW_REQUEST_AUTHORIZE_FAIL' as const;
-
-const FOLLOW_REQUEST_REJECT_REQUEST = 'FOLLOW_REQUEST_REJECT_REQUEST' as const;
-const FOLLOW_REQUEST_REJECT_SUCCESS = 'FOLLOW_REQUEST_REJECT_SUCCESS' as const;
-const FOLLOW_REQUEST_REJECT_FAIL = 'FOLLOW_REQUEST_REJECT_FAIL' as const;
 
 const NOTIFICATION_SETTINGS_REQUEST = 'NOTIFICATION_SETTINGS_REQUEST' as const;
 const NOTIFICATION_SETTINGS_SUCCESS = 'NOTIFICATION_SETTINGS_SUCCESS' as const;
@@ -313,120 +296,6 @@ const fetchRelationships = (accountIds: string[]) =>
       .then(response => dispatch(importEntities({ relationships: response })));
   };
 
-const fetchFollowRequests = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return null;
-
-    dispatch(fetchFollowRequestsRequest());
-
-    return getClient(getState()).myAccount.getFollowRequests()
-      .then(response => {
-        dispatch(importEntities({ accounts: response.items }));
-        dispatch(fetchFollowRequestsSuccess(response.items, response.next));
-      })
-      .catch(error => dispatch(fetchFollowRequestsFail(error)));
-  };
-
-const fetchFollowRequestsRequest = () => ({
-  type: FOLLOW_REQUESTS_FETCH_REQUEST,
-});
-
-const fetchFollowRequestsSuccess = (accounts: Array<Account>, next: (() => Promise<PaginatedResponse<Account>>) | null) => ({
-  type: FOLLOW_REQUESTS_FETCH_SUCCESS,
-  accounts,
-  next,
-});
-
-const fetchFollowRequestsFail = (error: unknown) => ({
-  type: FOLLOW_REQUESTS_FETCH_FAIL,
-  error,
-});
-
-const expandFollowRequests = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return null;
-
-    const next = getState().user_lists.follow_requests.next;
-
-    if (next === null) return null;
-
-    dispatch(expandFollowRequestsRequest());
-
-    return next().then(response => {
-      dispatch(importEntities({ accounts: response.items }));
-      dispatch(expandFollowRequestsSuccess(response.items, response.next));
-    }).catch(error => dispatch(expandFollowRequestsFail(error)));
-  };
-
-const expandFollowRequestsRequest = () => ({
-  type: FOLLOW_REQUESTS_EXPAND_REQUEST,
-});
-
-const expandFollowRequestsSuccess = (accounts: Array<Account>, next: (() => Promise<PaginatedResponse<Account>>) | null) => ({
-  type: FOLLOW_REQUESTS_EXPAND_SUCCESS,
-  accounts,
-  next,
-});
-
-const expandFollowRequestsFail = (error: unknown) => ({
-  type: FOLLOW_REQUESTS_EXPAND_FAIL,
-  error,
-});
-
-const authorizeFollowRequest = (accountId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return null;
-
-    dispatch(authorizeFollowRequestRequest(accountId));
-
-    return getClient(getState()).myAccount.acceptFollowRequest(accountId)
-      .then(() => dispatch(authorizeFollowRequestSuccess(accountId)))
-      .catch(error => dispatch(authorizeFollowRequestFail(accountId, error)));
-  };
-
-const authorizeFollowRequestRequest = (accountId: string) => ({
-  type: FOLLOW_REQUEST_AUTHORIZE_REQUEST,
-  accountId,
-});
-
-const authorizeFollowRequestSuccess = (accountId: string) => ({
-  type: FOLLOW_REQUEST_AUTHORIZE_SUCCESS,
-  accountId,
-});
-
-const authorizeFollowRequestFail = (accountId: string, error: unknown) => ({
-  type: FOLLOW_REQUEST_AUTHORIZE_FAIL,
-  accountId,
-  error,
-});
-
-const rejectFollowRequest = (accountId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
-
-    dispatch(rejectFollowRequestRequest(accountId));
-
-    return getClient(getState()).myAccount.rejectFollowRequest(accountId)
-      .then(() => dispatch(rejectFollowRequestSuccess(accountId)))
-      .catch(error => dispatch(rejectFollowRequestFail(accountId, error)));
-  };
-
-const rejectFollowRequestRequest = (accountId: string) => ({
-  type: FOLLOW_REQUEST_REJECT_REQUEST,
-  accountId,
-});
-
-const rejectFollowRequestSuccess = (accountId: string) => ({
-  type: FOLLOW_REQUEST_REJECT_SUCCESS,
-  accountId,
-});
-
-const rejectFollowRequestFail = (accountId: string, error: unknown) => ({
-  type: FOLLOW_REQUEST_REJECT_FAIL,
-  accountId,
-  error,
-});
-
 const pinAccount = (accountId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return dispatch(noOp);
@@ -580,18 +449,6 @@ type AccountsAction =
   | ReturnType<typeof muteAccountRequest>
   | ReturnType<typeof muteAccountSuccess>
   | ReturnType<typeof muteAccountFail>
-  | ReturnType<typeof fetchFollowRequestsRequest>
-  | ReturnType<typeof fetchFollowRequestsSuccess>
-  | ReturnType<typeof fetchFollowRequestsFail>
-  | ReturnType<typeof expandFollowRequestsRequest>
-  | ReturnType<typeof expandFollowRequestsSuccess>
-  | ReturnType<typeof expandFollowRequestsFail>
-  | ReturnType<typeof authorizeFollowRequestRequest>
-  | ReturnType<typeof authorizeFollowRequestSuccess>
-  | ReturnType<typeof authorizeFollowRequestFail>
-  | ReturnType<typeof rejectFollowRequestRequest>
-  | ReturnType<typeof rejectFollowRequestSuccess>
-  | ReturnType<typeof rejectFollowRequestFail>
   | NotificationSettingsRequestAction
   | NotificationSettingsSuccessAction
   | NotificationSettingsFailAction
@@ -627,18 +484,6 @@ export {
   ACCOUNT_LOOKUP_REQUEST,
   ACCOUNT_LOOKUP_SUCCESS,
   ACCOUNT_LOOKUP_FAIL,
-  FOLLOW_REQUESTS_FETCH_REQUEST,
-  FOLLOW_REQUESTS_FETCH_SUCCESS,
-  FOLLOW_REQUESTS_FETCH_FAIL,
-  FOLLOW_REQUESTS_EXPAND_REQUEST,
-  FOLLOW_REQUESTS_EXPAND_SUCCESS,
-  FOLLOW_REQUESTS_EXPAND_FAIL,
-  FOLLOW_REQUEST_AUTHORIZE_REQUEST,
-  FOLLOW_REQUEST_AUTHORIZE_SUCCESS,
-  FOLLOW_REQUEST_AUTHORIZE_FAIL,
-  FOLLOW_REQUEST_REJECT_REQUEST,
-  FOLLOW_REQUEST_REJECT_SUCCESS,
-  FOLLOW_REQUEST_REJECT_FAIL,
   NOTIFICATION_SETTINGS_REQUEST,
   NOTIFICATION_SETTINGS_SUCCESS,
   NOTIFICATION_SETTINGS_FAIL,
@@ -651,10 +496,6 @@ export {
   unmuteAccount,
   removeFromFollowers,
   fetchRelationships,
-  fetchFollowRequests,
-  expandFollowRequests,
-  authorizeFollowRequest,
-  rejectFollowRequest,
   pinAccount,
   unpinAccount,
   updateNotificationSettings,

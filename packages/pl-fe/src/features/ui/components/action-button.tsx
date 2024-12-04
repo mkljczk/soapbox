@@ -6,10 +6,9 @@ import {
   unblockAccount,
   muteAccount,
   unmuteAccount,
-  authorizeFollowRequest,
-  rejectFollowRequest,
   biteAccount,
 } from 'pl-fe/actions/accounts';
+import { useAcceptFollowRequestMutation, useRejectFollowRequestMutation } from 'pl-fe/api/hooks/account-lists/use-follow-requests';
 import { useFollow } from 'pl-fe/api/hooks/accounts/use-follow';
 import Button from 'pl-fe/components/ui/button';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -63,6 +62,9 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
   const { isLoggedIn, me } = useLoggedIn();
   const { follow, unfollow } = useFollow();
 
+  const { mutate: authorizeFollowRequest } = useAcceptFollowRequestMutation(account.id);
+  const { mutate: rejectFollowRequest } = useRejectFollowRequestMutation(account.id);
+
   const handleFollow = () => {
     if (account.relationship?.following || account.relationship?.requested) {
       unfollow(account.id);
@@ -88,11 +90,11 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
   };
 
   const handleAuthorize = () => {
-    dispatch(authorizeFollowRequest(account.id));
+    authorizeFollowRequest();
   };
 
   const handleReject = () => {
-    dispatch(rejectFollowRequest(account.id));
+    rejectFollowRequest();
   };
 
   const handleBite = () => {

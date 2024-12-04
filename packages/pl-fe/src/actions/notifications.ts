@@ -3,6 +3,7 @@ import 'intl-pluralrules';
 import { defineMessages } from 'react-intl';
 
 import { getClient } from 'pl-fe/api';
+import { appendFollowRequest } from 'pl-fe/api/hooks/account-lists/use-follow-requests';
 import { getNotificationStatus } from 'pl-fe/features/notifications/components/notification';
 import { normalizeNotification } from 'pl-fe/normalizers/notification';
 import { getFilters, regexFromFilters } from 'pl-fe/selectors';
@@ -74,8 +75,13 @@ const updateNotifications = (notification: BaseNotification) =>
       statuses: [getNotificationStatus(notification) as any],
     }));
 
+
     if (showInColumn) {
       const normalizedNotification = normalizeNotification(notification);
+
+      if (normalizedNotification.type === 'follow_request') {
+        normalizedNotification.sample_account_ids.forEach(appendFollowRequest);
+      }
 
       dispatch<NotificationsUpdateAction>({
         type: NOTIFICATIONS_UPDATE,

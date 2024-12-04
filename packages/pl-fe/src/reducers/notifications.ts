@@ -3,8 +3,6 @@ import { create } from 'mutative';
 import {
   ACCOUNT_BLOCK_SUCCESS,
   ACCOUNT_MUTE_SUCCESS,
-  FOLLOW_REQUEST_AUTHORIZE_SUCCESS,
-  FOLLOW_REQUEST_REJECT_SUCCESS,
   type AccountsAction,
 } from '../actions/accounts';
 import {
@@ -87,11 +85,11 @@ const filterNotifications = (state: State, relationship: Relationship) =>
     draft.items = draft.items.filter(item => !item.sample_account_ids.includes(relationship.id));
   });
 
-const filterNotificationIds = (state: State, accountIds: Array<string>, type?: string) =>
-  create(state, (draft) => {
-    const helper = (list: Array<NotificationGroup>) => list.filter(item => !(accountIds.includes(item.sample_account_ids[0]) && (type === undefined || type === item.type)));
-    draft.items = helper(draft.items);
-  });
+// const filterNotificationIds = (state: State, accountIds: Array<string>, type?: string) =>
+// create(state, (draft) => {
+//   const helper = (list: Array<NotificationGroup>) => list.filter(item => !(accountIds.includes(item.sample_account_ids[0]) && (type === undefined || type === item.type)));
+//   draft.items = helper(draft.items);
+// });
 
 const updateTop = (state: State, top: boolean) =>
   create(state, (draft) => {
@@ -147,9 +145,9 @@ const notifications = (state: State = initialState, action: AccountsAction | Mar
       return filterNotifications(state, action.relationship);
     case ACCOUNT_MUTE_SUCCESS:
       return action.relationship.muting_notifications ? filterNotifications(state, action.relationship) : state;
-    case FOLLOW_REQUEST_AUTHORIZE_SUCCESS:
-    case FOLLOW_REQUEST_REJECT_SUCCESS:
-      return filterNotificationIds(state, [action.accountId], 'follow_request');
+    // case FOLLOW_REQUEST_AUTHORIZE_SUCCESS:
+    // case FOLLOW_REQUEST_REJECT_SUCCESS:
+    //   return filterNotificationIds(state, [action.accountId], 'follow_request');
     case MARKER_FETCH_SUCCESS:
     case MARKER_SAVE_SUCCESS:
       return importMarker(state, action.marker);
