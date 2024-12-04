@@ -22,7 +22,6 @@ import type { MinifiedSuggestion } from 'pl-fe/api/hooks/trends/use-suggested-ac
 import type { MinifiedStatus } from 'pl-fe/reducers/statuses';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 import type { History } from 'pl-fe/types/history';
-import type { Me } from 'pl-fe/types/pl-fe';
 
 const ACCOUNT_CREATE_REQUEST = 'ACCOUNT_CREATE_REQUEST' as const;
 const ACCOUNT_CREATE_SUCCESS = 'ACCOUNT_CREATE_SUCCESS' as const;
@@ -71,10 +70,6 @@ const FOLLOW_REQUEST_REJECT_FAIL = 'FOLLOW_REQUEST_REJECT_FAIL' as const;
 const NOTIFICATION_SETTINGS_REQUEST = 'NOTIFICATION_SETTINGS_REQUEST' as const;
 const NOTIFICATION_SETTINGS_SUCCESS = 'NOTIFICATION_SETTINGS_SUCCESS' as const;
 const NOTIFICATION_SETTINGS_FAIL = 'NOTIFICATION_SETTINGS_FAIL' as const;
-
-const BIRTHDAY_REMINDERS_FETCH_REQUEST = 'BIRTHDAY_REMINDERS_FETCH_REQUEST' as const;
-const BIRTHDAY_REMINDERS_FETCH_SUCCESS = 'BIRTHDAY_REMINDERS_FETCH_SUCCESS' as const;
-const BIRTHDAY_REMINDERS_FETCH_FAIL = 'BIRTHDAY_REMINDERS_FETCH_FAIL' as const;
 
 const maybeRedirectLogin = (error: { response: PlfeResponse }, history?: History) => {
   // The client is unauthorized - redirect to login.
@@ -565,50 +560,6 @@ const accountLookup = (acct: string, signal?: AbortSignal) =>
     });
   };
 
-interface BirthdayRemindersFetchRequestAction {
-  type: typeof BIRTHDAY_REMINDERS_FETCH_REQUEST;
-  day: number;
-  month: number;
-  accountId: Me;
-}
-
-interface BirthdayRemindersFetchSuccessAction {
-  type: typeof BIRTHDAY_REMINDERS_FETCH_SUCCESS;
-  day: number;
-  month: number;
-  accountId: string;
-  accounts: Array<Account>;
-}
-
-interface BirthdayRemindersFetchFailAction {
-  type: typeof BIRTHDAY_REMINDERS_FETCH_FAIL;
-  day: number;
-  month: number;
-  accountId: Me;
-}
-
-const fetchBirthdayReminders = (month: number, day: number) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
-
-    const me = getState().me as string;
-
-    dispatch<BirthdayRemindersFetchRequestAction>({ type: BIRTHDAY_REMINDERS_FETCH_REQUEST, day, month, accountId: me });
-
-    return getClient(getState).accounts.getBirthdays(day, month).then(response => {
-      dispatch(importEntities({ accounts: response }));
-      dispatch<BirthdayRemindersFetchSuccessAction>({
-        type: BIRTHDAY_REMINDERS_FETCH_SUCCESS,
-        accounts: response,
-        day,
-        month,
-        accountId: me,
-      });
-    }).catch(() => {
-      dispatch<BirthdayRemindersFetchFailAction>({ type: BIRTHDAY_REMINDERS_FETCH_FAIL, day, month, accountId: me });
-    });
-  };
-
 const biteAccount = (accountId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const client = getClient(getState);
@@ -652,10 +603,7 @@ type AccountsAction =
   | AccountSearchFailAction
   | AccountLookupRequestAction
   | AccountLookupSuccessAction
-  | AccountLookupFailAction
-  | BirthdayRemindersFetchSuccessAction
-  | BirthdayRemindersFetchRequestAction
-  | BirthdayRemindersFetchFailAction
+  | AccountLookupFailAction;
 
 export {
   ACCOUNT_CREATE_REQUEST,
@@ -694,9 +642,6 @@ export {
   NOTIFICATION_SETTINGS_REQUEST,
   NOTIFICATION_SETTINGS_SUCCESS,
   NOTIFICATION_SETTINGS_FAIL,
-  BIRTHDAY_REMINDERS_FETCH_REQUEST,
-  BIRTHDAY_REMINDERS_FETCH_SUCCESS,
-  BIRTHDAY_REMINDERS_FETCH_FAIL,
   createAccount,
   fetchAccount,
   fetchAccountByUsername,
@@ -716,7 +661,6 @@ export {
   fetchPinnedAccounts,
   accountSearch,
   accountLookup,
-  fetchBirthdayReminders,
   biteAccount,
   type AccountsAction,
 };

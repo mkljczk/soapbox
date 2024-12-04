@@ -6,7 +6,6 @@ import {
   FOLLOW_REQUEST_AUTHORIZE_SUCCESS,
   FOLLOW_REQUEST_REJECT_SUCCESS,
   PINNED_ACCOUNTS_FETCH_SUCCESS,
-  BIRTHDAY_REMINDERS_FETCH_SUCCESS,
   type AccountsAction,
 } from 'pl-fe/actions/accounts';
 import { FAMILIAR_FOLLOWERS_FETCH_SUCCESS, type FamiliarFollowersAction } from 'pl-fe/actions/familiar-followers';
@@ -50,7 +49,7 @@ interface ReactionList {
 }
 
 type ListKey = 'follow_requests';
-type NestedListKey = 'reblogged_by' | 'favourited_by' | 'disliked_by' | 'pinned' | 'birthday_reminders' | 'familiar_followers' | 'membership_requests' | 'group_blocks';
+type NestedListKey = 'reblogged_by' | 'favourited_by' | 'disliked_by' | 'pinned' | 'familiar_followers' | 'membership_requests' | 'group_blocks';
 
 type State = Record<ListKey, List> & Record<NestedListKey, Record<string, List>> & {
   reactions: Record<string, ReactionList>;
@@ -63,7 +62,6 @@ const initialState: State = {
   reactions: {},
   follow_requests: { next: null, items: [], isLoading: false },
   pinned: {},
-  birthday_reminders: {},
   familiar_followers: {},
   membership_requests: {},
   group_blocks: {},
@@ -155,8 +153,6 @@ const userLists = (state = initialState, action: AccountsAction | FamiliarFollow
       return removeFromList(state, ['follow_requests'], action.accountId);
     case PINNED_ACCOUNTS_FETCH_SUCCESS:
       return normalizeList(state, ['pinned', action.accountId], action.accounts, action.next);
-    case BIRTHDAY_REMINDERS_FETCH_SUCCESS:
-      return normalizeList(state, ['birthday_reminders', action.accountId], action.accounts);
     case FAMILIAR_FOLLOWERS_FETCH_SUCCESS:
       return normalizeList(state, ['familiar_followers', action.accountId], action.accounts);
     case GROUP_BLOCKS_FETCH_SUCCESS:

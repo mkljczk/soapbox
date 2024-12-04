@@ -1,11 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { fetchBirthdayReminders } from 'pl-fe/actions/accounts';
+import { useBirthdayReminders } from 'pl-fe/api/hooks/account-lists/use-birthday-reminders';
 import Widget from 'pl-fe/components/ui/widget';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 const timeToMidnight = () => {
   const now = new Date();
@@ -14,31 +12,36 @@ const timeToMidnight = () => {
   return midnight.getTime() - now.getTime();
 };
 
+const getCurrentDate = () => {
+  const date = new Date();
+
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+
+  return [day, month];
+};
+
 interface IBirthdayPanel {
   limit: number;
 }
 
 const BirthdayPanel = ({ limit }: IBirthdayPanel) => {
-  const dispatch = useAppDispatch();
+  const [[day, month], setDate] = useState(getCurrentDate);
 
-  const birthdays = useAppSelector(state => state.user_lists.birthday_reminders[state.me as string]?.items || []);
+  const { data: birthdays = [] } = useBirthdayReminders(month, day);
   const birthdaysToRender = birthdays.slice(0, limit);
 
   const timeout = useRef<NodeJS.Timeout>();
 
-  const handleFetchBirthdayReminders = () => {
-    const date = new Date();
-
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-
-    dispatch(fetchBirthdayReminders(month, day))?.then(() => {
-      timeout.current = setTimeout(() => handleFetchBirthdayReminders(), timeToMidnight());
-    });
-  };
-
   React.useEffect(() => {
-    handleFetchBirthdayReminders();
+    const updateTimeout = () => {
+      timeout.current = setTimeout(() => {
+        setDate(getCurrentDate);
+        updateTimeout();
+      }, timeToMidnight());
+    };
+
+    updateTimeout();
 
     return () => {
       if (timeout.current) {
@@ -65,4 +68,4 @@ const BirthdayPanel = ({ limit }: IBirthdayPanel) => {
   );
 };
 
-export { BirthdayPanel as default };
+export { BirthdayPanel as default, getCurrentDate };
