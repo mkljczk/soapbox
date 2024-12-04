@@ -33,8 +33,6 @@ const NOTIFICATIONS_FILTER_SET = 'NOTIFICATIONS_FILTER_SET' as const;
 
 const NOTIFICATIONS_SCROLL_TOP = 'NOTIFICATIONS_SCROLL_TOP' as const;
 
-const MAX_QUEUED_NOTIFICATIONS = 40;
-
 const FILTER_TYPES = {
   all: undefined,
   mention: ['mention'],
@@ -294,7 +292,6 @@ export {
   NOTIFICATIONS_EXPAND_FAIL,
   NOTIFICATIONS_FILTER_SET,
   NOTIFICATIONS_SCROLL_TOP,
-  MAX_QUEUED_NOTIFICATIONS,
   type FilterType,
   updateNotifications,
   updateNotificationsQueue,
