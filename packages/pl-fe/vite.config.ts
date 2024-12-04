@@ -166,6 +166,7 @@ const config = defineConfig(({ command }) => ({
     alias: [
       { find: 'pl-fe', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
     ],
+    dedupe: ['@floating-ui/react', 'tabbable'],
   },
   test: {
     globals: true,
