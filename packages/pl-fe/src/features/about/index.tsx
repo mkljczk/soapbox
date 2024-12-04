@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { fetchAboutPage } from 'pl-fe/actions/about';
+import { useAboutPage } from 'pl-fe/api/hooks/pl-fe/use-about-page';
 import { Navlinks } from 'pl-fe/components/navlinks';
 import Card from 'pl-fe/components/ui/card';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 
@@ -13,30 +12,21 @@ import { languages } from '../preferences';
 
 /** Displays arbitrary user-uploaded HTML on a page at `/about/:slug` */
 const AboutPage: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const { slug } = useParams<{ slug?: string }>();
+  const { slug = 'index' } = useParams<{ slug?: string }>();
 
   const settings = useSettings();
   const plFeConfig = usePlFeConfig();
 
-  const [pageHtml, setPageHtml] = useState<string>('');
   const [locale, setLocale] = useState<string>(settings.locale);
 
   const { aboutPages } = plFeConfig;
 
-  const page = aboutPages[slug || 'about'];
+  const page = aboutPages[slug];
   const defaultLocale = page?.defaultLocale;
   const pageLocales = page?.locales || [];
+  const fetchLocale = Boolean(page && locale !== defaultLocale && pageLocales.includes(locale));
 
-  useEffect(() => {
-    const fetchLocale = Boolean(page && locale !== defaultLocale && pageLocales.includes(locale));
-    dispatch(fetchAboutPage(slug, fetchLocale ? locale : undefined)).then(html => {
-      setPageHtml(html);
-    }).catch(error => {
-      // TODO: Better error handling. 404 page?
-      setPageHtml('<h1>Page not found</h1>');
-    });
-  }, [locale, slug]);
+  const { data: pageHtml } = useAboutPage(slug, fetchLocale ? locale : undefined);
 
   const alsoAvailable = (defaultLocale) && (
     <div>
@@ -67,7 +57,7 @@ const AboutPage: React.FC = () => {
     <div>
       <Card variant='rounded'>
         <div className='prose mx-auto py-4 dark:prose-invert sm:p-6'>
-          <div dangerouslySetInnerHTML={{ __html: pageHtml }} />
+          {pageHtml && <div dangerouslySetInnerHTML={{ __html: pageHtml }} />}
           {alsoAvailable}
         </div>
       </Card>
