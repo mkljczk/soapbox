@@ -2214,11 +2214,8 @@ class PlApiClient {
      * Requires features{@link Features['statusDislikes']}.
      * @see {@link https://github.com/friendica/friendica/blob/2024.06-rc/doc/API-Friendica.md#get-apifriendicastatusesiddisliked_by}
      */
-    getDislikedBy: async (statusId: string) => {
-      const response = await this.request(`/api/friendica/statuses/${statusId}/disliked_by`);
-
-      return v.parse(filteredArray(accountSchema), response.json);
-    },
+    getDislikedBy: async (statusId: string) =>
+      this.#paginatedGet(`/api/v1/statuses/${statusId}/disliked_by`, {}, accountSchema),
 
     /**
      * Marks the given status as disliked by this user

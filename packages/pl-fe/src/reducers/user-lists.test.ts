@@ -13,9 +13,7 @@ describe('user_lists reducer', () => {
       follow_requests: { next: null, items: ImmutableOrderedSet(), isLoading: false },
       blocks: { next: null, items: ImmutableOrderedSet(), isLoading: false },
       mutes: { next: null, items: ImmutableOrderedSet(), isLoading: false },
-      directory: { next: null, items: ImmutableOrderedSet(), isLoading: true },
       pinned: {},
-      birthday_reminders: {},
       familiar_followers: {},
     });
   });

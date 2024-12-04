@@ -16,15 +16,6 @@ import {
   GROUP_UNBLOCK_SUCCESS,
   type GroupsAction,
 } from 'pl-fe/actions/groups';
-import {
-  REBLOGS_FETCH_SUCCESS,
-  REBLOGS_EXPAND_SUCCESS,
-  FAVOURITES_FETCH_SUCCESS,
-  FAVOURITES_EXPAND_SUCCESS,
-  DISLIKES_FETCH_SUCCESS,
-  REACTIONS_FETCH_SUCCESS,
-  type InteractionsAction,
-} from 'pl-fe/actions/interactions';
 import { NOTIFICATIONS_UPDATE, type NotificationsAction } from 'pl-fe/actions/notifications';
 
 import type { Account, NotificationGroup, PaginatedResponse } from 'pl-api';
@@ -35,31 +26,12 @@ interface List {
   isLoading: boolean;
 }
 
-interface Reaction {
-  accounts: Array<string>;
-  count: number | null;
-  name: string;
-  url: string | undefined;
-}
-
-interface ReactionList {
-  next: (() => Promise<PaginatedResponse<Reaction>>) | null;
-  items: Array<Reaction>;
-  isLoading: boolean;
-}
-
 type ListKey = 'follow_requests';
-type NestedListKey = 'reblogged_by' | 'favourited_by' | 'disliked_by' | 'pinned' | 'familiar_followers' | 'membership_requests' | 'group_blocks';
+type NestedListKey = 'pinned' | 'familiar_followers' | 'membership_requests' | 'group_blocks';
 
-type State = Record<ListKey, List> & Record<NestedListKey, Record<string, List>> & {
-  reactions: Record<string, ReactionList>;
-};
+type State = Record<ListKey, List> & Record<NestedListKey, Record<string, List>>;
 
 const initialState: State = {
-  reblogged_by: {},
-  favourited_by: {},
-  disliked_by: {},
-  reactions: {},
   follow_requests: { next: null, items: [], isLoading: false },
   pinned: {},
   familiar_followers: {},
@@ -122,26 +94,8 @@ const normalizeFollowRequest = (state: State, notification: NotificationGroup) =
     draft.follow_requests.items = [...new Set([...notification.sample_account_ids, ...draft.follow_requests.items])];
   });
 
-const userLists = (state = initialState, action: AccountsAction | FamiliarFollowersAction | GroupsAction | InteractionsAction | NotificationsAction): State => {
+const userLists = (state = initialState, action: AccountsAction | FamiliarFollowersAction | GroupsAction | NotificationsAction): State => {
   switch (action.type) {
-    case REBLOGS_FETCH_SUCCESS:
-      return normalizeList(state, ['reblogged_by', action.statusId], action.accounts, action.next);
-    case REBLOGS_EXPAND_SUCCESS:
-      return appendToList(state, ['reblogged_by', action.statusId], action.accounts, action.next);
-    case FAVOURITES_FETCH_SUCCESS:
-      return normalizeList(state, ['favourited_by', action.statusId], action.accounts, action.next);
-    case FAVOURITES_EXPAND_SUCCESS:
-      return appendToList(state, ['favourited_by', action.statusId], action.accounts, action.next);
-    case DISLIKES_FETCH_SUCCESS:
-      return normalizeList(state, ['disliked_by', action.statusId], action.accounts);
-    case REACTIONS_FETCH_SUCCESS:
-      return create(state, (draft) => {
-        draft.reactions[action.statusId] = {
-          items: action.reactions.map((reaction) => ({ ...reaction, accounts: reaction.accounts.map(({ id }) => id) })),
-          next: null,
-          isLoading: false,
-        };
-      });
     case NOTIFICATIONS_UPDATE:
       return action.notification.type === 'follow_request' ? normalizeFollowRequest(state, action.notification) : state;
     case FOLLOW_REQUESTS_FETCH_SUCCESS:

@@ -6,10 +6,9 @@ import { isLoggedIn } from 'pl-fe/utils/auth';
 
 import { getClient } from '../api';
 
-import { fetchRelationships } from './accounts';
 import { importEntities } from './importer';
 
-import type { Account, EmojiReaction, PaginatedResponse, Status } from 'pl-api';
+import type { Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const REBLOG_REQUEST = 'REBLOG_REQUEST' as const;
@@ -35,22 +34,6 @@ const UNFAVOURITE_FAIL = 'UNFAVOURITE_FAIL' as const;
 const UNDISLIKE_REQUEST = 'UNDISLIKE_REQUEST' as const;
 const UNDISLIKE_SUCCESS = 'UNDISLIKE_SUCCESS' as const;
 const UNDISLIKE_FAIL = 'UNDISLIKE_FAIL' as const;
-
-const REBLOGS_FETCH_REQUEST = 'REBLOGS_FETCH_REQUEST' as const;
-const REBLOGS_FETCH_SUCCESS = 'REBLOGS_FETCH_SUCCESS' as const;
-const REBLOGS_FETCH_FAIL = 'REBLOGS_FETCH_FAIL' as const;
-
-const FAVOURITES_FETCH_REQUEST = 'FAVOURITES_FETCH_REQUEST' as const;
-const FAVOURITES_FETCH_SUCCESS = 'FAVOURITES_FETCH_SUCCESS' as const;
-const FAVOURITES_FETCH_FAIL = 'FAVOURITES_FETCH_FAIL' as const;
-
-const DISLIKES_FETCH_REQUEST = 'DISLIKES_FETCH_REQUEST' as const;
-const DISLIKES_FETCH_SUCCESS = 'DISLIKES_FETCH_SUCCESS' as const;
-const DISLIKES_FETCH_FAIL = 'DISLIKES_FETCH_FAIL' as const;
-
-const REACTIONS_FETCH_REQUEST = 'REACTIONS_FETCH_REQUEST' as const;
-const REACTIONS_FETCH_SUCCESS = 'REACTIONS_FETCH_SUCCESS' as const;
-const REACTIONS_FETCH_FAIL = 'REACTIONS_FETCH_FAIL' as const;
 
 const PIN_REQUEST = 'PIN_REQUEST' as const;
 const PIN_SUCCESS = 'PIN_SUCCESS' as const;
@@ -79,8 +62,6 @@ const REBLOGS_EXPAND_SUCCESS = 'REBLOGS_EXPAND_SUCCESS' as const;
 const REBLOGS_EXPAND_FAIL = 'REBLOGS_EXPAND_FAIL' as const;
 
 const noOp = () => new Promise(f => f(undefined));
-
-type AccountListLink = () => Promise<PaginatedResponse<Account>>;
 
 const messages = defineMessages({
   bookmarkAdded: { id: 'status.bookmarked', defaultMessage: 'Bookmark added.' },
@@ -386,175 +367,6 @@ const unbookmarkFail = (statusId: string, error: unknown) => ({
   error,
 });
 
-const fetchReblogs = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(fetchReblogsRequest(statusId));
-
-    return getClient(getState()).statuses.getRebloggedBy(statusId).then(response => {
-      dispatch(importEntities({ accounts: response.items }));
-      dispatch(fetchRelationships(response.items.map((item) => item.id)));
-      dispatch(fetchReblogsSuccess(statusId, response.items, response.next));
-    }).catch(error => {
-      dispatch(fetchReblogsFail(statusId, error));
-    });
-  };
-
-const fetchReblogsRequest = (statusId: string) => ({
-  type: REBLOGS_FETCH_REQUEST,
-  statusId,
-});
-
-const fetchReblogsSuccess = (statusId: string, accounts: Array<Account>, next: AccountListLink | null) => ({
-  type: REBLOGS_FETCH_SUCCESS,
-  statusId,
-  accounts,
-  next,
-});
-
-const fetchReblogsFail = (statusId: string, error: unknown) => ({
-  type: REBLOGS_FETCH_FAIL,
-  statusId,
-  error,
-});
-
-const expandReblogs = (statusId: string, next: AccountListLink) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    next().then(response => {
-      dispatch(importEntities({ accounts: response.items }));
-      dispatch(fetchRelationships(response.items.map((item) => item.id)));
-      dispatch(expandReblogsSuccess(statusId, response.items, response.next));
-    }).catch(error => {
-      dispatch(expandReblogsFail(statusId, error));
-    });
-  };
-
-const expandReblogsSuccess = (statusId: string, accounts: Array<Account>, next: AccountListLink | null) => ({
-  type: REBLOGS_EXPAND_SUCCESS,
-  statusId,
-  accounts,
-  next,
-});
-
-const expandReblogsFail = (statusId: string, error: unknown) => ({
-  type: REBLOGS_EXPAND_FAIL,
-  statusId,
-  error,
-});
-
-const fetchFavourites = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(fetchFavouritesRequest(statusId));
-
-    return getClient(getState()).statuses.getFavouritedBy(statusId).then(response => {
-      dispatch(importEntities({ accounts: response.items }));
-      dispatch(fetchRelationships(response.items.map((item) => item.id)));
-      dispatch(fetchFavouritesSuccess(statusId, response.items, response.next));
-    }).catch(error => {
-      dispatch(fetchFavouritesFail(statusId, error));
-    });
-  };
-
-const fetchFavouritesRequest = (statusId: string) => ({
-  type: FAVOURITES_FETCH_REQUEST,
-  statusId,
-});
-
-const fetchFavouritesSuccess = (statusId: string, accounts: Array<Account>, next: AccountListLink | null) => ({
-  type: FAVOURITES_FETCH_SUCCESS,
-  statusId,
-  accounts,
-  next,
-});
-
-const fetchFavouritesFail = (statusId: string, error: unknown) => ({
-  type: FAVOURITES_FETCH_FAIL,
-  statusId,
-  error,
-});
-
-const expandFavourites = (statusId: string, next: AccountListLink) =>
-  (dispatch: AppDispatch) => {
-    next().then(response => {
-      dispatch(importEntities({ accounts: response.items }));
-      dispatch(fetchRelationships(response.items.map((item) => item.id)));
-      dispatch(expandFavouritesSuccess(statusId, response.items, response.next));
-    }).catch(error => {
-      dispatch(expandFavouritesFail(statusId, error));
-    });
-  };
-
-const expandFavouritesSuccess = (statusId: string, accounts: Array<Account>, next: AccountListLink | null) => ({
-  type: FAVOURITES_EXPAND_SUCCESS,
-  statusId,
-  accounts,
-  next,
-});
-
-const expandFavouritesFail = (statusId: string, error: unknown) => ({
-  type: FAVOURITES_EXPAND_FAIL,
-  statusId,
-  error,
-});
-
-const fetchDislikes = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(fetchDislikesRequest(statusId));
-
-    return getClient(getState).statuses.getDislikedBy(statusId).then(response => {
-      dispatch(importEntities({ accounts: response }));
-      dispatch(fetchRelationships(response.map((item) => item.id)));
-      dispatch(fetchDislikesSuccess(statusId, response));
-    }).catch(error => {
-      dispatch(fetchDislikesFail(statusId, error));
-    });
-  };
-
-const fetchDislikesRequest = (statusId: string) => ({
-  type: DISLIKES_FETCH_REQUEST,
-  statusId,
-});
-
-const fetchDislikesSuccess = (statusId: string, accounts: Array<Account>) => ({
-  type: DISLIKES_FETCH_SUCCESS,
-  statusId,
-  accounts,
-});
-
-const fetchDislikesFail = (statusId: string, error: unknown) => ({
-  type: DISLIKES_FETCH_FAIL,
-  statusId,
-  error,
-});
-
-const fetchReactions = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(fetchReactionsRequest(statusId));
-
-    return getClient(getState).statuses.getStatusReactions(statusId).then(response => {
-      dispatch(importEntities({ accounts: (response).map(({ accounts }) => accounts).flat() }));
-      dispatch(fetchReactionsSuccess(statusId, response));
-    }).catch(error => {
-      dispatch(fetchReactionsFail(statusId, error));
-    });
-  };
-
-const fetchReactionsRequest = (statusId: string) => ({
-  type: REACTIONS_FETCH_REQUEST,
-  statusId,
-});
-
-const fetchReactionsSuccess = (statusId: string, reactions: EmojiReaction[]) => ({
-  type: REACTIONS_FETCH_SUCCESS,
-  statusId,
-  reactions,
-});
-
-const fetchReactionsFail = (statusId: string, error: unknown) => ({
-  type: REACTIONS_FETCH_FAIL,
-  statusId,
-  error,
-});
-
 const pin = (status: Pick<Status, 'id'>, accountId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
@@ -695,22 +507,6 @@ type InteractionsAction =
   | ReturnType<typeof unbookmarkRequest>
   | ReturnType<typeof unbookmarkSuccess>
   | ReturnType<typeof unbookmarkFail>
-  | ReturnType<typeof fetchReblogsRequest>
-  | ReturnType<typeof fetchReblogsSuccess>
-  | ReturnType<typeof fetchReblogsFail>
-  | ReturnType<typeof expandReblogsSuccess>
-  | ReturnType<typeof expandReblogsFail>
-  | ReturnType<typeof fetchFavouritesRequest>
-  | ReturnType<typeof fetchFavouritesSuccess>
-  | ReturnType<typeof fetchFavouritesFail>
-  | ReturnType<typeof expandFavouritesSuccess>
-  | ReturnType<typeof expandFavouritesFail>
-  | ReturnType<typeof fetchDislikesRequest>
-  | ReturnType<typeof fetchDislikesSuccess>
-  | ReturnType<typeof fetchDislikesFail>
-  | ReturnType<typeof fetchReactionsRequest>
-  | ReturnType<typeof fetchReactionsSuccess>
-  | ReturnType<typeof fetchReactionsFail>
   | ReturnType<typeof pinRequest>
   | ReturnType<typeof pinSuccess>
   | ReturnType<typeof pinFail>
@@ -740,18 +536,6 @@ export {
   UNDISLIKE_REQUEST,
   UNDISLIKE_SUCCESS,
   UNDISLIKE_FAIL,
-  REBLOGS_FETCH_REQUEST,
-  REBLOGS_FETCH_SUCCESS,
-  REBLOGS_FETCH_FAIL,
-  FAVOURITES_FETCH_REQUEST,
-  FAVOURITES_FETCH_SUCCESS,
-  FAVOURITES_FETCH_FAIL,
-  DISLIKES_FETCH_REQUEST,
-  DISLIKES_FETCH_SUCCESS,
-  DISLIKES_FETCH_FAIL,
-  REACTIONS_FETCH_REQUEST,
-  REACTIONS_FETCH_SUCCESS,
-  REACTIONS_FETCH_FAIL,
   PIN_REQUEST,
   PIN_SUCCESS,
   PIN_FAIL,
@@ -783,12 +567,6 @@ export {
   bookmark,
   unbookmark,
   toggleBookmark,
-  fetchReblogs,
-  expandReblogs,
-  fetchFavourites,
-  expandFavourites,
-  fetchDislikes,
-  fetchReactions,
   pin,
   unpin,
   togglePin,

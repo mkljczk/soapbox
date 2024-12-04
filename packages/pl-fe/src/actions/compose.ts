@@ -343,7 +343,6 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
 
     const compose = state.compose[composeId]!;
 
-
     const status = compose.text;
     const media = compose.media_attachments;
     const statusId = compose.id;
@@ -781,7 +780,6 @@ const deleteComposeLanguage = (composeId: string, value: Language) => ({
   composeId,
   value,
 });
-
 
 const addPoll = (composeId: string) => ({
   type: COMPOSE_POLL_ADD,

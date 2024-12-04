@@ -1,14 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import React, { useRef } from 'react';
+import { FormattedMessage } from 'react-intl';
 
-import { fetchReblogs, expandReblogs } from 'pl-fe/actions/interactions';
-import { fetchStatus } from 'pl-fe/actions/statuses';
+import { useStatusReblogs } from 'pl-fe/api/hooks/account-lists/use-status-interactions';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -17,29 +14,12 @@ interface ReblogsModalProps {
 }
 
 const ReblogsModal: React.FC<BaseModalProps & ReblogsModalProps> = ({ onClose, statusId }) => {
-  const dispatch = useAppDispatch();
-  const intl = useIntl();
-  const accountIds = useAppSelector((state) => state.user_lists.reblogged_by[statusId]?.items);
-  const next = useAppSelector((state) => state.user_lists.reblogged_by[statusId]?.next);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const fetchData = () => {
-    dispatch(fetchReblogs(statusId));
-    dispatch(fetchStatus(statusId, intl));
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { data: accountIds, isLoading, hasNextPage, fetchNextPage } = useStatusReblogs(statusId);
 
   const onClickClose = () => {
     onClose('REBLOGS');
-  };
-
-  const handleLoadMore = () => {
-    if (next) {
-      dispatch(expandReblogs(statusId, next!));
-    }
   };
 
   let body;
@@ -55,8 +35,9 @@ const ReblogsModal: React.FC<BaseModalProps & ReblogsModalProps> = ({ onClose, s
         listClassName='max-w-full'
         itemClassName='pb-3'
         style={{ height: 'calc(80vh - 88px)' }}
-        onLoadMore={handleLoadMore}
-        hasMore={!!next}
+        hasMore={hasNextPage}
+        isLoading={typeof isLoading === 'boolean' ? isLoading : true}
+        onLoadMore={() => fetchNextPage({ cancelRefetch: false })}
         estimatedSize={42}
         parentRef={modalRef}
       >
