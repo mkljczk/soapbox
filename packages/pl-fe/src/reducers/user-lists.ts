@@ -18,39 +18,23 @@ interface List {
   isLoading: boolean;
 }
 
-type ListKey = 'follow_requests';
-type NestedListKey = 'pinned' | 'familiar_followers' | 'membership_requests' | 'group_blocks';
+type NestedListKey = 'pinned' | 'familiar_followers' | 'group_blocks';
 
-type State = Record<ListKey, List> & Record<NestedListKey, Record<string, List>>;
+type State = Record<NestedListKey, Record<string, List>>;
 
 const initialState: State = {
-  follow_requests: { next: null, items: [], isLoading: false },
   pinned: {},
   familiar_followers: {},
-  membership_requests: {},
   group_blocks: {},
 };
 
 type NestedListPath = [NestedListKey, string];
-type ListPath = [ListKey];
 
-const normalizeList = (state: State, path: NestedListPath | ListPath, accounts: Array<Pick<Account, 'id'>>, next: (() => Promise<PaginatedResponse<any>>) | null = null) =>
+const normalizeList = (state: State, path: NestedListPath, accounts: Array<Pick<Account, 'id'>>, next: (() => Promise<PaginatedResponse<any>>) | null = null) =>
   create(state, (draft) => {
-    let list: List;
-
-    if (path.length === 1) {
-      list = draft[path[0]];
-    } else {
-      list = draft[path[0]][path[1]];
-    }
-
+    const list = draft[path[0]][path[1]];
     const newList = { ...list, next, items: accounts.map(item => item.id), isLoading: false };
-
-    if (path.length === 1) {
-      draft[path[0]] = newList;
-    } else {
-      draft[path[0]][path[1]] = newList;
-    }
+    draft[path[0]][path[1]] = newList;
   });
 
 const userLists = (state = initialState, action: AccountsAction | FamiliarFollowersAction | GroupsAction): State => {

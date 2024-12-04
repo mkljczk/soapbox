@@ -23,7 +23,7 @@ const removeFollowRequest = (accountId: string) =>
     pages: data.pages.map(({ items, ...page }) => ({ ...page, items: items.filter((id) => id !== accountId) })),
   } : undefined);
 
-const useFollowRequests = () => {
+const makeUseFollowRequests = <T>(select: ((data: InfiniteData<PaginatedResponse<string, true>, PaginatedResponse<string, true>>) => T)) => () => {
   const client = useClient();
 
   return useInfiniteQuery({
@@ -31,9 +31,13 @@ const useFollowRequests = () => {
     queryFn: ({ pageParam }) => pageParam.next?.() || client.myAccount.getFollowRequests().then(minifyAccountList),
     initialPageParam: { previous: null, next: null, items: [], partial: false } as PaginatedResponse<string>,
     getNextPageParam: (page) => page.next ? page : undefined,
-    select: (data) => data.pages.map(page => page.items).flat(),
+    select,
   });
 };
+
+const useFollowRequests = makeUseFollowRequests((data) => data.pages.map(page => page.items).flat());
+
+const useFollowRequestsCount = makeUseFollowRequests((data) => data.pages.map(page => page.items).flat().length);
 
 const useAcceptFollowRequestMutation = (accountId: string) => {
   const client = useClient();
@@ -61,4 +65,11 @@ const prefetchFollowRequests = (client: PlApiClient) => queryClient.prefetchInfi
   initialPageParam: { previous: null, next: null, items: [], partial: false } as PaginatedResponse<string>,
 });
 
-export { appendFollowRequest, useFollowRequests, useAcceptFollowRequestMutation, useRejectFollowRequestMutation, prefetchFollowRequests };
+export {
+  appendFollowRequest,
+  useFollowRequests,
+  useFollowRequestsCount,
+  useAcceptFollowRequestMutation,
+  useRejectFollowRequestMutation,
+  prefetchFollowRequests,
+};

@@ -1,6 +1,7 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
+import { useFollowRequestsCount } from 'pl-fe/api/hooks/account-lists/use-follow-requests';
 import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
@@ -48,7 +49,7 @@ const SidebarNavigation = () => {
   const logoSrc = useLogo();
 
   const notificationCount = useAppSelector((state) => state.notifications.unread);
-  const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.length);
+  const followRequestsCount = useFollowRequestsCount().data || 0;
   const interactionRequestsCount = useInteractionRequestsCount().data || 0;
   const dashboardCount = useAppSelector((state) => state.admin.openReports.length + state.admin.awaitingApproval.length);
   const scheduledStatusCount = useAppSelector((state) => Object.keys(state.scheduled_statuses).length);

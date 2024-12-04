@@ -5,6 +5,7 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { Link, NavLink } from 'react-router-dom';
 
 import { fetchOwnAccounts, logOut, switchAccount } from 'pl-fe/actions/auth';
+import { useFollowRequestsCount } from 'pl-fe/api/hooks/account-lists/use-follow-requests';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import Account from 'pl-fe/components/account';
@@ -96,7 +97,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const { account } = useAccount(me || undefined);
   const otherAccounts = useAppSelector((state) => getOtherAccounts(state));
   const { settings } = useSettingsStore();
-  const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.length);
+  const followRequestsCount = useFollowRequestsCount().data || 0;
   const interactionRequestsCount = useInteractionRequestsCount().data || 0;
   const scheduledStatusCount = useAppSelector((state) => Object.keys(state.scheduled_statuses).length);
   const draftCount = useAppSelector((state) => Object.keys(state.draft_statuses).length);
