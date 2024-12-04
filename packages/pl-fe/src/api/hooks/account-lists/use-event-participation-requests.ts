@@ -1,5 +1,5 @@
 
-import { type InfiniteData, useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import { type InfiniteData, useMutation } from '@tanstack/react-query';
 
 import { importEntities } from 'pl-fe/actions/importer';
 import { makePaginatedResponseQuery } from 'pl-fe/api/utils/make-paginated-response-query';

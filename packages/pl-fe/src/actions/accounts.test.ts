@@ -4,22 +4,17 @@ import { __stub } from 'pl-fe/api';
 import { buildInstance, buildRelationship } from 'pl-fe/jest/factory';
 import { mockStore, rootState } from 'pl-fe/jest/test-helpers';
 import { normalizeAccount } from 'pl-fe/normalizers/account';
-import { ListRecord, ReducerRecord } from 'pl-fe/reducers/user-lists';
 
 import {
   blockAccount,
   createAccount,
-  expandFollowRequests,
   fetchAccount,
   fetchAccountByUsername,
-  fetchFollowRequests,
   fetchRelationships,
   muteAccount,
   removeFromFollowers,
-  subscribeAccount,
   unblockAccount,
   unmuteAccount,
-  unsubscribeAccount,
 } from './accounts';
 
 let store: ReturnType<typeof mockStore>;
