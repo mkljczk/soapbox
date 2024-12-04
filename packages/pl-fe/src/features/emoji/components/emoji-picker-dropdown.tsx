@@ -2,13 +2,13 @@ import React, { useEffect, useState, useLayoutEffect, Suspense, useMemo } from '
 import { defineMessages, useIntl } from 'react-intl';
 import { createSelector } from 'reselect';
 
-import { chooseEmoji } from 'pl-fe/actions/emojis';
-import { changeSetting } from 'pl-fe/actions/settings';
+import { changeSetting, saveSettings } from 'pl-fe/actions/settings';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useTheme } from 'pl-fe/hooks/use-theme';
 import { RootState } from 'pl-fe/store';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 
 import { buildCustomEmojis } from '../../emoji';
 import { EmojiPicker } from '../../ui/util/async-components';
@@ -128,6 +128,7 @@ const EmojiPickerDropdown: React.FC<IEmojiPickerDropdown> = ({
   const dispatch = useAppDispatch();
   const title = intl.formatMessage(messages.emoji);
   const theme = useTheme();
+  const { rememberEmojiUse } = useSettingsStore();
 
   const customEmojis = useAppSelector((state) => getCustomEmojis(state));
 
@@ -156,7 +157,8 @@ const EmojiPickerDropdown: React.FC<IEmojiPickerDropdown> = ({
       } as CustomEmoji;
     }
 
-    dispatch(chooseEmoji(pickedEmoji));
+    rememberEmojiUse(pickedEmoji);
+    dispatch(saveSettings());
 
     if (onPickEmoji) {
       onPickEmoji(pickedEmoji);

@@ -13,10 +13,9 @@ import { useSettingsStore } from 'pl-fe/stores/settings';
 import toast from 'pl-fe/toast';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 
-import { chooseEmoji } from './emojis';
 import { importEntities } from './importer';
-import { rememberLanguageUse } from './languages';
 import { uploadFile, updateMedia } from './media';
+import { saveSettings } from './settings';
 import { createStatus } from './statuses';
 
 import type { EditorState } from 'lexical';
@@ -384,7 +383,8 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
     useModalsStore.getState().closeModal('COMPOSE');
 
     if (compose.language && !statusId) {
-      dispatch(rememberLanguageUse(compose.language));
+      useSettingsStore.getState().rememberLanguageUse(compose.language);
+      dispatch(saveSettings());
     }
 
     const idempotencyKey = compose.idempotencyKey;
@@ -686,7 +686,8 @@ const selectComposeSuggestion = (composeId: string, position: number, token: str
       completion = isNativeEmoji(suggestion) ? suggestion.native : suggestion.colons;
       startPosition = position - 1;
 
-      dispatch(chooseEmoji(suggestion));
+      useSettingsStore.getState().rememberEmojiUse(suggestion);
+      dispatch(saveSettings());
     } else if (typeof suggestion === 'string' && suggestion[0] === '#') {
       completion = suggestion;
       startPosition = position - 1;
