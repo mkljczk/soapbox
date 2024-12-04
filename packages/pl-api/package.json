@@ -1,6 +1,6 @@
 {
   "name": "pl-api",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "type": "module",
   "homepage": "https://github.com/mkljczk/pl-fe/tree/develop/packages/pl-api",
   "repository": {

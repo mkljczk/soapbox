@@ -257,6 +257,7 @@ const getFeatures = (instance: Instance) => {
     announcements: any([
       v.software === FIREFISH,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA,
       v.software === TAKAHE && gte(v.version, '0.7.0'),
@@ -283,6 +284,7 @@ const getFeatures = (instance: Instance) => {
      * see POST /api/v1/bite
      */
     bites: any([
+      v.software === ICESHRIMP_NET,
       v.software === TOKI,
       instance.api_versions['bites.pleroma.pl-api'] >= 1,
     ]),
@@ -309,6 +311,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FIREFISH,
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === FRIENDICA,
       v.software === MASTODON,
       v.software === MITRA && gte(v.version, '3.3.0'),
@@ -325,6 +328,7 @@ const getFeatures = (instance: Instance) => {
     bots: any([
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA,
     ]),
@@ -359,6 +363,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PIXELFED,
       v.software === PLEROMA,
@@ -439,6 +444,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === MITRA,
       v.software === PIXELFED,
@@ -455,6 +461,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FIREFISH,
       v.software === FRIENDICA && gte(v.version, '2022.12.0'),
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === MITRA,
       v.software === TAKAHE && gte(v.version, '0.8.0'),
@@ -527,6 +534,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === TAKAHE && gte(v.version, '0.6.1'),
       v.software === TOKI,
@@ -563,6 +571,7 @@ const getFeatures = (instance: Instance) => {
      */
     filtersV2: any([
       v.software === GOTOSOCIAL && gte(v.version, '0.16.0'),
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
     ]),
 
@@ -624,6 +633,7 @@ const getFeatures = (instance: Instance) => {
      */
     frontendConfigurations: any([
       v.software === DITTO,
+      v.software === ICESHRIMP_NET,
       v.software === PLEROMA,
     ]),
 
@@ -750,6 +760,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA,
     ]),
@@ -820,6 +831,7 @@ const getFeatures = (instance: Instance) => {
     mediaV2: any([
       v.software === FIREFISH,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === MITRA,
       v.software === PLEROMA,
@@ -850,6 +862,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === GOTOSOCIAL && gte(v.version, '0.16.0'),
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === MITRA,
       v.software === PIXELFED,
@@ -865,6 +878,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FIREFISH,
       v.software === GOTOSOCIAL && gte(v.version, '0.16.0'),
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA,
       v.software === TAKAHE,
@@ -903,6 +917,7 @@ const getFeatures = (instance: Instance) => {
     notificationsIncludeTypes: any([
       v.software === FIREFISH,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA && gte(v.version, '2.5.0'),
       v.software === TAKAHE && gte(v.version, '0.6.2'),
@@ -965,6 +980,7 @@ const getFeatures = (instance: Instance) => {
     polls: any([
       v.software === FIREFISH,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === TAKAHE && gte(v.version, '0.8.0'),
       v.software === GOTOSOCIAL,
@@ -1014,6 +1030,7 @@ const getFeatures = (instance: Instance) => {
       v.software === DITTO,
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === MITRA,
       v.software === PLEROMA,
@@ -1037,6 +1054,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA,
       v.software === TAKAHE,
@@ -1048,6 +1066,7 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/statuses
      */
     quotePosts: any([
+      v.software === ICESHRIMP_NET,
       v.software === FRIENDICA && gte(v.version, '2023.3.0'),
       v.software === PLEROMA && [REBASED, AKKOMA].includes(v.build!) && gte(v.version, '2.5.0'),
       instance.api_versions['quote_posting.pleroma.pl-api'] >= 1,
@@ -1059,6 +1078,7 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/statuses/:id/reblog
      */
     reblogVisibility: any([
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA,
     ]),
@@ -1074,6 +1094,7 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/accounts/:id/remove_from_followers
      */
     removeFromFollowers: any([
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA && gte(v.version, '2.5.0'),
       v.software === PLEROMA && v.build === AKKOMA,
