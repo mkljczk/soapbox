@@ -376,7 +376,6 @@ export {
   messages,
   otpVerify,
   verifyCredentials,
-  rememberAuthAccount,
   loadCredentials,
   logIn,
   logOut,

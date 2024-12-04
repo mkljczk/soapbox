@@ -163,7 +163,6 @@ export {
   ALIASES_REMOVE_FAIL,
   fetchAliases,
   fetchAliasesSuggestions,
-  fetchAliasesSuggestionsReady,
   clearAliasesSuggestions,
   changeAliasesSuggestions,
   addToAliases,

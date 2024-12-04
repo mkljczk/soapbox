@@ -65,8 +65,6 @@ const COMPOSE_LANGUAGE_ADD = 'COMPOSE_LANGUAGE_ADD' as const;
 const COMPOSE_LANGUAGE_DELETE = 'COMPOSE_LANGUAGE_DELETE' as const;
 const COMPOSE_FEDERATED_CHANGE = 'COMPOSE_FEDERATED_CHANGE' as const;
 
-const COMPOSE_EMOJI_INSERT = 'COMPOSE_EMOJI_INSERT' as const;
-
 const COMPOSE_UPLOAD_CHANGE_REQUEST = 'COMPOSE_UPLOAD_UPDATE_REQUEST' as const;
 const COMPOSE_UPLOAD_CHANGE_SUCCESS = 'COMPOSE_UPLOAD_UPDATE_SUCCESS' as const;
 const COMPOSE_UPLOAD_CHANGE_FAIL = 'COMPOSE_UPLOAD_UPDATE_FAIL' as const;
@@ -784,13 +782,6 @@ const deleteComposeLanguage = (composeId: string, value: Language) => ({
   value,
 });
 
-const insertEmojiCompose = (composeId: string, position: number, emoji: Emoji, needsSpace: boolean) => ({
-  type: COMPOSE_EMOJI_INSERT,
-  composeId,
-  position,
-  emoji,
-  needsSpace,
-});
 
 const addPoll = (composeId: string) => ({
   type: COMPOSE_POLL_ADD,
@@ -978,7 +969,6 @@ type ComposeAction =
   | ReturnType<typeof changeComposeModifiedLanguage>
   | ReturnType<typeof addComposeLanguage>
   | ReturnType<typeof deleteComposeLanguage>
-  | ReturnType<typeof insertEmojiCompose>
   | ReturnType<typeof addPoll>
   | ReturnType<typeof removePoll>
   | ReturnType<typeof addSchedule>
@@ -1029,7 +1019,6 @@ export {
   COMPOSE_MODIFIED_LANGUAGE_CHANGE,
   COMPOSE_LANGUAGE_ADD,
   COMPOSE_LANGUAGE_DELETE,
-  COMPOSE_EMOJI_INSERT,
   COMPOSE_UPLOAD_CHANGE_REQUEST,
   COMPOSE_UPLOAD_CHANGE_SUCCESS,
   COMPOSE_UPLOAD_CHANGE_FAIL,
@@ -1051,7 +1040,6 @@ export {
   COMPOSE_ADD_SUGGESTED_LANGUAGE,
   COMPOSE_FEDERATED_CHANGE,
   setComposeToStatus,
-  changeCompose,
   replyCompose,
   cancelReplyCompose,
   quoteCompose,
@@ -1060,7 +1048,6 @@ export {
   mentionCompose,
   directCompose,
   directComposeById,
-  handleComposeSubmit,
   submitCompose,
   uploadFile,
   uploadCompose,
@@ -1071,11 +1058,7 @@ export {
   groupComposeModal,
   clearComposeSuggestions,
   fetchComposeSuggestions,
-  readyComposeSuggestionsEmojis,
-  readyComposeSuggestionsAccounts,
   selectComposeSuggestion,
-  updateSuggestionTags,
-  updateTagHistory,
   changeComposeSpoilerness,
   changeComposeContentType,
   changeComposeSpoilerText,
@@ -1084,7 +1067,6 @@ export {
   changeComposeModifiedLanguage,
   addComposeLanguage,
   deleteComposeLanguage,
-  insertEmojiCompose,
   addPoll,
   removePoll,
   addSchedule,

@@ -2,7 +2,6 @@ import { create } from 'mutative';
 import { type CredentialAccount, type Instance, type MediaAttachment, type Tag } from 'pl-api';
 
 import { INSTANCE_FETCH_SUCCESS, type InstanceAction } from 'pl-fe/actions/instance';
-import { isNativeEmoji, type Emoji } from 'pl-fe/features/emoji';
 import { tagHistory } from 'pl-fe/settings';
 
 import {
@@ -36,7 +35,6 @@ import {
   COMPOSE_LANGUAGE_ADD,
   COMPOSE_LANGUAGE_DELETE,
   COMPOSE_ADD_SUGGESTED_LANGUAGE,
-  COMPOSE_EMOJI_INSERT,
   COMPOSE_UPLOAD_CHANGE_REQUEST,
   COMPOSE_UPLOAD_CHANGE_SUCCESS,
   COMPOSE_UPLOAD_CHANGE_FAIL,
@@ -67,6 +65,7 @@ import { FE_NAME } from '../actions/settings';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 import { unescapeHTML } from '../utils/html';
 
+import type { Emoji } from 'pl-fe/features/emoji';
 import type { Language } from 'pl-fe/features/preferences';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';
@@ -243,17 +242,6 @@ const updateSuggestionTags = (compose: Compose, token: string, tags: Tag[]) => {
     .slice(0, 4)
     .map((tag) => '#' + tag.name);
   compose.suggestion_token = token;
-};
-
-const insertEmoji = (compose: Compose, position: number, emojiData: Emoji, needsSpace: boolean) => {
-  const oldText = compose.text;
-  const emojiText = isNativeEmoji(emojiData) ? emojiData.native : emojiData.colons;
-  const emoji = needsSpace ? ' ' + emojiText : emojiText;
-
-  compose.text = `${oldText.slice(0, position)}${emoji} ${oldText.slice(position)}`;
-  compose.focusDate = new Date();
-  compose.caretPosition = position + emoji.length + 1;
-  compose.idempotencyKey = crypto.randomUUID();
 };
 
 const privacyPreference = (a: string, b: string) => {
@@ -513,8 +501,6 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
           compose.quote = null;
         }
       });
-    case COMPOSE_EMOJI_INSERT:
-      return updateCompose(state, action.composeId, compose => insertEmoji(compose, action.position, action.emoji, action.needsSpace));
     case COMPOSE_UPLOAD_CHANGE_SUCCESS:
       return updateCompose(state, action.composeId, compose => {
         compose.is_changing_upload = false;

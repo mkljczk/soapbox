@@ -21,14 +21,6 @@ const EVENT_LEAVE_REQUEST = 'EVENT_LEAVE_REQUEST' as const;
 const EVENT_LEAVE_SUCCESS = 'EVENT_LEAVE_SUCCESS' as const;
 const EVENT_LEAVE_FAIL = 'EVENT_LEAVE_FAIL' as const;
 
-const EVENT_PARTICIPATIONS_FETCH_REQUEST = 'EVENT_PARTICIPATIONS_FETCH_REQUEST' as const;
-const EVENT_PARTICIPATIONS_FETCH_SUCCESS = 'EVENT_PARTICIPATIONS_FETCH_SUCCESS' as const;
-const EVENT_PARTICIPATIONS_FETCH_FAIL = 'EVENT_PARTICIPATIONS_FETCH_FAIL' as const;
-
-const EVENT_PARTICIPATIONS_EXPAND_REQUEST = 'EVENT_PARTICIPATIONS_EXPAND_REQUEST' as const;
-const EVENT_PARTICIPATIONS_EXPAND_SUCCESS = 'EVENT_PARTICIPATIONS_EXPAND_SUCCESS' as const;
-const EVENT_PARTICIPATIONS_EXPAND_FAIL = 'EVENT_PARTICIPATIONS_EXPAND_FAIL' as const;
-
 const EVENT_PARTICIPATION_REQUESTS_FETCH_REQUEST = 'EVENT_PARTICIPATION_REQUESTS_FETCH_REQUEST' as const;
 const EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS = 'EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS' as const;
 const EVENT_PARTICIPATION_REQUESTS_FETCH_FAIL = 'EVENT_PARTICIPATION_REQUESTS_FETCH_FAIL' as const;
@@ -219,72 +211,6 @@ const leaveEventFail = (error: unknown, statusId: string, previousState: Exclude
   statusId,
   error,
   previousState,
-});
-
-const fetchEventParticipations = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(fetchEventParticipationsRequest(statusId));
-
-    return getClient(getState).events.getEventParticipations(statusId).then(response => {
-      dispatch(importEntities({ accounts: response.items }));
-      return dispatch(fetchEventParticipationsSuccess(statusId, response.items, response.next));
-    }).catch(error => {
-      dispatch(fetchEventParticipationsFail(statusId, error));
-    });
-  };
-
-const fetchEventParticipationsRequest = (statusId: string) => ({
-  type: EVENT_PARTICIPATIONS_FETCH_REQUEST,
-  statusId,
-});
-
-const fetchEventParticipationsSuccess = (statusId: string, accounts: Array<Account>, next: (() => Promise<PaginatedResponse<Account>>) | null) => ({
-  type: EVENT_PARTICIPATIONS_FETCH_SUCCESS,
-  statusId,
-  accounts,
-  next,
-});
-
-const fetchEventParticipationsFail = (statusId: string, error: unknown) => ({
-  type: EVENT_PARTICIPATIONS_FETCH_FAIL,
-  statusId,
-  error,
-});
-
-const expandEventParticipations = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const next = getState().user_lists.event_participations[statusId]?.next || null;
-
-    if (next === null) {
-      return dispatch(noOp);
-    }
-
-    dispatch(expandEventParticipationsRequest(statusId));
-
-    return next().then(response => {
-      dispatch(importEntities({ accounts: response.items }));
-      return dispatch(expandEventParticipationsSuccess(statusId, response.items, response.next));
-    }).catch(error => {
-      dispatch(expandEventParticipationsFail(statusId, error));
-    });
-  };
-
-const expandEventParticipationsRequest = (statusId: string) => ({
-  type: EVENT_PARTICIPATIONS_EXPAND_REQUEST,
-  statusId,
-});
-
-const expandEventParticipationsSuccess = (statusId: string, accounts: Array<Account>, next: (() => Promise<PaginatedResponse<Account>>) | null) => ({
-  type: EVENT_PARTICIPATIONS_EXPAND_SUCCESS,
-  statusId,
-  accounts,
-  next,
-});
-
-const expandEventParticipationsFail = (statusId: string, error: unknown) => ({
-  type: EVENT_PARTICIPATIONS_EXPAND_FAIL,
-  statusId,
-  error,
 });
 
 const fetchEventParticipationRequests = (statusId: string) =>
@@ -499,12 +425,6 @@ type EventsAction =
   | ReturnType<typeof leaveEventRequest>
   | ReturnType<typeof leaveEventSuccess>
   | ReturnType<typeof leaveEventFail>
-  | ReturnType<typeof fetchEventParticipationsRequest>
-  | ReturnType<typeof fetchEventParticipationsSuccess>
-  | ReturnType<typeof fetchEventParticipationsFail>
-  | ReturnType<typeof expandEventParticipationsRequest>
-  | ReturnType<typeof expandEventParticipationsSuccess>
-  | ReturnType<typeof expandEventParticipationsFail>
   | ReturnType<typeof fetchEventParticipationRequestsRequest>
   | ReturnType<typeof fetchEventParticipationRequestsSuccess>
   | ReturnType<typeof fetchEventParticipationRequestsFail>
@@ -538,12 +458,6 @@ export {
   EVENT_LEAVE_REQUEST,
   EVENT_LEAVE_SUCCESS,
   EVENT_LEAVE_FAIL,
-  EVENT_PARTICIPATIONS_FETCH_REQUEST,
-  EVENT_PARTICIPATIONS_FETCH_SUCCESS,
-  EVENT_PARTICIPATIONS_FETCH_FAIL,
-  EVENT_PARTICIPATIONS_EXPAND_REQUEST,
-  EVENT_PARTICIPATIONS_EXPAND_SUCCESS,
-  EVENT_PARTICIPATIONS_EXPAND_FAIL,
   EVENT_PARTICIPATION_REQUESTS_FETCH_REQUEST,
   EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS,
   EVENT_PARTICIPATION_REQUESTS_FETCH_FAIL,
@@ -567,8 +481,6 @@ export {
   submitEvent,
   joinEvent,
   leaveEvent,
-  fetchEventParticipations,
-  expandEventParticipations,
   fetchEventParticipationRequests,
   expandEventParticipationRequests,
   authorizeEventParticipationRequest,

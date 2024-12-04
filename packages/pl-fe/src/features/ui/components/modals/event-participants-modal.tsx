@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { fetchEventParticipations } from 'pl-fe/actions/events';
+import { useEventParticipations } from 'pl-fe/api/hooks/account-lists/use-event-participations';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -16,17 +14,7 @@ interface EventParticipantsModalProps {
 }
 
 const EventParticipantsModal: React.FC<BaseModalProps & EventParticipantsModalProps> = ({ onClose, statusId }) => {
-  const dispatch = useAppDispatch();
-
-  const accountIds = useAppSelector((state) => state.user_lists.event_participations[statusId]?.items);
-
-  const fetchData = () => {
-    dispatch(fetchEventParticipations(statusId));
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { data: accountIds, isLoading, hasNextPage, fetchNextPage } = useEventParticipations(statusId);
 
   const onClickClose = () => {
     onClose('EVENT_PARTICIPANTS');
@@ -45,10 +33,11 @@ const EventParticipantsModal: React.FC<BaseModalProps & EventParticipantsModalPr
         listClassName='max-w-full'
         itemClassName='pb-3'
         estimatedSize={42}
+        hasMore={hasNextPage}
+        isLoading={typeof isLoading === 'boolean' ? isLoading : true}
+        onLoadMore={() => fetchNextPage({ cancelRefetch: false })}
       >
-        {accountIds.map(id =>
-          <AccountContainer key={id} id={id} />,
-        )}
+        {accountIds.map(id => <AccountContainer key={id} id={id} />)}
       </ScrollableList>
     );
   }

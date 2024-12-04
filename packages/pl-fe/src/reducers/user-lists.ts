@@ -10,8 +10,6 @@ import {
   type AccountsAction,
 } from 'pl-fe/actions/accounts';
 import {
-  EVENT_PARTICIPATIONS_EXPAND_SUCCESS,
-  EVENT_PARTICIPATIONS_FETCH_SUCCESS,
   EVENT_PARTICIPATION_REQUESTS_EXPAND_SUCCESS,
   EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS,
   EVENT_PARTICIPATION_REQUEST_AUTHORIZE_SUCCESS,
@@ -182,10 +180,6 @@ const userLists = (state = initialState, action: AccountsAction | EventsAction |
       return normalizeList(state, ['birthday_reminders', action.accountId], action.accounts);
     case FAMILIAR_FOLLOWERS_FETCH_SUCCESS:
       return normalizeList(state, ['familiar_followers', action.accountId], action.accounts);
-    case EVENT_PARTICIPATIONS_FETCH_SUCCESS:
-      return normalizeList(state, ['event_participations', action.statusId], action.accounts, action.next);
-    case EVENT_PARTICIPATIONS_EXPAND_SUCCESS:
-      return appendToList(state, ['event_participations', action.statusId], action.accounts, action.next);
     case EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS:
       return create(state, (draft) => {
         draft.event_participation_requests[action.statusId] = {
