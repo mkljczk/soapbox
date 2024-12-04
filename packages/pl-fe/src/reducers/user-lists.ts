@@ -9,13 +9,6 @@ import {
   BIRTHDAY_REMINDERS_FETCH_SUCCESS,
   type AccountsAction,
 } from 'pl-fe/actions/accounts';
-import {
-  EVENT_PARTICIPATION_REQUESTS_EXPAND_SUCCESS,
-  EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS,
-  EVENT_PARTICIPATION_REQUEST_AUTHORIZE_SUCCESS,
-  EVENT_PARTICIPATION_REQUEST_REJECT_SUCCESS,
-  type EventsAction,
-} from 'pl-fe/actions/events';
 import { FAMILIAR_FOLLOWERS_FETCH_SUCCESS, type FamiliarFollowersAction } from 'pl-fe/actions/familiar-followers';
 import {
   GROUP_BLOCKS_FETCH_REQUEST,
@@ -56,23 +49,11 @@ interface ReactionList {
   isLoading: boolean;
 }
 
-interface ParticipationRequest {
-  account: string;
-  participation_message: string | null;
-}
-
-interface ParticipationRequestList {
-  next: (() => Promise<PaginatedResponse<any>>) | null;
-  items: Array<ParticipationRequest>;
-  isLoading: boolean;
-}
-
 type ListKey = 'follow_requests';
-type NestedListKey = 'reblogged_by' | 'favourited_by' | 'disliked_by' | 'pinned' | 'birthday_reminders' | 'familiar_followers' | 'event_participations' | 'membership_requests' | 'group_blocks';
+type NestedListKey = 'reblogged_by' | 'favourited_by' | 'disliked_by' | 'pinned' | 'birthday_reminders' | 'familiar_followers' | 'membership_requests' | 'group_blocks';
 
 type State = Record<ListKey, List> & Record<NestedListKey, Record<string, List>> & {
   reactions: Record<string, ReactionList>;
-  event_participation_requests: Record<string, ParticipationRequestList>;
 };
 
 const initialState: State = {
@@ -84,8 +65,6 @@ const initialState: State = {
   pinned: {},
   birthday_reminders: {},
   familiar_followers: {},
-  event_participations: {},
-  event_participation_requests: {},
   membership_requests: {},
   group_blocks: {},
 };
@@ -145,7 +124,7 @@ const normalizeFollowRequest = (state: State, notification: NotificationGroup) =
     draft.follow_requests.items = [...new Set([...notification.sample_account_ids, ...draft.follow_requests.items])];
   });
 
-const userLists = (state = initialState, action: AccountsAction | EventsAction | FamiliarFollowersAction | GroupsAction | InteractionsAction | NotificationsAction): State => {
+const userLists = (state = initialState, action: AccountsAction | FamiliarFollowersAction | GroupsAction | InteractionsAction | NotificationsAction): State => {
   switch (action.type) {
     case REBLOGS_FETCH_SUCCESS:
       return normalizeList(state, ['reblogged_by', action.statusId], action.accounts, action.next);
@@ -180,33 +159,6 @@ const userLists = (state = initialState, action: AccountsAction | EventsAction |
       return normalizeList(state, ['birthday_reminders', action.accountId], action.accounts);
     case FAMILIAR_FOLLOWERS_FETCH_SUCCESS:
       return normalizeList(state, ['familiar_followers', action.accountId], action.accounts);
-    case EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS:
-      return create(state, (draft) => {
-        draft.event_participation_requests[action.statusId] = {
-          next: action.next,
-          items: action.participations.map(({ account, participation_message }) => ({
-            account: account.id,
-            participation_message,
-          })),
-          isLoading: false,
-        };
-      });
-    case EVENT_PARTICIPATION_REQUESTS_EXPAND_SUCCESS:
-      return create(state, (draft) => {
-        const list = draft.event_participation_requests[action.statusId];
-        list.next = action.next;
-        list.items = [...list.items, ...action.participations.map(({ account, participation_message }) => ({
-          account: account.id,
-          participation_message,
-        }))];
-        list.isLoading = false;
-      });
-    case EVENT_PARTICIPATION_REQUEST_AUTHORIZE_SUCCESS:
-    case EVENT_PARTICIPATION_REQUEST_REJECT_SUCCESS:
-      return create(state, (draft) => {
-        const list = draft.event_participation_requests[action.statusId];
-        if (list.items) list.items = list.items.filter(item => item.account !== action.accountId);
-      });
     case GROUP_BLOCKS_FETCH_SUCCESS:
       return normalizeList(state, ['group_blocks', action.groupId], action.accounts, action.next);
     case GROUP_BLOCKS_FETCH_REQUEST:

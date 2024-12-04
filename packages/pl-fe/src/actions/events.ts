@@ -6,7 +6,7 @@ import toast from 'pl-fe/toast';
 import { importEntities } from './importer';
 import { STATUS_FETCH_SOURCE_FAIL, STATUS_FETCH_SOURCE_REQUEST, STATUS_FETCH_SOURCE_SUCCESS } from './statuses';
 
-import type { Account, CreateEventParams, Location, MediaAttachment, PaginatedResponse, Status } from 'pl-api';
+import type { CreateEventParams, Location, MediaAttachment, PaginatedResponse, Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const EVENT_SUBMIT_REQUEST = 'EVENT_SUBMIT_REQUEST' as const;
@@ -20,22 +20,6 @@ const EVENT_JOIN_FAIL = 'EVENT_JOIN_FAIL' as const;
 const EVENT_LEAVE_REQUEST = 'EVENT_LEAVE_REQUEST' as const;
 const EVENT_LEAVE_SUCCESS = 'EVENT_LEAVE_SUCCESS' as const;
 const EVENT_LEAVE_FAIL = 'EVENT_LEAVE_FAIL' as const;
-
-const EVENT_PARTICIPATION_REQUESTS_FETCH_REQUEST = 'EVENT_PARTICIPATION_REQUESTS_FETCH_REQUEST' as const;
-const EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS = 'EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS' as const;
-const EVENT_PARTICIPATION_REQUESTS_FETCH_FAIL = 'EVENT_PARTICIPATION_REQUESTS_FETCH_FAIL' as const;
-
-const EVENT_PARTICIPATION_REQUESTS_EXPAND_REQUEST = 'EVENT_PARTICIPATION_REQUESTS_EXPAND_REQUEST' as const;
-const EVENT_PARTICIPATION_REQUESTS_EXPAND_SUCCESS = 'EVENT_PARTICIPATION_REQUESTS_EXPAND_SUCCESS' as const;
-const EVENT_PARTICIPATION_REQUESTS_EXPAND_FAIL = 'EVENT_PARTICIPATION_REQUESTS_EXPAND_FAIL' as const;
-
-const EVENT_PARTICIPATION_REQUEST_AUTHORIZE_REQUEST = 'EVENT_PARTICIPATION_REQUEST_AUTHORIZE_REQUEST' as const;
-const EVENT_PARTICIPATION_REQUEST_AUTHORIZE_SUCCESS = 'EVENT_PARTICIPATION_REQUEST_AUTHORIZE_SUCCESS' as const;
-const EVENT_PARTICIPATION_REQUEST_AUTHORIZE_FAIL = 'EVENT_PARTICIPATION_REQUEST_AUTHORIZE_FAIL' as const;
-
-const EVENT_PARTICIPATION_REQUEST_REJECT_REQUEST = 'EVENT_PARTICIPATION_REQUEST_REJECT_REQUEST' as const;
-const EVENT_PARTICIPATION_REQUEST_REJECT_SUCCESS = 'EVENT_PARTICIPATION_REQUEST_REJECT_SUCCESS' as const;
-const EVENT_PARTICIPATION_REQUEST_REJECT_FAIL = 'EVENT_PARTICIPATION_REQUEST_REJECT_FAIL' as const;
 
 const EVENT_COMPOSE_CANCEL = 'EVENT_COMPOSE_CANCEL' as const;
 
@@ -213,136 +197,6 @@ const leaveEventFail = (error: unknown, statusId: string, previousState: Exclude
   previousState,
 });
 
-const fetchEventParticipationRequests = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(fetchEventParticipationRequestsRequest(statusId));
-
-    return getClient(getState).events.getEventParticipationRequests(statusId).then(response => {
-      dispatch(importEntities({ accounts: response.items.map(({ account }) => account) }));
-      return dispatch(fetchEventParticipationRequestsSuccess(statusId, response.items, response.next));
-    }).catch(error => {
-      dispatch(fetchEventParticipationRequestsFail(statusId, error));
-    });
-  };
-
-const fetchEventParticipationRequestsRequest = (statusId: string) => ({
-  type: EVENT_PARTICIPATION_REQUESTS_FETCH_REQUEST,
-  statusId,
-});
-
-const fetchEventParticipationRequestsSuccess = (statusId: string, participations: Array<{
-  account: Account;
-  participation_message: string;
-}>, next: (() => Promise<PaginatedResponse<{ account: Account }>>) | null) => ({
-  type: EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS,
-  statusId,
-  participations,
-  next,
-});
-
-const fetchEventParticipationRequestsFail = (statusId: string, error: unknown) => ({
-  type: EVENT_PARTICIPATION_REQUESTS_FETCH_FAIL,
-  statusId,
-  error,
-});
-
-const expandEventParticipationRequests = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const next = getState().user_lists.event_participation_requests[statusId]?.next || null;
-
-    if (next === null) {
-      return dispatch(noOp);
-    }
-
-    dispatch(expandEventParticipationRequestsRequest(statusId));
-
-    return next().then(response => {
-      dispatch(importEntities({ accounts: response.items.map(({ account }) => account) }));
-      return dispatch(expandEventParticipationRequestsSuccess(statusId, response.items, response.next));
-    }).catch(error => {
-      dispatch(expandEventParticipationRequestsFail(statusId, error));
-    });
-  };
-
-const expandEventParticipationRequestsRequest = (statusId: string) => ({
-  type: EVENT_PARTICIPATION_REQUESTS_EXPAND_REQUEST,
-  statusId,
-});
-
-const expandEventParticipationRequestsSuccess = (statusId: string, participations: Array<{
-  account: Account;
-  participation_message: string;
-}>, next: (() => Promise<PaginatedResponse<{ account: Account }>>) | null) => ({
-  type: EVENT_PARTICIPATION_REQUESTS_EXPAND_SUCCESS,
-  statusId,
-  participations,
-  next,
-});
-
-const expandEventParticipationRequestsFail = (statusId: string, error: unknown) => ({
-  type: EVENT_PARTICIPATION_REQUESTS_EXPAND_FAIL,
-  statusId,
-  error,
-});
-
-const authorizeEventParticipationRequest = (statusId: string, accountId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(authorizeEventParticipationRequestRequest(statusId, accountId));
-
-    return getClient(getState).events.acceptEventParticipationRequest(statusId, accountId).then(() => {
-      dispatch(authorizeEventParticipationRequestSuccess(statusId, accountId));
-      toast.success(messages.authorized);
-    }).catch(error => dispatch(authorizeEventParticipationRequestFail(statusId, accountId, error)));
-  };
-
-const authorizeEventParticipationRequestRequest = (statusId: string, accountId: string) => ({
-  type: EVENT_PARTICIPATION_REQUEST_AUTHORIZE_REQUEST,
-  statusId,
-  accountId,
-});
-
-const authorizeEventParticipationRequestSuccess = (statusId: string, accountId: string) => ({
-  type: EVENT_PARTICIPATION_REQUEST_AUTHORIZE_SUCCESS,
-  statusId,
-  accountId,
-});
-
-const authorizeEventParticipationRequestFail = (statusId: string, accountId: string, error: unknown) => ({
-  type: EVENT_PARTICIPATION_REQUEST_AUTHORIZE_FAIL,
-  statusId,
-  accountId,
-  error,
-});
-
-const rejectEventParticipationRequest = (statusId: string, accountId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(rejectEventParticipationRequestRequest(statusId, accountId));
-
-    return getClient(getState).events.rejectEventParticipationRequest(statusId, accountId).then(() => {
-      dispatch(rejectEventParticipationRequestSuccess(statusId, accountId));
-      toast.success(messages.rejected);
-    }).catch(error => dispatch(rejectEventParticipationRequestFail(statusId, accountId, error)));
-  };
-
-const rejectEventParticipationRequestRequest = (statusId: string, accountId: string) => ({
-  type: EVENT_PARTICIPATION_REQUEST_REJECT_REQUEST,
-  statusId,
-  accountId,
-});
-
-const rejectEventParticipationRequestSuccess = (statusId: string, accountId: string) => ({
-  type: EVENT_PARTICIPATION_REQUEST_REJECT_SUCCESS,
-  statusId,
-  accountId,
-});
-
-const rejectEventParticipationRequestFail = (statusId: string, accountId: string, error: unknown) => ({
-  type: EVENT_PARTICIPATION_REQUEST_REJECT_FAIL,
-  statusId,
-  accountId,
-  error,
-});
-
 const fetchEventIcs = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) =>
     getClient(getState).events.getEventIcs(statusId);
@@ -425,20 +279,6 @@ type EventsAction =
   | ReturnType<typeof leaveEventRequest>
   | ReturnType<typeof leaveEventSuccess>
   | ReturnType<typeof leaveEventFail>
-  | ReturnType<typeof fetchEventParticipationRequestsRequest>
-  | ReturnType<typeof fetchEventParticipationRequestsSuccess>
-  | ReturnType<typeof fetchEventParticipationRequestsFail>
-  | ReturnType<typeof expandEventParticipationRequestsRequest>
-  | ReturnType<typeof expandEventParticipationRequestsSuccess>
-  | ReturnType<typeof expandEventParticipationRequestsFail>
-  | ReturnType<typeof expandEventParticipationRequestsSuccess>
-  | ReturnType<typeof expandEventParticipationRequestsFail>
-  | ReturnType<typeof authorizeEventParticipationRequestRequest>
-  | ReturnType<typeof authorizeEventParticipationRequestSuccess>
-  | ReturnType<typeof authorizeEventParticipationRequestFail>
-  | ReturnType<typeof rejectEventParticipationRequestRequest>
-  | ReturnType<typeof rejectEventParticipationRequestSuccess>
-  | ReturnType<typeof rejectEventParticipationRequestFail>
   | ReturnType<typeof cancelEventCompose>
   | EventFormSetAction
   | { type: typeof RECENT_EVENTS_FETCH_REQUEST }
@@ -458,18 +298,6 @@ export {
   EVENT_LEAVE_REQUEST,
   EVENT_LEAVE_SUCCESS,
   EVENT_LEAVE_FAIL,
-  EVENT_PARTICIPATION_REQUESTS_FETCH_REQUEST,
-  EVENT_PARTICIPATION_REQUESTS_FETCH_SUCCESS,
-  EVENT_PARTICIPATION_REQUESTS_FETCH_FAIL,
-  EVENT_PARTICIPATION_REQUESTS_EXPAND_REQUEST,
-  EVENT_PARTICIPATION_REQUESTS_EXPAND_SUCCESS,
-  EVENT_PARTICIPATION_REQUESTS_EXPAND_FAIL,
-  EVENT_PARTICIPATION_REQUEST_AUTHORIZE_REQUEST,
-  EVENT_PARTICIPATION_REQUEST_AUTHORIZE_SUCCESS,
-  EVENT_PARTICIPATION_REQUEST_AUTHORIZE_FAIL,
-  EVENT_PARTICIPATION_REQUEST_REJECT_REQUEST,
-  EVENT_PARTICIPATION_REQUEST_REJECT_SUCCESS,
-  EVENT_PARTICIPATION_REQUEST_REJECT_FAIL,
   EVENT_COMPOSE_CANCEL,
   EVENT_FORM_SET,
   RECENT_EVENTS_FETCH_REQUEST,
@@ -481,10 +309,6 @@ export {
   submitEvent,
   joinEvent,
   leaveEvent,
-  fetchEventParticipationRequests,
-  expandEventParticipationRequests,
-  authorizeEventParticipationRequest,
-  rejectEventParticipationRequest,
   fetchEventIcs,
   cancelEventCompose,
   initEventEdit,

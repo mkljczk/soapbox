@@ -33,7 +33,7 @@ type ExportDataAction = {
   | typeof EXPORT_BLOCKS_SUCCESS
   | typeof EXPORT_MUTES_SUCCESS;
 } | {
-  type:  typeof EXPORT_FOLLOWS_FAIL
+  type: typeof EXPORT_FOLLOWS_FAIL
   | typeof EXPORT_BLOCKS_FAIL
   | typeof EXPORT_MUTES_FAIL;
   error?: unknown;

@@ -11,7 +11,7 @@ const useEventParticipations = (statusId: string) => {
 
   return useInfiniteQuery({
     queryKey: ['accountsLists', 'eventParticipations', statusId],
-    queryFn:  ({ pageParam }) => pageParam.next?.() || client.events.getEventParticipations(statusId).then(minifyAccountList),
+    queryFn: ({ pageParam }) => pageParam.next?.() || client.events.getEventParticipations(statusId).then(minifyAccountList),
     initialPageParam: { previous: null, next: null, items: [], partial: false } as PaginatedResponse<string>,
     getNextPageParam: (page) => page.next ? page : undefined,
     select: (data) => data.pages.map(page => page.items).flat(),
