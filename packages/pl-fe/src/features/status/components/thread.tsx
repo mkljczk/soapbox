@@ -143,18 +143,16 @@ const Thread: React.FC<IThread> = ({
   const handleModalReblog = (status: Pick<SelectedStatus, 'id'>) => dispatch(reblog(status));
 
   const handleReblogClick = (status: SelectedStatus, e?: React.MouseEvent) => {
-    dispatch((_, getState) => {
-      const boostModal = settings.boostModal;
-      if (status.reblogged) {
-        dispatch(unreblog(status));
+    const boostModal = settings.boostModal;
+    if (status.reblogged) {
+      dispatch(unreblog(status));
+    } else {
+      if ((e && e.shiftKey) || !boostModal) {
+        handleModalReblog(status);
       } else {
-        if ((e && e.shiftKey) || !boostModal) {
-          handleModalReblog(status);
-        } else {
-          openModal('BOOST', { statusId: status.id, onReblog: handleModalReblog });
-        }
+        openModal('BOOST', { statusId: status.id, onReblog: handleModalReblog });
       }
-    });
+    }
   };
 
   const handleMentionClick = (account: Pick<Account, 'acct'>) => dispatch(mentionCompose(account));
