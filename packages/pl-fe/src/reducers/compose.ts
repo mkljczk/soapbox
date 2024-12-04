@@ -306,7 +306,9 @@ const updateDefaultContentType = (compose: Compose, instance: Instance) => {
 
 const updateCompose = (state: State, key: string, updater: (compose: Compose) => void) =>
   create(state, draft => {
-    draft[key] = draft[key] || create(draft.default, () => {});
+    draft[key] = draft[key] || create(draft.default, (draft) => {
+      draft.idempotencyKey = crypto.randomUUID();
+    });
     updater(draft[key]);
   });
   // state.update(key, state.get('default')!, updater);
@@ -616,8 +618,8 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
     case ME_FETCH_SUCCESS:
     case ME_PATCH_SUCCESS:
       return updateCompose(state, 'default', compose => importAccount(compose, action.me));
-    // case SETTING_CHANGE:
-    //   return updateCompose(state, 'default', compose => updateSetting(compose, action.path, action.value));
+      // case SETTING_CHANGE:
+      //   return updateCompose(state, 'default', compose => updateSetting(compose, action.path, action.value));
     case COMPOSE_EDITOR_STATE_SET:
       return updateCompose(state, action.composeId, compose => {
         if (!compose.modified_language || compose.modified_language === compose.language) {
