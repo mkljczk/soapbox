@@ -1,7 +1,7 @@
+import { useMutation, type InfiniteData } from '@tanstack/react-query';
 
-import { useInfiniteQuery, useMutation, type InfiniteData } from '@tanstack/react-query';
-
-import { minifyAccountList } from 'pl-fe/api/normalizers/minify-list';
+import { makePaginatedResponseQuery } from 'pl-fe/api/utils/make-paginated-response-query';
+import { minifyAccountList } from 'pl-fe/api/utils/minify-list';
 import { useClient } from 'pl-fe/hooks/use-client';
 import { queryClient } from 'pl-fe/queries/client';
 
@@ -23,17 +23,11 @@ const removeFollowRequest = (accountId: string) =>
     pages: data.pages.map(({ items, ...page }) => ({ ...page, items: items.filter((id) => id !== accountId) })),
   } : undefined);
 
-const makeUseFollowRequests = <T>(select: ((data: InfiniteData<PaginatedResponse<string, true>, PaginatedResponse<string, true>>) => T)) => () => {
-  const client = useClient();
-
-  return useInfiniteQuery({
-    queryKey: ['accountsLists', 'followRequests'],
-    queryFn: ({ pageParam }) => pageParam.next?.() || client.myAccount.getFollowRequests().then(minifyAccountList),
-    initialPageParam: { previous: null, next: null, items: [], partial: false } as PaginatedResponse<string>,
-    getNextPageParam: (page) => page.next ? page : undefined,
-    select,
-  });
-};
+const makeUseFollowRequests = <T>(select: ((data: InfiniteData<PaginatedResponse<string>>) => T)) => makePaginatedResponseQuery(
+  () => ['accountsLists', 'followRequests'],
+  (client) => client.myAccount.getFollowRequests().then(minifyAccountList),
+  select,
+);
 
 const useFollowRequests = makeUseFollowRequests((data) => data.pages.map(page => page.items).flat());
 

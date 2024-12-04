@@ -1,33 +1,25 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { importEntities } from 'pl-fe/actions/importer';
-import { minifyAccountList } from 'pl-fe/api/normalizers/minify-list';
+import { makePaginatedResponseQuery } from 'pl-fe/api/utils/make-paginated-response-query';
+import { minifyAccountList } from 'pl-fe/api/utils/minify-list';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useClient } from 'pl-fe/hooks/use-client';
 
-import type { PaginatedResponse } from 'pl-api';
-
-const useStatusInteractions = (statusId: string, method: 'getDislikedBy' | 'getFavouritedBy' | 'getRebloggedBy') => {
-  const client = useClient();
-
-  const queryKey = {
-    getDislikedBy: 'statusDislikes',
-    getFavouritedBy: 'statusFavourites',
-    getRebloggedBy: 'statusReblogs',
-  }[method];
-
-  return useInfiniteQuery({
-    queryKey: ['accountsLists', queryKey, statusId],
-    queryFn: ({ pageParam }) => pageParam.next?.() || client.statuses[method](statusId).then(minifyAccountList),
-    initialPageParam: { previous: null, next: null, items: [], partial: false } as PaginatedResponse<string>,
-    getNextPageParam: (page) => page.next ? page : undefined,
-    select: (data) => data.pages.map(page => page.items).flat(),
-  });
+const queryKey = {
+  getDislikedBy: 'statusDislikes',
+  getFavouritedBy: 'statusFavourites',
+  getRebloggedBy: 'statusReblogs',
 };
 
-const useStatusDislikes = (statusId: string) => useStatusInteractions(statusId, 'getDislikedBy');
-const useStatusFavourites = (statusId: string) => useStatusInteractions(statusId, 'getFavouritedBy');
-const useStatusReblogs = (statusId: string) => useStatusInteractions(statusId, 'getRebloggedBy');
+const makeUseStatusInteractions = (method: 'getDislikedBy' | 'getFavouritedBy' | 'getRebloggedBy') => makePaginatedResponseQuery(
+  (statusId: string) => ['accountsLists', queryKey[method], statusId],
+  (client, params) => client.statuses[method](...params).then(minifyAccountList),
+);
+
+const useStatusDislikes = makeUseStatusInteractions('getDislikedBy');
+const useStatusFavourites = makeUseStatusInteractions('getFavouritedBy');
+const useStatusReblogs = makeUseStatusInteractions('getRebloggedBy');
 
 const useStatusReactions = (statusId: string, emoji?: string) => {
   const client = useClient();

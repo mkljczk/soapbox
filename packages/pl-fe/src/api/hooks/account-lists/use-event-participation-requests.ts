@@ -2,7 +2,8 @@
 import { type InfiniteData, useInfiniteQuery, useMutation } from '@tanstack/react-query';
 
 import { importEntities } from 'pl-fe/actions/importer';
-import { minifyList } from 'pl-fe/api/normalizers/minify-list';
+import { makePaginatedResponseQuery } from 'pl-fe/api/utils/make-paginated-response-query';
+import { minifyList } from 'pl-fe/api/utils/minify-list';
 import { useClient } from 'pl-fe/hooks/use-client';
 import { queryClient } from 'pl-fe/queries/client';
 import { store } from 'pl-fe/store';
@@ -24,17 +25,10 @@ const removeRequest = (statusId: string, accountId: string) =>
     pages: data.pages.map(({ items, ...page }) => ({ ...page, items: items.filter(({ account_id }) => account_id !== accountId) })),
   } : undefined);
 
-const useEventParticipationRequests = (statusId: string) => {
-  const client = useClient();
-
-  return useInfiniteQuery({
-    queryKey: ['accountsLists', 'eventParticipationRequests', statusId],
-    queryFn: ({ pageParam }) => pageParam.next?.() || client.events.getEventParticipationRequests(statusId).then(minifyRequestList),
-    initialPageParam: { previous: null, next: null, items: [], partial: false } as MinifiedRequestList,
-    getNextPageParam: (page) => page.next ? page : undefined,
-    select: (data) => data.pages.map(page => page.items).flat(),
-  });
-};
+const useEventParticipationRequests = makePaginatedResponseQuery(
+  (statusId: string) => ['accountsLists', 'eventParticipationRequests', statusId],
+  (client, params) => client.events.getEventParticipationRequests(...params).then(minifyRequestList),
+);
 
 const useAcceptEventParticipationRequestMutation = (statusId: string, accountId: string) => {
   const client = useClient();
