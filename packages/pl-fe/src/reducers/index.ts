@@ -9,7 +9,6 @@ import admin from './admin';
 import admin_user_index from './admin-user-index';
 import aliases from './aliases';
 import auth from './auth';
-import backups from './backups';
 import compose from './compose';
 import contexts from './contexts';
 import conversations from './conversations';
@@ -43,7 +42,6 @@ const reducers = {
   admin_user_index,
   aliases,
   auth,
-  backups,
   compose,
   contexts,
   conversations,
