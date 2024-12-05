@@ -10,7 +10,7 @@ const useBackupsQuery = () => {
   return useQuery({
     queryKey: ['settings', 'backups'],
     queryFn: () => client.settings.getBackups(),
-    select: (backups) => backups.toSorted((a, b) => a.inserted_at.localeCompare(b.inserted_at)),
+    select: (backups) => backups.toSorted((a, b) => b.inserted_at.localeCompare(a.inserted_at)),
   });
 };
 
