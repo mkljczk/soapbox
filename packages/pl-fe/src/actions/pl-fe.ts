@@ -101,11 +101,7 @@ export {
   PLFE_CONFIG_REQUEST_FAIL,
   PLFE_CONFIG_REMEMBER_SUCCESS,
   getPlFeConfig,
-  rememberPlFeConfig,
-  fetchFrontendConfigurations,
   fetchPlFeConfig,
   loadPlFeConfig,
-  fetchPlFeJson,
   importPlFeConfig,
-  plFeConfigFail,
 };
