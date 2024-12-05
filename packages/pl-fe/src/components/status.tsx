@@ -299,11 +299,7 @@ const Status: React.FC<IStatus> = (props) => {
   if (!status) return null;
 
   if (status.deleted) return (
-    <Tombstone
-      id={status.id}
-      onMoveUp={onMoveUp}
-      onMoveDown={onMoveDown}
-    />
+    <Tombstone id={status.id} onMoveUp={onMoveUp} onMoveDown={onMoveDown} deleted />
   );
 
   if (filtered && status.showFiltered !== false) {

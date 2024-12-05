@@ -1543,6 +1543,7 @@
   "status_list.queue_label": "Click to see {count} new {count, plural, one {post} other {posts}}",
   "statuses.quote_tombstone": "Post is unavailable.",
   "statuses.tombstone": "One or more posts are unavailable.",
+  "statuses.tombstone.deleted": "The post is deleted.",
   "streamfield.add": "Add",
   "streamfield.remove": "Remove",
   "suggestions.dismiss": "Dismiss suggestion",

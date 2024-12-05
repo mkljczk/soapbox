@@ -329,7 +329,7 @@ const Thread: React.FC<IThread> = ({
   const focusedStatus = (
     <div className={clsx({ 'pb-4': hasDescendants })} key={status.id}>
       {status.deleted ? (
-        <Tombstone id={status.id} onMoveUp={handleMoveUp} onMoveDown={handleMoveDown} />
+        <Tombstone id={status.id} onMoveUp={handleMoveUp} onMoveDown={handleMoveDown} deleted />
       ) : (
         <HotKeys handlers={handlers}>
           <div

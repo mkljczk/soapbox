@@ -26,12 +26,7 @@ const ThreadStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
   if (isDeleted) {
     return (
       <div className='py-4 pb-8'>
-        <Tombstone
-          key={id}
-          id={id}
-          onMoveUp={props.onMoveUp}
-          onMoveDown={props.onMoveDown}
-        />
+        <Tombstone id={id} onMoveUp={props.onMoveUp} onMoveDown={props.onMoveDown} deleted />
       </div>
     );
   }
