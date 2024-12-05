@@ -328,31 +328,35 @@ const Thread: React.FC<IThread> = ({
 
   const focusedStatus = (
     <div className={clsx({ 'pb-4': hasDescendants })} key={status.id}>
-      <HotKeys handlers={handlers}>
-        <div
-          ref={statusRef}
-          className='focusable relative'
-          tabIndex={0}
-          // FIXME: no "reblogged by" text is added for the screen reader
-          aria-label={textForScreenReader(intl, status)}
-        >
+      {status.deleted ? (
+        <Tombstone id={status.id} onMoveUp={handleMoveUp} onMoveDown={handleMoveDown} />
+      ) : (
+        <HotKeys handlers={handlers}>
+          <div
+            ref={statusRef}
+            className='focusable relative'
+            tabIndex={0}
+            // FIXME: no "reblogged by" text is added for the screen reader
+            aria-label={textForScreenReader(intl, status)}
+          >
 
-          <DetailedStatus
-            status={status}
-            withMedia={withMedia}
-            onOpenCompareHistoryModal={handleOpenCompareHistoryModal}
-          />
+            <DetailedStatus
+              status={status}
+              withMedia={withMedia}
+              onOpenCompareHistoryModal={handleOpenCompareHistoryModal}
+            />
 
-          <hr className='-mx-4 mb-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />
+            <hr className='-mx-4 mb-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />
 
-          <StatusActionBar
-            status={status}
-            expandable={isModal}
-            space='lg'
-            withLabels
-          />
-        </div>
-      </HotKeys>
+            <StatusActionBar
+              status={status}
+              expandable={isModal}
+              space='lg'
+              withLabels
+            />
+          </div>
+        </HotKeys>
+      )}
 
       {hasDescendants && (
         <hr className='-mx-4 mt-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />

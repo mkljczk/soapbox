@@ -51,25 +51,23 @@ const exportFollows = () => async (_dispatch: AppDispatch, getState: () => RootS
     });
 };
 
-const exportBlocks = () => (_dispatch: AppDispatch, getState: () => RootState) => {
-  return getClient(getState()).filtering.getBlocks({ limit: 40 })
+const exportBlocks = () => (_dispatch: AppDispatch, getState: () => RootState) =>
+  getClient(getState()).filtering.getBlocks({ limit: 40 })
     .then(listAccounts)
     .then((blocks) => {
       fileExport(blocks.join('\n'), 'export_block.csv');
 
       toast.success(messages.blocksSuccess);
     });
-};
 
-const exportMutes = () => (_dispatch: AppDispatch, getState: () => RootState) => {
-  return getClient(getState()).filtering.getMutes({ limit: 40 })
+const exportMutes = () => (_dispatch: AppDispatch, getState: () => RootState) =>
+  getClient(getState()).filtering.getMutes({ limit: 40 })
     .then(listAccounts)
     .then((mutes) => {
       fileExport(mutes.join('\n'), 'export_mutes.csv');
 
       toast.success(messages.mutesSuccess);
     });
-};
 
 export {
   exportFollows,
