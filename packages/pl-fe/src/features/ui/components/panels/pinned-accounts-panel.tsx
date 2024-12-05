@@ -15,7 +15,7 @@ interface IPinnedAccountsPanel {
 }
 
 const PinnedAccountsPanel: React.FC<IPinnedAccountsPanel> = ({ account, limit }) => {
-  const { data: pinned = [] } = useEndorsedAccounts(accountId);
+  const { data: pinned = [] } = useEndorsedAccounts(account.id);
 
   if (!pinned.length) {
     return (
