@@ -46,7 +46,7 @@ const CreateApp: React.FC = () => {
   const handleCreateApp = () => {
     const baseURL = getBaseURL(account!);
 
-    return dispatch(createApp(params, baseURL))
+    return createApp(params, baseURL)
       .then(app => {
         setApp(app);
         return app;
