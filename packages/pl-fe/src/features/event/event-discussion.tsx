@@ -43,9 +43,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statu
 
   const node = useRef<HTMLDivElement>(null);
 
-  const fetchData = () => {
-    return dispatch(fetchStatusWithContext(statusId, intl));
-  };
+  const fetchData = () => dispatch(fetchStatusWithContext(statusId, intl));
 
   useEffect(() => {
     fetchData().then(() => {

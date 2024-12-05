@@ -118,7 +118,7 @@ const createAppToken = () =>
       scope: getScopes(getState()),
     };
 
-    return dispatch(obtainOAuthToken(params)).then((token) =>
+    return obtainOAuthToken(params).then((token) =>
       dispatch<AuthAppAuthorizedAction>({ type: AUTH_APP_AUTHORIZED, app, token }),
     );
   };
@@ -137,7 +137,7 @@ const createUserToken = (username: string, password: string) =>
       scope: getScopes(getState()),
     };
 
-    return dispatch(obtainOAuthToken(params))
+    return obtainOAuthToken(params)
       .then((token) => dispatch(authLoggedIn(token)));
   };
 
@@ -212,14 +212,13 @@ interface AuthAccountRememberSuccessAction {
 }
 
 const rememberAuthAccount = (accountUrl: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    return KVStore.getItemOrError(`authAccount:${accountUrl}`).then(account => {
+  (dispatch: AppDispatch, getState: () => RootState) =>
+    KVStore.getItemOrError(`authAccount:${accountUrl}`).then(account => {
       dispatch(importEntities({ accounts: [account] }));
       dispatch<AuthAccountRememberSuccessAction>({ type: AUTH_ACCOUNT_REMEMBER_SUCCESS, account, accountUrl });
       if (account.id === getState().me) dispatch(fetchMeSuccess(account));
       return account;
     });
-  };
 
 const loadCredentials = (token: string, accountUrl: string) =>
   (dispatch: AppDispatch) => dispatch(rememberAuthAccount(accountUrl))

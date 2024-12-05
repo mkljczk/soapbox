@@ -13,7 +13,6 @@ const SCHEDULED_STATUSES_EXPAND_FAIL = 'SCHEDULED_STATUSES_EXPAND_FAIL' as const
 
 const SCHEDULED_STATUS_CANCEL_REQUEST = 'SCHEDULED_STATUS_CANCEL_REQUEST' as const;
 const SCHEDULED_STATUS_CANCEL_SUCCESS = 'SCHEDULED_STATUS_CANCEL_SUCCESS' as const;
-const SCHEDULED_STATUS_CANCEL_FAIL = 'SCHEDULED_STATUS_CANCEL_FAIL' as const;
 
 const fetchScheduledStatuses = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
@@ -46,19 +45,11 @@ interface ScheduledStatusCancelSuccessAction {
   statusId: string;
 }
 
-interface ScheduledStatusCancelFailAction {
-  type: typeof SCHEDULED_STATUS_CANCEL_FAIL;
-  statusId: string;
-  error: unknown;
-}
-
 const cancelScheduledStatus = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch<ScheduledStatusCancelRequestAction>({ type: SCHEDULED_STATUS_CANCEL_REQUEST, statusId });
     return getClient(getState()).scheduledStatuses.cancelScheduledStatus(statusId).then(() => {
       dispatch<ScheduledStatusCancelSuccessAction>({ type: SCHEDULED_STATUS_CANCEL_SUCCESS, statusId });
-    }).catch(error => {
-      dispatch<ScheduledStatusCancelFailAction>({ type: SCHEDULED_STATUS_CANCEL_FAIL, statusId, error });
     });
   };
 
@@ -112,7 +103,6 @@ const expandScheduledStatusesFail = (error: unknown) => ({
 type ScheduledStatusesAction =
   | ScheduledStatusCancelRequestAction
   | ScheduledStatusCancelSuccessAction
-  | ScheduledStatusCancelFailAction
   | ReturnType<typeof fetchScheduledStatusesRequest>
   | ReturnType<typeof fetchScheduledStatusesSuccess>
   | ReturnType<typeof fetchScheduledStatusesFail>
@@ -129,7 +119,6 @@ export {
   SCHEDULED_STATUSES_EXPAND_FAIL,
   SCHEDULED_STATUS_CANCEL_REQUEST,
   SCHEDULED_STATUS_CANCEL_SUCCESS,
-  SCHEDULED_STATUS_CANCEL_FAIL,
   fetchScheduledStatuses,
   cancelScheduledStatus,
   expandScheduledStatuses,

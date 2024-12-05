@@ -88,7 +88,7 @@ const loginWithCode = (code: string) =>
       code,
     };
 
-    return dispatch(obtainOAuthToken(params, baseURL))
+    return obtainOAuthToken(params, baseURL)
       .then((token) => dispatch(authLoggedIn(token)))
       .then(({ access_token }) => dispatch(verifyCredentials(access_token, baseURL)))
       .then((account) => dispatch(switchAccount(account.id)))

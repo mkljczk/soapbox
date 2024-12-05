@@ -111,21 +111,19 @@ const approveUser = (accountId: string) =>
   };
 
 const deleteStatus = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    return getClient(getState).admin.statuses.deleteStatus(statusId)
+  (dispatch: AppDispatch, getState: () => RootState) =>
+    getClient(getState).admin.statuses.deleteStatus(statusId)
       .then(() => {
         dispatch(deleteFromTimelines(statusId));
         return ({ statusId });
       });
-  };
 
 const toggleStatusSensitivity = (statusId: string, sensitive: boolean) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    return getClient(getState).admin.statuses.updateStatus(statusId, { sensitive: !sensitive })
+  (dispatch: AppDispatch, getState: () => RootState) =>
+    getClient(getState).admin.statuses.updateStatus(statusId, { sensitive: !sensitive })
       .then((status) => {
         dispatch(importEntities({ statuses: [status] }));
       });
-  };
 
 const tagUser = (accountId: string, tags: string[]) =>
   (dispatch: AppDispatch, getState: () => RootState) =>

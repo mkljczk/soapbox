@@ -8,12 +8,9 @@ import type { Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const EMOJI_REACT_REQUEST = 'EMOJI_REACT_REQUEST' as const;
-const EMOJI_REACT_SUCCESS = 'EMOJI_REACT_SUCCESS' as const;
 const EMOJI_REACT_FAIL = 'EMOJI_REACT_FAIL' as const;
 
 const UNEMOJI_REACT_REQUEST = 'UNEMOJI_REACT_REQUEST' as const;
-const UNEMOJI_REACT_SUCCESS = 'UNEMOJI_REACT_SUCCESS' as const;
-const UNEMOJI_REACT_FAIL = 'UNEMOJI_REACT_FAIL' as const;
 
 const noOp = () => () => new Promise(f => f(undefined));
 
@@ -25,7 +22,6 @@ const emojiReact = (status: Pick<Status, 'id'>, emoji: string, custom?: string) 
 
     return getClient(getState).statuses.createStatusReaction(status.id, emoji).then((response) => {
       dispatch(importEntities({ statuses: [response] }));
-      dispatch(emojiReactSuccess(response, emoji));
     }).catch((error) => {
       dispatch(emojiReactFail(status.id, emoji, error));
     });
@@ -39,9 +35,6 @@ const unEmojiReact = (status: Pick<Status, 'id'>, emoji: string) =>
 
     return getClient(getState).statuses.deleteStatusReaction(status.id, emoji).then(response => {
       dispatch(importEntities({ statuses: [response] }));
-      dispatch(unEmojiReactSuccess(response, emoji));
-    }).catch(error => {
-      dispatch(unEmojiReactFail(status.id, emoji, error));
     });
   };
 
@@ -50,13 +43,6 @@ const emojiReactRequest = (statusId: string, emoji: string, custom?: string) => 
   statusId,
   emoji,
   custom,
-});
-
-const emojiReactSuccess = (status: Status, emoji: string) => ({
-  type: EMOJI_REACT_SUCCESS,
-  status,
-  statusId: status.id,
-  emoji,
 });
 
 const emojiReactFail = (statusId: string, emoji: string, error: unknown) => ({
@@ -72,35 +58,15 @@ const unEmojiReactRequest = (statusId: string, emoji: string) => ({
   emoji,
 });
 
-const unEmojiReactSuccess = (status: Status, emoji: string) => ({
-  type: UNEMOJI_REACT_SUCCESS,
-  status,
-  statusId: status.id,
-  emoji,
-});
-
-const unEmojiReactFail = (statusId: string, emoji: string, error: unknown) => ({
-  type: UNEMOJI_REACT_FAIL,
-  statusId,
-  emoji,
-  error,
-});
-
 type EmojiReactsAction =
   | ReturnType<typeof emojiReactRequest>
-  | ReturnType<typeof emojiReactSuccess>
   | ReturnType<typeof emojiReactFail>
   | ReturnType<typeof unEmojiReactRequest>
-  | ReturnType<typeof unEmojiReactSuccess>
-  | ReturnType<typeof unEmojiReactFail>
 
 export {
   EMOJI_REACT_REQUEST,
-  EMOJI_REACT_SUCCESS,
   EMOJI_REACT_FAIL,
   UNEMOJI_REACT_REQUEST,
-  UNEMOJI_REACT_SUCCESS,
-  UNEMOJI_REACT_FAIL,
   emojiReact,
   unEmojiReact,
   type EmojiReactsAction,

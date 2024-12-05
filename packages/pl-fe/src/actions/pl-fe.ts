@@ -22,12 +22,11 @@ const getPlFeConfig = createSelector([
 ], (plfe) => v.parse(plFeConfigSchema, plfe));
 
 const rememberPlFeConfig = (host: string | null) =>
-  (dispatch: AppDispatch) => {
-    return KVStore.getItemOrError(`plfe_config:${host}`).then(plFeConfig => {
+  (dispatch: AppDispatch) =>
+    KVStore.getItemOrError(`plfe_config:${host}`).then(plFeConfig => {
       dispatch({ type: PLFE_CONFIG_REMEMBER_SUCCESS, host, plFeConfig });
       return plFeConfig;
     }).catch(() => {});
-  };
 
 const fetchFrontendConfigurations = () =>
   (dispatch: AppDispatch, getState: () => RootState) =>
