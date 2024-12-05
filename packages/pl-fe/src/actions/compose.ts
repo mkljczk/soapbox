@@ -432,7 +432,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
     }
 
     return dispatch(createStatus(params, idempotencyKey, statusId)).then((data) => {
-      if (!statusId && data.scheduled_at === null && data.visibility === 'direct' && getState().conversations.mounted <= 0 && history) {
+      if (!statusId && !data.in_reply_to_id && data.scheduled_at === null && data.visibility === 'direct' && history) {
         history.push('/conversations');
       }
       handleComposeSubmit(dispatch, getState, composeId, data, status, !!statusId);
