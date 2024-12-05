@@ -171,13 +171,7 @@ const unmuteStatus = (statusId: string) =>
   };
 
 const toggleMuteStatus = (status: Pick<Status, 'id' | 'muted'>) =>
-  (dispatch: AppDispatch) => {
-    if (status.muted) {
-      dispatch(unmuteStatus(status.id));
-    } else {
-      dispatch(muteStatus(status.id));
-    }
-  };
+  status.muted ? unmuteStatus(status.id) : muteStatus(status.id);
 
 // let TRANSLATIONS_QUEUE: Set<string> = new Set();
 // let TRANSLATIONS_TIMEOUT: NodeJS.Timeout | null = null;
