@@ -42,4 +42,4 @@ const useKickGroupMemberMutation = (groupId: string, accountId: string) => {
 
 type MinifiedGroupMember = ReturnType<typeof minifyGroupMembersList>['items'][0];
 
-export { useGroupMembers, useKickGroupMemberMutation, type MinifiedGroupMember };
+export { useGroupMembers, useKickGroupMemberMutation, removeGroupMember, type MinifiedGroupMember };

@@ -1,9 +1,11 @@
 import { useMutation, type InfiniteData } from '@tanstack/react-query';
 
-import { makePaginatedResponseQuery } from 'pl-fe/queries/utils/make-paginated-response-query';
-import { minifyAccountList } from 'pl-fe/queries/utils/minify-list';
 import { useClient } from 'pl-fe/hooks/use-client';
 import { queryClient } from 'pl-fe/queries/client';
+import { makePaginatedResponseQuery } from 'pl-fe/queries/utils/make-paginated-response-query';
+import { minifyAccountList } from 'pl-fe/queries/utils/minify-list';
+
+import { removeGroupMember } from './use-group-members';
 
 const appendGroupBlock = (groupId: string, accountId: string) =>
   queryClient.setQueryData<InfiniteData<ReturnType<typeof minifyAccountList>>>(['accountsLists', 'groupBlocks', groupId], (data) => {
@@ -32,7 +34,10 @@ const useBlockGroupUserMutation = (groupId: string, accountId: string) => {
   return useMutation({
     mutationKey: ['accountsLists', 'groupBlocks', groupId, accountId],
     mutationFn: () => client.experimental.groups.blockGroupUsers(groupId, [accountId]),
-    onSettled: () => appendGroupBlock(groupId, accountId),
+    onSettled: () => {
+      removeGroupMember(groupId, accountId);
+      appendGroupBlock(groupId, accountId);
+    },
   });
 };
 
