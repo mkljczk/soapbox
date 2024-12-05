@@ -1,7 +1,5 @@
 import { create } from 'mutative';
 
-import { PINNED_ACCOUNTS_FETCH_SUCCESS, type AccountsAction } from 'pl-fe/actions/accounts';
-import { FAMILIAR_FOLLOWERS_FETCH_SUCCESS, type FamiliarFollowersAction } from 'pl-fe/actions/familiar-followers';
 import {
   GROUP_BLOCKS_FETCH_REQUEST,
   GROUP_BLOCKS_FETCH_SUCCESS,
@@ -18,13 +16,11 @@ interface List {
   isLoading: boolean;
 }
 
-type NestedListKey = 'pinned' | 'familiar_followers' | 'group_blocks';
+type NestedListKey = 'group_blocks';
 
 type State = Record<NestedListKey, Record<string, List>>;
 
 const initialState: State = {
-  pinned: {},
-  familiar_followers: {},
   group_blocks: {},
 };
 
@@ -37,12 +33,8 @@ const normalizeList = (state: State, path: NestedListPath, accounts: Array<Pick<
     draft[path[0]][path[1]] = newList;
   });
 
-const userLists = (state = initialState, action: AccountsAction | FamiliarFollowersAction | GroupsAction): State => {
+const userLists = (state = initialState, action: GroupsAction): State => {
   switch (action.type) {
-    case PINNED_ACCOUNTS_FETCH_SUCCESS:
-      return normalizeList(state, ['pinned', action.accountId], action.accounts, action.next);
-    case FAMILIAR_FOLLOWERS_FETCH_SUCCESS:
-      return normalizeList(state, ['familiar_followers', action.accountId], action.accounts);
     case GROUP_BLOCKS_FETCH_SUCCESS:
       return normalizeList(state, ['group_blocks', action.groupId], action.accounts, action.next);
     case GROUP_BLOCKS_FETCH_REQUEST:

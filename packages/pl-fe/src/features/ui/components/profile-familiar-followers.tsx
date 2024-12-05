@@ -1,17 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FormattedList, FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { fetchAccountFamiliarFollowers } from 'pl-fe/actions/familiar-followers';
+import { useFamiliarFollowers } from 'pl-fe/api/hooks/account-lists/use-familiar-followers';
 import AvatarStack from 'pl-fe/components/avatar-stack';
 import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
 import HStack from 'pl-fe/components/ui/hstack';
 import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import Emojify from 'pl-fe/features/emoji/emojify';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useFeatures } from 'pl-fe/hooks/use-features';
 import { makeGetAccount } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
@@ -25,17 +23,8 @@ interface IProfileFamiliarFollowers {
 
 const ProfileFamiliarFollowers: React.FC<IProfileFamiliarFollowers> = ({ account }) => {
   const { openModal } = useModalsStore();
-  const dispatch = useAppDispatch();
-  const me = useAppSelector((state) => state.me);
-  const features = useFeatures();
-  const familiarFollowerIds = useAppSelector(state => state.user_lists.familiar_followers[account.id]?.items || []);
+  const { data: familiarFollowerIds = [] } = useFamiliarFollowers(account.id);
   const familiarFollowers = useAppSelector(state => familiarFollowerIds.slice(0, 2).map(accountId => getAccount(state, accountId)));
-
-  useEffect(() => {
-    if (me && features.familiarFollowers) {
-      dispatch(fetchAccountFamiliarFollowers(account.id));
-    }
-  }, [account.id]);
 
   const openFamiliarFollowersModal = () => {
     openModal('FAMILIAR_FOLLOWERS', {

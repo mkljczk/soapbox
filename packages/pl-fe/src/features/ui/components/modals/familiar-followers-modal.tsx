@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { useFamiliarFollowers } from 'pl-fe/api/hooks/account-lists/use-familiar-followers';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
@@ -20,7 +21,7 @@ interface FamiliarFollowersModalProps {
 const FamiliarFollowersModal: React.FC<BaseModalProps & FamiliarFollowersModalProps> = ({ accountId, onClose }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const account = useAppSelector(state => getAccount(state, accountId));
-  const familiarFollowerIds = useAppSelector(state => state.user_lists.familiar_followers[accountId]?.items || []);
+  const { data: familiarFollowerIds } = useFamiliarFollowers(accountId);
 
   const onClickClose = () => {
     onClose('FAMILIAR_FOLLOWERS');

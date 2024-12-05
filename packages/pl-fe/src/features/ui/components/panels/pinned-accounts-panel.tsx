@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { fetchPinnedAccounts } from 'pl-fe/actions/accounts';
+import { useEndorsedAccounts } from 'pl-fe/api/hooks/account-lists/use-endorsed-accounts';
 import Widget from 'pl-fe/components/ui/widget';
 import AccountContainer from 'pl-fe/containers/account-container';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { WhoToFollowPanel } from 'pl-fe/features/ui/util/async-components';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import type { Account } from 'pl-fe/normalizers/account';
 
@@ -17,12 +15,7 @@ interface IPinnedAccountsPanel {
 }
 
 const PinnedAccountsPanel: React.FC<IPinnedAccountsPanel> = ({ account, limit }) => {
-  const dispatch = useAppDispatch();
-  const pinned = useAppSelector((state) => state.user_lists.pinned[account.id]?.items || []).slice(0, limit);
-
-  useEffect(() => {
-    dispatch(fetchPinnedAccounts(account.id));
-  }, []);
+  const { data: pinned = [] } = useEndorsedAccounts(accountId);
 
   if (!pinned.length) {
     return (

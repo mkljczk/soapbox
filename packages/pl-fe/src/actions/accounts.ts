@@ -38,10 +38,6 @@ const ACCOUNT_MUTE_REQUEST = 'ACCOUNT_MUTE_REQUEST' as const;
 const ACCOUNT_MUTE_SUCCESS = 'ACCOUNT_MUTE_SUCCESS' as const;
 const ACCOUNT_MUTE_FAIL = 'ACCOUNT_MUTE_FAIL' as const;
 
-const PINNED_ACCOUNTS_FETCH_REQUEST = 'PINNED_ACCOUNTS_FETCH_REQUEST' as const;
-const PINNED_ACCOUNTS_FETCH_SUCCESS = 'PINNED_ACCOUNTS_FETCH_SUCCESS' as const;
-const PINNED_ACCOUNTS_FETCH_FAIL = 'PINNED_ACCOUNTS_FETCH_FAIL' as const;
-
 const ACCOUNT_SEARCH_REQUEST = 'ACCOUNT_SEARCH_REQUEST' as const;
 const ACCOUNT_SEARCH_SUCCESS = 'ACCOUNT_SEARCH_SUCCESS' as const;
 const ACCOUNT_SEARCH_FAIL = 'ACCOUNT_SEARCH_FAIL' as const;
@@ -342,36 +338,6 @@ const updateNotificationSettings = (params: UpdateNotificationSettingsParams) =>
     });
   };
 
-const fetchPinnedAccounts = (accountId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(fetchPinnedAccountsRequest(accountId));
-
-    return getClient(getState).accounts.getAccountEndorsements(accountId).then(response => {
-      dispatch(importEntities({ accounts: response }));
-      dispatch(fetchPinnedAccountsSuccess(accountId, response, null));
-    }).catch(error => {
-      dispatch(fetchPinnedAccountsFail(accountId, error));
-    });
-  };
-
-const fetchPinnedAccountsRequest = (accountId: string) => ({
-  type: PINNED_ACCOUNTS_FETCH_REQUEST,
-  accountId,
-});
-
-const fetchPinnedAccountsSuccess = (accountId: string, accounts: Array<Account>, next: null) => ({
-  type: PINNED_ACCOUNTS_FETCH_SUCCESS,
-  accountId,
-  accounts,
-  next,
-});
-
-const fetchPinnedAccountsFail = (accountId: string, error: unknown) => ({
-  type: PINNED_ACCOUNTS_FETCH_FAIL,
-  accountId,
-  error,
-});
-
 interface AccountSearchRequestAction {
   type: typeof ACCOUNT_SEARCH_REQUEST;
   params: {
@@ -452,9 +418,6 @@ type AccountsAction =
   | NotificationSettingsRequestAction
   | NotificationSettingsSuccessAction
   | NotificationSettingsFailAction
-  | ReturnType<typeof fetchPinnedAccountsRequest>
-  | ReturnType<typeof fetchPinnedAccountsSuccess>
-  | ReturnType<typeof fetchPinnedAccountsFail>
   | AccountSearchRequestAction
   | AccountSearchSuccessAction
   | AccountSearchFailAction
@@ -475,9 +438,6 @@ export {
   ACCOUNT_MUTE_REQUEST,
   ACCOUNT_MUTE_SUCCESS,
   ACCOUNT_MUTE_FAIL,
-  PINNED_ACCOUNTS_FETCH_REQUEST,
-  PINNED_ACCOUNTS_FETCH_SUCCESS,
-  PINNED_ACCOUNTS_FETCH_FAIL,
   ACCOUNT_SEARCH_REQUEST,
   ACCOUNT_SEARCH_SUCCESS,
   ACCOUNT_SEARCH_FAIL,
@@ -499,7 +459,6 @@ export {
   pinAccount,
   unpinAccount,
   updateNotificationSettings,
-  fetchPinnedAccounts,
   accountSearch,
   accountLookup,
   biteAccount,
