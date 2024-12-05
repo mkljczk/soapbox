@@ -3,7 +3,6 @@ import { GroupRoles } from 'pl-api';
 import React, { useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { groupKick } from 'pl-fe/actions/groups';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import { useDemoteGroupMember } from 'pl-fe/api/hooks/groups/use-demote-group-member';
 import { usePromoteGroupMember } from 'pl-fe/api/hooks/groups/use-promote-group-member';
@@ -15,12 +14,12 @@ import { Entities } from 'pl-fe/entity-store/entities';
 import PlaceholderAccount from 'pl-fe/features/placeholder/components/placeholder-account';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/use-group-blocks';
+import { useKickGroupMemberMutation, type MinifiedGroupMember } from 'pl-fe/queries/groups/use-group-members';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
 import type { Menu as IMenu } from 'pl-fe/components/dropdown-menu';
 import type { Group } from 'pl-fe/normalizers/group';
-import type { MinifiedGroupMember } from 'pl-fe/queries/groups/use-group-members';
 
 const messages = defineMessages({
   adminLimitTitle: { id: 'group.member.admin.limit.title', defaultMessage: 'Admin limit reached' },
@@ -54,6 +53,7 @@ const GroupMemberListItem = ({ member, group }: IGroupMemberListItem) => {
   const { openModal } = useModalsStore();
 
   const { mutate: blockGroupMember } = useBlockGroupUserMutation(group.id, member.account_id);
+  const { mutate: kickGroupMember } = useKickGroupMemberMutation(group.id, member.account_id);
   const promoteGroupMember = usePromoteGroupMember(group, member);
   const demoteGroupMember = useDemoteGroupMember(group, member);
 
@@ -73,9 +73,9 @@ const GroupMemberListItem = ({ member, group }: IGroupMemberListItem) => {
       heading: intl.formatMessage(messages.kickFromGroupHeading, { name: account?.username }),
       message: intl.formatMessage(messages.kickFromGroupMessage, { name: account?.username }),
       confirm: intl.formatMessage(messages.kickConfirm),
-      onConfirm: () => dispatch(groupKick(group.id, account?.id as string)).then(() =>
-        toast.success(intl.formatMessage(messages.kicked, { name: account?.acct })),
-      ),
+      onConfirm: () => kickGroupMember(undefined, {
+        onSuccess: () => toast.success(intl.formatMessage(messages.kicked, { name: account?.acct })),
+      }),
     });
   };
 
