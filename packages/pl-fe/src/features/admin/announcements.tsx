@@ -47,7 +47,7 @@ const Announcement: React.FC<IAnnouncement> = ({ announcement }) => {
   };
 
   return (
-    <div key={announcement.id} className='dark:bg-primary-800 rounded-lg bg-gray-100 p-4'>
+    <div key={announcement.id} className='rounded-lg bg-gray-100 p-4 dark:bg-primary-800'>
       <Stack space={2}>
         <Text>
           <ParsedContent html={announcement.content} emojis={announcement.emojis} />

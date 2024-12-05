@@ -58,7 +58,7 @@ const HashtagTimeline: React.FC<IHashtagTimeline> = ({ params }) => {
       {features.followHashtags && isLoggedIn && (
         <List>
           <ListItem
-            className='black:mx-4 black:mb-0 mb-3'
+            className='mb-3 black:mx-4 black:mb-0'
             label={<FormattedMessage id='hashtag.follow' defaultMessage='Follow hashtag' />}
           >
             <Toggle

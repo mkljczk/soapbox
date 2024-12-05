@@ -93,7 +93,7 @@ interface IToolbarButton extends React.HTMLAttributes<HTMLButtonElement> {
 export const ToolbarButton: React.FC<IToolbarButton> = ({ active, icon, ...props }) => (
   <button
     className={clsx(
-      'dark:hover:bg-primary-700 flex cursor-pointer rounded-lg border-0 bg-none p-1 align-middle hover:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-none',
+      'flex cursor-pointer rounded-lg border-0 bg-none p-1 align-middle hover:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-none dark:hover:bg-primary-700',
       { 'bg-gray-100/30 dark:bg-gray-800/30': active },
     )}
     type='button'
@@ -185,7 +185,7 @@ const BlockTypeDropdown = ({ editor, anchorElem, blockType, icon }: {
     <>
       <button
         onClick={() => setShowDropDown(!showDropDown)}
-        className='dark:hover:bg-primary-700 relative flex cursor-pointer rounded-lg border-0 bg-none p-1 align-middle hover:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-none'
+        className='relative flex cursor-pointer rounded-lg border-0 bg-none p-1 align-middle hover:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-none dark:hover:bg-primary-700'
         aria-label=''
         type='button'
       >

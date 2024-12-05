@@ -273,7 +273,7 @@ const Status: React.FC<IStatus> = (props) => {
       return (
         <StatusInfo
           avatarSize={avatarSize}
-          icon={<Icon src={require('@tabler/icons/outline/circles.svg')} className='text-primary-600 dark:text-accent-blue size-4' />}
+          icon={<Icon src={require('@tabler/icons/outline/circles.svg')} className='size-4 text-primary-600 dark:text-accent-blue' />}
           text={
             <FormattedMessage
               id='status.group'
@@ -314,7 +314,7 @@ const Status: React.FC<IStatus> = (props) => {
           <Text theme='muted'>
             <FormattedMessage id='status.filtered' defaultMessage='Filtered' />: {status.filtered.join(', ')}.
             {' '}
-            <button className='text-primary-600 dark:text-accent-blue hover:underline' onClick={handleUnfilter}>
+            <button className='text-primary-600 hover:underline dark:text-accent-blue' onClick={handleUnfilter}>
               <FormattedMessage id='status.show_filter_reason' defaultMessage='Show anyway' />
             </button>
           </Text>

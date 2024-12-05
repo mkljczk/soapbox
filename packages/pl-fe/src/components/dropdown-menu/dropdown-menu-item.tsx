@@ -100,7 +100,7 @@ const DropdownMenuItem = ({ index, item, onClick, autoFocus, onSetTab }: IDropdo
   }
 
   return (
-    <li className='focus-visible:ring-primary-500 truncate focus-visible:ring-2'>
+    <li className='truncate focus-visible:ring-2 focus-visible:ring-primary-500'>
       <a
         href={item.href || item.to || '#'}
         role='button'
@@ -113,7 +113,7 @@ const DropdownMenuItem = ({ index, item, onClick, autoFocus, onSetTab }: IDropdo
         target={item.target}
         title={item.text}
         className={
-          clsx('black:hover:bg-gray-900 black:focus:bg-gray-900 mx-2 my-1 flex cursor-pointer items-center rounded-md px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-800 focus:outline-none dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-200 dark:focus:bg-gray-800 dark:focus:text-gray-200', {
+          clsx('mx-2 my-1 flex cursor-pointer items-center rounded-md px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-800 focus:outline-none black:hover:bg-gray-900 black:focus:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-200 dark:focus:bg-gray-800 dark:focus:text-gray-200', {
             'text-danger-600 dark:text-danger-400': item.destructive,
           })
         }

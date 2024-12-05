@@ -100,13 +100,13 @@ const Modal = React.forwardRef<HTMLDivElement, IModal>(({
     <div
       ref={ref}
       data-testid='modal'
-      className={clsx(className, 'black:bg-black dark:bg-primary-900 pointer-events-auto relative mx-auto flex max-h-[90vh] w-full flex-col overflow-auto rounded-2xl bg-white text-start align-middle text-gray-900 shadow-xl transition-all ease-in-out md:max-h-[80vh] dark:text-gray-100', widths[width], {
+      className={clsx(className, 'pointer-events-auto relative mx-auto flex max-h-[90vh] w-full flex-col overflow-auto rounded-2xl bg-white text-start align-middle text-gray-900 shadow-xl transition-all ease-in-out black:bg-black dark:bg-primary-900 dark:text-gray-100 md:max-h-[80vh]', widths[width], {
         'bottom-0': !firstRender,
         'no-reduce-motion:-bottom-32': firstRender,
       })}
     >
       {title && (
-        <div className='black:bg-black/80 dark:bg-primary-900/75 sticky top-0 z-10 bg-white/75 p-6 pb-2 backdrop-blur'>
+        <div className='sticky top-0 z-10 bg-white/75 p-6 pb-2 backdrop-blur black:bg-black/80 dark:bg-primary-900/75'>
           <div
             className={clsx('flex w-full items-center gap-2', {
               'flex-row-reverse': closePosition === 'left',
@@ -117,7 +117,7 @@ const Modal = React.forwardRef<HTMLDivElement, IModal>(({
                 src={require('@tabler/icons/outline/arrow-left.svg')}
                 title={intl.formatMessage(messages.back)}
                 onClick={onBack}
-                className='text-gray-500 hover:text-gray-700 rtl:rotate-180 dark:text-gray-300 dark:hover:text-gray-200'
+                className='text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200 rtl:rotate-180'
               />
             )}
 
@@ -130,7 +130,7 @@ const Modal = React.forwardRef<HTMLDivElement, IModal>(({
                 src={closeIcon}
                 title={intl.formatMessage(messages.close)}
                 onClick={onClose}
-                className='text-gray-500 hover:text-gray-700 rtl:rotate-180 dark:text-gray-300 dark:hover:text-gray-200'
+                className='text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200 rtl:rotate-180'
               />
             )}
           </div>

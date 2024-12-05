@@ -10,13 +10,13 @@ interface IInlineMultiselect<T extends string> {
 
 /** Allows to select many of available options. */
 const InlineMultiselect = <T extends string>({ items, value, onChange, disabled }: IInlineMultiselect<T>) => (
-  <div className='black:bg-black flex w-fit overflow-auto rounded-md border border-gray-400 bg-white dark:border-gray-800 dark:bg-gray-900'>
+  <div className='flex w-fit overflow-auto rounded-md border border-gray-400 bg-white black:bg-black dark:border-gray-800 dark:bg-gray-900'>
     {Object.entries(items).map(([key, label], i) => {
       const checked = value?.includes(key as T);
 
       return (
         <label
-          className={clsx('hover:bg-primary-700 [&:has(:focus-visible)]:bg-primary-700 whitespace-nowrap px-3 py-2 text-white transition-colors', {
+          className={clsx('whitespace-nowrap px-3 py-2 text-white transition-colors hover:bg-primary-700 [&:has(:focus-visible)]:bg-primary-700', {
             'cursor-pointer': !disabled,
             'opacity-75': disabled,
             'bg-gray-500': !checked,

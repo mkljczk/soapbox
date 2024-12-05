@@ -14,7 +14,7 @@ interface IProgressBar {
 /** A horizontal meter filled to the given percentage. */
 const ProgressBar: React.FC<IProgressBar> = ({ progress, size = 'md' }) => (
   <div
-    className={clsx('dark:bg-primary-800 h-2.5 w-full overflow-hidden rounded-lg bg-gray-300', {
+    className={clsx('h-2.5 w-full overflow-hidden rounded-lg bg-gray-300 dark:bg-primary-800', {
       'h-2.5': size === 'md',
       'h-[6px]': size === 'sm',
     })}
@@ -22,7 +22,7 @@ const ProgressBar: React.FC<IProgressBar> = ({ progress, size = 'md' }) => (
     <Motion defaultStyle={{ width: 0 }} style={{ width: spring(progress * 100) }}>
       {({ width }) => (
         <div
-          className='bg-secondary-500 h-full'
+          className='h-full bg-secondary-500'
           style={{ width: `${width}%` }}
         />
       )}

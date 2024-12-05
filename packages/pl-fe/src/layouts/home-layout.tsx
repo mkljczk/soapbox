@@ -59,7 +59,7 @@ const HomeLayout: React.FC<IHomeLayout> = ({ children }) => {
       <Layout.Main className={clsx('black:space-y-0 dark:divide-gray-800', { 'pt-3 sm:pt-0 space-y-3': !isMobile })}>
         {me && (
           <Card
-            className={clsx('black:border-b black:border-gray-800 relative z-[1] border-gray-200 transition dark:border-gray-800', {
+            className={clsx('relative z-[1] border-gray-200 transition black:border-b black:border-gray-800 dark:border-gray-800', {
               'border-2 border-primary-600 border-dashed z-[99]': isDragging,
               'ring-2 ring-offset-2 ring-primary-600': isDraggedOver,
               'border-b': isMobile,

@@ -152,7 +152,7 @@ const ChatComposer = React.forwardRef<HTMLTextAreaElement | null, IChatComposer>
 
   if (isBlocking) {
     return (
-      <div className='shadow-3xl mt-auto p-6 dark:border-t-2 dark:border-solid dark:border-gray-800'>
+      <div className='mt-auto p-6 shadow-3xl dark:border-t-2 dark:border-solid dark:border-gray-800'>
         <Stack space={3} alignItems='center'>
           <Text align='center' theme='muted'>
             {intl.formatMessage(messages.blocked)}
@@ -171,7 +171,7 @@ const ChatComposer = React.forwardRef<HTMLTextAreaElement | null, IChatComposer>
   }
 
   return (
-    <div className='shadow-3xl mt-auto px-4'>
+    <div className='mt-auto px-4 shadow-3xl'>
       {/* Spacer */}
       <div className='h-5' />
 

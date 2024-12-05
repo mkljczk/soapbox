@@ -265,7 +265,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
             ref={editorRef}
             className={transparent
               ? ''
-              : 'focus-within:border-primary-500 focus-within:ring-primary-500 dark:focus-within:border-primary-500 dark:focus-within:ring-primary-500 rounded-md border-gray-400 px-3 py-2 ring-2 dark:border-gray-800 dark:ring-gray-800'}
+              : 'rounded-md border-gray-400 px-3 py-2 ring-2 focus-within:border-primary-500 focus-within:ring-primary-500 dark:border-gray-800 dark:ring-gray-800 dark:focus-within:border-primary-500 dark:focus-within:ring-primary-500'}
             placeholderClassName={transparent ? '' : 'pt-2'}
             composeId={id}
             condensed={condensed}

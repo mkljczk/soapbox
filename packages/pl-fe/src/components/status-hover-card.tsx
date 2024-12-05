@@ -107,7 +107,7 @@ const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Card className='black:rounded-xl black:border black:border-gray-800 relative overflow-hidden'>
+      <Card className='relative overflow-hidden black:rounded-xl black:border black:border-gray-800'>
         <CardBody>
           {renderStatus(statusId)}
         </CardBody>

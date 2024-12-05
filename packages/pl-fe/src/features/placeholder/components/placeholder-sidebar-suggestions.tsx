@@ -15,7 +15,7 @@ const PlaceholderSidebarSuggestions = ({ limit }: { limit: number }) => {
         <HStack key={idx} alignItems='center' space={2} className='animate-pulse'>
           <Stack space={3} className='text-center'>
             <div
-              className='bg-primary-200 dark:bg-primary-700 mx-auto block size-9 rounded-full'
+              className='mx-auto block size-9 rounded-full bg-primary-200 dark:bg-primary-700'
             />
           </Stack>
 

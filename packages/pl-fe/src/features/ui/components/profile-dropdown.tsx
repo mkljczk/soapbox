@@ -114,7 +114,7 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
       component={ProfileDropdownMenu}
     >
       <button
-        className='focus:ring-primary-500 dark:focus:ring-primary-500 w-full rounded-lg focus:ring-2 focus:ring-offset-2 dark:ring-gray-800 dark:ring-offset-0'
+        className='w-full rounded-lg focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:ring-gray-800 dark:ring-offset-0 dark:focus:ring-primary-500'
         type='button'
       >
         {children}
@@ -129,7 +129,7 @@ interface MenuItemProps {
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({ className, menuItem }) => {
-  const baseClassName = clsx(className, 'focus:ring-primary-500 block w-full cursor-pointer truncate px-4 py-2.5 text-left text-sm text-gray-700 outline-none hover:bg-gray-100 focus:ring-2 focus:ring-offset-2 rtl:text-right dark:text-gray-500 dark:hover:bg-gray-800 dark:focus:ring-offset-0');
+  const baseClassName = clsx(className, 'block w-full cursor-pointer truncate px-4 py-2.5 text-left text-sm text-gray-700 outline-none hover:bg-gray-100 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-gray-500 dark:hover:bg-gray-800 dark:focus:ring-offset-0 rtl:text-right');
 
   if (menuItem.toggle) {
     return (
@@ -140,7 +140,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ className, menuItem }) => {
       </div>
     );
   } else if (!menuItem.text) {
-    return <hr className='black:border-t mx-2 my-1 border-t-2 border-gray-100 dark:border-gray-800' />;
+    return <hr className='mx-2 my-1 border-t-2 border-gray-100 black:border-t dark:border-gray-800' />;
   } else if (menuItem.action) {
     return (
       <button

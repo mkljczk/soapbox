@@ -70,7 +70,7 @@ const ChatList: React.FC<IChatList> = ({ onClickChat, parentRef, topOffset }) =>
 
       </div>
       <div
-        className={clsx('black:from-black pointer-events-none absolute inset-x-0 flex justify-center rounded-t-lg bg-gradient-to-b from-white to-transparent pb-12 pt-8 transition-opacity duration-500 dark:from-gray-900', {
+        className={clsx('pointer-events-none absolute inset-x-0 flex justify-center rounded-t-lg bg-gradient-to-b from-white to-transparent pb-12 pt-8 transition-opacity duration-500 black:from-black dark:from-gray-900', {
           'opacity-0': isNearTop,
           'opacity-100 black:opacity-50': !isNearTop,
         })}
@@ -79,7 +79,7 @@ const ChatList: React.FC<IChatList> = ({ onClickChat, parentRef, topOffset }) =>
         }}
       />
       <div
-        className={clsx('black:from-black pointer-events-none absolute inset-x-0 bottom-0 flex justify-center rounded-b-lg bg-gradient-to-t from-white to-transparent pb-8 pt-12 transition-opacity duration-500 dark:from-gray-900', {
+        className={clsx('pointer-events-none absolute inset-x-0 bottom-0 flex justify-center rounded-b-lg bg-gradient-to-t from-white to-transparent pb-8 pt-12 transition-opacity duration-500 black:from-black dark:from-gray-900', {
           'opacity-0': isNearBottom,
           'opacity-100 black:opacity-50': !isNearBottom,
         })}

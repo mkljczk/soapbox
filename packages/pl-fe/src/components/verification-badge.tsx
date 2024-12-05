@@ -24,8 +24,8 @@ const VerificationBadge: React.FC<IVerificationBadge> = ({ className }) => {
   const Element = icon.endsWith('.svg') ? Icon : 'img';
 
   return (
-    <span className='bg-accent-500 rounded-full' data-testid='verified-badge'>
-      <Element className={clsx('bg-accent-500 size-[16px] rounded-full stroke-[4] p-px text-white', className)} src={icon} alt={intl.formatMessage(messages.verified)} />
+    <span className='rounded-full bg-accent-500' data-testid='verified-badge'>
+      <Element className={clsx('size-[16px] rounded-full bg-accent-500 stroke-[4] p-px text-white', className)} src={icon} alt={intl.formatMessage(messages.verified)} />
     </span>
   );
 };

@@ -161,7 +161,7 @@ const Notifications = () => {
       placeholderCount={20}
       onLoadMore={handleLoadOlder}
       onScroll={handleScroll}
-      listClassName={clsx('black:divide-gray-800 dark:divide-primary-800 divide-y divide-solid divide-gray-200', {
+      listClassName={clsx('divide-y divide-solid divide-gray-200 black:divide-gray-800 dark:divide-primary-800', {
         'animate-pulse': displayedNotifications.length === 0,
       })}
     >

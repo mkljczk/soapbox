@@ -38,7 +38,7 @@ const IconPickerMenu: React.FC<IIconPickerMenu> = ({ icons, onPick, style }) => 
     return (
       <li key={icon} className='col-span-1 inline-block'>
         <button
-          className='dark:hover:bg-primary-800 flex items-center justify-center rounded-full p-1.5 hover:bg-gray-50'
+          className='flex items-center justify-center rounded-full p-1.5 hover:bg-gray-50 dark:hover:bg-primary-800'
           aria-label={name}
           title={name}
           onClick={() => handleClick(name)}
@@ -53,7 +53,7 @@ const IconPickerMenu: React.FC<IIconPickerMenu> = ({ icons, onPick, style }) => 
 
   return (
     <div
-      className='dark:bg-primary-900 h-[270px] overflow-x-hidden overflow-y-scroll rounded bg-white p-1.5 text-gray-900 dark:text-gray-100'
+      className='h-[270px] overflow-x-hidden overflow-y-scroll rounded bg-white p-1.5 text-gray-900 dark:bg-primary-900 dark:text-gray-100'
       aria-label={title}
       ref={setRef}
     >

@@ -6,7 +6,7 @@ interface IChatsLayout {
 
 /** Custom layout for chats on desktop. */
 const ChatsLayout: React.FC<IChatsLayout> = ({ children }) => (
-  <div className='black:border-gray-800 lg:black:border-l md:col-span-12 lg:col-span-9'>
+  <div className='black:border-gray-800 md:col-span-12 lg:col-span-9 lg:black:border-l'>
     {children}
   </div>
 );

@@ -35,7 +35,7 @@ const PlaceholderChatMessage = ({ isMyMessage = false }: { isMyMessage?: boolean
             })
           }
         >
-          <div style={{ width: messageLength, height: 20 }} className='bg-primary-50 dark:bg-primary-800 rounded-full' />
+          <div style={{ width: messageLength, height: 20 }} className='rounded-full bg-primary-50 dark:bg-primary-800' />
         </div>
 
         <div className={clsx({ 'order-1': !isMyMessage })}>
@@ -58,7 +58,7 @@ const PlaceholderChatMessage = ({ isMyMessage = false }: { isMyMessage?: boolean
             'order-2': !isMyMessage,
           })}
         >
-          <span style={{ width: 50, height: 12 }} className='bg-primary-50 dark:bg-primary-800 block rounded-full' />
+          <span style={{ width: 50, height: 12 }} className='block rounded-full bg-primary-50 dark:bg-primary-800' />
         </Text>
 
         <div className={clsx({ 'order-1': !isMyMessage })}>

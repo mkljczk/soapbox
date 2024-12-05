@@ -23,7 +23,7 @@ const StatusMention: React.FC<IStatusMention> = ({ accountId, fallback }) => {
     <HoverAccountWrapper accountId={accountId} element='span'>
       <Link
         to={`/@${account.acct}`}
-        className='text-primary-600 dark:text-accent-blue hover:underline'
+        className='text-primary-600 hover:underline dark:text-accent-blue'
         dir='ltr'
         onClick={(e) => e.stopPropagation()}
       >

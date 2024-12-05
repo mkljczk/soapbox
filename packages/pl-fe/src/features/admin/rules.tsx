@@ -46,7 +46,7 @@ const Rule: React.FC<IRule> = ({ rule }) => {
   };
 
   return (
-    <div key={rule.id} className='dark:bg-primary-800 rounded-lg bg-gray-100 p-4'>
+    <div key={rule.id} className='rounded-lg bg-gray-100 p-4 dark:bg-primary-800'>
       <Stack space={2}>
         <Text>{rule.text}</Text>
         <Text tag='span' theme='muted' size='sm'>{rule.hint}</Text>

@@ -177,7 +177,7 @@ const EditEvent: React.FC<IEditEvent> = ({ statusId }) => {
         labelText={<FormattedMessage id='compose_event.fields.banner_label' defaultMessage='Event banner' />}
         hintText={<FormattedMessage id='compose_event.fields.banner_hint' defaultMessage='PNG, GIF or JPG. Landscape format is preferred.' />}
       >
-        <div className='dark:sm:shadow-inset bg-primary-100 text-primary-500 relative flex h-24 items-center justify-center overflow-hidden rounded-lg sm:h-32 sm:shadow dark:bg-gray-800 dark:text-white'>
+        <div className='dark:sm:shadow-inset relative flex h-24 items-center justify-center overflow-hidden rounded-lg bg-primary-100 text-primary-500 dark:bg-gray-800 dark:text-white sm:h-32 sm:shadow'>
           {banner ? (
             <>
               <img className='size-full object-cover' src={banner.url} alt='' />
@@ -203,7 +203,7 @@ const EditEvent: React.FC<IEditEvent> = ({ statusId }) => {
       >
         <ComposeEditor
           key={String(isDisabled)}
-          className='focus-within:border-primary-500 focus-within:ring-primary-500 black:bg-black dark:focus-within:border-primary-500 dark:focus-within:ring-primary-500 block w-full rounded-md border border-gray-400 bg-white px-3 py-2 text-base text-gray-900 ring-1 placeholder:text-gray-600 sm:text-sm dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100 dark:ring-gray-800 dark:placeholder:text-gray-600'
+          className='block w-full rounded-md border border-gray-400 bg-white px-3 py-2 text-base text-gray-900 ring-1 placeholder:text-gray-600 focus-within:border-primary-500 focus-within:ring-primary-500 black:bg-black dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100 dark:ring-gray-800 dark:placeholder:text-gray-600 dark:focus-within:border-primary-500 dark:focus-within:ring-primary-500 sm:text-sm'
           placeholderClassName='pt-2'
           composeId={composeId}
           placeholder={intl.formatMessage(messages.eventDescriptionPlaceholder)}

@@ -82,7 +82,7 @@ const EventInformation: React.FC<IEventInformation> = ({ params }) => {
       text.push(
         <React.Fragment key='event-map'>
           <br />
-          <a href='#' className='text-primary-600 dark:text-accent-blue hover:underline' onClick={handleShowMap}>
+          <a href='#' className='text-primary-600 hover:underline dark:text-accent-blue' onClick={handleShowMap}>
             <FormattedMessage id='event.show_on_map' defaultMessage='Show on map' />
           </a>
         </React.Fragment>,
@@ -159,7 +159,7 @@ const EventInformation: React.FC<IEventInformation> = ({ params }) => {
         {status.event.links.map(link => (
           <HStack space={2} alignItems='center'>
             <Icon src={require('@tabler/icons/outline/link.svg')} />
-            <a href={link.remote_url || link.url} className='text-primary-600 dark:text-accent-blue hover:underline' target='_blank'>
+            <a href={link.remote_url || link.url} className='text-primary-600 hover:underline dark:text-accent-blue' target='_blank'>
               {(link.remote_url || link.url).replace(/^https?:\/\//, '')}
             </a>
           </HStack>

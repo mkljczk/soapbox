@@ -11,13 +11,13 @@ const PlaceholderGroupCard = () => {
 
   return (
     <div className='animate-pulse'>
-      <Stack className='black:bg-black dark:border-primary-800 dark:bg-primary-900 relative h-[240px] rounded-lg border border-solid border-gray-300 bg-white'>
+      <Stack className='relative h-[240px] rounded-lg border border-solid border-gray-300 bg-white black:bg-black dark:border-primary-800 dark:bg-primary-900'>
         {/* Group Cover Image */}
         <div className='relative grow basis-1/2 rounded-t-lg bg-gray-300 dark:bg-gray-800' />
 
         {/* Group Avatar */}
         <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>
-          <div className='dark:bg-primary-800 dark:ring-primary-900 size-16 rounded-lg bg-gray-500 ring-2 ring-white' />
+          <div className='size-16 rounded-lg bg-gray-500 ring-2 ring-white dark:bg-primary-800 dark:ring-primary-900' />
         </div>
 
         {/* Group Info */}

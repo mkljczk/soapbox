@@ -13,7 +13,7 @@ const ColumnForbidden = () => {
 
   return (
     <Column label={intl.formatMessage(messages.title)}>
-      <div className='bg-primary-50 flex min-h-[160px] flex-1 items-center justify-center rounded-lg p-10 text-center text-gray-900 dark:bg-gray-700 dark:text-gray-300'>
+      <div className='flex min-h-[160px] flex-1 items-center justify-center rounded-lg bg-primary-50 p-10 text-center text-gray-900 dark:bg-gray-700 dark:text-gray-300'>
         {intl.formatMessage(messages.body)}
       </div>
     </Column>

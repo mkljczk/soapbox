@@ -55,14 +55,14 @@ const ChatPage: React.FC<IChatPage> = ({ chatId }) => {
     <div
       ref={containerRef}
       style={{ height }}
-      className='black:bg-transparent dark:bg-primary-900 h-screen overflow-hidden bg-white text-gray-900 shadow-lg sm:rounded-t-xl dark:text-gray-100 dark:shadow-none'
+      className='h-screen overflow-hidden bg-white text-gray-900 shadow-lg black:bg-transparent dark:bg-primary-900 dark:text-gray-100 dark:shadow-none sm:rounded-t-xl'
     >
       <div
-        className='sm:black:divide-x grid h-full grid-cols-9 overflow-hidden dark:divide-solid dark:divide-gray-800 sm:dark:divide-x-2'
+        className='grid h-full grid-cols-9 overflow-hidden dark:divide-solid dark:divide-gray-800 sm:black:divide-x sm:dark:divide-x-2'
         data-testid='chat-page'
       >
         <Stack
-          className={clsx('dark:inset black:bg-black col-span-9 overflow-hidden bg-gradient-to-r from-white to-gray-100 sm:col-span-3 dark:bg-gray-900 dark:bg-none', {
+          className={clsx('dark:inset col-span-9 overflow-hidden bg-gradient-to-r from-white to-gray-100 black:bg-black dark:bg-gray-900 dark:bg-none sm:col-span-3', {
             'hidden sm:block': isSidebarHidden,
           })}
         >

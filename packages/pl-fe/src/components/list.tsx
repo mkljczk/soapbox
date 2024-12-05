@@ -56,7 +56,7 @@ const ListItem: React.FC<IListItem> = ({ className, label, hint, children, to, h
     return null;
   }), [children, domId]);
 
-  const classNames = clsx('from-gradient-start/20 to-gradient-end/20 dark:from-gradient-start/10 dark:to-gradient-end/10 flex items-center justify-between overflow-hidden bg-gradient-to-r first:rounded-t-lg last:rounded-b-lg',
+  const classNames = clsx('flex items-center justify-between overflow-hidden bg-gradient-to-r from-gradient-start/20 to-gradient-end/20 first:rounded-t-lg last:rounded-b-lg dark:from-gradient-start/10 dark:to-gradient-end/10',
     className,
     {
       'px-4 py-2': size === 'md',

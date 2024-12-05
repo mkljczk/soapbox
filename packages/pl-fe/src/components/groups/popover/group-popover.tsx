@@ -51,11 +51,11 @@ const GroupPopover = (props: IGroupPopoverContainer) => {
       content={
         <Stack space={4} className='w-80 pb-4'>
           <Stack
-            className='black:bg-white dark:border-primary-800 dark:bg-primary-900 relative h-60 rounded-lg bg-white'
+            className='relative h-60 rounded-lg bg-white black:bg-white dark:border-primary-800 dark:bg-primary-900'
             data-testid='group-card'
           >
             {/* Group Cover Image */}
-            <Stack grow className='bg-primary-100 relative basis-1/2 rounded-t-lg dark:bg-gray-800'>
+            <Stack grow className='relative basis-1/2 rounded-t-lg bg-primary-100 dark:bg-gray-800'>
               {group.header && (
                 <img
                   className='absolute inset-0 size-full rounded-t-lg object-cover'

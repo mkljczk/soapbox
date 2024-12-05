@@ -60,7 +60,7 @@ const CompareHistoryModal: React.FC<BaseModalProps & CompareHistoryModalProps> =
                     {poll.options.map((option: any) => (
                       <HStack alignItems='center' className='p-1 text-gray-900 dark:text-gray-300'>
                         <span
-                          className='border-primary-600 mr-2.5 inline-block size-4 flex-none rounded-full border border-solid'
+                          className='mr-2.5 inline-block size-4 flex-none rounded-full border border-solid border-primary-600'
                           tabIndex={0}
                           role='radio'
                         />

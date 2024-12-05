@@ -50,7 +50,7 @@ const Search = () => {
 
   return (
     <div
-      className='black:bg-black/80 dark:bg-primary-900/90 sticky top-[76px] z-10 w-full bg-white/90 backdrop-blur'
+      className='sticky top-[76px] z-10 w-full bg-white/90 backdrop-blur black:bg-black/80 dark:bg-primary-900/90'
     >
       <label htmlFor='search' className='sr-only'>{intl.formatMessage(messages.placeholder)}</label>
 

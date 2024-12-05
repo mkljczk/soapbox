@@ -7,7 +7,7 @@ interface ILogoText extends Pick<React.HTMLAttributes<HTMLHeadingElement>, 'dir'
 /** Big text in site colors, for displaying the site name. Resizes itself according to the screen size. */
 const LogoText: React.FC<ILogoText> = ({ children, dir }) => (
   <h1
-    className='from-accent-500 via-primary-500 to-gradient-end -my-5 overflow-hidden text-ellipsis bg-gradient-to-br bg-clip-text text-5xl font-extrabold !leading-tight text-transparent lg:text-6xl xl:text-7xl'
+    className='-my-5 overflow-hidden text-ellipsis bg-gradient-to-br from-accent-500 via-primary-500 to-gradient-end bg-clip-text text-5xl font-extrabold !leading-tight text-transparent lg:text-6xl xl:text-7xl'
     dir={dir}
   >
     {children}
