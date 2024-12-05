@@ -103,5 +103,4 @@ export {
   getPlFeConfig,
   fetchPlFeConfig,
   loadPlFeConfig,
-  importPlFeConfig,
 };
