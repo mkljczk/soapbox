@@ -300,7 +300,7 @@ const handleComposeSubmit = (dispatch: AppDispatch, getState: () => RootState, c
     dispatch(insertIntoTagHistory(composeId, data.tags || [], status));
     toast.success(edit ? messages.editSuccess : messages.success, {
       actionLabel: messages.view,
-      actionLink: `/@${data.account.acct}/posts/${data.id}`,
+      actionLink: data.visibility === 'direct' ? '/conversations' : `/@${data.account.acct}/posts/${data.id}`,
     });
   } else {
     toast.success(messages.scheduledSuccess, {
@@ -432,9 +432,6 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
     }
 
     return dispatch(createStatus(params, idempotencyKey, statusId)).then((data) => {
-      if (!statusId && !data.in_reply_to_id && data.scheduled_at === null && data.visibility === 'direct' && history) {
-        history.push('/conversations');
-      }
       handleComposeSubmit(dispatch, getState, composeId, data, status, !!statusId);
       onSuccess?.();
     }).catch((error) => {
