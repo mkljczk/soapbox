@@ -8,7 +8,6 @@ import Avatar from 'pl-fe/components/ui/avatar';
 import Card, { CardBody } from 'pl-fe/components/ui/card';
 import HStack from 'pl-fe/components/ui/hstack';
 import Layout from 'pl-fe/components/ui/layout';
-import ComposeForm from 'pl-fe/features/compose/components/compose-form';
 import LinkFooter from 'pl-fe/features/ui/components/link-footer';
 import {
   WhoToFollowPanel,
@@ -18,6 +17,7 @@ import {
   CryptoDonatePanel,
   BirthdayPanel,
   AnnouncementsPanel,
+  ComposeForm,
 } from 'pl-fe/features/ui/util/async-components';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
@@ -59,7 +59,7 @@ const HomeLayout: React.FC<IHomeLayout> = ({ children }) => {
       <Layout.Main className={clsx('black:space-y-0 dark:divide-gray-800', { 'pt-3 sm:pt-0 space-y-3': !isMobile })}>
         {me && (
           <Card
-            className={clsx('relative z-[1] border-gray-200 transition black:border-b black:border-gray-800 dark:border-gray-800', {
+            className={clsx('black:border-b black:border-gray-800 relative z-[1] border-gray-200 transition dark:border-gray-800', {
               'border-2 border-primary-600 border-dashed z-[99]': isDragging,
               'ring-2 ring-offset-2 ring-primary-600': isDraggedOver,
               'border-b': isMobile,

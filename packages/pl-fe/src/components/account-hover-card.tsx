@@ -124,7 +124,7 @@ const AccountHoverCard: React.FC<IAccountHoverCard> = ({ visible = true }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Card variant='rounded' className='relative isolate overflow-hidden black:rounded-xl black:border black:border-gray-800'>
+      <Card variant='rounded' className='black:rounded-xl black:border black:border-gray-800 relative isolate overflow-hidden'>
         <CardBody>
           <Stack space={2}>
             <UserPanel

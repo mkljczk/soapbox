@@ -55,7 +55,7 @@ const InstanceFavicon: React.FC<IInstanceFavicon> = ({ account, disabled }) => {
 
   return (
     <button
-      className='size-4 flex-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2'
+      className='focus:ring-primary-500 size-4 flex-none focus:ring-2 focus:ring-offset-2'
       onClick={handleClick}
       disabled={disabled}
     >

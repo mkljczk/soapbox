@@ -140,7 +140,7 @@ const Report: React.FC<IReport> = ({ id }) => {
                 <Link
                   to={`/@${reporterAcct}`}
                   title={reporterAcct}
-                  className='text-primary-600 hover:underline dark:text-accent-blue'
+                  className='text-primary-600 dark:text-accent-blue hover:underline'
                 >
                   @{reporterAcct}
                 </Link>

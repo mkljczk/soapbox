@@ -57,7 +57,7 @@ const FormGroup: React.FC<IFormGroup> = (props) => {
             <div>
               <p
                 data-testid='form-group-error'
-                className='form-error relative mt-0.5 inline-block rounded-md bg-danger-200 px-2 py-1 text-xs text-danger-900'
+                className='form-error bg-danger-200 text-danger-900 relative mt-0.5 inline-block rounded-md px-2 py-1 text-xs'
               >
                 {errors.join(', ')}
               </p>
@@ -100,7 +100,7 @@ const FormGroup: React.FC<IFormGroup> = (props) => {
         {hasError && (
           <p
             data-testid='form-group-error'
-            className='form-error relative mt-0.5 inline-block rounded-md bg-danger-200 px-2 py-1 text-xs text-danger-900'
+            className='form-error bg-danger-200 text-danger-900 relative mt-0.5 inline-block rounded-md px-2 py-1 text-xs'
           >
             {errors.join(', ')}
           </p>

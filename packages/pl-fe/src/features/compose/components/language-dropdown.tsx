@@ -191,7 +191,7 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
               ref={active ? focusedItem : null}
             >
               <div
-                className={clsx('flex-auto grow text-primary-600 dark:text-primary-400', {
+                className={clsx('text-primary-600 dark:text-primary-400 flex-auto grow', {
                   'text-black dark:text-white': modified,
                 })}
               >

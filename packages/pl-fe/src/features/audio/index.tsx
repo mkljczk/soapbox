@@ -466,7 +466,7 @@ const Audio: React.FC<IAudio> = (props) => {
         <img
           src={poster}
           alt=''
-          className='pointer-events-none absolute aspect-1 -translate-x-1/2 -translate-y-1/2 rounded-full object-cover'
+          className='aspect-1 pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full object-cover'
           width={(_getRadius() - TICK_SIZE) * 2}
           height={(_getRadius() - TICK_SIZE) * 2}
           style={{
@@ -481,7 +481,7 @@ const Audio: React.FC<IAudio> = (props) => {
         <div className='absolute top-0 block h-1 rounded bg-white/20' style={{ width: `${buffer}%` }} />
 
         <div
-          className='absolute top-0 block h-1 rounded bg-accent-500'
+          className='bg-accent-500 absolute top-0 block h-1 rounded'
           style={{ width: `${progress}%`, backgroundColor: accentColor }}
         />
 

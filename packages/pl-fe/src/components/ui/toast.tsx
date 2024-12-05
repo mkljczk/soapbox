@@ -43,7 +43,7 @@ const Toast = (props: IToast) => {
         return (
           <Icon
             src={require('@tabler/icons/outline/circle-check.svg')}
-            className='size-6 text-success-500 dark:text-success-400'
+            className='text-success-500 dark:text-success-400 size-6'
             aria-hidden
           />
         );
@@ -51,7 +51,7 @@ const Toast = (props: IToast) => {
         return (
           <Icon
             src={require('@tabler/icons/outline/info-circle.svg')}
-            className='size-6 text-primary-600 dark:text-accent-blue'
+            className='text-primary-600 dark:text-accent-blue size-6'
             aria-hidden
           />
         );
@@ -59,7 +59,7 @@ const Toast = (props: IToast) => {
         return (
           <Icon
             src={require('@tabler/icons/outline/alert-circle.svg')}
-            className='size-6 text-danger-600'
+            className='text-danger-600 size-6'
             aria-hidden
           />
         );
@@ -138,7 +138,7 @@ const Toast = (props: IToast) => {
           <div className='flex shrink-0 pt-0.5'>
             <button
               type='button'
-              className='inline-flex rounded-md text-gray-600 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-gray-600 dark:hover:text-gray-500'
+              className='focus:ring-primary-500 inline-flex rounded-md text-gray-600 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:text-gray-600 dark:hover:text-gray-500'
               onClick={dismissToast}
               data-testid='toast-dismiss'
             >

@@ -79,7 +79,7 @@ const SiteErrorBoundary: React.FC<ISiteErrorBoundary> = ({ children }) => {
   };
 
   const fallback = (
-    <div className='flex h-screen flex-col bg-white pb-12 pt-16 black:bg-black dark:bg-primary-900'>
+    <div className='black:bg-black dark:bg-primary-900 flex h-screen flex-col bg-white pb-12 pt-16'>
       <main className='mx-auto flex w-full max-w-7xl grow flex-col justify-center px-4 sm:px-6 lg:px-8'>
         {logoSrc && (
           <div className='flex shrink-0 justify-center'>
@@ -91,7 +91,7 @@ const SiteErrorBoundary: React.FC<ISiteErrorBoundary> = ({ children }) => {
 
         <div className='py-8'>
           <div className='mx-auto max-w-xl space-y-2 text-center'>
-            <h1 className='text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-500 sm:text-4xl'>
+            <h1 className='text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl dark:text-gray-500'>
               <FormattedMessage id='alert.unexpected.message' defaultMessage='Something went wrong.' />
             </h1>
             <p className='text-lg text-gray-700 dark:text-gray-600'>
@@ -100,7 +100,7 @@ const SiteErrorBoundary: React.FC<ISiteErrorBoundary> = ({ children }) => {
                 defaultMessage="We're sorry for the interruption. If the problem persists, please reach out to our support team. You may also try to {clearCookies} (this will log you out)."
                 values={{
                   clearCookies: (
-                    <a href='/' onClick={clearCookies} className='text-primary-600 hover:underline dark:text-accent-blue'>
+                    <a href='/' onClick={clearCookies} className='text-primary-600 dark:text-accent-blue hover:underline'>
                       <FormattedMessage
                         id='alert.unexpected.clear_cookies'
                         defaultMessage='clear cookies and browser data'
@@ -118,7 +118,7 @@ const SiteErrorBoundary: React.FC<ISiteErrorBoundary> = ({ children }) => {
             </Text>
 
             <div className='mt-10'>
-              <a href='/' className='text-base font-medium text-primary-600 hover:underline dark:text-accent-blue'>
+              <a href='/' className='text-primary-600 dark:text-accent-blue text-base font-medium hover:underline'>
                 <FormattedMessage id='alert.unexpected.return_home' defaultMessage='Return Home' />
                 {' '}
                 <span className='inline-block rtl:rotate-180' aria-hidden='true'>&rarr;</span>

@@ -23,7 +23,7 @@ interface LayoutComponent extends React.FC<ILayout> {
 
 /** Layout container, to hold Sidebar, Main, and Aside. */
 const Layout: LayoutComponent = ({ children }) => (
-  <div className='relative flex grow flex-col black:pt-0 sm:pt-4'>
+  <div className='black:pt-0 relative flex grow flex-col sm:pt-4'>
     <div className='mx-auto w-full max-w-3xl grow sm:px-6 md:grid md:max-w-7xl md:grid-cols-12 md:gap-8 md:px-8 xl:max-w-[1440px]'>
       {children}
     </div>

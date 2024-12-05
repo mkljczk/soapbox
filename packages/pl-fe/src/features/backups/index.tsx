@@ -36,7 +36,7 @@ const Backup: React.FC<IBackup> = ({ backup }) => {
   );
 
   return (
-    <div key={backup.id} className='rounded-lg bg-gray-100 p-4 dark:bg-primary-800'>
+    <div key={backup.id} className='dark:bg-primary-800 rounded-lg bg-gray-100 p-4'>
       <Stack space={2}>
         <Stack>
           <Text size='md'>

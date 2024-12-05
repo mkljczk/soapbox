@@ -16,7 +16,7 @@ const PinnedHostsPicker: React.FC<IPinnedHostsPicker> = ({ host: activeHost }) =
   if (!pinnedHosts.length) return null;
 
   return (
-    <HStack className='mb-4 black:mx-2' space={2}>
+    <HStack className='black:mx-2 mb-4' space={2}>
       {pinnedHosts.map((host) => (
         <Button
           key={host}

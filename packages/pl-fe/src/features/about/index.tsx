@@ -56,7 +56,7 @@ const AboutPage: React.FC = () => {
   return (
     <div>
       <Card variant='rounded'>
-        <div className='prose mx-auto py-4 dark:prose-invert sm:p-6'>
+        <div className='prose dark:prose-invert mx-auto py-4 sm:p-6'>
           {pageHtml && <div dangerouslySetInnerHTML={{ __html: pageHtml }} />}
           {alsoAvailable}
         </div>

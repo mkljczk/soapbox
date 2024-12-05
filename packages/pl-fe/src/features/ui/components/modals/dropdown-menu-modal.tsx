@@ -33,7 +33,7 @@ const DropdownMenuModal: React.FC<BaseModalProps & DropdownMenuModalProps> = ({ 
       onClick={handleClickOutside}
     >
       <div
-        className={clsx('pointer-events-auto fixed inset-x-0 z-[1001] mx-auto max-h-[calc(100dvh-1rem)] w-[calc(100vw-2rem)] max-w-lg overflow-auto rounded-t-xl bg-white py-1 shadow-lg duration-200 ease-in-out focus:outline-none black:bg-black no-reduce-motion:transition-all dark:bg-gray-900 dark:ring-2 dark:ring-primary-700', {
+        className={clsx('black:bg-black no-reduce-motion:transition-all dark:ring-primary-700 pointer-events-auto fixed inset-x-0 z-[1001] mx-auto max-h-[calc(100dvh-1rem)] w-[calc(100vw-2rem)] max-w-lg overflow-auto rounded-t-xl bg-white py-1 shadow-lg duration-200 ease-in-out focus:outline-none dark:bg-gray-900 dark:ring-2', {
           'bottom-0 opacity-100': !firstRender,
           'no-reduce-motion:-bottom-32 no-reduce-motion:opacity-0': firstRender,
         })}

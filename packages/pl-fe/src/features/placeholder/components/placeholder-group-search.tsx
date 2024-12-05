@@ -17,7 +17,7 @@ const PlaceholderGroupSearch = ({ withJoinAction = true }: { withJoinAction?: bo
     >
       <HStack alignItems='center' space={2} className='overflow-hidden'>
         {/* Group Avatar */}
-        <div className='size-11 rounded-lg bg-gray-500 dark:bg-gray-700 dark:ring-primary-900' />
+        <div className='dark:ring-primary-900 size-11 rounded-lg bg-gray-500 dark:bg-gray-700' />
 
         <Stack className='text-gray-500 dark:text-gray-700'>
           <Text theme='inherit' weight='bold'>

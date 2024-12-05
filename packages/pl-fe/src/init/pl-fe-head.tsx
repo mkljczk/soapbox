@@ -26,7 +26,7 @@ const PlFeHead = () => {
   const themeCss = generateThemeCss(demo ? v.parse(plFeConfigSchema, { brandColor: '#d80482' }) : plFeConfig);
   const dsn = plFeConfig.sentryDsn;
 
-  const bodyClass = clsx('h-full bg-white text-base antialiased black:bg-black dark:bg-gray-800', {
+  const bodyClass = clsx('black:bg-black h-full bg-white text-base antialiased dark:bg-gray-800', {
     'no-reduce-motion': !reduceMotion,
     'underline-links': underlineLinks,
     'demetricator': demetricator,

@@ -92,7 +92,7 @@ const CoverPhotoSelectionStep = ({ onNext }: { onNext: () => void }) => {
 
             {isSubmitting && (
               <div
-                className='absolute inset-0 flex items-center justify-center rounded-t-md bg-white/80 dark:bg-primary-900/80'
+                className='dark:bg-primary-900/80 absolute inset-0 flex items-center justify-center rounded-t-md bg-white/80'
               >
                 <Spinner withText={false} />
               </div>
@@ -119,7 +119,7 @@ const CoverPhotoSelectionStep = ({ onNext }: { onNext: () => void }) => {
                 src={account.avatar}
                 alt={account.avatar_description}
                 size={64}
-                className='-mt-8 mb-2 ring-2 ring-white dark:ring-primary-800'
+                className='dark:ring-primary-800 -mt-8 mb-2 ring-2 ring-white'
               />
             )}
 

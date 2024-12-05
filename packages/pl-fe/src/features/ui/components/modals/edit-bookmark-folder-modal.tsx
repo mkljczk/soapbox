@@ -52,7 +52,7 @@ const EmojiPicker: React.FC<IEmojiPicker> = ({ emoji, emojiUrl, ...props }) => {
   return (
     <div className='relative'>
       <button
-        className='mt-1 flex size-[38px] items-center justify-center rounded-md border border-solid border-gray-400 bg-white text-gray-900 ring-1 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100 dark:ring-gray-800 dark:focus:border-primary-500 dark:focus:ring-primary-500'
+        className='focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-500 dark:focus:ring-primary-500 mt-1 flex size-[38px] items-center justify-center rounded-md border border-solid border-gray-400 bg-white text-gray-900 ring-1 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100 dark:ring-gray-800'
         ref={refs.setReference}
         title={title}
         aria-label={title}

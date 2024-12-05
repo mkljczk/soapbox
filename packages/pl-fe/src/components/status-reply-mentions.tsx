@@ -47,7 +47,7 @@ const StatusReplyMentions: React.FC<IStatusReplyMentions> = ({ status, hoverable
       <Link
         key={account.id}
         to={`/@${account.acct}`}
-        className='inline-block max-w-[200px] truncate align-bottom text-primary-600 no-underline [direction:ltr] hover:text-primary-700 hover:underline dark:text-accent-blue dark:hover:text-accent-blue'
+        className='text-primary-600 hover:text-primary-700 dark:text-accent-blue dark:hover:text-accent-blue inline-block max-w-[200px] truncate align-bottom no-underline [direction:ltr] hover:underline'
         onClick={(e) => e.stopPropagation()}
       >
         @{account.username}

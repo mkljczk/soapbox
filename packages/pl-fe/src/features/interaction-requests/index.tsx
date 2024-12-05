@@ -60,7 +60,7 @@ const InteractionRequestStatus: React.FC<IInteractionRequestStatus> = ({ id: sta
     <Stack className='relative py-2' space={2}>
       {hasReply && (
         <div
-          className='absolute left-5 top-[62px] z-[1] block h-[calc(100%-58px)] w-0.5 bg-gray-200 black:bg-gray-800 dark:bg-primary-800 rtl:left-auto rtl:right-5'
+          className='black:bg-gray-800 dark:bg-primary-800 absolute left-5 top-[62px] z-[1] block h-[calc(100%-58px)] w-0.5 bg-gray-200 rtl:left-auto rtl:right-5'
         />
       )}
 
@@ -185,7 +185,7 @@ const InteractionRequest: React.FC<IInteractionRequest> = ({
                 >
                   <Icon
                     src={icons[interactionRequest.type]}
-                    className='flex-none text-primary-600 dark:text-primary-400'
+                    className='text-primary-600 dark:text-primary-400 flex-none'
                   />
                 </div>
 
@@ -247,7 +247,7 @@ const InteractionRequests = () => {
           hasMore={hasNextPage}
           emptyMessage={emptyMessage}
           onLoadMore={() => fetchNextPage()}
-          listClassName={clsx('divide-y divide-solid divide-gray-200 black:divide-gray-800 dark:divide-primary-800', {
+          listClassName={clsx('black:divide-gray-800 dark:divide-primary-800 divide-y divide-solid divide-gray-200', {
             'animate-pulse': data?.length === 0,
           })}
         >

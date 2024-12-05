@@ -51,7 +51,7 @@ const ReplyMentions: React.FC<IReplyMentions> = ({ composeId }) => {
     return (
       <span
         key={acct}
-        className='inline-block text-primary-600 no-underline [direction:ltr] hover:text-primary-700 hover:underline dark:text-accent-blue dark:hover:text-accent-blue'
+        className='text-primary-600 hover:text-primary-700 dark:text-accent-blue dark:hover:text-accent-blue inline-block no-underline [direction:ltr] hover:underline'
       >
         @{username}
       </span>

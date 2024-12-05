@@ -62,8 +62,8 @@ interface ISidebarLink {
 const SidebarLink: React.FC<ISidebarLink> = ({ href, to, icon, text, onClick }) => {
   const body = (
     <HStack space={2} alignItems='center'>
-      <div className='relative inline-flex rounded-full bg-primary-50 p-2 dark:bg-gray-800'>
-        <Icon src={icon} className='size-5 text-primary-500' />
+      <div className='bg-primary-50 relative inline-flex rounded-full p-2 dark:bg-gray-800'>
+        <Icon src={icon} className='text-primary-500 size-5' />
       </div>
 
       <Text tag='span' weight='medium' theme='inherit'>{text}</Text>
@@ -187,7 +187,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
       onTouchEnd={handleTouchEnd}
     >
       <div
-        className={clsx('fixed inset-0 cursor-default bg-gray-500 black:bg-gray-900 no-reduce-motion:transition-opacity dark:bg-gray-700', {
+        className={clsx('black:bg-gray-900 no-reduce-motion:transition-opacity fixed inset-0 cursor-default bg-gray-500 dark:bg-gray-700', {
           'no-reduce-motion:opacity-0': !(sidebarVisible && isSidebarOpen),
           'opacity-40': (sidebarVisible && isSidebarOpen),
         })}
@@ -197,7 +197,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
 
       <div
         className={
-          clsx('fixed bottom-[60px] left-2 z-[1000] flex max-h-[calc(100dvh-68px)] w-full max-w-xs flex-1 origin-bottom-left flex-col overflow-hidden rounded-xl bg-white shadow-lg ease-in-out black:bg-black no-reduce-motion:transition-transform dark:border dark:border-gray-800 dark:bg-primary-900 dark:shadow-none rtl:right-2 rtl:origin-bottom-right', {
+          clsx('black:bg-black no-reduce-motion:transition-transform dark:bg-primary-900 fixed bottom-[60px] left-2 z-[1000] flex max-h-[calc(100dvh-68px)] w-full max-w-xs flex-1 origin-bottom-left flex-col overflow-hidden rounded-xl bg-white shadow-lg ease-in-out rtl:right-2 rtl:origin-bottom-right dark:border dark:border-gray-800 dark:shadow-none', {
             'scale-100': sidebarVisible && isSidebarOpen,
             'no-reduce-motion:scale-0': !(sidebarVisible && isSidebarOpen),
           })
@@ -419,11 +419,11 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                     </button>
 
                     {switcher && (
-                      <div className='border-t-2 border-solid border-gray-100 black:border-t dark:border-gray-800'>
+                      <div className='black:border-t border-t-2 border-solid border-gray-100 dark:border-gray-800'>
                         {otherAccounts.map(account => renderAccount(account))}
 
                         <NavLink className='flex items-center space-x-1 py-2' to='/login/add' onClick={handleClose}>
-                          <Icon className='size-4 text-primary-500' src={require('@tabler/icons/outline/plus.svg')} />
+                          <Icon className='text-primary-500 size-4' src={require('@tabler/icons/outline/plus.svg')} />
                           <Text size='sm' weight='medium'>{intl.formatMessage(messages.addAccount)}</Text>
                         </NavLink>
                       </div>

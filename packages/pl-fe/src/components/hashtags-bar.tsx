@@ -36,7 +36,7 @@ const HashtagsBar: React.FC<IHashtagsBar> = ({ hashtags }) => {
           key={hashtag}
           to={`/tags/${hashtag}`}
           onClick={(e) => e.stopPropagation()}
-          className='flex items-center rounded-sm bg-gray-100 px-1.5 py-1 text-center text-xs font-medium text-primary-600 black:bg-primary-900 dark:bg-primary-700 dark:text-white'
+          className='text-primary-600 black:bg-primary-900 dark:bg-primary-700 flex items-center rounded-sm bg-gray-100 px-1.5 py-1 text-center text-xs font-medium dark:text-white'
         >
           <Text size='xs' weight='semibold' theme='inherit'>
             #<span>{hashtag}</span>

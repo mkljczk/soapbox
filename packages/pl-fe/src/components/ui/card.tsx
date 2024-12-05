@@ -71,7 +71,7 @@ const CardHeader: React.FC<ICardHeader> = ({ className, children, backHref, onBa
     const backAttributes = backHref ? { to: backHref } : { onClick: onBackClick };
 
     return (
-      <Comp {...backAttributes} className='rounded-full text-gray-900 focus:ring-2 focus:ring-primary-500 dark:text-gray-100' aria-label={intl.formatMessage(messages.back)}>
+      <Comp {...backAttributes} className='focus:ring-primary-500 rounded-full text-gray-900 focus:ring-2 dark:text-gray-100' aria-label={intl.formatMessage(messages.back)}>
         <SvgIcon src={require('@tabler/icons/outline/arrow-left.svg')} className='size-6 rtl:rotate-180' />
         <span className='sr-only' data-testid='back-button'>{intl.formatMessage(messages.back)}</span>
       </Comp>

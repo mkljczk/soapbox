@@ -205,7 +205,7 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
       <div
         role='presentation'
         id='modal-overlay'
-        className={clsx('fixed inset-0 bg-gray-500/90 black:bg-gray-900/90 dark:bg-gray-700/90', {
+        className={clsx('black:bg-gray-900/90 fixed inset-0 bg-gray-500/90 dark:bg-gray-700/90', {
           'opacity-60': type === 'DROPDOWN_MENU',
         })}
         onClick={handleOnClose}

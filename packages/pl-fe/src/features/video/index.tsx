@@ -495,7 +495,7 @@ const Video: React.FC<IVideo> = ({
       <div className={clsx('video-player__controls absolute inset-x-0 bottom-0 z-[2] box-border px-4 py-0 opacity-0 ring-0 transition-opacity duration-100 ease-in-out', { 'opacity-100': paused || hovered })}>
         <div className='video-player__seek' onMouseDown={handleMouseDown} ref={seek}>
           <div className='absolute top-3.5 block h-1 rounded bg-white/20' style={{ width: `${buffer}%` }} />
-          <div className='absolute top-3.5 block h-1 rounded bg-accent-500' style={{ width: `${progress}%` }} />
+          <div className='bg-accent-500 absolute top-3.5 block h-1 rounded' style={{ width: `${progress}%` }} />
 
           <span
             className={clsx('video-player__seek__handle', { 'opacity-100': dragging })}

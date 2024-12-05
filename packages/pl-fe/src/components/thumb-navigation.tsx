@@ -58,13 +58,13 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
     >
       <Icon
         src={require('@tabler/icons/outline/square-rounded-plus.svg')}
-        className='size-6 text-gray-600 black:text-white'
+        className='black:text-white size-6 text-gray-600'
       />
     </button>
   );
 
   return (
-    <div className='fixed inset-x-0 bottom-0 z-50 flex w-full overflow-x-auto border-t border-solid border-gray-200 bg-white/90 shadow-2xl backdrop-blur-md black:bg-black/80 dark:border-gray-800 dark:bg-primary-900/90 lg:hidden'>
+    <div className='black:bg-black/80 dark:bg-primary-900/90 fixed inset-x-0 bottom-0 z-50 flex w-full overflow-x-auto border-t border-solid border-gray-200 bg-white/90 shadow-2xl backdrop-blur-md lg:hidden dark:border-gray-800'>
       <button
         className='flex flex-1 flex-col items-center px-2 py-4 text-lg text-gray-600'
         onClick={openSidebar}
@@ -72,7 +72,7 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
       >
         <Icon
           src={require('@tabler/icons/outline/menu-2.svg')}
-          className='size-5 text-gray-600 black:text-white'
+          className='black:text-white size-5 text-gray-600'
         />
       </button>
 

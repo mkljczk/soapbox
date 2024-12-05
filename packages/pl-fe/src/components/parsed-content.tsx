@@ -122,7 +122,7 @@ function parseContent({ html, mentions, hasQuote, emojis }: IParsedContent, extr
                 <HoverAccountWrapper accountId={mention.id} element='span'>
                   <Link
                     to={`/@${mention.acct}`}
-                    className='text-primary-600 hover:underline dark:text-accent-blue'
+                    className='text-primary-600 dark:text-accent-blue hover:underline'
                     dir='ltr'
                     onClick={(e) => e.stopPropagation()}
                   >

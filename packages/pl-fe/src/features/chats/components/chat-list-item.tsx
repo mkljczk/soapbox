@@ -83,7 +83,7 @@ const ChatListItem: React.FC<IChatListItemInterface> = ({ chat, onClick }) => {
       key={chat.id}
       onClick={() => onClick(chat)}
       onKeyDown={handleKeyDown}
-      className='group flex w-full flex-col rounded-lg px-2 py-3 hover:bg-gray-100 focus:shadow-inset-ring dark:hover:bg-gray-800'
+      className='focus:shadow-inset-ring group flex w-full flex-col rounded-lg px-2 py-3 hover:bg-gray-100 dark:hover:bg-gray-800'
       data-testid='chat-list-item'
       tabIndex={0}
     >
@@ -152,7 +152,7 @@ const ChatListItem: React.FC<IChatListItemInterface> = ({ chat, onClick }) => {
             <>
               {chat.last_message.unread && (
                 <div
-                  className='size-2 rounded-full bg-secondary-500'
+                  className='bg-secondary-500 size-2 rounded-full'
                   data-testid='chat-unread-indicator'
                 />
               )}

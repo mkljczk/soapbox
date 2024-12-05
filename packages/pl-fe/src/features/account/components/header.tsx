@@ -118,7 +118,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
     return (
       <div className='-mx-4 -mt-4 sm:-mx-6 sm:-mt-6'>
         <div>
-          <div className='relative h-32 w-full bg-gray-200 black:rounded-t-none dark:bg-gray-900/50 md:rounded-t-xl lg:h-48' />
+          <div className='black:rounded-t-none relative h-32 w-full bg-gray-200 md:rounded-t-xl lg:h-48 dark:bg-gray-900/50' />
         </div>
 
         <div className='px-4 sm:px-6'>
@@ -634,7 +634,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
       )}
 
       <div>
-        <div className='relative isolate flex h-32 w-full flex-col justify-center overflow-hidden bg-gray-200 black:rounded-t-none dark:bg-gray-900/50 md:rounded-t-xl lg:h-48'>
+        <div className='black:rounded-t-none relative isolate flex h-32 w-full flex-col justify-center overflow-hidden bg-gray-200 md:rounded-t-xl lg:h-48 dark:bg-gray-900/50'>
           {renderHeader()}
 
           <div className='absolute left-2 top-2'>
@@ -653,12 +653,12 @@ const Header: React.FC<IHeader> = ({ account }) => {
                 src={account.avatar}
                 alt={account.avatar_description}
                 size={96}
-                className='relative size-24 rounded-lg bg-white ring-4 ring-white black:ring-black dark:bg-primary-900 dark:ring-primary-900'
+                className='black:ring-black dark:bg-primary-900 dark:ring-primary-900 relative size-24 rounded-lg bg-white ring-4 ring-white'
               />
             </a>
             {account.verified && (
               <div className='absolute -bottom-2 -right-2'>
-                <VerificationBadge className='!size-[24px] rounded-full !p-[2px] ring-2 ring-white black:ring-black dark:ring-primary-900' />
+                <VerificationBadge className='black:ring-black dark:ring-primary-900 !size-[24px] rounded-full !p-[2px] ring-2 ring-white' />
               </div>
             )}
           </div>

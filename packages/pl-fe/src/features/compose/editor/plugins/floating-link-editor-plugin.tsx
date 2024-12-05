@@ -198,7 +198,7 @@ const FloatingLinkEditor = ({
           </>
         ) : (
           <>
-            <a className='mr-8 block truncate text-primary-600 no-underline hover:underline dark:text-accent-blue' href={linkUrl} target='_blank' rel='noopener noreferrer'>
+            <a className='text-primary-600 dark:text-accent-blue mr-8 block truncate no-underline hover:underline' href={linkUrl} target='_blank' rel='noopener noreferrer'>
               {linkUrl}
             </a>
             <div

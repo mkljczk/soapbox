@@ -311,7 +311,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
   }
 
   const getClassName = () => {
-    const className = clsx('z-[1001] bg-white py-1 shadow-lg ease-in-out focus:outline-none black:bg-black no-reduce-motion:transition-all dark:bg-gray-900 dark:ring-2 dark:ring-primary-700', {
+    const className = clsx('black:bg-black no-reduce-motion:transition-all dark:ring-primary-700 z-[1001] bg-white py-1 shadow-lg ease-in-out focus:outline-none dark:bg-gray-900 dark:ring-2', {
       'rounded-md min-w-56 max-w-sm duration-100': true,
       'no-reduce-motion:scale-0': !(isDisplayed && isOpen),
       'scale-100': isDisplayed && isOpen,
@@ -371,7 +371,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
               <div
                 ref={arrowRef}
                 style={arrowProps}
-                className='pointer-events-none absolute z-[-1] size-3 bg-white black:bg-black dark:bg-gray-900'
+                className='black:bg-black pointer-events-none absolute z-[-1] size-3 bg-white dark:bg-gray-900'
               />
             </div>
           </div>

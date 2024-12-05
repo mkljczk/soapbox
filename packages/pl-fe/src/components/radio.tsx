@@ -30,7 +30,7 @@ const RadioItem: React.FC<IRadioItem> = ({ label, hint, checked = false, onChang
       checked={checked}
       onChange={onChange}
       value={value}
-      className='size-4 border-gray-300 text-primary-600 focus:ring-primary-500'
+      className='text-primary-600 focus:ring-primary-500 size-4 border-gray-300'
     />
   </ListItem>
 );

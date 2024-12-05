@@ -30,7 +30,7 @@ const AccountCard: React.FC<IAccountCard> = ({ id }) => {
   const followedBy = me !== account.id && account.relationship?.followed_by;
 
   return (
-    <div className='flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow dark:divide-primary-700 dark:bg-primary-800'>
+    <div className='dark:divide-primary-700 dark:bg-primary-800 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow'>
       <div className='relative'>
         {followedBy && (
           <div className='absolute left-2.5 top-2.5'>
@@ -56,7 +56,7 @@ const AccountCard: React.FC<IAccountCard> = ({ id }) => {
             <Avatar
               src={account.avatar}
               alt={account.avatar_description}
-              className='!absolute bottom-0 left-3 translate-y-1/2 bg-white ring-2 ring-white dark:bg-primary-900 dark:ring-primary-900'
+              className='dark:bg-primary-900 dark:ring-primary-900 !absolute bottom-0 left-3 translate-y-1/2 bg-white ring-2 ring-white'
               size={64}
             />
           </Link>

@@ -65,7 +65,7 @@ const Domain: React.FC<IDomain> = ({ domain }) => {
   }) : undefined;
 
   return (
-    <div key={domain.id} className='rounded-lg bg-gray-100 p-4 dark:bg-primary-800'>
+    <div key={domain.id} className='dark:bg-primary-800 rounded-lg bg-gray-100 p-4'>
       <Stack space={2}>
         <HStack alignItems='center' space={4} wrap>
           <Text size='sm'>

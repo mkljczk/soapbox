@@ -61,7 +61,7 @@ const CommunityTimeline = () => {
     <Column className='-mt-3 sm:mt-0' label={intl.formatMessage(messages.title)} transparent={!isMobile}>
       <PinnedHostsPicker />
 
-      {showExplanationBox && <div className='mb-4 black:mx-4'>
+      {showExplanationBox && <div className='black:mx-4 mb-4'>
         <Accordion
           headline={<FormattedMessage id='fediverse_tab.explanation_box.title' defaultMessage='What is the Fediverse?' />}
           action={dismissExplanationBox}

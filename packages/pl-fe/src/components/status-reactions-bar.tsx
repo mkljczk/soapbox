@@ -134,7 +134,7 @@ const StatusReactionsBar: React.FC<IStatusReactionsBar> = ({ status, collapsed }
       {me && (
         <EmojiPickerDropdown onPickEmoji={handlePickEmoji}>
           <button
-            className='emoji-picker-dropdown cursor-pointer rounded-md border border-gray-400 bg-transparent p-1.5 transition-colors hover:bg-gray-50 black:border-primary-800 black:bg-primary-800 hover:black:bg-primary-700 dark:border-primary-700 dark:bg-primary-700 hover:dark:border-primary-600 hover:dark:bg-primary-600'
+            className='emoji-picker-dropdown black:border-primary-800 black:bg-primary-800 hover:black:bg-primary-700 dark:border-primary-700 dark:bg-primary-700 hover:dark:border-primary-600 hover:dark:bg-primary-600 cursor-pointer rounded-md border border-gray-400 bg-transparent p-1.5 transition-colors hover:bg-gray-50'
             title={intl.formatMessage(messages.addEmoji)}
           >
             <Icon

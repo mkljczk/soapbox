@@ -55,7 +55,7 @@ const AvatarPicker = React.forwardRef<HTMLInputElement, IMediaInput>(({
     <label
       ref={picker}
       className={clsx(
-        'absolute bottom-0 left-1/2 size-20 -translate-x-1/2 translate-y-1/2 cursor-pointer rounded-lg bg-primary-300 ring-2',
+        'bg-primary-300 absolute bottom-0 left-1/2 size-20 -translate-x-1/2 translate-y-1/2 cursor-pointer rounded-lg ring-2',
         {
           'border-2 border-primary-600 border-dashed !z-[99] overflow-hidden': isDragging,
           'ring-white dark:ring-primary-900': !isDraggedOver,

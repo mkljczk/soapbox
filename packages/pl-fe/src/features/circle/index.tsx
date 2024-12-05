@@ -149,7 +149,7 @@ const Circle: React.FC = () => {
             <FormattedMessage id='interactions_circle.confirmation_heading' defaultMessage='Do you want to generate an interaction circle for the user @{username}?' values={{ username: account?.acct }} />
           </Text>
 
-          <div className='mx-auto max-w-md rounded-lg p-2 black:border black:border-gray-800'>
+          <div className='black:border black:border-gray-800 mx-auto max-w-md rounded-lg p-2'>
             {account && <Account account={account} withRelationship={false} disabled />}
           </div>
 

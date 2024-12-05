@@ -107,7 +107,7 @@ const Popover: React.FC<IPopover> = ({ children, content, referenceElementClassN
             <div
               className={
                 clsx(
-                  'overflow-hidden rounded-lg bg-white shadow-2xl dark:bg-gray-900 dark:ring-2 dark:ring-primary-700',
+                  'dark:ring-primary-700 overflow-hidden rounded-lg bg-white shadow-2xl dark:bg-gray-900 dark:ring-2',
                   { 'p-6': !isFlush },
                 )
               }
@@ -119,7 +119,7 @@ const Popover: React.FC<IPopover> = ({ children, content, referenceElementClassN
             <FloatingArrow
               ref={arrowRef}
               context={context}
-              className='fill-white dark:fill-primary-700'
+              className='dark:fill-primary-700 fill-white'
               tipRadius={3}
             />
           </div>
