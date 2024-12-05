@@ -7,7 +7,7 @@ import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useFamiliarFollowers } from 'pl-fe/queries/account-lists/use-familiar-followers';
+import { useFamiliarFollowers } from 'pl-fe/queries/accounts/use-familiar-followers';
 import { makeGetAccount } from 'pl-fe/selectors';
 
 import type { BaseModalProps } from '../modal-root';

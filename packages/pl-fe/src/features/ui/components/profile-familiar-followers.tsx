@@ -9,7 +9,7 @@ import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useFamiliarFollowers } from 'pl-fe/queries/account-lists/use-familiar-followers';
+import { useFamiliarFollowers } from 'pl-fe/queries/accounts/use-familiar-followers';
 import { makeGetAccount } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 

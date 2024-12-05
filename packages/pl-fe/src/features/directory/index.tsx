@@ -10,7 +10,7 @@ import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
-import { useDirectory } from 'pl-fe/queries/account-lists/use-directory';
+import { useDirectory } from 'pl-fe/queries/accounts/use-directory';
 
 import AccountCard from './components/account-card';
 

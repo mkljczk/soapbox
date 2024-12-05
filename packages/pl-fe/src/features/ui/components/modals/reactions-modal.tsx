@@ -8,7 +8,7 @@ import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Tabs from 'pl-fe/components/ui/tabs';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useStatusReactions } from 'pl-fe/queries/account-lists/use-status-interactions';
+import { useStatusReactions } from 'pl-fe/queries/statuses/use-status-interactions';
 
 import type { BaseModalProps } from '../modal-root';
 import type { Item } from 'pl-fe/components/ui/tabs';

@@ -40,7 +40,7 @@ import ProfileLayout from 'pl-fe/layouts/profile-layout';
 import RemoteInstanceLayout from 'pl-fe/layouts/remote-instance-layout';
 import SearchLayout from 'pl-fe/layouts/search-layout';
 import StatusLayout from 'pl-fe/layouts/status-layout';
-import { prefetchFollowRequests } from 'pl-fe/queries/account-lists/use-follow-requests';
+import { prefetchFollowRequests } from 'pl-fe/queries/accounts/use-follow-requests';
 import { useUiStore } from 'pl-fe/stores/ui';
 import { getVapidKey } from 'pl-fe/utils/auth';
 import { isStandalone } from 'pl-fe/utils/state';

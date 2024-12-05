@@ -5,7 +5,7 @@ import Widget from 'pl-fe/components/ui/widget';
 import AccountContainer from 'pl-fe/containers/account-container';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { WhoToFollowPanel } from 'pl-fe/features/ui/util/async-components';
-import { useEndorsedAccounts } from 'pl-fe/queries/account-lists/use-endorsed-accounts';
+import { useEndorsedAccounts } from 'pl-fe/queries/accounts/use-endorsed-accounts';
 
 import type { Account } from 'pl-fe/normalizers/account';
 

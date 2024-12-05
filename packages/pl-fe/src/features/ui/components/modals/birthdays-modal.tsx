@@ -6,7 +6,7 @@ import ScrollableList from 'pl-fe/components/scrollable-list';
 import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Account from 'pl-fe/features/birthdays/account';
-import { useBirthdayReminders } from 'pl-fe/queries/account-lists/use-birthday-reminders';
+import { useBirthdayReminders } from 'pl-fe/queries/accounts/use-birthday-reminders';
 
 import type { BaseModalProps } from '../modal-root';
 

@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import Widget from 'pl-fe/components/ui/widget';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useBirthdayReminders } from 'pl-fe/queries/account-lists/use-birthday-reminders';
+import { useBirthdayReminders } from 'pl-fe/queries/accounts/use-birthday-reminders';
 
 const timeToMidnight = () => {
   const now = new Date();
