@@ -20,7 +20,7 @@ import toast from 'pl-fe/toast';
 
 import type { Menu as IMenu } from 'pl-fe/components/dropdown-menu';
 import type { Group } from 'pl-fe/normalizers/group';
-import type { GroupMember } from 'pl-fe/normalizers/group-member';
+import type { MinifiedGroupMember } from 'pl-fe/queries/groups/use-group-members';
 
 const messages = defineMessages({
   adminLimitTitle: { id: 'group.member.admin.limit.title', defaultMessage: 'Admin limit reached' },
@@ -44,7 +44,7 @@ const messages = defineMessages({
 });
 
 interface IGroupMemberListItem {
-  member: GroupMember;
+  member: MinifiedGroupMember;
   group: Pick<Group, 'id' | 'relationship'>;
 }
 
@@ -53,11 +53,11 @@ const GroupMemberListItem = ({ member, group }: IGroupMemberListItem) => {
   const intl = useIntl();
   const { openModal } = useModalsStore();
 
-  const { mutate: blockGroupMember } = useBlockGroupUserMutation(group.id, member.account.id);
+  const { mutate: blockGroupMember } = useBlockGroupUserMutation(group.id, member.account_id);
   const promoteGroupMember = usePromoteGroupMember(group, member);
   const demoteGroupMember = useDemoteGroupMember(group, member);
 
-  const { account, isLoading } = useAccount(member.account.id);
+  const { account, isLoading } = useAccount(member.account_id);
 
   // Current user role
   const isCurrentUserOwner = group.relationship?.role === GroupRoles.OWNER;
@@ -102,7 +102,7 @@ const GroupMemberListItem = ({ member, group }: IGroupMemberListItem) => {
       confirm: intl.formatMessage(messages.promoteConfirm),
       confirmationTheme: 'primary',
       onConfirm: () => {
-        promoteGroupMember({ role: GroupRoles.ADMIN, account_ids: [member.account.id] }, {
+        promoteGroupMember({ role: GroupRoles.ADMIN, account_ids: [member.account_id] }, {
           onSuccess() {
             toast.success(
               intl.formatMessage(messages.promotedToAdmin, { name: account?.acct }),
@@ -114,7 +114,7 @@ const GroupMemberListItem = ({ member, group }: IGroupMemberListItem) => {
   };
 
   const handleUserAssignment = () => {
-    demoteGroupMember({ role: GroupRoles.USER, account_ids: [member.account.id] }, {
+    demoteGroupMember({ role: GroupRoles.USER, account_ids: [member.account_id] }, {
       onSuccess() {
         toast.success(intl.formatMessage(messages.demotedToUser, { name: account?.acct }));
       },
@@ -167,7 +167,7 @@ const GroupMemberListItem = ({ member, group }: IGroupMemberListItem) => {
     return items;
   }, [group, account?.id]);
 
-  if (isLoading) {
+  if (isLoading || !account) {
     return <PlaceholderAccount />;
   }
 
@@ -178,7 +178,7 @@ const GroupMemberListItem = ({ member, group }: IGroupMemberListItem) => {
       data-testid='group-member-list-item'
     >
       <div className='w-full'>
-        <Account account={member.account} withRelationship={false} />
+        <Account account={account} withRelationship={false} />
       </div>
 
       <HStack alignItems='center' space={2}>

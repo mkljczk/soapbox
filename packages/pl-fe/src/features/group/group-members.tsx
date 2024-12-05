@@ -3,10 +3,10 @@ import { GroupRoles } from 'pl-api';
 import React, { useMemo } from 'react';
 
 import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
-import { useGroupMembers } from 'pl-fe/api/hooks/groups/use-group-members';
 import { useGroupMembershipRequests } from 'pl-fe/api/hooks/groups/use-group-membership-requests';
 import { PendingItemsRow } from 'pl-fe/components/pending-items-row';
 import ScrollableList from 'pl-fe/components/scrollable-list';
+import { useGroupMembers } from 'pl-fe/queries/groups/use-group-members';
 
 import PlaceholderAccount from '../placeholder/components/placeholder-account';
 
@@ -20,17 +20,17 @@ const GroupMembers: React.FC<IGroupMembers> = (props) => {
   const { groupId } = props.params;
 
   const { group, isFetching: isFetchingGroup } = useGroup(groupId);
-  const { groupMembers: owners, isFetching: isFetchingOwners } = useGroupMembers(groupId, GroupRoles.OWNER);
-  const { groupMembers: admins, isFetching: isFetchingAdmins } = useGroupMembers(groupId, GroupRoles.ADMIN);
-  const { groupMembers: users, isFetching: isFetchingUsers, fetchNextPage, hasNextPage } = useGroupMembers(groupId, GroupRoles.USER);
+  const { data: owners, isFetching: isFetchingOwners } = useGroupMembers(groupId, GroupRoles.OWNER);
+  const { data: admins, isFetching: isFetchingAdmins } = useGroupMembers(groupId, GroupRoles.ADMIN);
+  const { data: users, isFetching: isFetchingUsers, fetchNextPage, hasNextPage } = useGroupMembers(groupId, GroupRoles.USER);
   const { isFetching: isFetchingPending, count: pendingCount } = useGroupMembershipRequests(groupId);
 
   const isLoading = isFetchingGroup || isFetchingOwners || isFetchingAdmins || isFetchingUsers || isFetchingPending;
 
   const members = useMemo(() => [
-    ...owners,
-    ...admins,
-    ...users,
+    ...(owners || []),
+    ...(admins || []),
+    ...(users || []),
   ], [owners, admins, users]);
 
   return (
@@ -57,7 +57,7 @@ const GroupMembers: React.FC<IGroupMembers> = (props) => {
           <GroupMemberListItem
             group={group!}
             member={member}
-            key={member.account.id}
+            key={member.account_id}
           />
         ))}
       </ScrollableList>

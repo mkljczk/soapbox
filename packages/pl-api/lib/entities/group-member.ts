@@ -27,4 +27,4 @@ const groupMemberSchema = v.object({
  */
 type GroupMember = v.InferOutput<typeof groupMemberSchema>;
 
-export { groupMemberSchema, type GroupMember, GroupRoles, type GroupRole };
+export { groupMemberSchema, type GroupMember, type GroupRoles, type GroupRole };

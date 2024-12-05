@@ -5,7 +5,7 @@ import { useClient } from 'pl-fe/hooks/use-client';
 import type { PaginatedResponse, PlApiClient } from 'pl-api';
 
 const makePaginatedResponseQuery = <T1 extends Array<any>, T2, T3 = Array<T2>>(
-  queryKey: (...params: T1) => string[],
+  queryKey: (...params: T1) => Array<string | undefined>,
   queryFn: (client: PlApiClient, params: T1) => Promise<PaginatedResponse<T2>>,
   select?: (data: InfiniteData<PaginatedResponse<T2>>) => T3,
 ) => (...params: T1) => {
