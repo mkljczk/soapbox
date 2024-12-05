@@ -1,8 +1,7 @@
-import { GroupRoles } from 'pl-api';
+import { type CustomEmoji, GroupRoles } from 'pl-api';
 import React, { useMemo } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { createSelector } from 'reselect';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose, replyCompose } from 'pl-fe/actions/compose';
@@ -30,8 +29,8 @@ import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
 import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/use-group-blocks';
+import { useCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
 import { useTranslationLanguages } from 'pl-fe/queries/instance/use-translation-languages';
-import { RootState } from 'pl-fe/store';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import toast from 'pl-fe/toast';
@@ -463,10 +462,7 @@ const DislikeButton: React.FC<IActionButton> = ({
   );
 };
 
-const getLongerWrench = createSelector(
-  [(state: RootState) => state.custom_emojis],
-  (emojis) => emojis.find(({ shortcode }) => shortcode === 'longestest_wrench') || emojis.find(({ shortcode }) => shortcode === 'longest_wrench'),
-);
+const getLongerWrench = (emojis: Array<CustomEmoji>) => emojis.find(({ shortcode }) => shortcode === 'longestest_wrench') || emojis.find(({ shortcode }) => shortcode === 'longest_wrench');
 
 const WrenchButton: React.FC<IActionButton> = ({
   status,
@@ -481,7 +477,7 @@ const WrenchButton: React.FC<IActionButton> = ({
   const { openModal } = useModalsStore();
   const { showWrenchButton } = useSettings();
 
-  const hasLongerWrench = useAppSelector(getLongerWrench);
+  const { data: hasLongerWrench } = useCustomEmojis(getLongerWrench);
 
   if (!me || withLabels || !features.emojiReacts || !showWrenchButton) return;
 

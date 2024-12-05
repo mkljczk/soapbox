@@ -12,7 +12,6 @@ import auth from './auth';
 import compose from './compose';
 import contexts from './contexts';
 import conversations from './conversations';
-import custom_emojis from './custom-emojis';
 import domain_lists from './domain-lists';
 import draft_statuses from './draft-statuses';
 import filters from './filters';
@@ -45,7 +44,6 @@ const reducers = {
   compose,
   contexts,
   conversations,
-  custom_emojis,
   domain_lists,
   draft_statuses,
   entities,
@@ -83,8 +81,8 @@ const logOut = (state: AppState): ReturnType<typeof appReducer> => {
 
   const newState = rootReducer(undefined, { type: '' });
 
-  const { instance, plfe, custom_emojis, auth } = state;
-  return { ...newState, instance, plfe, custom_emojis, auth };
+  const { instance, plfe, auth } = state;
+  return { ...newState, instance, plfe, auth };
 };
 
 const rootReducer: typeof appReducer = (state, action) => {

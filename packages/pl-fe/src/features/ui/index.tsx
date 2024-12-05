@@ -3,7 +3,6 @@ import React, { Suspense, lazy, useEffect, useRef } from 'react';
 import { Redirect, Switch, useHistory, useLocation } from 'react-router-dom';
 
 import { fetchConfig, fetchReports, fetchUsers } from 'pl-fe/actions/admin';
-import { fetchCustomEmojis } from 'pl-fe/actions/custom-emojis';
 import { fetchDraftStatuses } from 'pl-fe/actions/draft-statuses';
 import { fetchFilters } from 'pl-fe/actions/filters';
 import { fetchMarker } from 'pl-fe/actions/markers';
@@ -41,6 +40,7 @@ import RemoteInstanceLayout from 'pl-fe/layouts/remote-instance-layout';
 import SearchLayout from 'pl-fe/layouts/search-layout';
 import StatusLayout from 'pl-fe/layouts/status-layout';
 import { prefetchFollowRequests } from 'pl-fe/queries/accounts/use-follow-requests';
+import { prefetchCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
 import { useUiStore } from 'pl-fe/stores/ui';
 import { getVapidKey } from 'pl-fe/utils/auth';
 import { isStandalone } from 'pl-fe/utils/state';
@@ -445,7 +445,7 @@ const UI: React.FC<IUI> = ({ children }) => {
   // The user has logged in
   useEffect(() => {
     loadAccountData();
-    dispatch(fetchCustomEmojis());
+    prefetchCustomEmojis(client);
   }, [!!account]);
 
   useEffect(() => {

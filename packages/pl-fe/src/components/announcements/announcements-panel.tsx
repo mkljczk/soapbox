@@ -2,23 +2,21 @@ import clsx from 'clsx';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import ReactSwipeableViews from 'react-swipeable-views';
-import { createSelector } from 'reselect';
 
 import Card from 'pl-fe/components/ui/card';
 import HStack from 'pl-fe/components/ui/hstack';
 import Widget from 'pl-fe/components/ui/widget';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useAnnouncements } from 'pl-fe/queries/announcements/use-announcements';
+import { useCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
 
 import Announcement from './announcement';
 
 import type { CustomEmoji } from 'pl-api';
-import type { RootState } from 'pl-fe/store';
 
-const customEmojiMap = createSelector([(state: RootState) => state.custom_emojis], items => items.reduce<Record<string, CustomEmoji>>((map, emoji) => (map[emoji.shortcode] = emoji, map), {}));
+const makeCustomEmojiMap = (items: Array<CustomEmoji>) => items.reduce<Record<string, CustomEmoji>>((map, emoji) => (map[emoji.shortcode] = emoji, map), {});
 
 const AnnouncementsPanel = () => {
-  const emojiMap = useAppSelector(state => customEmojiMap(state));
+  const { data: emojiMap = {} } = useCustomEmojis(makeCustomEmojiMap);
   const [index, setIndex] = useState(0);
 
   const { data: announcements } = useAnnouncements();

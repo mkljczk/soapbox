@@ -9,7 +9,7 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useBackupsQuery, useCreateBackupMutation } from 'pl-fe/queries/settings/use-backups';
+import { useBackups, useCreateBackupMutation } from 'pl-fe/queries/settings/use-backups';
 
 import type { Backup as BackupEntity } from 'pl-api';
 
@@ -62,7 +62,7 @@ const Backup: React.FC<IBackup> = ({ backup }) => {
 const Backups = () => {
   const intl = useIntl();
 
-  const { data: backups = [], isLoading } = useBackupsQuery();
+  const { data: backups = [], isLoading } = useBackups();
   const { mutate: createBackup } = useCreateBackupMutation();
 
   const handleCreateBackup: React.MouseEventHandler = e => {

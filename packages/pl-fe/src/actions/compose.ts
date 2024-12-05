@@ -19,7 +19,7 @@ import { saveSettings } from './settings';
 import { createStatus } from './statuses';
 
 import type { EditorState } from 'lexical';
-import type { Account as BaseAccount, CreateStatusParams, Group, MediaAttachment, Status as BaseStatus, Tag, Poll, ScheduledStatus } from 'pl-api';
+import type { Account as BaseAccount, CreateStatusParams, CustomEmoji, Group, MediaAttachment, Status as BaseStatus, Tag, Poll, ScheduledStatus } from 'pl-api';
 import type { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import type { Emoji } from 'pl-fe/features/emoji';
 import type { Account } from 'pl-fe/normalizers/account';
@@ -595,9 +595,9 @@ const fetchComposeSuggestionsAccounts = throttle((dispatch, getState, composeId,
     });
 }, 200, { leading: true, trailing: true });
 
-const fetchComposeSuggestionsEmojis = (dispatch: AppDispatch, getState: () => RootState, composeId: string, token: string) => {
-  const state = getState();
-  const results = emojiSearch(token.replace(':', ''), { maxResults: 10 }, state.custom_emojis);
+const fetchComposeSuggestionsEmojis = (dispatch: AppDispatch, composeId: string, token: string) => {
+  const customEmojis = queryClient.getQueryData<Array<CustomEmoji>>(['instance', 'customEmojis']);
+  const results = emojiSearch(token.replace(':', ''), { maxResults: 10 }, customEmojis);
 
   dispatch(readyComposeSuggestionsEmojis(composeId, token, results));
 };
@@ -633,7 +633,7 @@ const fetchComposeSuggestions = (composeId: string, token: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     switch (token[0]) {
       case ':':
-        fetchComposeSuggestionsEmojis(dispatch, getState, composeId, token);
+        fetchComposeSuggestionsEmojis(dispatch, composeId, token);
         break;
       case '#':
         fetchComposeSuggestionsTags(dispatch, getState, composeId, token);

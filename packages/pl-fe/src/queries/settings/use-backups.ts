@@ -4,7 +4,7 @@ import { useClient } from 'pl-fe/hooks/use-client';
 
 import { queryClient } from '../client';
 
-const useBackupsQuery = () => {
+const useBackups = () => {
   const client = useClient();
 
   return useQuery({
@@ -26,4 +26,4 @@ const useCreateBackupMutation = () => {
   });
 };
 
-export { useBackupsQuery, useCreateBackupMutation };
+export { useBackups, useCreateBackupMutation };
