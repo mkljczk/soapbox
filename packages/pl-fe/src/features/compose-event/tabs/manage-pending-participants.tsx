@@ -24,7 +24,7 @@ const Account: React.FC<IAccount> = ({ eventId, id, participationMessage }) => {
   const intl = useIntl();
 
   const { mutate: acceptEventParticipationRequest } = useAcceptEventParticipationRequestMutation(eventId, id);
-  const { mutate: rejectEventParticipationRequest } = useAcceptEventParticipationRequestMutation(eventId, id);
+  const { mutate: rejectEventParticipationRequest } = useRejectEventParticipationRequestMutation(eventId, id);
 
   return (
     <AccountContainer
