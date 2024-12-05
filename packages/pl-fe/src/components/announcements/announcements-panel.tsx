@@ -4,11 +4,11 @@ import { FormattedMessage } from 'react-intl';
 import ReactSwipeableViews from 'react-swipeable-views';
 import { createSelector } from 'reselect';
 
-import { useAnnouncements } from 'pl-fe/api/hooks/announcements/use-announcements';
 import Card from 'pl-fe/components/ui/card';
 import HStack from 'pl-fe/components/ui/hstack';
 import Widget from 'pl-fe/components/ui/widget';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useAnnouncements } from 'pl-fe/queries/announcements/use-announcements';
 
 import Announcement from './announcement';
 

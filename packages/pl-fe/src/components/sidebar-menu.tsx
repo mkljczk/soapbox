@@ -5,9 +5,7 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { Link, NavLink } from 'react-router-dom';
 
 import { fetchOwnAccounts, logOut, switchAccount } from 'pl-fe/actions/auth';
-import { useFollowRequestsCount } from 'pl-fe/api/hooks/account-lists/use-follow-requests';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
-import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import Account from 'pl-fe/components/account';
 import Divider from 'pl-fe/components/ui/divider';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -20,6 +18,8 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
+import { useFollowRequestsCount } from 'pl-fe/queries/account-lists/use-follow-requests';
+import { useInteractionRequestsCount } from 'pl-fe/queries/statuses/use-interaction-requests';
 import { makeGetOtherAccounts } from 'pl-fe/selectors';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { useUiStore } from 'pl-fe/stores/ui';

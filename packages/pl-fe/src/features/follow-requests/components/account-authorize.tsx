@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { useAcceptFollowRequestMutation, useRejectFollowRequestMutation } from 'pl-fe/api/hooks/account-lists/use-follow-requests';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import Account from 'pl-fe/components/account';
 import { AuthorizeRejectButtons } from 'pl-fe/components/authorize-reject-buttons';
+import { useAcceptFollowRequestMutation, useRejectFollowRequestMutation } from 'pl-fe/queries/account-lists/use-follow-requests';
 
 interface IAccountAuthorize {
   id: string;

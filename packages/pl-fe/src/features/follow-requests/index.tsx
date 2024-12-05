@@ -1,10 +1,10 @@
 import React from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
-import { useFollowRequests } from 'pl-fe/api/hooks/account-lists/use-follow-requests';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Column from 'pl-fe/components/ui/column';
 import Spinner from 'pl-fe/components/ui/spinner';
+import { useFollowRequests } from 'pl-fe/queries/account-lists/use-follow-requests';
 
 import AccountAuthorize from './components/account-authorize';
 

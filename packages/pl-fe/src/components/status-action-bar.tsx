@@ -17,7 +17,6 @@ import { useBlockGroupMember } from 'pl-fe/api/hooks/groups/use-block-group-memb
 import { useDeleteGroupStatus } from 'pl-fe/api/hooks/groups/use-delete-group-status';
 import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import { useGroupRelationship } from 'pl-fe/api/hooks/groups/use-group-relationship';
-import { useTranslationLanguages } from 'pl-fe/api/hooks/instance/use-translation-languages';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import StatusActionButton from 'pl-fe/components/status-action-button';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -31,6 +30,7 @@ import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
+import { useTranslationLanguages } from 'pl-fe/queries/instance/use-translation-languages';
 import { RootState } from 'pl-fe/store';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';

@@ -1,11 +1,11 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useEventParticipations } from 'pl-fe/api/hooks/account-lists/use-event-participations';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
+import { useEventParticipations } from 'pl-fe/queries/account-lists/use-event-participations';
 
 import type { BaseModalProps } from '../modal-root';
 

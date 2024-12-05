@@ -10,7 +10,7 @@ import * as v from 'valibot';
 import { useClient } from 'pl-fe/hooks/use-client';
 import { queryClient } from 'pl-fe/queries/client';
 
-import { useAnnouncements as useUserAnnouncements } from '../announcements/use-announcements';
+import { useAnnouncements as useUserAnnouncements } from '../../../queries/announcements/use-announcements';
 
 const useAnnouncements = () => {
   const client = useClient();

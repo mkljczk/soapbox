@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import React, { useState } from 'react';
 
-import { useAnnouncements } from 'pl-fe/api/hooks/announcements/use-announcements';
 import AnimatedNumber from 'pl-fe/components/animated-number';
 import unicodeMapping from 'pl-fe/features/emoji/mapping';
+import { useAnnouncements } from 'pl-fe/queries/announcements/use-announcements';
 
 import Emoji from './emoji';
 
