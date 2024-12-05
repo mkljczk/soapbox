@@ -15,7 +15,6 @@ import conversations from './conversations';
 import domain_lists from './domain-lists';
 import draft_statuses from './draft-statuses';
 import filters from './filters';
-import followed_tags from './followed-tags';
 import instance from './instance';
 import listAdder from './list-adder';
 import listEditor from './list-editor';
@@ -32,7 +31,6 @@ import scheduled_statuses from './scheduled-statuses';
 import security from './security';
 import status_lists from './status-lists';
 import statuses from './statuses';
-import tags from './tags';
 import timelines from './timelines';
 
 const reducers = {
@@ -48,7 +46,6 @@ const reducers = {
   draft_statuses,
   entities,
   filters,
-  followed_tags,
   instance,
   listAdder,
   listEditor,
@@ -65,7 +62,6 @@ const reducers = {
   security,
   status_lists,
   statuses,
-  tags,
   timelines,
 };
 
