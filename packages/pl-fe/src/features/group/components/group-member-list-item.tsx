@@ -5,7 +5,6 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import { groupKick } from 'pl-fe/actions/groups';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
-import { useBlockGroupMember } from 'pl-fe/api/hooks/groups/use-block-group-member';
 import { useDemoteGroupMember } from 'pl-fe/api/hooks/groups/use-demote-group-member';
 import { usePromoteGroupMember } from 'pl-fe/api/hooks/groups/use-promote-group-member';
 import Account from 'pl-fe/components/account';
@@ -15,6 +14,7 @@ import { deleteEntities } from 'pl-fe/entity-store/actions';
 import { Entities } from 'pl-fe/entity-store/entities';
 import PlaceholderAccount from 'pl-fe/features/placeholder/components/placeholder-account';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/use-group-blocks';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
@@ -53,7 +53,7 @@ const GroupMemberListItem = ({ member, group }: IGroupMemberListItem) => {
   const intl = useIntl();
   const { openModal } = useModalsStore();
 
-  const blockGroupMember = useBlockGroupMember(group, member.account);
+  const { mutate: blockGroupMember } = useBlockGroupUserMutation(group.id, member.account.id);
   const promoteGroupMember = usePromoteGroupMember(group, member);
   const demoteGroupMember = useDemoteGroupMember(group, member);
 
@@ -85,7 +85,7 @@ const GroupMemberListItem = ({ member, group }: IGroupMemberListItem) => {
       message: intl.formatMessage(messages.blockFromGroupMessage, { name: account?.username }),
       confirm: intl.formatMessage(messages.blockConfirm),
       onConfirm: () => {
-        blockGroupMember([member.account.id], {
+        blockGroupMember(undefined, {
           onSuccess() {
             dispatch(deleteEntities([member.id], Entities.GROUP_MEMBERSHIPS));
             toast.success(intl.formatMessage(messages.blocked, { name: account?.acct }));

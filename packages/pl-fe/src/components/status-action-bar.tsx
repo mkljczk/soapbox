@@ -13,7 +13,6 @@ import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { changeSetting } from 'pl-fe/actions/settings';
 import { deleteStatus, editStatus, toggleMuteStatus } from 'pl-fe/actions/statuses';
 import { deleteFromTimelines } from 'pl-fe/actions/timelines';
-import { useBlockGroupMember } from 'pl-fe/api/hooks/groups/use-block-group-member';
 import { useDeleteGroupStatus } from 'pl-fe/api/hooks/groups/use-delete-group-status';
 import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import { useGroupRelationship } from 'pl-fe/api/hooks/groups/use-group-relationship';
@@ -30,6 +29,7 @@ import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
+import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/use-group-blocks';
 import { useTranslationLanguages } from 'pl-fe/queries/instance/use-translation-languages';
 import { RootState } from 'pl-fe/store';
 import { useModalsStore } from 'pl-fe/stores/modals';
@@ -590,7 +590,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   const { openModal } = useModalsStore();
   const { group } = useGroup((status.group as Group)?.id as string);
   const deleteGroupStatus = useDeleteGroupStatus(group as Group, status.id);
-  const blockGroupMember = useBlockGroupMember(group as Group, status.account);
+  const { mutate: blockGroupMember } = useBlockGroupUserMutation(status.group?.id as string, status.account.id);
   const { getOrCreateChatByAccountId } = useChats();
 
   const { groupRelationship } = useGroupRelationship(status.group_id || undefined);
@@ -762,8 +762,8 @@ const MenuButton: React.FC<IMenuButton> = ({
       message: intl.formatMessage(messages.groupBlockFromGroupMessage, { name: status.account.username }),
       confirm: intl.formatMessage(messages.groupBlockConfirm),
       onConfirm: () => {
-        blockGroupMember([status.account_id], {
-          onSuccess() {
+        blockGroupMember(undefined, {
+          onSuccess: () => {
             toast.success(intl.formatMessage(messages.blocked, { name: account?.acct }));
           },
         });

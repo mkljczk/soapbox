@@ -36,7 +36,6 @@ import status_lists from './status-lists';
 import statuses from './statuses';
 import tags from './tags';
 import timelines from './timelines';
-import user_lists from './user-lists';
 
 const reducers = {
   accounts_meta,
@@ -72,7 +71,6 @@ const reducers = {
   statuses,
   tags,
   timelines,
-  user_lists,
 };
 
 const appReducer = combineReducers(reducers);
