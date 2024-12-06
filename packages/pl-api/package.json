@@ -34,7 +34,7 @@
     "typedoc": "^0.26.10",
     "typedoc-material-theme": "^1.1.0",
     "typedoc-plugin-valibot": "^1.0.0",
-    "typescript": "^5.6.2",
+    "typescript": "^5.6.3",
     "vite": "^5.4.8",
     "vite-plugin-dts": "^4.3.0",
     "ws": "^8.18.0"
