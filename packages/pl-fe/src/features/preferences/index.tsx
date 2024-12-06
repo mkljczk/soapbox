@@ -175,6 +175,7 @@ const Preferences = () => {
           label={intl.formatMessage(messages.brandColor)}
           palette={colors(settings.theme?.brandColor || plFeConfig.brandColor || '#d80482')}
           onChange={(palette) => onBrandColorChange(palette['500'])}
+          allowTintChange={false}
         />
       </List>
 
