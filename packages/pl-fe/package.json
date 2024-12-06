@@ -89,7 +89,7 @@
     "html-react-parser": "^5.1.19",
     "immutable": "^5.0.3",
     "intersection-observer": "^0.12.2",
-    "intl-messageformat": "^10.5.14",
+    "intl-messageformat": "^10.7.7",
     "intl-pluralrules": "^2.0.1",
     "isomorphic-dompurify": "^2.16.0",
     "leaflet": "^1.8.0",
