@@ -153,9 +153,8 @@ const useChatActions = (chatId: string) => {
       .catch(() => null);
 
   const createChatMessage = useMutation({
-    mutationFn: ({ chatId, content, mediaId }: { chatId: string; content: string; mediaId?: string }) => {
-      return client.chats.createChatMessage(chatId, { content, media_id: mediaId });
-    },
+    mutationFn: ({ chatId, content, mediaId }: { chatId: string; content: string; mediaId?: string }) =>
+      client.chats.createChatMessage(chatId, { content, media_id: mediaId }),
     retry: false,
     onMutate: async (variables) => {
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)

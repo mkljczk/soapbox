@@ -3,7 +3,6 @@ import React, { Suspense, lazy, useEffect, useRef } from 'react';
 import { Redirect, Switch, useHistory, useLocation } from 'react-router-dom';
 
 import { fetchConfig, fetchReports, fetchUsers } from 'pl-fe/actions/admin';
-import { fetchCustomEmojis } from 'pl-fe/actions/custom-emojis';
 import { fetchDraftStatuses } from 'pl-fe/actions/draft-statuses';
 import { fetchFilters } from 'pl-fe/actions/filters';
 import { fetchMarker } from 'pl-fe/actions/markers';
@@ -11,7 +10,6 @@ import { expandNotifications } from 'pl-fe/actions/notifications';
 import { register as registerPushNotifications } from 'pl-fe/actions/push-notifications/registerer';
 import { fetchScheduledStatuses } from 'pl-fe/actions/scheduled-statuses';
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
-import { prefetchFollowRequests } from 'pl-fe/api/hooks/account-lists/use-follow-requests';
 import { useUserStream } from 'pl-fe/api/hooks/streaming/use-user-stream';
 import SidebarNavigation from 'pl-fe/components/sidebar-navigation';
 import ThumbNavigation from 'pl-fe/components/thumb-navigation';
@@ -41,6 +39,8 @@ import ProfileLayout from 'pl-fe/layouts/profile-layout';
 import RemoteInstanceLayout from 'pl-fe/layouts/remote-instance-layout';
 import SearchLayout from 'pl-fe/layouts/search-layout';
 import StatusLayout from 'pl-fe/layouts/status-layout';
+import { prefetchFollowRequests } from 'pl-fe/queries/accounts/use-follow-requests';
+import { prefetchCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
 import { useUiStore } from 'pl-fe/stores/ui';
 import { getVapidKey } from 'pl-fe/utils/auth';
 import { isStandalone } from 'pl-fe/utils/state';
@@ -387,6 +387,8 @@ const UI: React.FC<IUI> = ({ children }) => {
   const loadAccountData = () => {
     if (!account) return;
 
+    prefetchCustomEmojis(client);
+
     dispatch(fetchDraftStatuses());
 
     dispatch(fetchHomeTimeline());
@@ -445,7 +447,6 @@ const UI: React.FC<IUI> = ({ children }) => {
   // The user has logged in
   useEffect(() => {
     loadAccountData();
-    dispatch(fetchCustomEmojis());
   }, [!!account]);
 
   useEffect(() => {

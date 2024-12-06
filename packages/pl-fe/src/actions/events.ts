@@ -9,16 +9,10 @@ import { STATUS_FETCH_SOURCE_FAIL, STATUS_FETCH_SOURCE_REQUEST, STATUS_FETCH_SOU
 import type { CreateEventParams, Location, MediaAttachment, PaginatedResponse, Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
-const EVENT_SUBMIT_REQUEST = 'EVENT_SUBMIT_REQUEST' as const;
-const EVENT_SUBMIT_SUCCESS = 'EVENT_SUBMIT_SUCCESS' as const;
-const EVENT_SUBMIT_FAIL = 'EVENT_SUBMIT_FAIL' as const;
-
 const EVENT_JOIN_REQUEST = 'EVENT_JOIN_REQUEST' as const;
-const EVENT_JOIN_SUCCESS = 'EVENT_JOIN_SUCCESS' as const;
 const EVENT_JOIN_FAIL = 'EVENT_JOIN_FAIL' as const;
 
 const EVENT_LEAVE_REQUEST = 'EVENT_LEAVE_REQUEST' as const;
-const EVENT_LEAVE_SUCCESS = 'EVENT_LEAVE_SUCCESS' as const;
 const EVENT_LEAVE_FAIL = 'EVENT_LEAVE_FAIL' as const;
 
 const EVENT_COMPOSE_CANCEL = 'EVENT_COMPOSE_CANCEL' as const;
@@ -71,8 +65,6 @@ const submitEvent = ({
       return;
     }
 
-    dispatch(submitEventRequest());
-
     const params: CreateEventParams = {
       name,
       status,
@@ -91,7 +83,6 @@ const submitEvent = ({
         : getClient(state).events.editEvent(statusId, params)
     ).then((data) => {
       dispatch(importEntities({ statuses: [data] }));
-      dispatch(submitEventSuccess(data));
       toast.success(
         statusId ? messages.editSuccess : messages.success,
         {
@@ -101,24 +92,8 @@ const submitEvent = ({
       );
 
       return data;
-    }).catch((error) => {
-      dispatch(submitEventFail(error));
     });
   };
-
-const submitEventRequest = () => ({
-  type: EVENT_SUBMIT_REQUEST,
-});
-
-const submitEventSuccess = (status: Status) => ({
-  type: EVENT_SUBMIT_SUCCESS,
-  status,
-});
-
-const submitEventFail = (error: unknown) => ({
-  type: EVENT_SUBMIT_FAIL,
-  error,
-});
 
 const joinEvent = (statusId: string, participationMessage?: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
@@ -132,7 +107,6 @@ const joinEvent = (statusId: string, participationMessage?: string) =>
 
     return getClient(getState).events.joinEvent(statusId, participationMessage).then((data) => {
       dispatch(importEntities({ statuses: [data] }));
-      dispatch(joinEventSuccess(status.id));
       toast.success(
         data.event?.join_state === 'pending' ? messages.joinRequestSuccess : messages.joinSuccess,
         {
@@ -147,11 +121,6 @@ const joinEvent = (statusId: string, participationMessage?: string) =>
 
 const joinEventRequest = (statusId: string) => ({
   type: EVENT_JOIN_REQUEST,
-  statusId,
-});
-
-const joinEventSuccess = (statusId: string) => ({
-  type: EVENT_JOIN_SUCCESS,
   statusId,
 });
 
@@ -174,7 +143,6 @@ const leaveEvent = (statusId: string) =>
 
     return getClient(getState).events.leaveEvent(statusId).then((data) => {
       dispatch(importEntities({ statuses: [data] }));
-      dispatch(leaveEventSuccess(status.id));
     }).catch((error) => {
       dispatch(leaveEventFail(error, status.id, status?.event?.join_state || null));
     });
@@ -182,11 +150,6 @@ const leaveEvent = (statusId: string) =>
 
 const leaveEventRequest = (statusId: string) => ({
   type: EVENT_LEAVE_REQUEST,
-  statusId,
-});
-
-const leaveEventSuccess = (statusId: string) => ({
-  type: EVENT_LEAVE_SUCCESS,
   statusId,
 });
 
@@ -270,14 +233,9 @@ const fetchJoinedEvents = () =>
   };
 
 type EventsAction =
-  | ReturnType<typeof submitEventRequest>
-  | ReturnType<typeof submitEventSuccess>
-  | ReturnType<typeof submitEventFail>
   | ReturnType<typeof joinEventRequest>
-  | ReturnType<typeof joinEventSuccess>
   | ReturnType<typeof joinEventFail>
   | ReturnType<typeof leaveEventRequest>
-  | ReturnType<typeof leaveEventSuccess>
   | ReturnType<typeof leaveEventFail>
   | ReturnType<typeof cancelEventCompose>
   | EventFormSetAction
@@ -289,14 +247,9 @@ type EventsAction =
   | { type: typeof JOINED_EVENTS_FETCH_FAIL; error: unknown }
 
 export {
-  EVENT_SUBMIT_REQUEST,
-  EVENT_SUBMIT_SUCCESS,
-  EVENT_SUBMIT_FAIL,
   EVENT_JOIN_REQUEST,
-  EVENT_JOIN_SUCCESS,
   EVENT_JOIN_FAIL,
   EVENT_LEAVE_REQUEST,
-  EVENT_LEAVE_SUCCESS,
   EVENT_LEAVE_FAIL,
   EVENT_COMPOSE_CANCEL,
   EVENT_FORM_SET,

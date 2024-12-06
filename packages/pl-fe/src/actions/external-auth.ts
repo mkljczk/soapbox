@@ -46,7 +46,7 @@ const externalAuthorize = (instance: Instance, baseURL: string) =>
   (dispatch: AppDispatch) => {
     const scopes = getInstanceScopes(instance);
 
-    return dispatch(createExternalApp(instance, baseURL)).then((app) => {
+    return createExternalApp(instance, baseURL).then((app) => {
       const { client_id, redirect_uri } = app;
 
       const query = new URLSearchParams({
@@ -88,7 +88,7 @@ const loginWithCode = (code: string) =>
       code,
     };
 
-    return dispatch(obtainOAuthToken(params, baseURL))
+    return obtainOAuthToken(params, baseURL)
       .then((token) => dispatch(authLoggedIn(token)))
       .then(({ access_token }) => dispatch(verifyCredentials(access_token, baseURL)))
       .then((account) => dispatch(switchAccount(account.id)))

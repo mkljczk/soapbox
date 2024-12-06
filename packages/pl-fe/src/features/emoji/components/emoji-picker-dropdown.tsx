@@ -1,18 +1,17 @@
 import React, { useEffect, useState, useLayoutEffect, Suspense, useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { createSelector } from 'reselect';
 
 import { changeSetting, saveSettings } from 'pl-fe/actions/settings';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useTheme } from 'pl-fe/hooks/use-theme';
-import { RootState } from 'pl-fe/store';
+import { useCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 
 import { buildCustomEmojis } from '../../emoji';
 import { EmojiPicker } from '../../ui/util/async-components';
 
+import type { CustomEmoji as BaseCustomEmoji } from 'pl-api';
 import type { Emoji, CustomEmoji, NativeEmoji } from 'pl-fe/features/emoji';
 
 const messages = defineMessages({
@@ -87,9 +86,7 @@ const getFrequentlyUsedEmojis = (emojiCounters: Record<string, number>) => {
   return emojis;
 };
 
-const getCustomEmojis = createSelector([
-  (state: RootState) => state.custom_emojis,
-], emojis => emojis.filter(e => e.visible_in_picker).toSorted((a, b) => {
+const getCustomEmojis = (emojis: Array<BaseCustomEmoji>) => emojis.filter(e => e.visible_in_picker).toSorted((a, b) => {
   const aShort = a.shortcode.toLowerCase();
   const bShort = b.shortcode.toLowerCase();
 
@@ -100,7 +97,7 @@ const getCustomEmojis = createSelector([
   } else {
     return 0;
   }
-}));
+});
 
 // Fixes render bug where popover has a delayed position update
 const RenderAfter = ({ children, update }: any) => {
@@ -130,7 +127,7 @@ const EmojiPickerDropdown: React.FC<IEmojiPickerDropdown> = ({
   const theme = useTheme();
   const { rememberEmojiUse } = useSettingsStore();
 
-  const customEmojis = useAppSelector((state) => getCustomEmojis(state));
+  const { data: customEmojis } = useCustomEmojis(getCustomEmojis);
 
   const settings = useSettings();
   const frequentlyUsedEmojis = useMemo(() => getFrequentlyUsedEmojis(settings.frequentlyUsedEmojis), [settings.frequentlyUsedEmojis]);
@@ -217,7 +214,7 @@ const EmojiPickerDropdown: React.FC<IEmojiPickerDropdown> = ({
       <RenderAfter update={update}>
         <Suspense>
           <EmojiPicker
-            custom={withCustom ? [{ emojis: buildCustomEmojis(customEmojis) }] : undefined}
+            custom={withCustom ? [{ emojis: buildCustomEmojis(customEmojis || []) }] : undefined}
             title={title}
             onEmojiSelect={handlePick}
             recent={frequentlyUsedEmojis}

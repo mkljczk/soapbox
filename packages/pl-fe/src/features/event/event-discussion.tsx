@@ -13,9 +13,9 @@ import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetStatus } from 'pl-fe/selectors';
 
-import ComposeForm from '../compose/components/compose-form';
 import { makeGetDescendantsIds } from '../status/components/thread';
 import ThreadStatus from '../status/components/thread-status';
+import { ComposeForm } from '../ui/util/async-components';
 
 import type { MediaAttachment } from 'pl-api';
 
@@ -43,9 +43,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statu
 
   const node = useRef<HTMLDivElement>(null);
 
-  const fetchData = () => {
-    return dispatch(fetchStatusWithContext(statusId, intl));
-  };
+  const fetchData = () => dispatch(fetchStatusWithContext(statusId, intl));
 
   useEffect(() => {
     fetchData().then(() => {

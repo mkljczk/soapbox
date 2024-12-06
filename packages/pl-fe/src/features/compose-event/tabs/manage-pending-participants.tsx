@@ -1,13 +1,13 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useAcceptEventParticipationRequestMutation, useEventParticipationRequests } from 'pl-fe/api/hooks/account-lists/use-event-participation-requests';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Button from 'pl-fe/components/ui/button';
 import HStack from 'pl-fe/components/ui/hstack';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
 import AccountContainer from 'pl-fe/containers/account-container';
+import { useAcceptEventParticipationRequestMutation, useEventParticipationRequests, useRejectEventParticipationRequestMutation } from 'pl-fe/queries/events/use-event-participation-requests';
 
 const messages = defineMessages({
   authorize: { id: 'compose_event.participation_requests.authorize', defaultMessage: 'Authorize' },
@@ -24,7 +24,7 @@ const Account: React.FC<IAccount> = ({ eventId, id, participationMessage }) => {
   const intl = useIntl();
 
   const { mutate: acceptEventParticipationRequest } = useAcceptEventParticipationRequestMutation(eventId, id);
-  const { mutate: rejectEventParticipationRequest } = useAcceptEventParticipationRequestMutation(eventId, id);
+  const { mutate: rejectEventParticipationRequest } = useRejectEventParticipationRequestMutation(eventId, id);
 
   return (
     <AccountContainer

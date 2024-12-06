@@ -505,7 +505,7 @@ const Video: React.FC<IVideo> = ({
           />
         </div>
 
-        <div className='-mx-[5px] my-0 flex justify-between pb-2'>
+        <div className='mx-[-5px] my-0 flex justify-between pb-2'>
           <div className='video-player__buttons left'>
             <button
               type='button'

@@ -1,5 +1,5 @@
-import { makePaginatedResponseQuery } from 'pl-fe/api/utils/make-paginated-response-query';
-import { minifyAccountList } from 'pl-fe/api/utils/minify-list';
+import { makePaginatedResponseQuery } from 'pl-fe/queries/utils/make-paginated-response-query';
+import { minifyAccountList } from 'pl-fe/queries/utils/minify-list';
 
 const useEventParticipations = makePaginatedResponseQuery(
   (statusId: string) => ['accountsLists', 'eventParticipations', statusId],

@@ -62,6 +62,7 @@ const useSettingsStore = create<State>()(mutative((set) => ({
   }),
 
   changeSetting: (path: string[], value: any) => set((state: State) => {
+    state.userSettings.saved = false;
     changeSetting(state.userSettings, path, value);
 
     mergeSettings(state);

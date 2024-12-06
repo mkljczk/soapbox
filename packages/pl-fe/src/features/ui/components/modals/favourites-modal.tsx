@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useStatusFavourites } from 'pl-fe/api/hooks/account-lists/use-status-interactions';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
+import { useStatusFavourites } from 'pl-fe/queries/statuses/use-status-interactions';
 
 import type { BaseModalProps } from '../modal-root';
 

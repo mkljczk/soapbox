@@ -1,8 +1,6 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useFollowRequestsCount } from 'pl-fe/api/hooks/account-lists/use-follow-requests';
-import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import { useStatContext } from 'pl-fe/contexts/stat-context';
@@ -15,6 +13,8 @@ import { useLogo } from 'pl-fe/hooks/use-logo';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useFollowRequestsCount } from 'pl-fe/queries/accounts/use-follow-requests';
+import { useInteractionRequestsCount } from 'pl-fe/queries/statuses/use-interaction-requests';
 
 import Account from './account';
 import DropdownMenu, { Menu } from './dropdown-menu';
@@ -173,6 +173,7 @@ const SidebarNavigation = () => {
                 account={account}
                 action={<Icon src={require('@tabler/icons/outline/chevron-down.svg')} className='text-gray-600 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-500' />}
                 disabled
+                withLinkToProfile={false}
               />
             </ProfileDropdown>
           </div>

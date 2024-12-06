@@ -109,9 +109,9 @@ const SignUpPanel = () => {
         <>
           <Text size='lg' weight='bold'>
             {isOpen ? (
-              <FormattedMessage id='signup_panel.sign_in.title' defaultMessage='Sign in' />
-            ) : (
               <FormattedMessage id='signup_panel.sign_in.title.or' defaultMessage='Already have an account?' />
+            ) : (
+              <FormattedMessage id='signup_panel.sign_in.title' defaultMessage='Sign in' />
             )}
           </Text>
 
