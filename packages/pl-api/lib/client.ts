@@ -182,6 +182,7 @@ import {
   GroupTimelineParams,
   HashtagTimelineParams,
   HomeTimelineParams,
+  LinkTimelineParams,
   ListTimelineParams,
   PublicTimelineParams,
   SaveMarkersParams,
@@ -2375,7 +2376,7 @@ class PlApiClient {
      * View public statuses containing a link to the specified currently-trending article. This only lists statuses from people who have opted in to discoverability features.
      * @see {@link https://docs.joinmastodon.org/methods/timelines/#link}
      */
-    linkTimeline: (url: string, params?: HashtagTimelineParams) =>
+    linkTimeline: (url: string, params?: LinkTimelineParams) =>
       this.#paginatedGet('/api/v1/timelines/link', { params: { ...params, url } }, statusSchema),
 
     /**
