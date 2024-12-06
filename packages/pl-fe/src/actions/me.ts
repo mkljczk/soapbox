@@ -13,14 +13,11 @@ import { FE_NAME } from './settings';
 import type { CredentialAccount, UpdateCredentialsParams } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
-const ME_FETCH_REQUEST = 'ME_FETCH_REQUEST' as const;
 const ME_FETCH_SUCCESS = 'ME_FETCH_SUCCESS' as const;
 const ME_FETCH_FAIL = 'ME_FETCH_FAIL' as const;
 const ME_FETCH_SKIP = 'ME_FETCH_SKIP' as const;
 
-const ME_PATCH_REQUEST = 'ME_PATCH_REQUEST' as const;
 const ME_PATCH_SUCCESS = 'ME_PATCH_SUCCESS' as const;
-const ME_PATCH_FAIL = 'ME_PATCH_FAIL' as const;
 
 const noOp = () => new Promise(f => f(undefined));
 
@@ -54,7 +51,6 @@ const fetchMe = () =>
       return noOp();
     }
 
-    dispatch(fetchMeRequest());
     return dispatch(loadCredentials(token, accountUrl!))
       .catch(error => dispatch(fetchMeFail(error)));
   };
@@ -81,22 +77,12 @@ const persistAuthAccount = (account: CredentialAccount, params: Record<string, a
 };
 
 const patchMe = (params: UpdateCredentialsParams) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch(patchMeRequest());
-
-    return getClient(getState).settings.updateCredentials(params)
+  (dispatch: AppDispatch, getState: () => RootState) =>
+    getClient(getState).settings.updateCredentials(params)
       .then(response => {
         persistAuthAccount(response, params);
         dispatch(patchMeSuccess(response));
-      }).catch(error => {
-        dispatch(patchMeFail(error));
-        throw error;
       });
-  };
-
-const fetchMeRequest = () => ({
-  type: ME_FETCH_REQUEST,
-});
 
 const fetchMeSuccess = (account: CredentialAccount) => {
   setSentryAccount(account);
@@ -115,10 +101,6 @@ const fetchMeFail = (error: unknown) => ({
   skipAlert: true,
 });
 
-const patchMeRequest = () => ({
-  type: ME_PATCH_REQUEST,
-});
-
 interface MePatchSuccessAction {
   type: typeof ME_PATCH_SUCCESS;
   me: CredentialAccount;
@@ -133,29 +115,17 @@ const patchMeSuccess = (me: CredentialAccount) =>
     });
   };
 
-const patchMeFail = (error: unknown) => ({
-  type: ME_PATCH_FAIL,
-  error,
-  skipAlert: true,
-});
-
 type MeAction =
-  | ReturnType<typeof fetchMeRequest>
   | ReturnType<typeof fetchMeSuccess>
   | ReturnType<typeof fetchMeFail>
   | MeFetchSkipAction
-  | ReturnType<typeof patchMeRequest>
   | MePatchSuccessAction
-  | ReturnType<typeof patchMeFail>;
 
 export {
-  ME_FETCH_REQUEST,
   ME_FETCH_SUCCESS,
   ME_FETCH_FAIL,
   ME_FETCH_SKIP,
-  ME_PATCH_REQUEST,
   ME_PATCH_SUCCESS,
-  ME_PATCH_FAIL,
   fetchMe,
   patchMe,
   fetchMeSuccess,

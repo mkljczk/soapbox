@@ -143,18 +143,16 @@ const Thread: React.FC<IThread> = ({
   const handleModalReblog = (status: Pick<SelectedStatus, 'id'>) => dispatch(reblog(status));
 
   const handleReblogClick = (status: SelectedStatus, e?: React.MouseEvent) => {
-    dispatch((_, getState) => {
-      const boostModal = settings.boostModal;
-      if (status.reblogged) {
-        dispatch(unreblog(status));
+    const boostModal = settings.boostModal;
+    if (status.reblogged) {
+      dispatch(unreblog(status));
+    } else {
+      if ((e && e.shiftKey) || !boostModal) {
+        handleModalReblog(status);
       } else {
-        if ((e && e.shiftKey) || !boostModal) {
-          handleModalReblog(status);
-        } else {
-          openModal('BOOST', { statusId: status.id, onReblog: handleModalReblog });
-        }
+        openModal('BOOST', { statusId: status.id, onReblog: handleModalReblog });
       }
-    });
+    }
   };
 
   const handleMentionClick = (account: Pick<Account, 'acct'>) => dispatch(mentionCompose(account));
@@ -330,31 +328,35 @@ const Thread: React.FC<IThread> = ({
 
   const focusedStatus = (
     <div className={clsx({ 'pb-4': hasDescendants })} key={status.id}>
-      <HotKeys handlers={handlers}>
-        <div
-          ref={statusRef}
-          className='focusable relative'
-          tabIndex={0}
-          // FIXME: no "reblogged by" text is added for the screen reader
-          aria-label={textForScreenReader(intl, status)}
-        >
+      {status.deleted ? (
+        <Tombstone id={status.id} onMoveUp={handleMoveUp} onMoveDown={handleMoveDown} deleted />
+      ) : (
+        <HotKeys handlers={handlers}>
+          <div
+            ref={statusRef}
+            className='focusable relative'
+            tabIndex={0}
+            // FIXME: no "reblogged by" text is added for the screen reader
+            aria-label={textForScreenReader(intl, status)}
+          >
 
-          <DetailedStatus
-            status={status}
-            withMedia={withMedia}
-            onOpenCompareHistoryModal={handleOpenCompareHistoryModal}
-          />
+            <DetailedStatus
+              status={status}
+              withMedia={withMedia}
+              onOpenCompareHistoryModal={handleOpenCompareHistoryModal}
+            />
 
-          <hr className='-mx-4 mb-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />
+            <hr className='-mx-4 mb-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />
 
-          <StatusActionBar
-            status={status}
-            expandable={isModal}
-            space='lg'
-            withLabels
-          />
-        </div>
-      </HotKeys>
+            <StatusActionBar
+              status={status}
+              expandable={isModal}
+              space='lg'
+              withLabels
+            />
+          </div>
+        </HotKeys>
+      )}
 
       {hasDescendants && (
         <hr className='-mx-4 mt-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />

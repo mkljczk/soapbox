@@ -2,11 +2,11 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { useStatusQuotes } from 'pl-fe/api/hooks/statuses/use-status-quotes';
 import StatusList from 'pl-fe/components/status-list';
 import Column from 'pl-fe/components/ui/column';
 import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
 import { useTheme } from 'pl-fe/hooks/use-theme';
+import { useStatusQuotes } from 'pl-fe/queries/statuses/use-status-quotes';
 
 const messages = defineMessages({
   heading: { id: 'column.quotes', defaultMessage: 'Post quotes' },

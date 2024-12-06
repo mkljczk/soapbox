@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FormattedDate, defineMessages, useIntl } from 'react-intl';
 
-import { fetchBackups, createBackup } from 'pl-fe/actions/backups';
 import Button from 'pl-fe/components/ui/button';
 import Card from 'pl-fe/components/ui/card';
 import Column from 'pl-fe/components/ui/column';
@@ -10,8 +9,7 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useBackups, useCreateBackupMutation } from 'pl-fe/queries/settings/use-backups';
 
 import type { Backup as BackupEntity } from 'pl-api';
 
@@ -63,22 +61,14 @@ const Backup: React.FC<IBackup> = ({ backup }) => {
 
 const Backups = () => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
 
-  const backups = useAppSelector((state) => Object.values(state.backups).toSorted((a, b) => a.inserted_at.localeCompare(b.inserted_at)));
-
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: backups = [], isLoading } = useBackups();
+  const { mutate: createBackup } = useCreateBackupMutation();
 
   const handleCreateBackup: React.MouseEventHandler = e => {
-    dispatch(createBackup());
+    createBackup();
     e.preventDefault();
   };
-
-  useEffect(() => {
-    dispatch(fetchBackups()).then(() => {
-      setIsLoading(false);
-    }).catch(() => {});
-  }, []);
 
   const showLoading = isLoading && backups.length === 0;
 

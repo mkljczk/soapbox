@@ -3,7 +3,6 @@ import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { useSearchParams } from 'react-router-dom-v5-compat';
 
-import { useDirectory } from 'pl-fe/api/hooks/account-lists/use-directory';
 import LoadMore from 'pl-fe/components/load-more';
 import { RadioGroup, RadioItem } from 'pl-fe/components/radio';
 import { CardTitle } from 'pl-fe/components/ui/card';
@@ -11,6 +10,7 @@ import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useDirectory } from 'pl-fe/queries/accounts/use-directory';
 
 import AccountCard from './components/account-card';
 

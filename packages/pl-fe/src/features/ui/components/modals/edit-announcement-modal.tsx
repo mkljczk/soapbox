@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useAnnouncements } from 'pl-fe/api/hooks/admin/use-announcements';
 import Form from 'pl-fe/components/ui/form';
 import FormGroup from 'pl-fe/components/ui/form-group';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -11,6 +10,7 @@ import Text from 'pl-fe/components/ui/text';
 import Textarea from 'pl-fe/components/ui/textarea';
 import Toggle from 'pl-fe/components/ui/toggle';
 import { DatePicker } from 'pl-fe/features/ui/util/async-components';
+import { useCreateAnnouncementMutation, useUpdateAnnouncementMutation } from 'pl-fe/queries/admin/use-announcements';
 import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';
@@ -30,7 +30,8 @@ interface EditAnnouncementModalProps {
 }
 
 const EditAnnouncementModal: React.FC<BaseModalProps & EditAnnouncementModalProps> = ({ onClose, announcement }) => {
-  const { createAnnouncement, updateAnnouncement } = useAnnouncements();
+  const { mutate: createAnnouncement } = useCreateAnnouncementMutation();
+  const { mutate: updateAnnouncement } = useUpdateAnnouncementMutation();
   const intl = useIntl();
 
   const [content, setContent] = useState(announcement?.raw_content || '');

@@ -13,14 +13,13 @@ import { useSettingsStore } from 'pl-fe/stores/settings';
 import toast from 'pl-fe/toast';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 
-import { chooseEmoji } from './emojis';
 import { importEntities } from './importer';
-import { rememberLanguageUse } from './languages';
 import { uploadFile, updateMedia } from './media';
+import { saveSettings } from './settings';
 import { createStatus } from './statuses';
 
 import type { EditorState } from 'lexical';
-import type { Account as BaseAccount, CreateStatusParams, Group, MediaAttachment, Status as BaseStatus, Tag, Poll, ScheduledStatus } from 'pl-api';
+import type { Account as BaseAccount, CreateStatusParams, CustomEmoji, Group, MediaAttachment, Status as BaseStatus, Tag, Poll, ScheduledStatus } from 'pl-api';
 import type { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import type { Emoji } from 'pl-fe/features/emoji';
 import type { Account } from 'pl-fe/normalizers/account';
@@ -65,8 +64,6 @@ const COMPOSE_MODIFIED_LANGUAGE_CHANGE = 'COMPOSE_MODIFIED_LANGUAGE_CHANGE' as c
 const COMPOSE_LANGUAGE_ADD = 'COMPOSE_LANGUAGE_ADD' as const;
 const COMPOSE_LANGUAGE_DELETE = 'COMPOSE_LANGUAGE_DELETE' as const;
 const COMPOSE_FEDERATED_CHANGE = 'COMPOSE_FEDERATED_CHANGE' as const;
-
-const COMPOSE_EMOJI_INSERT = 'COMPOSE_EMOJI_INSERT' as const;
 
 const COMPOSE_UPLOAD_CHANGE_REQUEST = 'COMPOSE_UPLOAD_UPDATE_REQUEST' as const;
 const COMPOSE_UPLOAD_CHANGE_SUCCESS = 'COMPOSE_UPLOAD_UPDATE_SUCCESS' as const;
@@ -303,7 +300,7 @@ const handleComposeSubmit = (dispatch: AppDispatch, getState: () => RootState, c
     dispatch(insertIntoTagHistory(composeId, data.tags || [], status));
     toast.success(edit ? messages.editSuccess : messages.success, {
       actionLabel: messages.view,
-      actionLink: `/@${data.account.acct}/posts/${data.id}`,
+      actionLink: data.visibility === 'direct' ? '/conversations' : `/@${data.account.acct}/posts/${data.id}`,
     });
   } else {
     toast.success(messages.scheduledSuccess, {
@@ -346,7 +343,6 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
 
     const compose = state.compose[composeId]!;
 
-
     const status = compose.text;
     const media = compose.media_attachments;
     const statusId = compose.id;
@@ -384,7 +380,8 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
     useModalsStore.getState().closeModal('COMPOSE');
 
     if (compose.language && !statusId) {
-      dispatch(rememberLanguageUse(compose.language));
+      useSettingsStore.getState().rememberLanguageUse(compose.language);
+      dispatch(saveSettings());
     }
 
     const idempotencyKey = compose.idempotencyKey;
@@ -435,9 +432,6 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
     }
 
     return dispatch(createStatus(params, idempotencyKey, statusId)).then((data) => {
-      if (!statusId && data.scheduled_at === null && data.visibility === 'direct' && getState().conversations.mounted <= 0 && history) {
-        history.push('/conversations');
-      }
       handleComposeSubmit(dispatch, getState, composeId, data, status, !!statusId);
       onSuccess?.();
     }).catch((error) => {
@@ -598,9 +592,9 @@ const fetchComposeSuggestionsAccounts = throttle((dispatch, getState, composeId,
     });
 }, 200, { leading: true, trailing: true });
 
-const fetchComposeSuggestionsEmojis = (dispatch: AppDispatch, getState: () => RootState, composeId: string, token: string) => {
-  const state = getState();
-  const results = emojiSearch(token.replace(':', ''), { maxResults: 10 }, state.custom_emojis);
+const fetchComposeSuggestionsEmojis = (dispatch: AppDispatch, composeId: string, token: string) => {
+  const customEmojis = queryClient.getQueryData<Array<CustomEmoji>>(['instance', 'customEmojis']);
+  const results = emojiSearch(token.replace(':', ''), { maxResults: 10 }, customEmojis);
 
   dispatch(readyComposeSuggestionsEmojis(composeId, token, results));
 };
@@ -636,7 +630,7 @@ const fetchComposeSuggestions = (composeId: string, token: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     switch (token[0]) {
       case ':':
-        fetchComposeSuggestionsEmojis(dispatch, getState, composeId, token);
+        fetchComposeSuggestionsEmojis(dispatch, composeId, token);
         break;
       case '#':
         fetchComposeSuggestionsTags(dispatch, getState, composeId, token);
@@ -686,7 +680,8 @@ const selectComposeSuggestion = (composeId: string, position: number, token: str
       completion = isNativeEmoji(suggestion) ? suggestion.native : suggestion.colons;
       startPosition = position - 1;
 
-      dispatch(chooseEmoji(suggestion));
+      useSettingsStore.getState().rememberEmojiUse(suggestion);
+      dispatch(saveSettings());
     } else if (typeof suggestion === 'string' && suggestion[0] === '#') {
       completion = suggestion;
       startPosition = position - 1;
@@ -781,14 +776,6 @@ const deleteComposeLanguage = (composeId: string, value: Language) => ({
   type: COMPOSE_LANGUAGE_DELETE,
   composeId,
   value,
-});
-
-const insertEmojiCompose = (composeId: string, position: number, emoji: Emoji, needsSpace: boolean) => ({
-  type: COMPOSE_EMOJI_INSERT,
-  composeId,
-  position,
-  emoji,
-  needsSpace,
 });
 
 const addPoll = (composeId: string) => ({
@@ -977,7 +964,6 @@ type ComposeAction =
   | ReturnType<typeof changeComposeModifiedLanguage>
   | ReturnType<typeof addComposeLanguage>
   | ReturnType<typeof deleteComposeLanguage>
-  | ReturnType<typeof insertEmojiCompose>
   | ReturnType<typeof addPoll>
   | ReturnType<typeof removePoll>
   | ReturnType<typeof addSchedule>
@@ -1028,7 +1014,6 @@ export {
   COMPOSE_MODIFIED_LANGUAGE_CHANGE,
   COMPOSE_LANGUAGE_ADD,
   COMPOSE_LANGUAGE_DELETE,
-  COMPOSE_EMOJI_INSERT,
   COMPOSE_UPLOAD_CHANGE_REQUEST,
   COMPOSE_UPLOAD_CHANGE_SUCCESS,
   COMPOSE_UPLOAD_CHANGE_FAIL,
@@ -1050,7 +1035,6 @@ export {
   COMPOSE_ADD_SUGGESTED_LANGUAGE,
   COMPOSE_FEDERATED_CHANGE,
   setComposeToStatus,
-  changeCompose,
   replyCompose,
   cancelReplyCompose,
   quoteCompose,
@@ -1059,7 +1043,6 @@ export {
   mentionCompose,
   directCompose,
   directComposeById,
-  handleComposeSubmit,
   submitCompose,
   uploadFile,
   uploadCompose,
@@ -1070,11 +1053,7 @@ export {
   groupComposeModal,
   clearComposeSuggestions,
   fetchComposeSuggestions,
-  readyComposeSuggestionsEmojis,
-  readyComposeSuggestionsAccounts,
   selectComposeSuggestion,
-  updateSuggestionTags,
-  updateTagHistory,
   changeComposeSpoilerness,
   changeComposeContentType,
   changeComposeSpoilerText,
@@ -1083,7 +1062,6 @@ export {
   changeComposeModifiedLanguage,
   addComposeLanguage,
   deleteComposeLanguage,
-  insertEmojiCompose,
   addPoll,
   removePoll,
   addSchedule,

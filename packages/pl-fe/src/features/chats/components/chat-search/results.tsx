@@ -7,7 +7,9 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
-import useAccountSearch from 'pl-fe/queries/search';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useAccountSearch } from 'pl-fe/queries/search/use-search-accounts';
+import { selectAccounts } from 'pl-fe/selectors';
 
 import type { Account } from 'pl-api';
 
@@ -18,7 +20,8 @@ interface IResults {
 }
 
 const Results = ({ accountSearchResult, onSelect, parentRef }: IResults) => {
-  const { data: accounts, isFetching, hasNextPage, fetchNextPage } = accountSearchResult;
+  const { data: accountIds = [], isFetching, hasNextPage, fetchNextPage } = accountSearchResult;
+  const accounts = useAppSelector((state) => selectAccounts(state, accountIds));
 
   const [isNearBottom, setNearBottom] = useState<boolean>(false);
   const [isNearTop, setNearTop] = useState<boolean>(true);

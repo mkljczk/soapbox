@@ -17,13 +17,16 @@ const FE_NAME = 'pl_fe';
 type SettingOpts = {
   /** Whether to display an alert when settings are saved. */
   showAlert?: boolean;
+  save?: boolean;
 }
 
 const saveSuccessMessage = defineMessage({ id: 'settings.save.success', defaultMessage: 'Your preferences have been saved!' });
 
 const changeSetting = (path: string[], value: any, opts?: SettingOpts) => {
   useSettingsStore.getState().changeSetting(path, value);
-  return saveSettings(opts);
+
+  if (opts?.save !== false) return saveSettings(opts);
+  return () => {};
 };
 
 const saveSettings = (opts?: SettingOpts) =>

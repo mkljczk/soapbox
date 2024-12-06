@@ -10,7 +10,7 @@ import { createApp } from './apps';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const createProviderApp = () =>
-  async(dispatch: AppDispatch, getState: () => RootState) => {
+  async (dispatch: AppDispatch, getState: () => RootState) => {
     const scopes = getScopes(getState());
 
     const params = {
@@ -20,7 +20,7 @@ const createProviderApp = () =>
       scopes,
     };
 
-    return dispatch(createApp(params));
+    return createApp(params);
   };
 
 const prepareRequest = (provider: string) =>
