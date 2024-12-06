@@ -30,7 +30,7 @@
     "eslint-import-resolver-typescript": "^3.6.3",
     "eslint-plugin-compat": "^6.0.1",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-promise": "^7.2.1",
     "typedoc": "^0.26.10",
     "typedoc-material-theme": "^1.2.0",
     "typedoc-plugin-valibot": "^1.0.0",
