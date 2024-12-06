@@ -115,7 +115,7 @@
     "react-helmet-async": "^2.0.5",
     "react-hot-toast": "^2.4.0",
     "react-inlinesvg": "^4.1.5",
-    "react-intl": "^6.7.0",
+    "react-intl": "^7.0.1",
     "react-motion": "^0.5.2",
     "react-redux": "^9.0.4",
     "react-router-dom": "^5.3.4",
