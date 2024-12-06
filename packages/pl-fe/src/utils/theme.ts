@@ -1,6 +1,5 @@
 import { hexToRgb } from './colors';
 
-import type { PlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import type { Rgb, Hsl, TailwindColorPalette, TailwindColorObject } from 'pl-fe/types/colors';
 
 // Taken from chromatism.js
