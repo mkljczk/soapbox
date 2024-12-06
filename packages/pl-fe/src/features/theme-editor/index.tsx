@@ -283,4 +283,4 @@ const ColorListItem: React.FC<IColorListItem> = ({ label, value, onChange }) => 
   );
 };
 
-export { ThemeEditor as default };
+export { ThemeEditor as default, PaletteListItem };

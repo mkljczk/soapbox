@@ -1,7 +1,8 @@
+import debounce from 'lodash/debounce';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { changeSetting } from 'pl-fe/actions/settings';
+import { changeSetting, saveSettings } from 'pl-fe/actions/settings';
 import List, { ListItem } from 'pl-fe/components/list';
 import Form from 'pl-fe/components/ui/form';
 import { Mutliselect, SelectDropdown } from 'pl-fe/features/forms';
@@ -9,9 +10,14 @@ import SettingToggle from 'pl-fe/features/notifications/components/setting-toggl
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import colors from 'pl-fe/utils/colors';
 
+import { PaletteListItem } from '../theme-editor';
 import ThemeToggle from '../ui/components/theme-toggle';
+
+import type { AppDispatch } from 'pl-fe/store';
 
 const languages = {
   en: 'English',
@@ -91,13 +97,19 @@ const messages = defineMessages({
   content_type_plaintext: { id: 'preferences.options.content_type_plaintext', defaultMessage: 'Plain text' },
   content_type_markdown: { id: 'preferences.options.content_type_markdown', defaultMessage: 'Markdown' },
   content_type_html: { id: 'preferences.options.content_type_html', defaultMessage: 'HTML' },
+  brandColor: { id: 'preferences.options.brand_color', defaultMessage: 'Base color' },
 });
+
+const debouncedSave = debounce((dispatch: AppDispatch) => {
+  dispatch(saveSettings({ showAlert: true }));
+}, 1000);
 
 const Preferences = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const features = useFeatures();
   const settings = useSettings();
+  const plFeConfig = usePlFeConfig();
   const instance = useInstance();
 
   const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>, path: string[]) => {
@@ -109,7 +121,14 @@ const Preferences = () => {
   };
 
   const onToggleChange = (key: string[], checked: boolean) => {
-    dispatch(changeSetting(key, checked, { showAlert: true }));
+    dispatch(changeSetting(key, checked));
+  };
+
+  const onBrandColorChange = (brandColor: string) => {
+    if (!settings.theme?.brandColor && brandColor === (plFeConfig.brandColor || '#d80482')) return;
+
+    dispatch(changeSetting(['theme', 'brandColor'], brandColor, { showAlert: true, save: false }));
+    debouncedSave(dispatch);
   };
 
   const displayMediaOptions = React.useMemo(() => ({
@@ -152,7 +171,14 @@ const Preferences = () => {
         <ListItem label={<FormattedMessage id='preferences.fields.theme' defaultMessage='Theme' />}>
           <ThemeToggle />
         </ListItem>
+        <PaletteListItem
+          label={intl.formatMessage(messages.brandColor)}
+          palette={colors(settings.theme?.brandColor || plFeConfig.brandColor || '#d80482')}
+          onChange={(palette) => onBrandColorChange(palette['500'])}
+        />
+      </List>
 
+      <List>
         <ListItem label={<FormattedMessage id='preferences.fields.language_label' defaultMessage='Display language' />}>
           <SelectDropdown
             className='max-w-[200px]'
