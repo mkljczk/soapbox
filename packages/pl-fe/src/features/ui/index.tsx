@@ -387,6 +387,8 @@ const UI: React.FC<IUI> = ({ children }) => {
   const loadAccountData = () => {
     if (!account) return;
 
+    prefetchCustomEmojis(client);
+
     dispatch(fetchDraftStatuses());
 
     dispatch(fetchHomeTimeline());
@@ -445,7 +447,6 @@ const UI: React.FC<IUI> = ({ children }) => {
   // The user has logged in
   useEffect(() => {
     loadAccountData();
-    prefetchCustomEmojis(client);
   }, [!!account]);
 
   useEffect(() => {
