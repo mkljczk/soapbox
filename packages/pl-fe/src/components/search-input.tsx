@@ -78,6 +78,7 @@ const SearchInput = () => {
 
       <div className='relative'>
         <AutosuggestAccountInput
+          id='search'
           placeholder={intl.formatMessage(messages.placeholder)}
           value={value}
           onChange={handleChange}

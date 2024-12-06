@@ -29,6 +29,7 @@ import StatusLanguagePicker from './status-language-picker';
 import StatusReactionsBar from './status-reactions-bar';
 import StatusReplyMentions from './status-reply-mentions';
 import StatusInfo from './statuses/status-info';
+import Tombstone from './tombstone';
 
 const messages = defineMessages({
   reblogged_by: { id: 'status.reblogged_by', defaultMessage: '{name} reposted' },
@@ -40,7 +41,6 @@ interface IStatus {
   status: SelectedStatus;
   onClick?: () => void;
   muted?: boolean;
-  hidden?: boolean;
   unread?: boolean;
   onMoveUp?: (statusId: string, featured?: boolean) => void;
   onMoveDown?: (statusId: string, featured?: boolean) => void;
@@ -65,7 +65,6 @@ const Status: React.FC<IStatus> = (props) => {
     onMoveUp,
     onMoveDown,
     muted,
-    hidden,
     featured,
     unread,
     hideActionBar,
@@ -95,7 +94,7 @@ const Status: React.FC<IStatus> = (props) => {
 
   // Track height changes we know about to compensate scrolling.
   useEffect(() => {
-    didShowCard.current = Boolean(!muted && !hidden && status?.card);
+    didShowCard.current = Boolean(!muted && status?.card);
   }, []);
 
   const handleClick = (e?: React.MouseEvent) => {
@@ -299,16 +298,9 @@ const Status: React.FC<IStatus> = (props) => {
 
   if (!status) return null;
 
-  if (hidden) {
-    return (
-      <div ref={node}>
-        <>
-          {actualStatus.account.display_name || actualStatus.account.username}
-          {actualStatus.content}
-        </>
-      </div>
-    );
-  }
+  if (status.deleted) return (
+    <Tombstone id={status.id} onMoveUp={onMoveUp} onMoveDown={onMoveDown} deleted />
+  );
 
   if (filtered && status.showFiltered !== false) {
     const minHandlers = muted ? undefined : {

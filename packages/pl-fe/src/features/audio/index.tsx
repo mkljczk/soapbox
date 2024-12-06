@@ -494,7 +494,7 @@ const Audio: React.FC<IAudio> = (props) => {
       </div>
 
       <div className='video-player__controls absolute bottom-0 left-0 z-[2] box-border bg-transparent px-4 py-0 pt-2.5 opacity-100 ring-0 transition-opacity duration-100 ease-in-out'>
-        <div className='-mx-[5px] my-0 flex justify-between pb-2'>
+        <div className='mx-[-5px] my-0 flex justify-between pb-2'>
           <div className='video-player__buttons left'>
 
             <button

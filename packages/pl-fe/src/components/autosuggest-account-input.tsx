@@ -11,6 +11,7 @@ import type { InputThemes } from 'pl-fe/components/ui/input';
 const noOp = () => { };
 
 interface IAutosuggestAccountInput {
+  id?: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   onSelected: (accountId: string) => void;
   autoFocus?: boolean;

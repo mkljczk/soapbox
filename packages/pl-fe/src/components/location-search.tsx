@@ -3,9 +3,9 @@ import clsx from 'clsx';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { useSearchLocation } from 'pl-fe/api/hooks/search/use-search-location';
 import AutosuggestInput, { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import Icon from 'pl-fe/components/icon';
+import { useSearchLocation } from 'pl-fe/queries/search/use-search-location';
 
 import type { Location } from 'pl-api';
 

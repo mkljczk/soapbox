@@ -2,9 +2,7 @@ import clsx from 'clsx';
 import React, { Suspense, lazy, useEffect, useRef } from 'react';
 import { Redirect, Switch, useHistory, useLocation } from 'react-router-dom';
 
-import { fetchFollowRequests } from 'pl-fe/actions/accounts';
 import { fetchConfig, fetchReports, fetchUsers } from 'pl-fe/actions/admin';
-import { fetchCustomEmojis } from 'pl-fe/actions/custom-emojis';
 import { fetchDraftStatuses } from 'pl-fe/actions/draft-statuses';
 import { fetchFilters } from 'pl-fe/actions/filters';
 import { fetchMarker } from 'pl-fe/actions/markers';
@@ -18,6 +16,7 @@ import ThumbNavigation from 'pl-fe/components/thumb-navigation';
 import Layout from 'pl-fe/components/ui/layout';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useClient } from 'pl-fe/hooks/use-client';
 import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
@@ -40,6 +39,8 @@ import ProfileLayout from 'pl-fe/layouts/profile-layout';
 import RemoteInstanceLayout from 'pl-fe/layouts/remote-instance-layout';
 import SearchLayout from 'pl-fe/layouts/search-layout';
 import StatusLayout from 'pl-fe/layouts/status-layout';
+import { prefetchFollowRequests } from 'pl-fe/queries/accounts/use-follow-requests';
+import { prefetchCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
 import { useUiStore } from 'pl-fe/stores/ui';
 import { getVapidKey } from 'pl-fe/utils/auth';
 import { isStandalone } from 'pl-fe/utils/state';
@@ -362,6 +363,7 @@ const UI: React.FC<IUI> = ({ children }) => {
   const { account } = useOwnAccount();
   const features = useFeatures();
   const vapidKey = useAppSelector(state => getVapidKey(state));
+  const client = useClient();
 
   const { isDropdownMenuOpen } = useUiStore();
   const standalone = useAppSelector(isStandalone);
@@ -384,6 +386,8 @@ const UI: React.FC<IUI> = ({ children }) => {
   /** Load initial data when a user is logged in */
   const loadAccountData = () => {
     if (!account) return;
+
+    prefetchCustomEmojis(client);
 
     dispatch(fetchDraftStatuses());
 
@@ -409,7 +413,7 @@ const UI: React.FC<IUI> = ({ children }) => {
     setTimeout(() => dispatch(fetchFilters()), 500);
 
     if (account.locked) {
-      setTimeout(() => dispatch(fetchFollowRequests()), 700);
+      setTimeout(() => prefetchFollowRequests(client), 700);
     }
 
     setTimeout(() => dispatch(fetchScheduledStatuses()), 900);
@@ -443,7 +447,6 @@ const UI: React.FC<IUI> = ({ children }) => {
   // The user has logged in
   useEffect(() => {
     loadAccountData();
-    dispatch(fetchCustomEmojis());
   }, [!!account]);
 
   useEffect(() => {

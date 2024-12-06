@@ -85,7 +85,6 @@ interface IAccount {
   /** Override other actions for specificity like mute/unmute. */
   actionType?: 'muting' | 'blocking' | 'follow_request' | 'biting';
   avatarSize?: number;
-  hidden?: boolean;
   hideActions?: boolean;
   id?: string;
   onActionClick?: (account: AccountSchema) => void;
@@ -115,7 +114,6 @@ const Account = ({
   actionTitle,
   actionAlignment = 'center',
   avatarSize = 42,
-  hidden = false,
   hideActions = false,
   onActionClick,
   showAccountHoverCard = true,
@@ -181,15 +179,6 @@ const Account = ({
     return null;
   }
 
-  if (hidden) {
-    return (
-      <>
-        {account.display_name}
-        {account.username}
-      </>
-    );
-  }
-
   if (withDate) timestamp = account.created_at;
 
   const LinkEl: any = withLinkToProfile ? Link : 'div';
@@ -234,7 +223,7 @@ const Account = ({
                 <Text theme='muted' size='sm' direction='ltr' truncate>@{username}</Text>
 
                 {account.favicon && (
-                  <InstanceFavicon account={account} disabled={!withLinkToProfile} />
+                  <InstanceFavicon account={account} disabled />
                 )}
 
                 {items}

@@ -249,12 +249,13 @@ interface IPaletteListItem {
   palette: ColorGroup | string;
   onChange: (palette: ColorGroup) => void;
   resetKey?: string;
+  allowTintChange?: boolean;
 }
 
 /** Palette editor inside a ListItem. */
-const PaletteListItem: React.FC<IPaletteListItem> = ({ label, palette, onChange, resetKey }) => typeof palette === 'string' ? null : (
+const PaletteListItem: React.FC<IPaletteListItem> = ({ label, palette, onChange, resetKey, allowTintChange }) => typeof palette === 'string' ? null : (
   <ListItem label={<div className='w-20'>{label}</div>}>
-    <Palette palette={palette} onChange={onChange} resetKey={resetKey} />
+    <Palette palette={palette} onChange={onChange} resetKey={resetKey} allowTintChange={allowTintChange} />
   </ListItem>
 );
 
@@ -283,4 +284,4 @@ const ColorListItem: React.FC<IColorListItem> = ({ label, value, onChange }) => 
   );
 };
 
-export { ThemeEditor as default };
+export { ThemeEditor as default, PaletteListItem };

@@ -29,9 +29,7 @@ const LandingTimeline = () => {
     dispatch(fetchPublicTimeline({ local: true }, true));
   };
 
-  const handleRefresh = () => {
-    return dispatch(fetchPublicTimeline({ local: true }));
-  };
+  const handleRefresh = () => dispatch(fetchPublicTimeline({ local: true }));
 
   useCommunityStream({ enabled: timelineEnabled });
 

@@ -22,25 +22,15 @@ const STATUS_FETCH_SOURCE_REQUEST = 'STATUS_FETCH_SOURCE_REQUEST' as const;
 const STATUS_FETCH_SOURCE_SUCCESS = 'STATUS_FETCH_SOURCE_SUCCESS' as const;
 const STATUS_FETCH_SOURCE_FAIL = 'STATUS_FETCH_SOURCE_FAIL' as const;
 
-const STATUS_FETCH_REQUEST = 'STATUS_FETCH_REQUEST' as const;
-const STATUS_FETCH_SUCCESS = 'STATUS_FETCH_SUCCESS' as const;
-const STATUS_FETCH_FAIL = 'STATUS_FETCH_FAIL' as const;
-
 const STATUS_DELETE_REQUEST = 'STATUS_DELETE_REQUEST' as const;
 const STATUS_DELETE_SUCCESS = 'STATUS_DELETE_SUCCESS' as const;
 const STATUS_DELETE_FAIL = 'STATUS_DELETE_FAIL' as const;
 
-const CONTEXT_FETCH_REQUEST = 'CONTEXT_FETCH_REQUEST' as const;
 const CONTEXT_FETCH_SUCCESS = 'CONTEXT_FETCH_SUCCESS' as const;
-const CONTEXT_FETCH_FAIL = 'CONTEXT_FETCH_FAIL' as const;
 
-const STATUS_MUTE_REQUEST = 'STATUS_MUTE_REQUEST' as const;
 const STATUS_MUTE_SUCCESS = 'STATUS_MUTE_SUCCESS' as const;
-const STATUS_MUTE_FAIL = 'STATUS_MUTE_FAIL' as const;
 
-const STATUS_UNMUTE_REQUEST = 'STATUS_UNMUTE_REQUEST' as const;
 const STATUS_UNMUTE_SUCCESS = 'STATUS_UNMUTE_SUCCESS' as const;
-const STATUS_UNMUTE_FAIL = 'STATUS_UNMUTE_FAIL' as const;
 
 const STATUS_UNFILTER = 'STATUS_UNFILTER' as const;
 
@@ -99,18 +89,13 @@ const editStatus = (statusId: string) => (dispatch: AppDispatch, getState: () =>
 
 const fetchStatus = (statusId: string, intl?: IntlShape) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch<StatusesAction>({ type: STATUS_FETCH_REQUEST, statusId });
-
     const params = intl && useSettingsStore.getState().settings.autoTranslate ? {
       language: intl.locale,
     } : undefined;
 
     return getClient(getState()).statuses.getStatus(statusId, params).then(status => {
       dispatch(importEntities({ statuses: [status] }));
-      dispatch<StatusesAction>({ type: STATUS_FETCH_SUCCESS, status });
       return status;
-    }).catch(error => {
-      dispatch<StatusesAction>({ type: STATUS_FETCH_FAIL, statusId, error, skipAlert: true });
     });
   };
 
@@ -144,8 +129,6 @@ const updateStatus = (status: BaseStatus) => (dispatch: AppDispatch) =>
 
 const fetchContext = (statusId: string, intl?: IntlShape) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch<StatusesAction>({ type: CONTEXT_FETCH_REQUEST, statusId });
-
     const params = intl && useSettingsStore.getState().settings.autoTranslate ? {
       language: intl.locale,
     } : undefined;
@@ -160,8 +143,6 @@ const fetchContext = (statusId: string, intl?: IntlShape) =>
       if (error.response?.status === 404) {
         dispatch(deleteFromTimelines(statusId));
       }
-
-      dispatch<StatusesAction>({ type: CONTEXT_FETCH_FAIL, statusId, error, skipAlert: true });
     });
   };
 
@@ -175,11 +156,8 @@ const muteStatus = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
-    dispatch<StatusesAction>({ type: STATUS_MUTE_REQUEST, statusId });
     return getClient(getState()).statuses.muteStatus(statusId).then((status) => {
       dispatch<StatusesAction>({ type: STATUS_MUTE_SUCCESS, statusId });
-    }).catch(error => {
-      dispatch<StatusesAction>({ type: STATUS_MUTE_FAIL, statusId, error });
     });
   };
 
@@ -187,22 +165,13 @@ const unmuteStatus = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
-    dispatch<StatusesAction>({ type: STATUS_UNMUTE_REQUEST, statusId });
     return getClient(getState()).statuses.unmuteStatus(statusId).then(() => {
       dispatch<StatusesAction>({ type: STATUS_UNMUTE_SUCCESS, statusId });
-    }).catch(error => {
-      dispatch<StatusesAction>({ type: STATUS_UNMUTE_FAIL, statusId, error });
     });
   };
 
 const toggleMuteStatus = (status: Pick<Status, 'id' | 'muted'>) =>
-  (dispatch: AppDispatch) => {
-    if (status.muted) {
-      dispatch(unmuteStatus(status.id));
-    } else {
-      dispatch(muteStatus(status.id));
-    }
-  };
+  status.muted ? unmuteStatus(status.id) : muteStatus(status.id);
 
 // let TRANSLATIONS_QUEUE: Set<string> = new Set();
 // let TRANSLATIONS_TIMEOUT: NodeJS.Timeout | null = null;
@@ -265,21 +234,12 @@ type StatusesAction =
   | { type: typeof STATUS_FETCH_SOURCE_REQUEST }
   | { type: typeof STATUS_FETCH_SOURCE_SUCCESS }
   | { type: typeof STATUS_FETCH_SOURCE_FAIL; error: unknown }
-  | { type: typeof STATUS_FETCH_REQUEST; statusId: string }
-  | { type: typeof STATUS_FETCH_SUCCESS; status: BaseStatus }
-  | { type: typeof STATUS_FETCH_FAIL; statusId: string; error: unknown; skipAlert: true }
   | { type: typeof STATUS_DELETE_REQUEST; params: Pick<Status, 'in_reply_to_id' | 'quote_id'> }
   | { type: typeof STATUS_DELETE_SUCCESS; statusId: string }
   | { type: typeof STATUS_DELETE_FAIL; params: Pick<Status, 'in_reply_to_id' | 'quote_id'>; error: unknown }
-  | { type: typeof CONTEXT_FETCH_REQUEST; statusId: string }
   | { type: typeof CONTEXT_FETCH_SUCCESS; statusId: string; ancestors: Array<BaseStatus>; descendants: Array<BaseStatus> }
-  | { type: typeof CONTEXT_FETCH_FAIL; statusId: string; error: unknown; skipAlert: true }
-  | { type: typeof STATUS_MUTE_REQUEST; statusId: string }
   | { type: typeof STATUS_MUTE_SUCCESS; statusId: string }
-  | { type: typeof STATUS_MUTE_FAIL; statusId: string; error: unknown }
-  | { type: typeof STATUS_UNMUTE_REQUEST; statusId: string }
   | { type: typeof STATUS_UNMUTE_SUCCESS; statusId: string }
-  | { type: typeof STATUS_UNMUTE_FAIL; statusId: string; error: unknown }
   | ReturnType<typeof unfilterStatus>
 
 export {
@@ -289,21 +249,12 @@ export {
   STATUS_FETCH_SOURCE_REQUEST,
   STATUS_FETCH_SOURCE_SUCCESS,
   STATUS_FETCH_SOURCE_FAIL,
-  STATUS_FETCH_REQUEST,
-  STATUS_FETCH_SUCCESS,
-  STATUS_FETCH_FAIL,
   STATUS_DELETE_REQUEST,
   STATUS_DELETE_SUCCESS,
   STATUS_DELETE_FAIL,
-  CONTEXT_FETCH_REQUEST,
   CONTEXT_FETCH_SUCCESS,
-  CONTEXT_FETCH_FAIL,
-  STATUS_MUTE_REQUEST,
   STATUS_MUTE_SUCCESS,
-  STATUS_MUTE_FAIL,
-  STATUS_UNMUTE_REQUEST,
   STATUS_UNMUTE_SUCCESS,
-  STATUS_UNMUTE_FAIL,
   STATUS_UNFILTER,
   createStatus,
   editStatus,

@@ -5,6 +5,7 @@ import { defineMessages } from 'react-intl';
 import { getClient } from 'pl-fe/api';
 import { getNotificationStatus } from 'pl-fe/features/notifications/components/notification';
 import { normalizeNotification } from 'pl-fe/normalizers/notification';
+import { appendFollowRequest } from 'pl-fe/queries/accounts/use-follow-requests';
 import { getFilters, regexFromFilters } from 'pl-fe/selectors';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { isLoggedIn } from 'pl-fe/utils/auth';
@@ -31,8 +32,6 @@ const NOTIFICATIONS_EXPAND_FAIL = 'NOTIFICATIONS_EXPAND_FAIL' as const;
 const NOTIFICATIONS_FILTER_SET = 'NOTIFICATIONS_FILTER_SET' as const;
 
 const NOTIFICATIONS_SCROLL_TOP = 'NOTIFICATIONS_SCROLL_TOP' as const;
-
-const MAX_QUEUED_NOTIFICATIONS = 40;
 
 const FILTER_TYPES = {
   all: undefined,
@@ -74,8 +73,13 @@ const updateNotifications = (notification: BaseNotification) =>
       statuses: [getNotificationStatus(notification) as any],
     }));
 
+
     if (showInColumn) {
       const normalizedNotification = normalizeNotification(notification);
+
+      if (normalizedNotification.type === 'follow_request') {
+        normalizedNotification.sample_account_ids.forEach(appendFollowRequest);
+      }
 
       dispatch<NotificationsUpdateAction>({
         type: NOTIFICATIONS_UPDATE,
@@ -282,13 +286,11 @@ type NotificationsAction =
 
 export {
   NOTIFICATIONS_UPDATE,
-  NOTIFICATIONS_UPDATE_NOOP,
   NOTIFICATIONS_EXPAND_REQUEST,
   NOTIFICATIONS_EXPAND_SUCCESS,
   NOTIFICATIONS_EXPAND_FAIL,
   NOTIFICATIONS_FILTER_SET,
   NOTIFICATIONS_SCROLL_TOP,
-  MAX_QUEUED_NOTIFICATIONS,
   type FilterType,
   updateNotifications,
   updateNotificationsQueue,

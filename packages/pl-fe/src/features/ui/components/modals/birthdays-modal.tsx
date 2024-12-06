@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { getCurrentDate } from 'pl-fe/components/birthday-panel';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Account from 'pl-fe/features/birthdays/account';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useBirthdayReminders } from 'pl-fe/queries/accounts/use-birthday-reminders';
 
 import type { BaseModalProps } from '../modal-root';
 
 const BirthdaysModal = ({ onClose }: BaseModalProps) => {
-  const accountIds = useAppSelector(state => state.user_lists.birthday_reminders[state.me as string]?.items);
+  const [[day, month]] = useState(getCurrentDate);
+  const { data: accountIds } = useBirthdayReminders(month, day);
 
   const onClickClose = () => {
     onClose('BIRTHDAYS');

@@ -1,13 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { fetchFavourites, expandFavourites } from 'pl-fe/actions/interactions';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useStatusFavourites } from 'pl-fe/queries/statuses/use-status-interactions';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -17,27 +15,11 @@ interface FavouritesModalProps {
 
 const FavouritesModal: React.FC<BaseModalProps & FavouritesModalProps> = ({ onClose, statusId }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const dispatch = useAppDispatch();
 
-  const accountIds = useAppSelector((state) => state.user_lists.favourited_by[statusId]?.items);
-  const next = useAppSelector((state) => state.user_lists.favourited_by[statusId]?.next);
-
-  const fetchData = () => {
-    dispatch(fetchFavourites(statusId));
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { data: accountIds, isLoading, hasNextPage, fetchNextPage } = useStatusFavourites(statusId);
 
   const onClickClose = () => {
     onClose('FAVOURITES');
-  };
-
-  const handleLoadMore = () => {
-    if (next) {
-      dispatch(expandFavourites(statusId, next!));
-    }
   };
 
   let body;
@@ -53,8 +35,9 @@ const FavouritesModal: React.FC<BaseModalProps & FavouritesModalProps> = ({ onCl
         listClassName='max-w-full'
         itemClassName='pb-3'
         style={{ height: 'calc(80vh - 88px)' }}
-        onLoadMore={handleLoadMore}
-        hasMore={!!next}
+        hasMore={hasNextPage}
+        isLoading={typeof isLoading === 'boolean' ? isLoading : true}
+        onLoadMore={() => fetchNextPage({ cancelRefetch: false })}
         estimatedSize={42}
         parentRef={modalRef}
       >

@@ -1,9 +1,7 @@
-import { GroupRoles } from 'pl-api';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
 import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
-import { useGroupMembers } from 'pl-fe/api/hooks/groups/use-group-members';
 import { useGroupMembershipRequests } from 'pl-fe/api/hooks/groups/use-group-membership-requests';
 import Account from 'pl-fe/components/account';
 import { AuthorizeRejectButtons } from 'pl-fe/components/authorize-reject-buttons';
@@ -64,11 +62,6 @@ const GroupMembershipRequests: React.FC<IGroupMembershipRequests> = ({ params })
   const { group } = useGroup(groupId);
 
   const { accounts, authorize, reject, refetch, isLoading } = useGroupMembershipRequests(groupId);
-  const { invalidate } = useGroupMembers(groupId, GroupRoles.USER);
-
-  useEffect(() => () => {
-    invalidate();
-  }, []);
 
   if (!group || !group.relationship || isLoading) {
     return (

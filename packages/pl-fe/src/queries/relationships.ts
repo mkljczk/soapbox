@@ -6,9 +6,8 @@ const useFetchRelationships = () => {
   const client = useClient();
 
   return useMutation({
-    mutationFn: ({ accountIds }: { accountIds: string[]}) => {
-      return client.accounts.getRelationships(accountIds);
-    },
+    mutationFn: ({ accountIds }: { accountIds: string[]}) =>
+      client.accounts.getRelationships(accountIds),
   });
 };
 
