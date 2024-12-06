@@ -53,9 +53,7 @@ const VERIFY_CREDENTIALS_REQUEST = 'VERIFY_CREDENTIALS_REQUEST' as const;
 const VERIFY_CREDENTIALS_SUCCESS = 'VERIFY_CREDENTIALS_SUCCESS' as const;
 const VERIFY_CREDENTIALS_FAIL = 'VERIFY_CREDENTIALS_FAIL' as const;
 
-const AUTH_ACCOUNT_REMEMBER_REQUEST = 'AUTH_ACCOUNT_REMEMBER_REQUEST' as const;
 const AUTH_ACCOUNT_REMEMBER_SUCCESS = 'AUTH_ACCOUNT_REMEMBER_SUCCESS' as const;
-const AUTH_ACCOUNT_REMEMBER_FAIL = 'AUTH_ACCOUNT_REMEMBER_FAIL' as const;
 
 const customApp = custom('app');
 
@@ -97,7 +95,7 @@ const createAuthApp = () =>
       website: sourceCode.homepage,
     };
 
-    return dispatch(createApp(params)).then((app) =>
+    return createApp(params).then((app) =>
       dispatch<AuthAppCreatedAction>({ type: AUTH_APP_CREATED, app }),
     );
   };
@@ -120,7 +118,7 @@ const createAppToken = () =>
       scope: getScopes(getState()),
     };
 
-    return dispatch(obtainOAuthToken(params)).then((token) =>
+    return obtainOAuthToken(params).then((token) =>
       dispatch<AuthAppAuthorizedAction>({ type: AUTH_APP_AUTHORIZED, app, token }),
     );
   };
@@ -139,7 +137,7 @@ const createUserToken = (username: string, password: string) =>
       scope: getScopes(getState()),
     };
 
-    return dispatch(obtainOAuthToken(params))
+    return obtainOAuthToken(params)
       .then((token) => dispatch(authLoggedIn(token)));
   };
 
@@ -207,36 +205,20 @@ const verifyCredentials = (token: string, accountUrl?: string) =>
     });
   };
 
-interface AuthAccountRememberRequestAction {
-  type: typeof AUTH_ACCOUNT_REMEMBER_REQUEST;
-  accountUrl: string;
-}
-
 interface AuthAccountRememberSuccessAction {
   type: typeof AUTH_ACCOUNT_REMEMBER_SUCCESS;
   accountUrl: string;
   account: CredentialAccount;
 }
 
-interface AuthAccountRememberFailAction {
-  type: typeof AUTH_ACCOUNT_REMEMBER_FAIL;
-  error: unknown;
-  accountUrl: string;
-  skipAlert: boolean;
-}
-
 const rememberAuthAccount = (accountUrl: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    dispatch<AuthAccountRememberRequestAction>({ type: AUTH_ACCOUNT_REMEMBER_REQUEST, accountUrl });
-    return KVStore.getItemOrError(`authAccount:${accountUrl}`).then(account => {
+  (dispatch: AppDispatch, getState: () => RootState) =>
+    KVStore.getItemOrError(`authAccount:${accountUrl}`).then(account => {
       dispatch(importEntities({ accounts: [account] }));
       dispatch<AuthAccountRememberSuccessAction>({ type: AUTH_ACCOUNT_REMEMBER_SUCCESS, account, accountUrl });
       if (account.id === getState().me) dispatch(fetchMeSuccess(account));
       return account;
-    }).catch(error => {
-      dispatch<AuthAccountRememberFailAction>({ type: AUTH_ACCOUNT_REMEMBER_FAIL, error, accountUrl, skipAlert: true });
     });
-  };
 
 const loadCredentials = (token: string, accountUrl: string) =>
   (dispatch: AppDispatch) => dispatch(rememberAuthAccount(accountUrl))
@@ -357,9 +339,7 @@ type AuthAction =
   | VerifyCredentialsRequestAction
   | VerifyCredentialsSuccessAction
   | VerifyCredentialsFailAction
-  | AuthAccountRememberRequestAction
-  | AuthAccountRememberSuccessAction
-  | AuthAccountRememberFailAction;
+  | AuthAccountRememberSuccessAction;
 
 export {
   SWITCH_ACCOUNT,
@@ -370,13 +350,10 @@ export {
   VERIFY_CREDENTIALS_REQUEST,
   VERIFY_CREDENTIALS_SUCCESS,
   VERIFY_CREDENTIALS_FAIL,
-  AUTH_ACCOUNT_REMEMBER_REQUEST,
   AUTH_ACCOUNT_REMEMBER_SUCCESS,
-  AUTH_ACCOUNT_REMEMBER_FAIL,
   messages,
   otpVerify,
   verifyCredentials,
-  rememberAuthAccount,
   loadCredentials,
   logIn,
   logOut,

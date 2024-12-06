@@ -31,20 +31,17 @@ const DraftStatusActionBar: React.FC<IDraftStatusActionBar> = ({ source, status 
   const dispatch = useAppDispatch();
 
   const handleCancelClick = () => {
-    dispatch((_, getState) => {
-
-      const deleteModal = settings.deleteModal;
-      if (!deleteModal) {
-        dispatch(cancelDraftStatus(source.draft_id));
-      } else {
-        openModal('CONFIRM', {
-          heading: intl.formatMessage(messages.deleteHeading),
-          message: intl.formatMessage(messages.deleteMessage),
-          confirm: intl.formatMessage(messages.deleteConfirm),
-          onConfirm: () => dispatch(cancelDraftStatus(source.draft_id)),
-        });
-      }
-    });
+    const deleteModal = settings.deleteModal;
+    if (!deleteModal) {
+      dispatch(cancelDraftStatus(source.draft_id));
+    } else {
+      openModal('CONFIRM', {
+        heading: intl.formatMessage(messages.deleteHeading),
+        message: intl.formatMessage(messages.deleteMessage),
+        confirm: intl.formatMessage(messages.deleteConfirm),
+        onConfirm: () => dispatch(cancelDraftStatus(source.draft_id)),
+      });
+    }
   };
 
   const handleEditClick = () => {

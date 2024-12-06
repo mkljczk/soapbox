@@ -1,7 +1,6 @@
 import React from 'react';
 import { FormattedDate, FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useAnnouncements } from 'pl-fe/api/hooks/admin/use-announcements';
 import { ParsedContent } from 'pl-fe/components/parsed-content';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Button from 'pl-fe/components/ui/button';
@@ -9,6 +8,7 @@ import Column from 'pl-fe/components/ui/column';
 import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
+import { useAnnouncements, useDeleteAnnouncementMutation } from 'pl-fe/queries/admin/use-announcements';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
@@ -28,7 +28,7 @@ interface IAnnouncement {
 
 const Announcement: React.FC<IAnnouncement> = ({ announcement }) => {
   const intl = useIntl();
-  const { deleteAnnouncement } = useAnnouncements();
+  const { mutate: deleteAnnouncement } = useDeleteAnnouncementMutation();
   const { openModal } = useModalsStore();
 
   const handleEditAnnouncement = () => {

@@ -1,8 +1,7 @@
-import { GroupRoles } from 'pl-api';
+import { type CustomEmoji, GroupRoles } from 'pl-api';
 import React, { useMemo } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { createSelector } from 'reselect';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose, replyCompose } from 'pl-fe/actions/compose';
@@ -13,11 +12,9 @@ import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { changeSetting } from 'pl-fe/actions/settings';
 import { deleteStatus, editStatus, toggleMuteStatus } from 'pl-fe/actions/statuses';
 import { deleteFromTimelines } from 'pl-fe/actions/timelines';
-import { useBlockGroupMember } from 'pl-fe/api/hooks/groups/use-block-group-member';
 import { useDeleteGroupStatus } from 'pl-fe/api/hooks/groups/use-delete-group-status';
 import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import { useGroupRelationship } from 'pl-fe/api/hooks/groups/use-group-relationship';
-import { useTranslationLanguages } from 'pl-fe/api/hooks/instance/use-translation-languages';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import StatusActionButton from 'pl-fe/components/status-action-button';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -31,7 +28,9 @@ import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
-import { RootState } from 'pl-fe/store';
+import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/use-group-blocks';
+import { useCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
+import { useTranslationLanguages } from 'pl-fe/queries/instance/use-translation-languages';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import toast from 'pl-fe/toast';
@@ -463,10 +462,7 @@ const DislikeButton: React.FC<IActionButton> = ({
   );
 };
 
-const getLongerWrench = createSelector(
-  [(state: RootState) => state.custom_emojis],
-  (emojis) => emojis.find(({ shortcode }) => shortcode === 'longestest_wrench') || emojis.find(({ shortcode }) => shortcode === 'longest_wrench'),
-);
+const getLongerWrench = (emojis: Array<CustomEmoji>) => emojis.find(({ shortcode }) => shortcode === 'longestest_wrench') || emojis.find(({ shortcode }) => shortcode === 'longest_wrench');
 
 const WrenchButton: React.FC<IActionButton> = ({
   status,
@@ -481,7 +477,7 @@ const WrenchButton: React.FC<IActionButton> = ({
   const { openModal } = useModalsStore();
   const { showWrenchButton } = useSettings();
 
-  const hasLongerWrench = useAppSelector(getLongerWrench);
+  const { data: hasLongerWrench } = useCustomEmojis(getLongerWrench);
 
   if (!me || withLabels || !features.emojiReacts || !showWrenchButton) return;
 
@@ -590,7 +586,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   const { openModal } = useModalsStore();
   const { group } = useGroup((status.group as Group)?.id as string);
   const deleteGroupStatus = useDeleteGroupStatus(group as Group, status.id);
-  const blockGroupMember = useBlockGroupMember(group as Group, status.account);
+  const { mutate: blockGroupMember } = useBlockGroupUserMutation(status.group?.id as string, status.account.id);
   const { getOrCreateChatByAccountId } = useChats();
 
   const { groupRelationship } = useGroupRelationship(status.group_id || undefined);
@@ -762,8 +758,8 @@ const MenuButton: React.FC<IMenuButton> = ({
       message: intl.formatMessage(messages.groupBlockFromGroupMessage, { name: status.account.username }),
       confirm: intl.formatMessage(messages.groupBlockConfirm),
       onConfirm: () => {
-        blockGroupMember([status.account_id], {
-          onSuccess() {
+        blockGroupMember(undefined, {
+          onSuccess: () => {
             toast.success(intl.formatMessage(messages.blocked, { name: account?.acct }));
           },
         });

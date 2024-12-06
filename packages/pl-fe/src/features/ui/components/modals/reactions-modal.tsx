@@ -1,16 +1,14 @@
 import clsx from 'clsx';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { fetchReactions } from 'pl-fe/actions/interactions';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Emoji from 'pl-fe/components/ui/emoji';
 import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Tabs from 'pl-fe/components/ui/tabs';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useStatusReactions } from 'pl-fe/queries/statuses/use-status-interactions';
 
 import type { BaseModalProps } from '../modal-root';
 import type { Item } from 'pl-fe/components/ui/tabs';
@@ -32,10 +30,10 @@ interface ReactionsModalProps {
 
 const ReactionsModal: React.FC<BaseModalProps & ReactionsModalProps> = ({ onClose, statusId, reaction: initialReaction }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const dispatch = useAppDispatch();
   const intl = useIntl();
   const [reaction, setReaction] = useState(initialReaction);
-  const reactions = useAppSelector((state) => state.user_lists.reactions[statusId]?.items);
+
+  const { data: reactions, isLoading } = useStatusReactions(statusId);
 
   const onClickClose = () => {
     onClose('REACTIONS');
@@ -70,15 +68,11 @@ const ReactionsModal: React.FC<BaseModalProps & ReactionsModalProps> = ({ onClos
     if (reaction) {
       const reactionRecord = reactions.find(({ name }) => name === reaction);
 
-      if (reactionRecord) return reactionRecord.accounts.map(account => ({ id: account, reaction: reaction, reactionUrl: reactionRecord.url || undefined }));
+      if (reactionRecord) return reactionRecord.account_ids.map(account => ({ id: account, reaction: reaction, reactionUrl: reactionRecord.url || undefined }));
     } else {
-      return reactions.map(({ accounts, name, url }) => accounts.map(account => ({ id: account, reaction: name, reactionUrl: url || undefined }))).flat();
+      return reactions.map(({ account_ids, name, url }) => account_ids.map(account => ({ id: account, reaction: name, reactionUrl: url || undefined }))).flat();
     }
   }, [reactions, reaction]);
-
-  useEffect(() => {
-    dispatch(fetchReactions(statusId));
-  }, []);
 
   let body;
 
@@ -96,6 +90,7 @@ const ReactionsModal: React.FC<BaseModalProps & ReactionsModalProps> = ({ onClos
         })}
         itemClassName='pb-3'
         style={{ height: 'calc(80vh - 88px)' }}
+        isLoading={typeof isLoading === 'boolean' ? isLoading : true}
         estimatedSize={42}
         parentRef={modalRef}
       >

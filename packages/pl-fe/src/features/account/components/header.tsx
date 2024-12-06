@@ -657,7 +657,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
               />
             </a>
             {account.verified && (
-              <div className='absolute bottom-0 right-0'>
+              <div className='absolute -bottom-2 -right-2'>
                 <VerificationBadge className='!size-[24px] rounded-full !p-[2px] ring-2 ring-white black:ring-black dark:ring-primary-900' />
               </div>
             )}

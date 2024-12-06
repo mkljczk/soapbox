@@ -38,6 +38,12 @@ const settingsSchema = v.object({
   knownLanguages: v.fallback(v.array(v.string()), []),
   showWrenchButton: v.fallback(v.boolean(), false),
 
+  theme: v.fallback(v.optional(v.object({
+    brandColor: v.fallback(v.string(), ''),
+    accentColor: v.fallback(v.string(), ''),
+    colors: v.any(),
+  })), undefined),
+
   systemFont: v.fallback(v.boolean(), false),
   demetricator: v.fallback(v.boolean(), false),
 

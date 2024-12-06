@@ -181,7 +181,6 @@ const buildMessage = (
 const avatarSize = 48;
 
 interface INotification {
-  hidden?: boolean;
   notification: NotificationGroup;
   onMoveUp?: (notificationId: string) => void;
   onMoveDown?: (notificationId: string) => void;
@@ -196,7 +195,7 @@ const getNotificationStatus = (n: Pick<NotificationGroup, 'type'> & ({ status: S
 };
 
 const Notification: React.FC<INotification> = (props) => {
-  const { hidden = false, onMoveUp, onMoveDown } = props;
+  const { onMoveUp, onMoveDown } = props;
 
   const dispatch = useAppDispatch();
 
@@ -330,7 +329,6 @@ const Notification: React.FC<INotification> = (props) => {
         return account && typeof account === 'object' ? (
           <AccountContainer
             id={account.id}
-            hidden={hidden}
             avatarSize={avatarSize}
             actionType='follow_request'
             withRelationship
@@ -340,7 +338,6 @@ const Notification: React.FC<INotification> = (props) => {
         return account && typeof account === 'object' ? (
           <AccountContainer
             id={account.id}
-            hidden={hidden}
             avatarSize={avatarSize}
             actionType='biting'
             withRelationship
@@ -350,7 +347,6 @@ const Notification: React.FC<INotification> = (props) => {
         return account && typeof account === 'object' && notification.target && typeof notification.target === 'object' ? (
           <AccountContainer
             id={notification.target_id}
-            hidden={hidden}
             avatarSize={avatarSize}
             withRelationship
           />
@@ -368,7 +364,6 @@ const Notification: React.FC<INotification> = (props) => {
         return status && typeof status === 'object' ? (
           <StatusContainer
             id={status.id}
-            hidden={hidden}
             onMoveDown={handleMoveDown}
             onMoveUp={handleMoveUp}
             avatarSize={avatarSize}
