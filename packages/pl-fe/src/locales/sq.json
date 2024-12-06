@@ -823,7 +823,7 @@
   "gdpr.message": "",
   "gdpr.title": "",
   "generic.saved": "",
-  "getting_started.open_source_notice": "{code_name}-i është software me burim të hapur. Mund të jepni ndihmesë ose të njoftoni probleme në GitLab, te {code_link} (v{code_version}).",
+  "getting_started.open_source_notice": "{code_name}-i është software me burim të hapur. Mund të jepni ndihmesë ose të njoftoni probleme në GitHub, te {code_link} (v{code_version}).",
   "group.cancel_request": "",
   "group.delete.success": "",
   "group.demote.user.success": "",

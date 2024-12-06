@@ -823,7 +823,7 @@
   "gdpr.message": "",
   "gdpr.title": "",
   "generic.saved": "",
-  "getting_started.open_source_notice": "{code_name} ghjè un lugiziale liberu. Pudete cuntribuisce à u codice o a traduzione, o palisà un bug, nant'à GitLab: {code_link} (v{code_version}).",
+  "getting_started.open_source_notice": "{code_name} ghjè un lugiziale liberu. Pudete cuntribuisce à u codice o a traduzione, o palisà un bug, nant'à GitHub: {code_link} (v{code_version}).",
   "group.cancel_request": "",
   "group.delete.success": "",
   "group.demote.user.success": "",

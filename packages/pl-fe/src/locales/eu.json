@@ -823,7 +823,7 @@
   "gdpr.message": "",
   "gdpr.title": "",
   "generic.saved": "",
-  "getting_started.open_source_notice": "{code_name} software librea da. Ekarpenak egin ditzakezu edo akatsen berri eman GitLab bidez: {code_link} (v{code_version}).",
+  "getting_started.open_source_notice": "{code_name} software librea da. Ekarpenak egin ditzakezu edo akatsen berri eman GitHub bidez: {code_link} (v{code_version}).",
   "group.cancel_request": "",
   "group.delete.success": "",
   "group.demote.user.success": "",

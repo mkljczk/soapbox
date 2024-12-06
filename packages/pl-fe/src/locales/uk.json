@@ -823,7 +823,7 @@
   "gdpr.message": "",
   "gdpr.title": "",
   "generic.saved": "",
-  "getting_started.open_source_notice": "{code_name} — програмне забезпечення з відкритим кодом. Ви можете допомогти проєкту, або повідомити про проблеми на GitLab за адресою {code_link} (v{code_version}).",
+  "getting_started.open_source_notice": "{code_name} — програмне забезпечення з відкритим кодом. Ви можете допомогти проєкту, або повідомити про проблеми на GitHub за адресою {code_link} (v{code_version}).",
   "group.cancel_request": "",
   "group.delete.success": "",
   "group.demote.user.success": "",

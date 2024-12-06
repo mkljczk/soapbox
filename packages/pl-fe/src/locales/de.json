@@ -857,7 +857,7 @@
   "gdpr.message": "{siteTitle} verwendet Sitzungscookies, die für das Funktionieren der Website unerlässlich sind.",
   "gdpr.title": "{siteTitle} verwendet Cookies",
   "generic.saved": "",
-  "getting_started.open_source_notice": "{code_name} ist quelloffene Software. Du kannst auf GitLab unter {code_link} (v{code_version}) mitarbeiten oder Probleme melden.",
+  "getting_started.open_source_notice": "{code_name} ist quelloffene Software. Du kannst auf GitHub unter {code_link} (v{code_version}) mitarbeiten oder Probleme melden.",
   "group.cancel_request": "Anfrage zurückziehen",
   "group.delete.success": "",
   "group.demote.user.success": "",

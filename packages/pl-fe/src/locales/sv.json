@@ -823,7 +823,7 @@
   "gdpr.message": "",
   "gdpr.title": "",
   "generic.saved": "",
-  "getting_started.open_source_notice": "{code_name} är programvara med öppen källkod. Du kan bidra eller rapportera problem via GitLab på {code_link} (v{code_version}).",
+  "getting_started.open_source_notice": "{code_name} är programvara med öppen källkod. Du kan bidra eller rapportera problem via GitHub på {code_link} (v{code_version}).",
   "group.cancel_request": "",
   "group.delete.success": "",
   "group.demote.user.success": "",

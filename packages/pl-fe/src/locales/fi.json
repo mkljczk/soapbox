@@ -823,7 +823,7 @@
   "gdpr.message": "",
   "gdpr.title": "",
   "generic.saved": "",
-  "getting_started.open_source_notice": "{code_name} on avoimen lähdekoodin ohjelma. Voit avustaa tai raportoida ongelmia GitLabissa: {code_link} (v{code_version}).",
+  "getting_started.open_source_notice": "{code_name} on avoimen lähdekoodin ohjelma. Voit avustaa tai raportoida ongelmia GitHubissa: {code_link} (v{code_version}).",
   "group.cancel_request": "",
   "group.delete.success": "",
   "group.demote.user.success": "",

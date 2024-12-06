@@ -832,7 +832,7 @@
   "gdpr.message": "",
   "gdpr.title": "",
   "generic.saved": "",
-  "getting_started.open_source_notice": "{code_name} 是開源軟體。你可以在 GitLab {code_link} (v{code_version}) 上貢獻或是回報問題。",
+  "getting_started.open_source_notice": "{code_name} 是開源軟體。你可以在 GitHub {code_link} (v{code_version}) 上貢獻或是回報問題。",
   "group.cancel_request": "",
   "group.delete.success": "",
   "group.demote.user.success": "",

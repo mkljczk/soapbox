@@ -821,7 +821,7 @@
   "gdpr.message": "",
   "gdpr.title": "",
   "generic.saved": "Запазено",
-  "getting_started.open_source_notice": "{code_name} е софтуер с отворен код. Можеш да помогнеш или да докладваш за проблеми в GitLab: {code_link} (v{code_version}).",
+  "getting_started.open_source_notice": "{code_name} е софтуер с отворен код. Можеш да помогнеш или да докладваш за проблеми в GitHub: {code_link} (v{code_version}).",
   "group.cancel_request": "",
   "group.delete.success": "",
   "group.demote.user.success": "",

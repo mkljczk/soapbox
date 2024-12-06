@@ -823,7 +823,7 @@
   "gdpr.message": "",
   "gdpr.title": "",
   "generic.saved": "",
-  "getting_started.open_source_notice": "{code_name} is vrije software. Je kunt bijdragen of problemen melden op GitLab via {code_link} (v{code_version}).",
+  "getting_started.open_source_notice": "{code_name} is vrije software. Je kunt bijdragen of problemen melden op GitHub via {code_link} (v{code_version}).",
   "group.cancel_request": "",
   "group.delete.success": "",
   "group.demote.user.success": "",

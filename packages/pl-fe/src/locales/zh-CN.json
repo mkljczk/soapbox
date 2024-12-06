@@ -862,7 +862,7 @@
   "gdpr.message": "{siteTitle} 使用会话cookie，这对网站的运作至关重要。",
   "gdpr.title": "{siteTitle} 使用cookies",
   "generic.saved": "已保存",
-  "getting_started.open_source_notice": "{code_name} 是开源软件。欢迎前往 GitLab（{code_link} (v{code_version})）贡献代码或反馈问题。",
+  "getting_started.open_source_notice": "{code_name} 是开源软件。欢迎前往 GitHub（{code_link} (v{code_version})）贡献代码或反馈问题。",
   "group.banned.message": "您已被 {group} 封禁",
   "group.cancel_request": "取消申请",
   "group.delete.success": "群组已成功删除",

@@ -858,7 +858,7 @@
   "gdpr.message": "{siteTitle} はセッションクッキーを使用します。これはウェブサイトが機能するために必須です。",
   "gdpr.title": "{siteTitle} はクッキーを使用します",
   "generic.saved": "保存しました",
-  "getting_started.open_source_notice": "{code_name}はオープンソースソフトウェアです。誰でもGitLab ( {code_link} (v{code_version}) ) から開発に参加したり、問題を報告したりできます。",
+  "getting_started.open_source_notice": "{code_name}はオープンソースソフトウェアです。誰でもGitHub ( {code_link} (v{code_version}) ) から開発に参加したり、問題を報告したりできます。",
   "group.banned.message": "あなたは {group} から追放されました",
   "group.cancel_request": "申請をキャンセル",
   "group.delete.success": "グループを削除しました",
