@@ -112,6 +112,8 @@ const Preferences = () => {
   const plFeConfig = usePlFeConfig();
   const instance = useInstance();
 
+  const brandColor = settings.theme?.brandColor || plFeConfig.brandColor || '#d80482';
+
   const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>, path: string[]) => {
     dispatch(changeSetting(path, event.target.value, { showAlert: true }));
   };
@@ -124,10 +126,10 @@ const Preferences = () => {
     dispatch(changeSetting(key, checked));
   };
 
-  const onBrandColorChange = (brandColor: string) => {
-    if (!settings.theme?.brandColor && brandColor === (plFeConfig.brandColor || '#d80482')) return;
+  const onBrandColorChange = (newBrandColor: string) => {
+    if (!settings.theme?.brandColor && newBrandColor === brandColor) return;
 
-    dispatch(changeSetting(['theme', 'brandColor'], brandColor, { showAlert: true, save: false }));
+    dispatch(changeSetting(['theme', 'brandColor'], newBrandColor, { showAlert: true, save: false }));
     debouncedSave(dispatch);
   };
 
@@ -173,7 +175,7 @@ const Preferences = () => {
         </ListItem>
         <PaletteListItem
           label={intl.formatMessage(messages.brandColor)}
-          palette={colors(settings.theme?.brandColor || plFeConfig.brandColor || '#d80482')}
+          palette={colors(brandColor)}
           onChange={(palette) => onBrandColorChange(palette['500'])}
           allowTintChange={false}
         />
