@@ -110,8 +110,8 @@ const colorsToCss = (colors: TailwindColorPalette): string => {
   return Object.keys(parsed).reduce((css, variable) => css + `${variable}:${parsed[variable]};`, '');
 };
 
-const generateThemeCss = (plFeConfig: PlFeConfig): string =>
-  colorsToCss(plFeConfig.colors);
+const generateThemeCss = (colors: TailwindColorPalette): string =>
+  colorsToCss(colors);
 
 const hexToHsl = (hex: string): Hsl | null => {
   const rgb = hexToRgb(hex);
