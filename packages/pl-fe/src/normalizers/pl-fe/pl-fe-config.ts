@@ -71,7 +71,7 @@ const plFeConfigSchema = v.pipe(coerceObject({
   appleAppId: v.fallback(v.nullable(v.string()), null),
   logo: v.fallback(v.string(), ''),
   logoDarkMode: v.fallback(v.nullable(v.string()), null),
-  brandColor: v.fallback(v.string(), ''),
+  brandColor: v.fallback(v.string(), '#d80482'),
   accentColor: v.fallback(v.string(), ''),
   colors: v.any(),
   copyright: v.fallback(v.string(), `♥${new Date().getFullYear()}. Copying is an act of love. Please copy and share.`),

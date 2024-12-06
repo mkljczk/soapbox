@@ -1,6 +1,6 @@
 import { Map as ImmutableMap } from 'immutable';
 
-import { toTailwind, fromLegacyColors, expandPalette } from './tailwind';
+import { toTailwind, fromBasicColors, expandPalette } from './tailwind';
 
 describe('toTailwind()', () => {
   it('handles empty pl-fe config', () => {
@@ -68,7 +68,7 @@ describe('toTailwind()', () => {
   });
 });
 
-describe('fromLegacyColors()', () => {
+describe('fromBasicColors()', () => {
   it('converts only brandColor', () => {
     const plFeConfig = ImmutableMap({ brandColor: '#0482d8' });
 
@@ -124,7 +124,7 @@ describe('fromLegacyColors()', () => {
       },
     };
 
-    const result = fromLegacyColors(plFeConfig);
+    const result = fromBasicColors(plFeConfig);
     expect(result).toEqual(expected);
   });
 
@@ -185,7 +185,7 @@ describe('fromLegacyColors()', () => {
       },
     };
 
-    const result = fromLegacyColors(plFeConfig);
+    const result = fromBasicColors(plFeConfig);
     expect(result).toEqual(expected);
   });
 });
