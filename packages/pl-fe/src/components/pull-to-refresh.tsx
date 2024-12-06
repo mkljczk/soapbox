@@ -1,7 +1,7 @@
 import React from 'react';
 import PTRComponent from 'react-simple-pull-to-refresh';
 
-import { Spinner } from 'pl-fe/components/ui';
+import Spinner from 'pl-fe/components/ui/spinner';
 
 interface IPullToRefresh {
   onRefresh?: () => Promise<any>;

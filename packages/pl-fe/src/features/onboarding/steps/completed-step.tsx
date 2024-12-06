@@ -1,13 +1,17 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Button, Card, CardBody, Icon, Stack, Text } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import Card, { CardBody } from 'pl-fe/components/ui/card';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
 const CompletedStep = ({ onComplete }: { onComplete: () => void }) => (
   <Card variant='rounded' size='xl'>
     <CardBody>
       <Stack space={2}>
-        <Icon strokeWidth={1} src={require('@tabler/icons/outline/confetti.svg')} className='mx-auto h-16 w-16 text-primary-600 dark:text-primary-400' />
+        <Icon strokeWidth={1} src={require('@tabler/icons/outline/confetti.svg')} className='mx-auto size-16 text-primary-600 dark:text-primary-400' />
 
         <Text size='2xl' align='center' weight='bold'>
           <FormattedMessage id='onboarding.finished.title' defaultMessage='Onboarding complete' />

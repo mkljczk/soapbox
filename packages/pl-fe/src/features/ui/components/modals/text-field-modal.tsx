@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Modal, Stack, Textarea } from 'pl-fe/components/ui';
+import Modal from 'pl-fe/components/ui/modal';
+import Stack from 'pl-fe/components/ui/stack';
+import Textarea from 'pl-fe/components/ui/textarea';
 
 import type { BaseModalProps } from '../modal-root';
 import type { ButtonThemes } from 'pl-fe/components/ui/button/useButtonStyles';
@@ -29,12 +31,12 @@ const TextFieldModal: React.FC<TextFieldModalProps & BaseModalProps> = ({
   const [value, setValue] = useState(text);
 
   const handleClick = () => {
-    onClose('CONFIRM');
+    onClose('TEXT_FIELD');
     onConfirm(value);
   };
 
   const handleCancel = () => {
-    onClose('CONFIRM');
+    onClose('TEXT_FIELD');
     if (onCancel) onCancel();
   };
 

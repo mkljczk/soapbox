@@ -1,23 +1,39 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-import { dateSchema } from './utils';
+import { datetimeSchema } from './utils';
 
-const markerSchema = z.preprocess((marker: any) => ({
-  unread_count: marker.pleroma?.unread_count,
-  ...marker,
-}), z.object({
-  last_read_id: z.string(),
-  version: z.number().int(),
-  updated_at: dateSchema,
-  unread_count: z.number().int().optional().catch(undefined),
-}));
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Marker/}
+ */
+const markerSchema = v.pipe(
+  v.any(),
+  v.transform((marker: any) => marker ? ({
+    unread_count: marker.pleroma?.unread_count,
+    ...marker,
+  }) : null),
+  v.object({
+    last_read_id: v.string(),
+    version: v.pipe(v.number(), v.integer()),
+    updated_at: datetimeSchema,
+    unread_count: v.fallback(v.optional(v.pipe(v.number(), v.integer())), undefined),
+  }),
+);
 
-/** @see {@link https://docs.joinmastodon.org/entities/Marker/} */
-type Marker = z.infer<typeof markerSchema>;
+/**
+ * @category Entity types
+ */
+type Marker = v.InferOutput<typeof markerSchema>;
 
-const markersSchema = z.record(markerSchema);
+/**
+ * @category Schemas
+ */
+const markersSchema = v.record(v.string(), markerSchema);
 
-type Markers = z.infer<typeof markersSchema>;
+/**
+ * @category Entity types
+ */
+type Markers = v.InferOutput<typeof markersSchema>;
 
 export {
   markerSchema,

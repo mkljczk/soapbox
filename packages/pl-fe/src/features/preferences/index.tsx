@@ -1,15 +1,23 @@
-import { Set as ImmutableSet } from 'immutable';
+import debounce from 'lodash/debounce';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { changeSetting } from 'pl-fe/actions/settings';
+import { changeSetting, saveSettings } from 'pl-fe/actions/settings';
 import List, { ListItem } from 'pl-fe/components/list';
-import { Form } from 'pl-fe/components/ui';
+import Form from 'pl-fe/components/ui/form';
 import { Mutliselect, SelectDropdown } from 'pl-fe/features/forms';
 import SettingToggle from 'pl-fe/features/notifications/components/setting-toggle';
-import { useAppDispatch, useFeatures, useSettings } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import colors from 'pl-fe/utils/colors';
 
+import { PaletteListItem } from '../theme-editor';
 import ThemeToggle from '../ui/components/theme-toggle';
+
+import type { AppDispatch } from 'pl-fe/store';
 
 const languages = {
   en: 'English',
@@ -89,43 +97,65 @@ const messages = defineMessages({
   content_type_plaintext: { id: 'preferences.options.content_type_plaintext', defaultMessage: 'Plain text' },
   content_type_markdown: { id: 'preferences.options.content_type_markdown', defaultMessage: 'Markdown' },
   content_type_html: { id: 'preferences.options.content_type_html', defaultMessage: 'HTML' },
+  brandColor: { id: 'preferences.options.brand_color', defaultMessage: 'Base color' },
 });
+
+const debouncedSave = debounce((dispatch: AppDispatch) => {
+  dispatch(saveSettings({ showAlert: true }));
+}, 1000);
 
 const Preferences = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const features = useFeatures();
   const settings = useSettings();
+  const plFeConfig = usePlFeConfig();
+  const instance = useInstance();
+
+  const brandColor = settings.theme?.brandColor || plFeConfig.brandColor || '#d80482';
 
   const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>, path: string[]) => {
     dispatch(changeSetting(path, event.target.value, { showAlert: true }));
   };
 
   const onSelectMultiple = (selectedList: string[], path: string[]) => {
-    dispatch(changeSetting(path, ImmutableSet(selectedList.sort((a, b) => a.localeCompare(b))), { showAlert: true }));
+    dispatch(changeSetting(path, selectedList.toSorted((a, b) => a.localeCompare(b)), { showAlert: true }));
   };
 
   const onToggleChange = (key: string[], checked: boolean) => {
-    dispatch(changeSetting(key, checked, { showAlert: true }));
+    dispatch(changeSetting(key, checked));
+  };
+
+  const onBrandColorChange = (newBrandColor: string) => {
+    if (!settings.theme?.brandColor && newBrandColor === brandColor) return;
+
+    dispatch(changeSetting(['theme', 'brandColor'], newBrandColor, { showAlert: true, save: false }));
+    debouncedSave(dispatch);
   };
 
   const displayMediaOptions = React.useMemo(() => ({
     default: intl.formatMessage(messages.displayPostsDefault),
     hide_all: intl.formatMessage(messages.displayPostsHideAll),
     show_all: intl.formatMessage(messages.displayPostsShowAll),
-  }), []);
+  }), [settings.locale]);
 
   const defaultPrivacyOptions = React.useMemo(() => ({
     public: intl.formatMessage(messages.privacy_public),
     unlisted: intl.formatMessage(messages.privacy_unlisted),
     private: intl.formatMessage(messages.privacy_followers_only),
-  }), []);
+  }), [settings.locale]);
 
-  const defaultContentTypeOptions = React.useMemo(() => ({
-    'text/plain': intl.formatMessage(messages.content_type_plaintext),
-    'text/markdown': intl.formatMessage(messages.content_type_markdown),
-    'text/html': intl.formatMessage(messages.content_type_html),
-  }), []);
+  const defaultContentTypeOptions = React.useMemo(() => {
+    const postFormats = instance.pleroma.metadata.post_formats;
+
+    const options = Object.entries({
+      'text/plain': intl.formatMessage(messages.content_type_plaintext),
+      'text/markdown': intl.formatMessage(messages.content_type_markdown),
+      'text/html': intl.formatMessage(messages.content_type_html),
+    }).filter(([key]) => postFormats.includes(key));
+
+    if (options.length > 1) return Object.fromEntries(options);
+  }, [settings.locale]);
 
   return (
     <Form>
@@ -143,8 +173,16 @@ const Preferences = () => {
         <ListItem label={<FormattedMessage id='preferences.fields.theme' defaultMessage='Theme' />}>
           <ThemeToggle />
         </ListItem>
+        <PaletteListItem
+          label={intl.formatMessage(messages.brandColor)}
+          palette={colors(brandColor)}
+          onChange={(palette) => onBrandColorChange(palette['500'])}
+          allowTintChange={false}
+        />
+      </List>
 
-        <ListItem label={<FormattedMessage id='preferences.fields.language_label' defaultMessage='Display Language' />}>
+      <List>
+        <ListItem label={<FormattedMessage id='preferences.fields.language_label' defaultMessage='Display language' />}>
           <SelectDropdown
             className='max-w-[200px]'
             items={languages}
@@ -177,7 +215,7 @@ const Preferences = () => {
           </ListItem>
         )}
 
-        {features.richText && (
+        {features.richText && !!defaultContentTypeOptions && (
           <ListItem label={<FormattedMessage id='preferences.fields.content_type_label' defaultMessage='Default post format' />}>
             <SelectDropdown
               className='max-w-[200px]'
@@ -194,16 +232,28 @@ const Preferences = () => {
           </ListItem>
         )}
 
+        {features.createStatusExplicitAddressing && (
+          <ListItem label={<FormattedMessage id='preferences.fields.implicit_addressing_label' defaultMessage='Include mentions in post content when replying' />}>
+            <SettingToggle settings={settings} settingPath={['forceImplicitAddressing']} onChange={onToggleChange} />
+          </ListItem>
+        )}
+
         <ListItem label={<FormattedMessage id='preferences.notifications.advanced' defaultMessage='Show all notification categories' />}>
           <SettingToggle settings={settings} settingPath={['notifications', 'quickFilter', 'advanced']} onChange={onToggleChange} />
         </ListItem>
 
         <ListItem
-          label={<FormattedMessage id='preferences.fields.demetricator_label' defaultMessage='Use Demetricator' />}
+          label={<FormattedMessage id='preferences.fields.demetricator_label' defaultMessage='Hide social media counters' />}
           hint={<FormattedMessage id='preferences.hints.demetricator' defaultMessage='Decrease social media anxiety by hiding all numbers from the site.' />}
         >
           <SettingToggle settings={settings} settingPath={['demetricator']} onChange={onToggleChange} />
         </ListItem>
+
+        {features.emojiReacts && (
+          <ListItem label={<FormattedMessage id='preferences.fields.wrench_label' defaultMessage='Display wrench reaction button' />} >
+            <SettingToggle settings={settings} settingPath={['showWrenchButton']} onChange={onToggleChange} />
+          </ListItem>
+        )}
       </List>
 
       <List>

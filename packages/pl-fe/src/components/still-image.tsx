@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React, { useRef } from 'react';
 
-import { useSettings } from 'pl-fe/hooks';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 interface IStillImage {
   /** Image alt text. */
@@ -18,17 +18,23 @@ interface IStillImage {
   showExt?: boolean;
   /** Callback function if the image fails to load */
   onError?(): void;
+  /** Treat as animated, no matter the extension */
+  isGif?: boolean;
+  /** Specify that the group is defined by the parent */
+  noGroup?: boolean;
 }
 
 /** Renders images on a canvas, only playing GIFs if autoPlayGif is enabled. */
-const StillImage: React.FC<IStillImage> = ({ alt, className, src, style, letterboxed = false, showExt = false, onError }) => {
+const StillImage: React.FC<IStillImage> = ({
+  alt, className, src, style, letterboxed = false, showExt = false, onError, isGif, noGroup,
+}) => {
   const { autoPlayGif } = useSettings();
 
   const canvas = useRef<HTMLCanvasElement>(null);
   const img = useRef<HTMLImageElement>(null);
 
   const hoverToPlay = (
-    src && !autoPlayGif && (src.endsWith('.gif') || src.startsWith('blob:'))
+    src && !autoPlayGif && ((isGif) || src.endsWith('.gif') || src.startsWith('blob:'))
   );
 
   const handleImageLoad = () => {
@@ -40,7 +46,7 @@ const StillImage: React.FC<IStillImage> = ({ alt, className, src, style, letterb
   };
 
   /** ClassNames shared between the `<img>` and `<canvas>` elements. */
-  const baseClassName = clsx('block h-full w-full', {
+  const baseClassName = clsx('block size-full', {
     'object-contain': letterboxed,
     'object-cover': !letterboxed,
   });
@@ -48,7 +54,7 @@ const StillImage: React.FC<IStillImage> = ({ alt, className, src, style, letterb
   return (
     <div
       data-testid='still-image-container'
-      className={clsx(className, 'group relative isolate overflow-hidden')}
+      className={clsx(className, 'relative isolate overflow-hidden', { 'group': !noGroup })}
       style={style}
     >
       <img

@@ -1,15 +1,16 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { openModal } from 'pl-fe/actions/modals';
-import { Button, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 const NewGroupPanel = () => {
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
 
   const createGroup = () => {
-    dispatch(openModal('CREATE_GROUP'));
+    openModal('CREATE_GROUP');
   };
 
   return (

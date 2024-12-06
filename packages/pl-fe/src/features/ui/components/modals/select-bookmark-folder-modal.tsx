@@ -2,15 +2,20 @@ import React, { useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { bookmark } from 'pl-fe/actions/interactions';
-import { useBookmarkFolders } from 'pl-fe/api/hooks';
 import { RadioGroup, RadioItem } from 'pl-fe/components/radio';
-import { Emoji, HStack, Icon, Modal, Spinner, Stack } from 'pl-fe/components/ui';
+import Emoji from 'pl-fe/components/ui/emoji';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Modal from 'pl-fe/components/ui/modal';
+import Spinner from 'pl-fe/components/ui/spinner';
+import Stack from 'pl-fe/components/ui/stack';
 import NewFolderForm from 'pl-fe/features/bookmark-folders/components/new-folder-form';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useBookmarkFolders } from 'pl-fe/queries/statuses/use-bookmark-folders';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 import type { BaseModalProps } from '../modal-root';
-import type { Status as StatusEntity } from 'pl-fe/normalizers';
 
 interface SelectBookmarkFolderModalProps {
   statusId: string;
@@ -18,12 +23,12 @@ interface SelectBookmarkFolderModalProps {
 
 const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseModalProps> = ({ statusId, onClose }) => {
   const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector(state => getStatus(state, { id: statusId })) as StatusEntity;
+  const status = useAppSelector(state => getStatus(state, { id: statusId }))!;
   const dispatch = useAppDispatch();
 
   const [selectedFolder, setSelectedFolder] = useState(status.bookmark_folder);
 
-  const { isFetching, bookmarkFolders } = useBookmarkFolders();
+  const { isFetching, data: bookmarkFolders } = useBookmarkFolders(data => data);
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = e => {
     const folderId = e.target.value;
@@ -53,7 +58,7 @@ const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseM
   ];
 
   if (!isFetching) {
-    items.push(...(bookmarkFolders.map((folder) => (
+    items.push(...((bookmarkFolders || []).map((folder) => (
       <RadioItem
         key={folder.id}
         label={
@@ -62,7 +67,7 @@ const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseM
               <Emoji
                 emoji={folder.emoji}
                 src={folder.emoji_url || undefined}
-                className='h-5 w-5 flex-none'
+                className='size-5 flex-none'
               />
             ) : <Icon src={require('@tabler/icons/outline/folder.svg')} size={20} />}
             <span>{folder.name}</span>

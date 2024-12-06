@@ -1,15 +1,19 @@
-import { z } from 'zod';
-
-import { Resolve } from '../utils/types';
+import * as v from 'valibot';
 
 import { statusSchema } from './status';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Context/} */
-const contextSchema = z.object({
-  ancestors: z.array(statusSchema),
-  descendants: z.array(statusSchema),
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Context/}
+ */
+const contextSchema = v.object({
+  ancestors: v.array(statusSchema),
+  descendants: v.array(statusSchema),
 });
 
-type Context = Resolve<z.infer<typeof contextSchema>>;
+/**
+ * @category Entity types
+ */
+type Context = v.InferOutput<typeof contextSchema>;
 
 export { contextSchema, type Context };

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import LandingGradient from 'pl-fe/components/landing-gradient';
-import { Spinner } from 'pl-fe/components/ui';
+import Spinner from 'pl-fe/components/ui/spinner';
 
 /** Fullscreen loading indicator. */
 const LoadingScreen: React.FC = () => (

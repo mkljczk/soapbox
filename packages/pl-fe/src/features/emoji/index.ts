@@ -1,9 +1,5 @@
-import split from 'graphemesplit';
-
-import unicodeMapping from './mapping';
-
+import type { Emoji as EmojiMart, CustomEmoji as EmojiMartCustom } from './data';
 import type { CustomEmoji as BaseCustomEmoji } from 'pl-api';
-import type { Emoji as EmojiMart, CustomEmoji as EmojiMartCustom } from 'pl-fe/features/emoji/data';
 
 /*
  * TODO: Consolate emoji object types
@@ -57,148 +53,6 @@ const isAlphaNumeric = (c: string) => {
 const validEmojiChar = (c: string) =>
   isAlphaNumeric(c) || ['_', '-', '.'].includes(c);
 
-const convertCustom = (shortname: string, filename: string) =>
-  `<img draggable="false" class="emojione" alt="${shortname}" title="${shortname}" src="${filename}" />`;
-
-const convertUnicode = (c: string) => {
-  const { unified, shortcode } = unicodeMapping[c];
-
-  return `<img draggable="false" class="emojione" alt="${c}" title=":${shortcode}:" src="/packs/emoji/${unified}.svg" />`;
-};
-
-const convertEmoji = (str: string, customEmojis: any) => {
-  if (str.length < 3) return str;
-  if (str in customEmojis) {
-    const emoji = customEmojis[str];
-    const filename = emoji.static_url;
-
-    if (filename?.length > 0) {
-      return convertCustom(str, filename);
-    }
-  }
-
-  return str;
-};
-
-const emojifyText = (str: string, customEmojis = {}) => {
-  let buf = '';
-  let stack = '';
-  let open = false;
-
-  const clearStack = () => {
-    buf += stack;
-    open = false;
-    stack = '';
-  };
-
-  for (let c of split(str)) {
-    // convert FE0E selector to FE0F so it can be found in unimap
-    if (c.codePointAt(c.length - 1) === 65038) {
-      c = c.slice(0, -1) + String.fromCodePoint(65039);
-    }
-
-    // unqualified emojis aren't in emoji-mart's mappings so we just add FEOF
-    const unqualified = c + String.fromCodePoint(65039);
-
-    if (c in unicodeMapping) {
-      if (open) { // unicode emoji inside colon
-        clearStack();
-      }
-
-      buf += convertUnicode(c);
-    } else if (unqualified in unicodeMapping) {
-      if (open) { // unicode emoji inside colon
-        clearStack();
-      }
-
-      buf += convertUnicode(unqualified);
-    } else if (c === ':') {
-      stack += ':';
-
-      // we see another : we convert it and clear the stack buffer
-      if (open) {
-        buf += convertEmoji(stack, customEmojis);
-        stack = '';
-      }
-
-      open = !open;
-    } else {
-      if (open) {
-        stack += c;
-
-        // if the stack is non-null and we see invalid chars it's a string not emoji
-        // so we push it to the return result and clear it
-        if (!validEmojiChar(c)) {
-          clearStack();
-        }
-      } else {
-        buf += c;
-      }
-    }
-  }
-
-  // never found a closing colon so it's just a raw string
-  if (open) {
-    buf += stack;
-  }
-
-  return buf;
-};
-
-const parseHTML = (str: string): { text: boolean; data: string }[] => {
-  const tokens = [];
-  let buf = '';
-  let stack = '';
-  let open = false;
-
-  for (const c of str) {
-    if (c === '<') {
-      if (open) {
-        tokens.push({ text: true, data: stack });
-        stack = '<';
-      } else {
-        tokens.push({ text: true, data: buf });
-        stack = '<';
-        open = true;
-      }
-    } else if (c === '>') {
-      if (open) {
-        open = false;
-        tokens.push({ text: false, data: stack + '>' });
-        stack = '';
-        buf = '';
-      } else {
-        buf += '>';
-      }
-
-    } else {
-      if (open) {
-        stack += c;
-      } else {
-        buf += c;
-      }
-    }
-  }
-
-  if (open) {
-    tokens.push({ text: true, data: buf + stack });
-  } else if (buf !== '') {
-    tokens.push({ text: true, data: buf });
-  }
-
-  return tokens;
-};
-
-const emojify = (str: string, customEmojis = {}) =>
-  parseHTML(str)
-    .map(({ text, data }) => {
-      if (!text) return data;
-      if (data.length === 0 || data === ' ') return data;
-
-      return emojifyText(data, customEmojis);
-    })
-    .join('');
-
 const buildCustomEmojis = (customEmojis: Array<BaseCustomEmoji>) => {
   const emojis: EmojiMart<EmojiMartCustom>[] = [];
 
@@ -224,8 +78,6 @@ export {
   type Emoji,
   isCustomEmoji,
   isNativeEmoji,
-  emojifyText,
-  parseHTML,
   buildCustomEmojis,
-  emojify as default,
+  validEmojiChar,
 };

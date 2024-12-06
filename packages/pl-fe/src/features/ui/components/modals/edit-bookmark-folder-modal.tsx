@@ -1,15 +1,18 @@
-import { useFloating, shift } from '@floating-ui/react';
+import { useFloating, shift, autoUpdate } from '@floating-ui/react';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { closeModal } from 'pl-fe/actions/modals';
-import { useBookmarkFolder, useUpdateBookmarkFolder } from 'pl-fe/api/hooks';
-import { Emoji, HStack, Icon, Input, Modal } from 'pl-fe/components/ui';
+import Emoji from 'pl-fe/components/ui/emoji';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Input from 'pl-fe/components/ui/input';
+import Modal from 'pl-fe/components/ui/modal';
 import EmojiPickerDropdown from 'pl-fe/features/emoji/components/emoji-picker-dropdown';
 import { messages as emojiMessages } from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
-import { useAppDispatch, useClickOutside } from 'pl-fe/hooks';
-import { useTextField } from 'pl-fe/hooks/forms';
+import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
+import { useClickOutside } from 'pl-fe/hooks/use-click-outside';
+import { useBookmarkFolder, useUpdateBookmarkFolder } from 'pl-fe/queries/statuses/use-bookmark-folders';
 import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';
@@ -34,6 +37,7 @@ const EmojiPicker: React.FC<IEmojiPicker> = ({ emoji, emojiUrl, ...props }) => {
 
   const { x, y, strategy, refs, update } = useFloating<HTMLButtonElement>({
     middleware: [shift()],
+    whileElementsMounted: autoUpdate,
   });
 
   useClickOutside(refs, () => {
@@ -48,7 +52,7 @@ const EmojiPicker: React.FC<IEmojiPicker> = ({ emoji, emojiUrl, ...props }) => {
   return (
     <div className='relative'>
       <button
-        className='mt-1 flex h-[38px] w-[38px] items-center justify-center rounded-md border border-solid border-gray-400 bg-white text-gray-900 ring-1 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100 dark:ring-gray-800 dark:focus:border-primary-500 dark:focus:ring-primary-500'
+        className='mt-1 flex size-[38px] items-center justify-center rounded-md border border-solid border-gray-400 bg-white text-gray-900 ring-1 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100 dark:ring-gray-800 dark:focus:border-primary-500 dark:focus:ring-primary-500'
         ref={refs.setReference}
         title={title}
         aria-label={title}
@@ -58,8 +62,8 @@ const EmojiPicker: React.FC<IEmojiPicker> = ({ emoji, emojiUrl, ...props }) => {
         tabIndex={0}
       >
         {emoji
-          ? <Emoji height={20} width={20} emoji={emoji} />
-          : <Icon className='h-5 w-5 text-gray-600 hover:text-gray-700 dark:hover:text-gray-500' src={require('@tabler/icons/outline/mood-happy.svg')} />}
+          ? <Emoji className='size-5' emoji={emoji} src={emojiUrl} />
+          : <Icon className='size-5 text-gray-600 hover:text-gray-700 dark:hover:text-gray-500' src={require('@tabler/icons/outline/mood-happy.svg')} />}
       </button>
 
       {createPortal(
@@ -92,10 +96,9 @@ interface EditBookmarkFolderModalProps {
 
 const EditBookmarkFolderModal: React.FC<BaseModalProps & EditBookmarkFolderModalProps> = ({ folderId, onClose }) => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
 
-  const { bookmarkFolder } = useBookmarkFolder(folderId);
-  const { updateBookmarkFolder, isSubmitting } = useUpdateBookmarkFolder(folderId);
+  const { data: bookmarkFolder } = useBookmarkFolder(folderId);
+  const { mutate: updateBookmarkFolder, isPending } = useUpdateBookmarkFolder(folderId);
 
   const [emoji, setEmoji] = useState(bookmarkFolder?.emoji || undefined);
   const [emojiUrl, setEmojiUrl] = useState(bookmarkFolder?.emoji_url || undefined);
@@ -121,7 +124,7 @@ const EditBookmarkFolderModal: React.FC<BaseModalProps & EditBookmarkFolderModal
     }, {
       onSuccess() {
         toast.success(intl.formatMessage(messages.editSuccess));
-        dispatch(closeModal('EDIT_BOOKMARK_FOLDER'));
+        onClose('EDIT_BOOKMARK_FOLDER');
       },
       onError() {
         toast.success(intl.formatMessage(messages.editFail));
@@ -150,7 +153,7 @@ const EditBookmarkFolderModal: React.FC<BaseModalProps & EditBookmarkFolderModal
           <Input
             type='text'
             placeholder={label}
-            disabled={isSubmitting}
+            disabled={isPending}
             {...name}
           />
         </label>

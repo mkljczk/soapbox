@@ -1,4 +1,4 @@
-import { createPushSubscription, updatePushSubscription } from 'pl-fe/actions/push-subscriptions';
+import { createPushSubscription } from 'pl-fe/actions/push-subscriptions';
 import { pushNotificationsSetting } from 'pl-fe/settings';
 import { getVapidKey } from 'pl-fe/utils/auth';
 import { decode as decodeBase64 } from 'pl-fe/utils/base64';
@@ -44,7 +44,7 @@ const unsubscribe = ({ registration, subscription }: {
 
 const sendSubscriptionToBackend = (subscription: PushSubscription, me: Me) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const alerts = getState().push_notifications.alerts.toJS() as Record<string, boolean>;
+    const alerts = getState().push_notifications.alerts;
     const params = { subscription, data: { alerts } };
 
     if (me) {
@@ -135,21 +135,6 @@ const register = () =>
       .catch(console.warn);
   };
 
-const saveSettings = () =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const state = getState().push_notifications;
-    const alerts = state.alerts.toJS();
-    const data = { alerts };
-    const me = getState().me;
-
-    return dispatch(updatePushSubscription({ data })).then(() => {
-      if (me) {
-        pushNotificationsSetting.set(me, data);
-      }
-    }).catch(console.warn);
-  };
-
 export {
   register,
-  saveSettings,
 };

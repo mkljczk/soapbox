@@ -1,18 +1,20 @@
-import { GroupRoles } from 'pl-api';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useGroup, useGroupMembers, useGroupMembershipRequests } from 'pl-fe/api/hooks';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
+import { useGroupMembershipRequests } from 'pl-fe/api/hooks/groups/use-group-membership-requests';
 import Account from 'pl-fe/components/account';
 import { AuthorizeRejectButtons } from 'pl-fe/components/authorize-reject-buttons';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, HStack, Spinner } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import HStack from 'pl-fe/components/ui/hstack';
+import Spinner from 'pl-fe/components/ui/spinner';
 import toast from 'pl-fe/toast';
 
 import ColumnForbidden from '../ui/components/column-forbidden';
 
 import type { PlfeResponse } from 'pl-fe/api';
-import type { Account as AccountEntity } from 'pl-fe/normalizers';
+import type { Account as AccountEntity } from 'pl-fe/normalizers/account';
 
 type RouteParams = { groupId: string };
 
@@ -60,11 +62,6 @@ const GroupMembershipRequests: React.FC<IGroupMembershipRequests> = ({ params })
   const { group } = useGroup(groupId);
 
   const { accounts, authorize, reject, refetch, isLoading } = useGroupMembershipRequests(groupId);
-  const { invalidate } = useGroupMembers(groupId, GroupRoles.USER);
-
-  useEffect(() => () => {
-    invalidate();
-  }, []);
 
   if (!group || !group.relationship || isLoading) {
     return (
@@ -111,7 +108,6 @@ const GroupMembershipRequests: React.FC<IGroupMembershipRequests> = ({ params })
   return (
     <Column label={intl.formatMessage(messages.heading)}>
       <ScrollableList
-        scrollKey='group_membership_requests'
         emptyMessage={<FormattedMessage id='empty_column.group_membership_requests' defaultMessage='There are no pending membership requests for this group.' />}
       >
         {accounts.map((account) => (

@@ -1,27 +1,3 @@
-import camelCase from 'lodash/camelCase';
-import startCase from 'lodash/startCase';
-
-const toSentence = (arr: string[]) => arr
-  .reduce(
-    (prev, curr, i) => prev + curr + (i === arr.length - 2 ? ' and ' : ', '),
-    '',
-  )
-  .slice(0, -2);
-
-type Errors = {
-  [key: string]: string[];
-}
-
-const buildErrorMessage = (errors: Errors) => {
-  const individualErrors = Object.keys(errors).map(
-    (attribute) => `${startCase(camelCase(attribute))} ${toSentence(
-      errors[attribute],
-    )}`,
-  );
-
-  return toSentence(individualErrors);
-};
-
 const httpErrorMessages: { code: number; name: string; description: string }[] = [
   {
     code: 100,
@@ -206,4 +182,4 @@ const isNetworkError = (error: unknown): boolean =>
     && error.name === 'TypeError'
     && error.message.startsWith('Failed to fetch dynamically imported module: ');
 
-export { buildErrorMessage, httpErrorMessages, isNetworkError };
+export { httpErrorMessages, isNetworkError };

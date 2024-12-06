@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { BigCard } from 'pl-fe/components/big-card';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Button, Stack, Text } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
 import { useOnboardingSuggestions } from 'pl-fe/queries/suggestions';
 
 const SuggestedAccountsStep = ({ onNext }: { onNext: () => void }) => {
+  const parentRef = useRef<HTMLDivElement>(null);
   const { data, isFetching } = useOnboardingSuggestions();
 
   const renderSuggestions = () => {
@@ -16,18 +19,17 @@ const SuggestedAccountsStep = ({ onNext }: { onNext: () => void }) => {
     }
 
     return (
-      <div className='flex flex-col sm:pb-10 sm:pt-4'>
+      <div className='flex flex-col sm:pb-10 sm:pt-4' ref={parentRef}>
         <ScrollableList
           isLoading={isFetching}
-          scrollKey='suggestions'
-          useWindowScroll={false}
           style={{ height: 320 }}
+          parentRef={parentRef}
         >
           {data.map((suggestion) => (
             <div key={suggestion.account.id} className='py-2'>
               <AccountContainer
                 id={suggestion.account.id}
-                showProfileHoverCard={false}
+                showAccountHoverCard={false}
                 withLinkToProfile={false}
               />
             </div>

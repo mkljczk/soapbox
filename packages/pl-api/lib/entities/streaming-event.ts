@@ -1,102 +1,142 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
 import { announcementSchema } from './announcement';
 import { announcementReactionSchema } from './announcement-reaction';
 import { chatSchema } from './chat';
 import { conversationSchema } from './conversation';
+import { markersSchema } from './marker';
 import { notificationSchema } from './notification';
 import { statusSchema } from './status';
 
-const followRelationshipUpdateSchema = z.object({
-  state: z.enum(['follow_pending', 'follow_accept', 'follow_reject']),
-  follower: z.object({
-    id: z.string(),
-    follower_count: z.number().nullable().catch(null),
-    following_count: z.number().nullable().catch(null),
+/**
+ * @category Schemas
+ */
+const followRelationshipUpdateSchema = v.object({
+  state: v.picklist(['follow_pending', 'follow_accept', 'follow_reject']),
+  follower: v.object({
+    id: v.string(),
+    follower_count: v.fallback(v.nullable(v.number()), null),
+    following_count: v.fallback(v.nullable(v.number()), null),
   }),
-  following: z.object({
-    id: z.string(),
-    follower_count: z.number().nullable().catch(null),
-    following_count: z.number().nullable().catch(null),
+  following: v.object({
+    id: v.string(),
+    follower_count: v.fallback(v.nullable(v.number()), null),
+    following_count: v.fallback(v.nullable(v.number()), null),
   }),
 });
 
-type FollowRelationshipUpdate = z.infer<typeof followRelationshipUpdateSchema>;
+/**
+ * @category Entity types
+ */
+type FollowRelationshipUpdate = v.InferOutput<typeof followRelationshipUpdateSchema>;
 
-const baseStreamingEventSchema = z.object({
-  stream: z.array(z.string()).catch([]),
+const baseStreamingEventSchema = v.object({
+  stream: v.fallback(v.array(v.string()), []),
 });
 
-const statusStreamingEventSchema = baseStreamingEventSchema.extend({
-  event: z.enum(['update', 'status.update']),
-  payload: z.preprocess((payload: any) => JSON.parse(payload), statusSchema),
+const statusStreamingEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.picklist(['update', 'status.update']),
+  payload: v.pipe(v.any(), v.transform((payload: any) => JSON.parse(payload)), statusSchema),
 });
 
-const stringStreamingEventSchema = baseStreamingEventSchema.extend({
-  event: z.enum(['delete', 'announcement.delete']),
-  payload: z.string(),
+const stringStreamingEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.picklist(['delete', 'announcement.delete']),
+  payload: v.string(),
 });
 
-const notificationStreamingEventSchema = baseStreamingEventSchema.extend({
-  event: z.literal('notification'),
-  payload: z.preprocess((payload: any) => JSON.parse(payload), notificationSchema),
+const notificationStreamingEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.literal('notification'),
+  payload: v.pipe(v.any(), v.transform((payload: any) => JSON.parse(payload)), notificationSchema),
 });
 
-const emptyStreamingEventSchema = baseStreamingEventSchema.extend({
-  event: z.literal('filters_changed'),
+const emptyStreamingEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.literal('filters_changed'),
 });
 
-const conversationStreamingEventSchema = baseStreamingEventSchema.extend({
-  event: z.literal('conversation'),
-  payload: z.preprocess((payload: any) => JSON.parse(payload), conversationSchema),
+const conversationStreamingEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.literal('conversation'),
+  payload: v.pipe(v.any(), v.transform((payload: any) => JSON.parse(payload)), conversationSchema),
 });
 
-const announcementStreamingEventSchema = baseStreamingEventSchema.extend({
-  event: z.literal('announcement'),
-  payload: z.preprocess((payload: any) => JSON.parse(payload), announcementSchema),
+const announcementStreamingEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.literal('announcement'),
+  payload: v.pipe(v.any(), v.transform((payload: any) => JSON.parse(payload)), announcementSchema),
 });
 
-const announcementReactionStreamingEventSchema = baseStreamingEventSchema.extend({
-  event: z.literal('announcement.reaction'),
-  payload: z.preprocess((payload: any) => JSON.parse(payload), announcementReactionSchema),
+const announcementReactionStreamingEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.literal('announcement.reaction'),
+  payload: v.pipe(v.any(), v.transform((payload: any) => JSON.parse(payload)), announcementReactionSchema),
 });
 
-const chatUpdateStreamingEventSchema = baseStreamingEventSchema.extend({
-  event: z.literal('chat_update'),
-  payload: z.preprocess((payload: any) => JSON.parse(payload), chatSchema),
+const chatUpdateStreamingEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.literal('chat_update'),
+  payload: v.pipe(v.any(), v.transform((payload: any) => JSON.parse(payload)), chatSchema),
 });
 
-const followRelationshipsUpdateStreamingEventSchema = baseStreamingEventSchema.extend({
-  event: z.literal('follow_relationships_update'),
-  payload: z.preprocess((payload: any) => JSON.parse(payload), followRelationshipUpdateSchema),
+const followRelationshipsUpdateStreamingEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.literal('follow_relationships_update'),
+  payload: v.pipe(v.any(), v.transform((payload: any) => JSON.parse(payload)), followRelationshipUpdateSchema),
 });
 
-const respondStreamingEventSchema = baseStreamingEventSchema.extend({
-  event: z.literal('respond'),
-  payload: z.preprocess((payload: any) => JSON.parse(payload), z.object({
-    type: z.string(),
-    result: z.enum(['success', 'ignored', 'error']),
+const respondStreamingEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.literal('respond'),
+  payload: v.pipe(v.any(), v.transform((payload: any) => JSON.parse(payload)), v.object({
+    type: v.string(),
+    result: v.picklist(['success', 'ignored', 'error']),
   })),
 });
 
-/** @see {@link https://docs.joinmastodon.org/methods/streaming/#events} */
-const streamingEventSchema: z.ZodType<StreamingEvent> = z.preprocess((event: any) => ({
-  ...event,
-  event: event.event?.replace(/^pleroma:/, ''),
-}), z.discriminatedUnion('event', [
-  statusStreamingEventSchema,
-  stringStreamingEventSchema,
-  notificationStreamingEventSchema,
-  emptyStreamingEventSchema,
-  conversationStreamingEventSchema,
-  announcementStreamingEventSchema,
-  announcementReactionStreamingEventSchema,
-  chatUpdateStreamingEventSchema,
-  followRelationshipsUpdateStreamingEventSchema,
-  respondStreamingEventSchema,
-])) as any;
+const markerStreamingEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.literal('marker'),
+  payload: v.pipe(v.any(), v.transform((payload: any) => JSON.parse(payload)), markersSchema),
+});
 
-type StreamingEvent = z.infer<
+const notificationsMergedEventSchema = v.object({
+  ...baseStreamingEventSchema.entries,
+  event: v.literal('notifications_merged'),
+});
+
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/methods/streaming/#events}
+ */
+const streamingEventSchema: v.BaseSchema<any, StreamingEvent, v.BaseIssue<unknown>> = v.pipe(
+  v.any(),
+  v.transform((event: any) => ({
+    ...event,
+    event: event.event?.replace(/^pleroma:/, ''),
+  })),
+  v.variant('event', [
+    statusStreamingEventSchema,
+    stringStreamingEventSchema,
+    notificationStreamingEventSchema,
+    emptyStreamingEventSchema,
+    conversationStreamingEventSchema,
+    announcementStreamingEventSchema,
+    announcementReactionStreamingEventSchema,
+    chatUpdateStreamingEventSchema,
+    followRelationshipsUpdateStreamingEventSchema,
+    respondStreamingEventSchema,
+    markerStreamingEventSchema,
+    notificationsMergedEventSchema,
+  ]),
+) as any;
+
+/**
+ * @category Entity types
+ */
+type StreamingEvent = v.InferOutput<
 | typeof statusStreamingEventSchema
 | typeof stringStreamingEventSchema
 | typeof notificationStreamingEventSchema
@@ -107,6 +147,8 @@ type StreamingEvent = z.infer<
 | typeof chatUpdateStreamingEventSchema
 | typeof followRelationshipsUpdateStreamingEventSchema
 | typeof respondStreamingEventSchema
+| typeof markerStreamingEventSchema
+| typeof notificationsMergedEventSchema
 >;
 
 export {

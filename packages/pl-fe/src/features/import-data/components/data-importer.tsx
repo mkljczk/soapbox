@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 
 import List, { ListItem } from 'pl-fe/components/list';
-import { Button, FileInput, Form, FormActions, FormGroup, Text, Toggle } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import FileInput from 'pl-fe/components/ui/file-input';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Text from 'pl-fe/components/ui/text';
+import Toggle from 'pl-fe/components/ui/toggle';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
 import type { AppDispatch, RootState } from 'pl-fe/store';
 

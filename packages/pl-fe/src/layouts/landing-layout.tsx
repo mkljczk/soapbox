@@ -1,14 +1,13 @@
 import React from 'react';
 
+import Layout from 'pl-fe/components/ui/layout';
 import LinkFooter from 'pl-fe/features/ui/components/link-footer';
 import {
   TrendsPanel,
   SignUpPanel,
-  CtaBanner,
 } from 'pl-fe/features/ui/util/async-components';
-import { useAppSelector, useFeatures } from 'pl-fe/hooks';
-
-import { Layout } from '../components/ui';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 
 interface ILandingLayout {
   children: React.ReactNode;
@@ -20,12 +19,8 @@ const LandingLayout: React.FC<ILandingLayout> = ({ children }) => {
 
   return (
     <>
-      <Layout.Main className='space-y-3 pt-3 sm:pt-0 dark:divide-gray-800'>
+      <Layout.Main className='space-y-3 pt-3 dark:divide-gray-800 sm:pt-0'>
         {children}
-
-        {!me && (
-          <CtaBanner />
-        )}
       </Layout.Main>
 
       <Layout.Aside>

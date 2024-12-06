@@ -1,8 +1,10 @@
 import { createSelector } from 'reselect';
+import * as v from 'valibot';
 
 import { getHost } from 'pl-fe/actions/instance';
-import { normalizePlFeConfig } from 'pl-fe/normalizers';
+import { plFeConfigSchema } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import KVStore from 'pl-fe/storage/kv-store';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 
 import { getClient, staticFetch } from '../api';
 
@@ -16,19 +18,15 @@ const PLFE_CONFIG_REMEMBER_SUCCESS = 'PLFE_CONFIG_REMEMBER_SUCCESS' as const;
 
 const getPlFeConfig = createSelector([
   (state: RootState) => state.plfe,
-  (state: RootState) => state.auth.client.features,
-], (plfe, features) => {
-  // Do some additional normalization with the state
-  return normalizePlFeConfig(plfe);
-});
+// Do some additional normalization with the state
+], (plfe) => v.parse(plFeConfigSchema, plfe));
 
 const rememberPlFeConfig = (host: string | null) =>
-  (dispatch: AppDispatch) => {
-    return KVStore.getItemOrError(`plfe_config:${host}`).then(plFeConfig => {
+  (dispatch: AppDispatch) =>
+    KVStore.getItemOrError(`plfe_config:${host}`).then(plFeConfig => {
       dispatch({ type: PLFE_CONFIG_REMEMBER_SUCCESS, host, plFeConfig });
       return plFeConfig;
     }).catch(() => {});
-  };
 
 const fetchFrontendConfigurations = () =>
   (dispatch: AppDispatch, getState: () => RootState) =>
@@ -75,8 +73,11 @@ const fetchPlFeJson = (host: string | null) =>
 
 const importPlFeConfig = (plFeConfig: APIEntity, host: string | null) => {
   if (!plFeConfig.brandColor) {
-    plFeConfig.brandColor = '#0482d8';
+    plFeConfig.brandColor = '#d80482';
   }
+
+  useSettingsStore.getState().loadDefaultSettings(plFeConfig?.defaultSettings);
+
   return {
     type: PLFE_CONFIG_REQUEST_SUCCESS,
     plFeConfig,
@@ -99,11 +100,6 @@ export {
   PLFE_CONFIG_REQUEST_FAIL,
   PLFE_CONFIG_REMEMBER_SUCCESS,
   getPlFeConfig,
-  rememberPlFeConfig,
-  fetchFrontendConfigurations,
   fetchPlFeConfig,
   loadPlFeConfig,
-  fetchPlFeJson,
-  importPlFeConfig,
-  plFeConfigFail,
 };

@@ -1,15 +1,21 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-import { dateSchema } from '../utils';
+import { datetimeSchema } from '../utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Admin_DomainAllow/} */
-const adminDomainAllowSchema = z.object({
-  id: z.string(),
-  domain: z.string(),
-  created_at: dateSchema,
+/**
+ * @category Admin schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Admin_DomainAllow/}
+ */
+const adminDomainAllowSchema = v.object({
+  id: v.string(),
+  domain: v.string(),
+  created_at: datetimeSchema,
 });
 
-type AdminDomainAllow = z.infer<typeof adminDomainAllowSchema>;
+/**
+ * @category Admin entity types
+ */
+type AdminDomainAllow = v.InferOutput<typeof adminDomainAllowSchema>;
 
 export {
   adminDomainAllowSchema,

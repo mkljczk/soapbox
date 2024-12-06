@@ -3,10 +3,14 @@ import React from 'react';
 import { defineMessages, useIntl, FormatDateOptions } from 'react-intl';
 
 import Markup from 'pl-fe/components/markup';
-import { HStack, Icon } from 'pl-fe/components/ui';
+import { ParsedContent } from 'pl-fe/components/parsed-content';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Emojify from 'pl-fe/features/emoji/emojify';
 import { CryptoAddress, LightningAddress } from 'pl-fe/features/ui/util/async-components';
+import { unescapeHTML } from 'pl-fe/utils/html';
 
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 const getTicker = (value: string): string => (value.match(/\$([a-zA-Z]*)/i) || [])[1];
 const isTicker = (value: string): boolean => Boolean(getTicker(value));
@@ -27,32 +31,35 @@ const dateFormatOptions: FormatDateOptions = {
 
 interface IProfileField {
   field: Account['fields'][number];
+  emojis?: Account['emojis'];
 }
 
 /** Renders a single profile field. */
-const ProfileField: React.FC<IProfileField> = ({ field }) => {
+const ProfileField: React.FC<IProfileField> = ({ field, emojis }) => {
   const intl = useIntl();
 
   if (isTicker(field.name)) {
     return (
       <CryptoAddress
         ticker={getTicker(field.name).toLowerCase()}
-        address={field.value_plain}
+        address={unescapeHTML(field.value)}
       />
     );
   } else if (isZapEmoji(field.name)) {
-    return <LightningAddress address={field.value_plain} />;
+    return <LightningAddress address={unescapeHTML(field.value)} />;
   }
 
   return (
     <dl>
       <dt title={field.name}>
-        <Markup weight='bold' tag='span' dangerouslySetInnerHTML={{ __html: field.name_emojified }} />
+        <Markup weight='bold' tag='span'>
+          <Emojify text={field.name} emojis={emojis} />
+        </Markup>
       </dt>
 
       <dd
         className={clsx({ 'text-success-500': field.verified_at })}
-        title={field.value_plain}
+        title={unescapeHTML(field.value)}
       >
         <HStack space={2} alignItems='center'>
           {field.verified_at && (
@@ -61,7 +68,9 @@ const ProfileField: React.FC<IProfileField> = ({ field }) => {
             </span>
           )}
 
-          <Markup className='overflow-hidden break-words' tag='span' dangerouslySetInnerHTML={{ __html: field.value_emojified }} />
+          <Markup className='overflow-hidden break-words' tag='span'>
+            <ParsedContent html={field.value} emojis={emojis} />
+          </Markup>
         </HStack>
       </dd>
     </dl>

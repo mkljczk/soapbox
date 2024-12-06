@@ -2,7 +2,7 @@ import React from 'react';
 
 import { buildAccount } from 'pl-fe/jest/factory';
 import { render, screen, rootState } from 'pl-fe/jest/test-helpers';
-import { normalizeStatus } from 'pl-fe/normalizers';
+import { normalizeStatus } from 'pl-fe/normalizers/status';
 
 import Status from './status';
 
@@ -21,7 +21,7 @@ const status = normalizeStatus({
 }) as ReducerStatus;
 
 describe('<Status />', () => {
-  const state = rootState.setIn(['accounts', '1'], account);
+  const state = rootState/*.accounts.set('1', account)*/;
 
   it('renders content', () => {
     render(<Status status={status} />, undefined, state);

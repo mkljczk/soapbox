@@ -11,4 +11,4 @@ const HotKeys = React.forwardRef<any, HotKeysProps>(({ children, ...rest }, ref)
   </_HotKeys>
 ));
 
-export { HotKeys, type HotKeysProps as IHotKeys };
+export { HotKeys };

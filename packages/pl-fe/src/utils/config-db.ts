@@ -1,54 +1,51 @@
-import {
-  Map as ImmutableMap,
-  List as ImmutableList,
-  Set as ImmutableSet,
-  fromJS,
-} from 'immutable';
 import trimStart from 'lodash/trimStart';
+import * as v from 'valibot';
 
-import { type MRFSimple, mrfSimpleSchema } from 'pl-fe/schemas/pleroma';
+import { mrfSimpleSchema } from 'pl-fe/schemas/pleroma';
 
-type Config = ImmutableMap<string, any>;
+import type { PleromaConfig } from 'pl-api';
+
 type Policy = Record<string, any>;
+type Config = PleromaConfig['configs'][0];
 
 const find = (
-  configs: ImmutableList<Config>,
+  configs: PleromaConfig['configs'],
   group: string,
   key: string,
 ): Config | undefined => configs.find(config =>
-  config.isSuperset(ImmutableMap({ group, key })),
+  config.group === group && config.key === key,
 );
 
-const toSimplePolicy = (configs: ImmutableList<Config>): MRFSimple => {
+const toSimplePolicy = (configs: PleromaConfig['configs']) => {
   const config = find(configs, ':pleroma', ':mrf_simple');
 
-  const reducer = (acc: ImmutableMap<string, any>, curr: ImmutableMap<string, any>) => {
-    const key = curr.getIn(['tuple', 0]) as string;
-    const hosts = curr.getIn(['tuple', 1]) as ImmutableList<string>;
-    return acc.set(trimStart(key, ':'), ImmutableSet(hosts));
+  const reducer = (acc: Record<string, any>, curr: Record<string, any>) => {
+    const key = curr.tuple?.[0] as string;
+    const hosts = curr.tuple?.[1] as Array<string>;
+    return acc[trimStart(key, ':')] = hosts;
   };
 
-  if (config?.get) {
-    const value = config.get('value', ImmutableList());
-    const result = value.reduce(reducer, ImmutableMap());
-    return mrfSimpleSchema.parse(result.toJS());
+  if (config) {
+    const value = config.value || [];
+    const result = value.reduce(reducer, {});
+    return v.parse(mrfSimpleSchema, result);
   } else {
-    return mrfSimpleSchema.parse({});
+    return v.parse(mrfSimpleSchema, {});
   }
 };
 
-const fromSimplePolicy = (simplePolicy: Policy): ImmutableList<Config> => {
-  const mapper = ([key, hosts]: [key: string, hosts: ImmutableList<string>]) => fromJS({ tuple: [`:${key}`, hosts] });
+const fromSimplePolicy = (simplePolicy: Policy) => {
+  const mapper = ([key, hosts]: [key: string, hosts: Array<string>]) => ({ tuple: [`:${key}`, hosts] });
 
   const value = Object.entries(simplePolicy).map(mapper);
 
-  return ImmutableList([
-    ImmutableMap({
+  return [
+    {
       group: ':pleroma',
       key: ':mrf_simple',
-      value: ImmutableList(value),
-    }),
-  ]);
+      value: value,
+    },
+  ];
 };
 
 const ConfigDB = {
@@ -57,4 +54,4 @@ const ConfigDB = {
   fromSimplePolicy,
 };
 
-export { type Config, type Policy, ConfigDB as default };
+export { type Config, ConfigDB as default };

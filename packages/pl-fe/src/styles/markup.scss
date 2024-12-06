@@ -14,18 +14,16 @@
   }
 
   hr {
-    @apply mb-4;
-
-    &:last-child {
-      @apply mb-0;
+    &:not(:last-child) {
+      @apply mb-4;
     }
   }
   
   p {
-    @apply mb-4 whitespace-pre-wrap;
+    @apply whitespace-pre-wrap;
 
-    &:last-child {
-      @apply mb-0;
+    &:not(:last-child) {
+      @apply mb-4;
     }
   }
   
@@ -43,7 +41,11 @@
   
   ul,
   ol {
-    @apply pl-10 mb-4;
+    @apply pl-10;
+
+    &:not(:last-child) {
+      @apply mb-4;
+    }
   }
   
   ul {
@@ -55,7 +57,11 @@
   }
   
   blockquote {
-    @apply py-1 pl-4 mb-4 border-l-4 border-solid border-gray-400 text-gray-500 dark:text-gray-400;
+    @apply py-1 pl-4 border-l-4 border-solid border-gray-400 text-gray-500 dark:text-gray-400;
+
+    &:not(:last-child) {
+      @apply mb-4;
+    }
   }
   
   table {
@@ -87,7 +93,11 @@
   
   /* Code block */
   pre {
-    @apply py-2 px-3 mb-4 leading-6 overflow-x-auto rounded-md break-all;
+    @apply py-2 px-3 leading-6 overflow-x-auto rounded-md break-all;
+
+    &:not(:last-child) {
+      @apply mb-4;
+    }
   }
   
   pre:last-child {

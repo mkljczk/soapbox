@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
 import { logOut } from 'pl-fe/actions/auth';
-import { Spinner } from 'pl-fe/components/ui';
+import Spinner from 'pl-fe/components/ui/spinner';
 
 /** Component that logs the user out when rendered */
 const Logout: React.FC = () => {

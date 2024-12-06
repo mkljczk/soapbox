@@ -1,7 +1,10 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Column, Stack, Text, IconButton } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import { isNetworkError } from 'pl-fe/utils/errors';
 
 const messages = defineMessages({

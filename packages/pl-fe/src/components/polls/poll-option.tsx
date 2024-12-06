@@ -3,9 +3,13 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Motion, presets, spring } from 'react-motion';
 
-import { HStack, Icon, Text } from '../ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Text from 'pl-fe/components/ui/text';
 
-import type { Poll } from 'pl-fe/normalizers';
+import { ParsedContent } from '../parsed-content';
+
+import type { Poll } from 'pl-api';
 
 const messages = defineMessages({
   voted: { id: 'poll.voted', defaultMessage: 'You voted for this answer' },
@@ -63,14 +67,15 @@ const PollOptionText: React.FC<IPollOptionText> = ({ poll, option, index, active
               theme='inherit'
               weight='medium'
               align='center'
-              dangerouslySetInnerHTML={{ __html: option.title_emojified }}
-            />
+            >
+              <ParsedContent html={option.title} emojis={poll.emojis} />
+            </Text>
           </div>
         </div>
 
         <div className='col-start-1 row-start-1 flex items-center justify-self-end'>
           <span
-            className={clsx('flex h-6 w-6 flex-none items-center justify-center rounded-full border border-solid', {
+            className={clsx('flex size-6 flex-none items-center justify-center rounded-full border border-solid', {
               'bg-primary-600 border-primary-600 dark:bg-primary-300 dark:border-primary-300': active,
               'border-primary-300 bg-white dark:bg-primary-900 dark:border-primary-500': !active,
             })}
@@ -81,7 +86,7 @@ const PollOptionText: React.FC<IPollOptionText> = ({ poll, option, index, active
             aria-label={option.title}
           >
             {active && (
-              <Icon src={require('@tabler/icons/outline/check.svg')} className='h-4 w-4 text-white dark:text-primary-900' />
+              <Icon src={require('@tabler/icons/outline/check.svg')} className='size-4 text-white dark:text-primary-900' />
             )}
           </span>
         </div>
@@ -131,9 +136,10 @@ const PollOption: React.FC<IPollOption> = (props): JSX.Element | null => {
               <Text
                 theme='inherit'
                 weight='medium'
-                dangerouslySetInnerHTML={{ __html: (language && option.title_map_emojified) && option.title_map_emojified[language] || option.title_emojified }}
                 className='relative'
-              />
+              >
+                <ParsedContent html={(language && option.title_map) && option.title_map[language] || option.title} emojis={poll.emojis} />
+              </Text>
             </div>
 
             <HStack space={2} alignItems='center' className='relative'>
@@ -141,7 +147,7 @@ const PollOption: React.FC<IPollOption> = (props): JSX.Element | null => {
                 <Icon
                   src={require('@tabler/icons/outline/circle-check.svg')}
                   alt={intl.formatMessage(messages.voted)}
-                  className='h-4 w-4 text-primary-600 dark:fill-white dark:text-primary-800'
+                  className='size-4 text-primary-600 dark:fill-white dark:text-primary-800'
                 />
               ) : (
                 <div className='svg-icon' />

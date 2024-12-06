@@ -3,8 +3,12 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { patchMe } from 'pl-fe/actions/me';
 import { BigCard } from 'pl-fe/components/big-card';
-import { Button, FormGroup, Input, Stack } from 'pl-fe/components/ui';
-import { useAppDispatch, useOwnAccount } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Input from 'pl-fe/components/ui/input';
+import Stack from 'pl-fe/components/ui/stack';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import toast from 'pl-fe/toast';
 
 import type { PlfeResponse } from 'pl-fe/api';
@@ -47,7 +51,7 @@ const DisplayNameStep = ({ onNext }: { onNext: () => void }) => {
         setSubmitting(false);
 
         if (error.response?.status === 422) {
-          setErrors([(error.response.json as any).error.replace('Validation failed: ', '')]);
+          setErrors([error.response.json.error.replace('Validation failed: ', '')]);
         } else {
           toast.error(messages.error);
         }

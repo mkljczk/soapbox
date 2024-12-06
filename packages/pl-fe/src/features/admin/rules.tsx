@@ -1,13 +1,17 @@
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { openModal } from 'pl-fe/actions/modals';
-import { useRules } from 'pl-fe/api/hooks/admin';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Button, Column, HStack, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
-import { AdminRule } from 'pl-fe/schemas';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useRules } from 'pl-fe/queries/admin/use-rules';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
+
+import type { AdminRule } from 'pl-api';
 
 const messages = defineMessages({
   heading: { id: 'column.admin.rules', defaultMessage: 'Instance rules' },
@@ -23,22 +27,22 @@ interface IRule {
 
 const Rule: React.FC<IRule> = ({ rule }) => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
   const { deleteRule } = useRules();
 
   const handleEditRule = (rule: AdminRule) => () => {
-    dispatch(openModal('EDIT_RULE', { rule }));
+    openModal('EDIT_RULE', { rule });
   };
 
   const handleDeleteRule = (id: string) => () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.deleteHeading),
       message: intl.formatMessage(messages.deleteMessage),
       confirm: intl.formatMessage(messages.deleteConfirm),
       onConfirm: () => deleteRule(id, {
         onSuccess: () => toast.success(messages.ruleDeleteSuccess),
       }),
-    }));
+    });
   };
 
   return (
@@ -70,12 +74,12 @@ const Rule: React.FC<IRule> = ({ rule }) => {
 
 const Rules: React.FC = () => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
 
+  const { openModal } = useModalsStore();
   const { data, isLoading } = useRules();
 
   const handleCreateRule = () => {
-    dispatch(openModal('EDIT_RULE'));
+    openModal('EDIT_RULE');
   };
 
   const emptyMessage = <FormattedMessage id='empty_column.admin.rules' defaultMessage='There are no instance rules yet.' />;
@@ -93,7 +97,6 @@ const Rules: React.FC = () => {
           <FormattedMessage id='admin.rules.action' defaultMessage='Create rule' />
         </Button>
         <ScrollableList
-          scrollKey='rules'
           emptyMessage={emptyMessage}
           itemClassName='py-3 first:pt-0 last:pb-0'
           isLoading={isLoading}

@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { HStack, Stack, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
 import { generateText, randomIntFromInterval } from '../utils';
 
@@ -15,7 +17,7 @@ const PlaceholderGroupCard = () => {
 
         {/* Group Avatar */}
         <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>
-          <div className='h-16 w-16 rounded-full bg-gray-500 ring-2 ring-white dark:bg-primary-800 dark:ring-primary-900' />
+          <div className='size-16 rounded-lg bg-gray-500 ring-2 ring-white dark:bg-primary-800 dark:ring-primary-900' />
         </div>
 
         {/* Group Info */}

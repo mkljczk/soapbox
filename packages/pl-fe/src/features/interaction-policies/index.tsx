@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useInteractionPolicies } from 'pl-fe/api/hooks';
 import List, { ListItem } from 'pl-fe/components/list';
-import { Button, CardTitle, Column, Form, FormActions, Tabs } from 'pl-fe/components/ui';
-import { InlineMultiselect } from 'pl-fe/components/ui/inline-multiselect/inline-multiselect';
+import Button from 'pl-fe/components/ui/button';
+import { CardTitle } from 'pl-fe/components/ui/card';
+import Column from 'pl-fe/components/ui/column';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import { InlineMultiselect } from 'pl-fe/components/ui/inline-multiselect';
+import Tabs from 'pl-fe/components/ui/tabs';
+import { useInteractionPolicies } from 'pl-fe/queries/settings/use-interaction-policies';
 import toast from 'pl-fe/toast';
 
 import Warning from '../compose/components/warning';

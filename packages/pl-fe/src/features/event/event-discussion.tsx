@@ -1,4 +1,3 @@
-import { List as ImmutableList, OrderedSet as ImmutableOrderedSet } from 'immutable';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -7,18 +6,18 @@ import { fetchStatusWithContext } from 'pl-fe/actions/statuses';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Tombstone from 'pl-fe/components/tombstone';
-import { Stack } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import PendingStatus from 'pl-fe/features/ui/components/pending-status';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetStatus } from 'pl-fe/selectors';
 
-import ComposeForm from '../compose/components/compose-form';
-import { getDescendantsIds } from '../status/components/thread';
+import { makeGetDescendantsIds } from '../status/components/thread';
 import ThreadStatus from '../status/components/thread-status';
+import { ComposeForm } from '../ui/util/async-components';
 
 import type { MediaAttachment } from 'pl-api';
-import type { VirtuosoHandle } from 'react-virtuoso';
 
 type RouteParams = { statusId: string };
 
@@ -28,37 +27,23 @@ interface IEventDiscussion {
   onOpenVideo: (video: MediaAttachment, time: number) => void;
 }
 
-const EventDiscussion: React.FC<IEventDiscussion> = (props) => {
+const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statusId } }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
   const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector(state => getStatus(state, { id: props.params.statusId }));
+  const getDescendantsIds = useCallback(makeGetDescendantsIds(), []);
+  const status = useAppSelector(state => getStatus(state, { id: statusId }));
 
   const me = useAppSelector((state) => state.me);
 
-  const descendantsIds = useAppSelector(state => {
-    let descendantsIds = ImmutableOrderedSet<string>();
-
-    if (status) {
-      const statusId = status.id;
-      descendantsIds = getDescendantsIds(state, statusId);
-      descendantsIds = descendantsIds.delete(statusId);
-    }
-
-    return descendantsIds;
-  });
+  const descendantsIds = useAppSelector(state => getDescendantsIds(state, statusId).filter(id => id !== statusId));
 
   const [isLoaded, setIsLoaded] = useState<boolean>(!!status);
 
   const node = useRef<HTMLDivElement>(null);
-  const scroller = useRef<VirtuosoHandle>(null);
 
-  const fetchData = () => {
-    const { params } = props;
-    const { statusId } = params;
-    return dispatch(fetchStatusWithContext(statusId, intl));
-  };
+  const fetchData = () => dispatch(fetchStatusWithContext(statusId, intl));
 
   useEffect(() => {
     fetchData().then(() => {
@@ -66,34 +51,27 @@ const EventDiscussion: React.FC<IEventDiscussion> = (props) => {
     }).catch(() => {
       setIsLoaded(true);
     });
-  }, [props.params.statusId]);
+  }, [statusId]);
 
   useEffect(() => {
-    if (isLoaded && me) dispatch(eventDiscussionCompose(`reply:${props.params.statusId}`, status!));
+    if (isLoaded && me) dispatch(eventDiscussionCompose(`reply:${statusId}`, status!));
   }, [isLoaded, me]);
 
   const handleMoveUp = (id: string) => {
-    const index = ImmutableList(descendantsIds).indexOf(id);
+    const index = descendantsIds.indexOf(id);
     _selectChild(index - 1);
   };
 
   const handleMoveDown = (id: string) => {
-    const index = ImmutableList(descendantsIds).indexOf(id);
+    const index = descendantsIds.indexOf(id);
     _selectChild(index + 1);
   };
 
   const _selectChild = (index: number) => {
-    scroller.current?.scrollIntoView({
-      index,
-      behavior: 'smooth',
-      done: () => {
-        const element = document.querySelector<HTMLDivElement>(`#thread [data-index="${index}"] .focusable`);
+    const selector = `#thread [data-index="${index}"] .focusable`;
+    const element = document.querySelector<HTMLDivElement>(selector);
 
-        if (element) {
-          element.focus();
-        }
-      },
-    });
+    if (element) element.focus();
   };
 
   const renderTombstone = (id: string) => (
@@ -129,7 +107,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = (props) => {
     );
   };
 
-  const renderChildren = (list: ImmutableOrderedSet<string>) => list.map(id => {
+  const renderChildren = (list: Array<string>) => list.map(id => {
     if (id.endsWith('-tombstone')) {
       return renderTombstone(id);
     } else if (id.startsWith('末pending-')) {
@@ -139,7 +117,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = (props) => {
     }
   });
 
-  const hasDescendants = descendantsIds.size > 0;
+  const hasDescendants = descendantsIds.length > 0;
 
   if (!status && isLoaded) {
     return (
@@ -154,7 +132,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = (props) => {
   const children: JSX.Element[] = [];
 
   if (hasDescendants) {
-    children.push(...renderChildren(descendantsIds).toArray());
+    children.push(...renderChildren(descendantsIds));
   }
 
   return (
@@ -165,9 +143,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = (props) => {
       <div ref={node} className='thread p-0 shadow-none sm:p-2'>
         <ScrollableList
           id='thread'
-          ref={scroller}
           placeholderComponent={() => <PlaceholderStatus variant='slim' />}
-          initialTopMostItemIndex={0}
           emptyMessage={<FormattedMessage id='event.discussion.empty' defaultMessage='No one has commented this event yet. When someone does, they will appear here.' />}
         >
           {children}

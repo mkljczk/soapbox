@@ -2,11 +2,12 @@ import React from 'react';
 import { useIntl, defineMessages } from 'react-intl';
 import { NavLink } from 'react-router-dom';
 
-import { HStack, Text } from 'pl-fe/components/ui';
-import { useSettings } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Text from 'pl-fe/components/ui/text';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { shortNumberFormat } from 'pl-fe/utils/numbers';
 
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
   followers: { id: 'account.followers', defaultMessage: 'Followers' },
@@ -30,14 +31,16 @@ const ProfileStats: React.FC<IProfileStats> = ({ account, onClickHandler }) => {
 
   return (
     <HStack alignItems='center' className='gap-x-3' wrap>
-      <HStack alignItems='center' space={1}>
-        <Text theme='primary' weight='bold' size='sm'>
-          {shortNumberFormat(account.statuses_count)}
-        </Text>
-        <Text weight='bold' size='sm'>
-          {intl.formatMessage(messages.statuses)}
-        </Text>
-      </HStack>
+      {!demetricator && (
+        <HStack alignItems='center' space={1}>
+          <Text theme='primary' weight='bold' size='sm'>
+            {shortNumberFormat(account.statuses_count)}
+          </Text>
+          <Text weight='bold' size='sm'>
+            {intl.formatMessage(messages.statuses)}
+          </Text>
+        </HStack>
+      )}
 
       <NavLink to={`/@${account.acct}/followers`} onClick={onClickHandler} title={intl.formatNumber(account.followers_count)} className='hover:underline'>
         <HStack alignItems='center' space={1}>

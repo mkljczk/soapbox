@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { Card, CardBody, Stack, Text } from 'pl-fe/components/ui';
+import Card, { CardBody } from 'pl-fe/components/ui/card';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
 interface IBigCard {
   title: React.ReactNode;
@@ -11,7 +13,7 @@ interface IBigCard {
 const BigCard: React.FC<IBigCard> = ({ title, subtitle, children }) => (
   <Card variant='rounded' size='xl'>
     <CardBody>
-      <div className='-mx-4 mb-4 border-b border-solid border-gray-200 pb-4 sm:-mx-10 sm:pb-10 dark:border-gray-800'>
+      <div className='-mx-4 mb-4 border-b border-solid border-gray-200 pb-4 dark:border-gray-800 sm:-mx-10 sm:pb-10'>
         <Stack space={2}>
           <Text size='2xl' align='center' weight='bold'>{title}</Text>
           {subtitle && <Text theme='muted' align='center'>{subtitle}</Text>}

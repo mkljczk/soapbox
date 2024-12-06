@@ -2,8 +2,11 @@ import L from 'leaflet';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Button, Modal, Stack } from 'pl-fe/components/ui';
-import { useAppSelector, usePlFeConfig } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Modal from 'pl-fe/components/ui/modal';
+import Stack from 'pl-fe/components/ui/stack';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 import 'leaflet/dist/leaflet.css';

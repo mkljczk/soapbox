@@ -1,19 +1,23 @@
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import ReactSwipeableViews from 'react-swipeable-views';
 
 import { fetchStatusWithContext } from 'pl-fe/actions/statuses';
 import ExtendedVideoPlayer from 'pl-fe/components/extended-video-player';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import StatusActionBar from 'pl-fe/components/status-action-bar';
-import { Icon, IconButton, HStack, Stack } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Stack from 'pl-fe/components/ui/stack';
 import Audio from 'pl-fe/features/audio';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import Thread from 'pl-fe/features/status/components/thread';
 import Video from 'pl-fe/features/video';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { userTouching } from 'pl-fe/is-mobile';
 import { makeGetStatus } from 'pl-fe/selectors';
 
@@ -32,7 +36,7 @@ const messages = defineMessages({
 
 // you can't use 100vh, because the viewport height is taller
 // than the visible part of the document in some mobile
-// browsers when it's address bar is visible.
+// browsers when its address bar is visible.
 // https://developers.google.com/web/updates/2016/12/url-bar-resizing
 const swipeableViewsStyle: React.CSSProperties = {
   width: '100%',
@@ -59,7 +63,6 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
   } = props;
 
   const dispatch = useAppDispatch();
-  const history = useHistory();
   const intl = useIntl();
 
   const getStatus = useCallback(makeGetStatus(), []);
@@ -104,14 +107,6 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
     setNavigationHidden(value => !value && userTouching.matches);
   };
 
-  const handleStatusClick: React.MouseEventHandler = e => {
-    if (status && e.button === 0 && !(e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      history.push(`/@${status.account.acct}/posts/${status?.id}`);
-      onClose();
-    }
-  };
-
   const content = media.map((attachment, i) => {
     let width: number | undefined, height: number | undefined;
     if (attachment.type === 'image' || attachment.type === 'gifv' || attachment.type === 'video') {
@@ -120,9 +115,9 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
     }
 
     const link = (status && (
-      <a href={status.url} onClick={handleStatusClick}>
+      <Link to={`/@${status.account.acct}/posts/${status.id}`}>
         <FormattedMessage id='lightbox.view_context' defaultMessage='View context' />
-      </a>
+      </Link>
     ));
 
     if (attachment.type === 'image') {
@@ -280,11 +275,11 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
               <div className={clsx('absolute inset-y-0 left-5 z-10 flex items-center transition-opacity', navigationHiddenClassName)}>
                 <button
                   tabIndex={0}
-                  className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 text-white'
+                  className='flex size-10 items-center justify-center rounded-full bg-gray-900 text-white'
                   onClick={handlePrevClick}
                   aria-label={intl.formatMessage(messages.previous)}
                 >
-                  <Icon src={require('@tabler/icons/outline/arrow-left.svg')} className='h-5 w-5' />
+                  <Icon src={require('@tabler/icons/outline/arrow-left.svg')} className='size-5' />
                 </button>
               </div>
             )}
@@ -302,11 +297,11 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
               <div className={clsx('absolute inset-y-0 right-5 z-10 flex items-center transition-opacity', navigationHiddenClassName)}>
                 <button
                   tabIndex={0}
-                  className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 text-white'
+                  className='flex size-10 items-center justify-center rounded-full bg-gray-900 text-white'
                   onClick={handleNextClick}
                   aria-label={intl.formatMessage(messages.next)}
                 >
-                  <Icon src={require('@tabler/icons/outline/arrow-right.svg')} className='h-5 w-5' />
+                  <Icon src={require('@tabler/icons/outline/arrow-right.svg')} className='size-5' />
                 </button>
               </div>
             )}
@@ -321,6 +316,7 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
                 status={status}
                 space='md'
                 statusActionButtonTheme='inverse'
+                expandable
               />
             </HStack>
           )}
@@ -337,8 +333,8 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
             <Thread
               status={status}
               withMedia={false}
-              useWindowScroll={false}
               itemClassName='px-4'
+              isModal
             />
           </div>
         )}

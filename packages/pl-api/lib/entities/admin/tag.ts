@@ -1,16 +1,23 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
 import { tagSchema } from '../tag';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Tag/#admin} */
-const adminTagSchema = tagSchema.extend({
-  id: z.string(),
-  trendable: z.boolean(),
-  usable: z.boolean(),
-  requires_review: z.boolean(),
+/**
+ * @category Admin schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Tag/#admin}
+ */
+const adminTagSchema = v.object({
+  ...tagSchema.entries,
+  id: v.string(),
+  trendable: v.boolean(),
+  usable: v.boolean(),
+  requires_review: v.boolean(),
 });
 
-type AdminTag = z.infer<typeof adminTagSchema>;
+/**
+ * @category Admin entity types
+ */
+type AdminTag = v.InferOutput<typeof adminTagSchema>;
 
 export {
   adminTagSchema,

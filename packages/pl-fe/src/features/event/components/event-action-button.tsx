@@ -2,12 +2,13 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { joinEvent, leaveEvent } from 'pl-fe/actions/events';
-import { openModal } from 'pl-fe/actions/modals';
-import { Button } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import type { ButtonThemes } from 'pl-fe/components/ui/button/useButtonStyles';
-import type { Status as StatusEntity } from 'pl-fe/normalizers';
+import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
 
 const messages = defineMessages({
   leaveHeading: { id: 'confirmations.leave_event.heading', defaultMessage: 'Leave event' },
@@ -24,9 +25,24 @@ const EventActionButton: React.FC<IEventAction> = ({ status, theme = 'secondary'
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
+  const { openModal } = useModalsStore();
   const me = useAppSelector((state) => state.me);
 
   const event = status.event!;
+
+  if (event.join_mode === 'external') {
+    return (
+      <Button
+        className='min-w-max'
+        size='sm'
+        theme={theme}
+        icon={require('@tabler/icons/outline/external-link.svg')}
+        href={status.url}
+      >
+        <FormattedMessage id='event.join_state.empty' defaultMessage='Participate' />
+      </Button>
+    );
+  }
 
   const handleJoin: React.EventHandler<React.MouseEvent> = (e) => {
     e.preventDefault();
@@ -34,9 +50,9 @@ const EventActionButton: React.FC<IEventAction> = ({ status, theme = 'secondary'
     if (event.join_mode === 'free') {
       dispatch(joinEvent(status.id));
     } else {
-      dispatch(openModal('JOIN_EVENT', {
+      openModal('JOIN_EVENT', {
         statusId: status.id,
-      }));
+      });
     }
   };
 
@@ -44,12 +60,12 @@ const EventActionButton: React.FC<IEventAction> = ({ status, theme = 'secondary'
     e.preventDefault();
 
     if (event.join_mode === 'restricted') {
-      dispatch(openModal('CONFIRM', {
+      openModal('CONFIRM', {
         heading: intl.formatMessage(messages.leaveHeading),
         message: intl.formatMessage(messages.leaveMessage),
         confirm: intl.formatMessage(messages.leaveConfirm),
         onConfirm: () => dispatch(leaveEvent(status.id)),
-      }));
+      });
     } else {
       dispatch(leaveEvent(status.id));
     }
@@ -58,10 +74,10 @@ const EventActionButton: React.FC<IEventAction> = ({ status, theme = 'secondary'
   const handleOpenUnauthorizedModal: React.EventHandler<React.MouseEvent> = (e) => {
     e.preventDefault();
 
-    dispatch(openModal('UNAUTHORIZED', {
+    openModal('UNAUTHORIZED', {
       action: 'JOIN',
       ap_id: status.url,
-    }));
+    });
   };
 
   let buttonLabel;

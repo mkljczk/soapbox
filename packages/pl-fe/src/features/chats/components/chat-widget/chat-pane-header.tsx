@@ -1,7 +1,9 @@
 import React, { HTMLAttributes } from 'react';
 
-import { HStack, IconButton, Text } from 'pl-fe/components/ui';
-import { useSettings } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Text from 'pl-fe/components/ui/text';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 interface IChatPaneHeader {
   isOpen: boolean;
@@ -50,7 +52,7 @@ const ChatPaneHeader = (props: IChatPaneHeader) => {
               ({unreadCount})
             </Text>
 
-            <div className='h-2.5 w-2.5 rounded-full bg-accent-300' />
+            <div className='size-2.5 rounded-full bg-accent-300' />
           </HStack>
         )}
       </ButtonComp>

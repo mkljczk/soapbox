@@ -1,12 +1,12 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { useFollow } from 'pl-fe/api/hooks';
-import { IconButton } from 'pl-fe/components/ui';
-import { useFeatures } from 'pl-fe/hooks';
+import { useFollow } from 'pl-fe/api/hooks/accounts/use-follow';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import toast from 'pl-fe/toast';
 
-import type { Account as AccountEntity } from 'pl-fe/normalizers';
+import type { Account as AccountEntity } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
   subscribe: { id: 'account.subscribe', defaultMessage: 'Subscribe to notifications from @{name}' },

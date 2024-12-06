@@ -1,20 +1,27 @@
 import clsx from 'clsx';
 import React, { useCallback, useState } from 'react';
-import { Virtuoso } from 'react-virtuoso';
 
-import { Avatar, HStack, Stack, Text } from 'pl-fe/components/ui';
+import ScrollableList from 'pl-fe/components/scrollable-list';
+import Avatar from 'pl-fe/components/ui/avatar';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
-import useAccountSearch from 'pl-fe/queries/search';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useAccountSearch } from 'pl-fe/queries/search/use-search-accounts';
+import { selectAccounts } from 'pl-fe/selectors';
 
 import type { Account } from 'pl-api';
 
 interface IResults {
   accountSearchResult: ReturnType<typeof useAccountSearch>;
   onSelect(id: string): void;
+  parentRef: React.RefObject<HTMLElement>;
 }
 
-const Results = ({ accountSearchResult, onSelect }: IResults) => {
-  const { data: accounts, isFetching, hasNextPage, fetchNextPage } = accountSearchResult;
+const Results = ({ accountSearchResult, onSelect, parentRef }: IResults) => {
+  const { data: accountIds = [], isFetching, hasNextPage, fetchNextPage } = accountSearchResult;
+  const accounts = useAppSelector((state) => selectAccounts(state, accountIds));
 
   const [isNearBottom, setNearBottom] = useState<boolean>(false);
   const [isNearTop, setNearTop] = useState<boolean>(true);
@@ -25,7 +32,7 @@ const Results = ({ accountSearchResult, onSelect }: IResults) => {
     }
   };
 
-  const renderAccount = useCallback((_index: number, account: Account) => (
+  const renderAccount = useCallback((account: Account) => (
     <button
       key={account.id}
       type='button'
@@ -47,35 +54,37 @@ const Results = ({ accountSearchResult, onSelect }: IResults) => {
     </button>
   ), []);
 
+  // <div className='relative grow'>
   return (
-    <div className='relative grow'>
-      <Virtuoso
-        data={accounts}
-        itemContent={(index, chat) => (
-          <div className='px-2'>
-            {renderAccount(index, chat)}
-          </div>
-        )}
-        endReached={handleLoadMore}
-        atTopStateChange={(atTop) => setNearTop(atTop)}
-        atBottomStateChange={(atBottom) => setNearBottom(atBottom)}
-      />
+    <>
+      <ScrollableList
+        itemClassName='px-2'
+        loadMoreClassName='mx-4 mb-4'
+        onScroll={(startIndex, endIndex) => {
+          setNearTop(startIndex === 0);
+          setNearBottom(endIndex === accounts?.length);
+        }}
+        isLoading={isFetching}
+        hasMore={hasNextPage}
+        onLoadMore={handleLoadMore}
+        parentRef={parentRef}
+      >
+        {(accounts || []).map((chat) => renderAccount(chat))}
+      </ScrollableList>
 
-      <>
-        <div
-          className={clsx('pointer-events-none absolute inset-x-0 top-0 flex justify-center rounded-t-lg bg-gradient-to-b from-white to-transparent pb-12 pt-8 transition-opacity duration-500 dark:from-gray-900', {
-            'opacity-0': isNearTop,
-            'opacity-100': !isNearTop,
-          })}
-        />
-        <div
-          className={clsx('pointer-events-none absolute inset-x-0 bottom-0 flex justify-center rounded-b-lg bg-gradient-to-t from-white to-transparent pb-8 pt-12 transition-opacity duration-500 dark:from-gray-900', {
-            'opacity-0': isNearBottom,
-            'opacity-100': !isNearBottom,
-          })}
-        />
-      </>
-    </div>
+      <div
+        className={clsx('pointer-events-none absolute inset-x-0 top-[58px] flex justify-center rounded-t-lg bg-gradient-to-b from-white to-transparent pb-12 pt-8 transition-opacity duration-500 black:from-black dark:from-gray-900', {
+          'opacity-0': isNearTop,
+          'opacity-100': !isNearTop,
+        })}
+      />
+      <div
+        className={clsx('pointer-events-none absolute inset-x-0 bottom-0 flex justify-center rounded-b-lg bg-gradient-to-t from-white to-transparent pb-8 pt-12 transition-opacity duration-500 black:from-black dark:from-gray-900', {
+          'opacity-0': isNearBottom,
+          'opacity-100': !isNearBottom,
+        })}
+      />
+    </>
   );
 };
 

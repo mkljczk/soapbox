@@ -4,7 +4,6 @@ import {
   groupRelationshipSchema,
   groupSchema,
   instanceSchema,
-  previewCardSchema,
   relationshipSchema,
   statusSchema,
   GroupRoles,
@@ -13,11 +12,10 @@ import {
   type GroupMember,
   type GroupRelationship,
   type Instance,
-  type PreviewCard,
   type Relationship,
   type Status,
 } from 'pl-api';
-import { v4 as uuidv4 } from 'uuid';
+import * as v from 'valibot';
 
 import type { PartialDeep } from 'type-fest';
 
@@ -25,54 +23,48 @@ import type { PartialDeep } from 'type-fest';
 // This looks promising but didn't work on my first attempt: https://github.com/anatine/zod-plugins/tree/main/packages/zod-mock
 
 const buildAccount = (props: PartialDeep<Account> = {}): Account =>
-  accountSchema.parse(Object.assign({
-    id: uuidv4(),
-    url: `https://soapbox.test/users/${uuidv4()}`,
-  }, props));
-
-const buildCard = (props: PartialDeep<PreviewCard> = {}): PreviewCard =>
-  previewCardSchema.parse(Object.assign({
-    url: 'https://soapbox.test',
+  v.parse(accountSchema, Object.assign({
+    id: crypto.randomUUID(),
+    url: `https://soapbox.test/users/${crypto.randomUUID()}`,
   }, props));
 
 const buildGroup = (props: PartialDeep<Group> = {}): Group =>
-  groupSchema.parse(Object.assign({
-    id: uuidv4(),
+  v.parse(groupSchema, Object.assign({
+    id: crypto.randomUUID(),
     owner: {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
     },
   }, props));
 
 const buildGroupRelationship = (props: PartialDeep<GroupRelationship> = {}): GroupRelationship =>
-  groupRelationshipSchema.parse(Object.assign({
-    id: uuidv4(),
+  v.parse(groupRelationshipSchema, Object.assign({
+    id: crypto.randomUUID(),
   }, props));
 
 const buildGroupMember = (
   props: PartialDeep<GroupMember> = {},
   accountProps: PartialDeep<Account> = {},
-): GroupMember => groupMemberSchema.parse(Object.assign({
-  id: uuidv4(),
+): GroupMember => v.parse(groupMemberSchema, Object.assign({
+  id: crypto.randomUUID(),
   account: buildAccount(accountProps),
   role: GroupRoles.USER,
 }, props));
 
-const buildInstance = (props: PartialDeep<Instance> = {}) => instanceSchema.parse(props);
+const buildInstance = (props: PartialDeep<Instance> = {}) => v.parse(instanceSchema, props);
 
 const buildRelationship = (props: PartialDeep<Relationship> = {}): Relationship =>
-  relationshipSchema.parse(Object.assign({
-    id: uuidv4(),
+  v.parse(relationshipSchema, Object.assign({
+    id: crypto.randomUUID(),
   }, props));
 
 const buildStatus = (props: PartialDeep<Status> = {}) =>
-  statusSchema.parse(Object.assign({
-    id: uuidv4(),
+  v.parse(statusSchema, Object.assign({
+    id: crypto.randomUUID(),
     account: buildAccount(),
   }, props));
 
 export {
   buildAccount,
-  buildCard,
   buildGroup,
   buildGroupMember,
   buildGroupRelationship,

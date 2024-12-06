@@ -1,19 +1,27 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Admin_Measure/} */
-const adminMeasureSchema = z.object({
-  key: z.string(),
-  unit: z.string().nullable().catch(null),
-  total: z.coerce.number(),
-  human_value: z.string().optional().catch(undefined),
-  previous_total: z.coerce.string().optional().catch(undefined),
-  data: z.array(z.object({
-    date: z.string().datetime({ offset: true }),
-    value: z.coerce.string(),
+import { datetimeSchema } from '../utils';
+
+/**
+ * @category Admin schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Admin_Measure/}
+ */
+const adminMeasureSchema = v.object({
+  key: v.string(),
+  unit: v.fallback(v.nullable(v.string()), null),
+  total: v.pipe(v.unknown(), v.transform(Number)),
+  human_value: v.fallback(v.optional(v.string()), undefined),
+  previous_total: v.fallback(v.optional(v.pipe(v.unknown(), v.transform(String))), undefined),
+  data: v.array(v.object({
+    date: datetimeSchema,
+    value: v.pipe(v.unknown(), v.transform(String)),
   })),
 });
 
-type AdminMeasure = z.infer<typeof adminMeasureSchema>;
+/**
+ * @category Admin entity types
+ */
+type AdminMeasure = v.InferOutput<typeof adminMeasureSchema>;
 
 export {
   adminMeasureSchema,

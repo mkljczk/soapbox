@@ -1,9 +1,12 @@
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useCreateBookmarkFolder } from 'pl-fe/api/hooks';
-import { Button, Form, HStack, Input } from 'pl-fe/components/ui';
-import { useTextField } from 'pl-fe/hooks/forms';
+import Button from 'pl-fe/components/ui/button';
+import Form from 'pl-fe/components/ui/form';
+import HStack from 'pl-fe/components/ui/hstack';
+import Input from 'pl-fe/components/ui/input';
+import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
+import { useCreateBookmarkFolder } from 'pl-fe/queries/statuses/use-bookmark-folders';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({
@@ -17,7 +20,7 @@ const NewFolderForm: React.FC = () => {
 
   const name = useTextField();
 
-  const { createBookmarkFolder, isSubmitting } = useCreateBookmarkFolder();
+  const { mutate: createBookmarkFolder, isPending } = useCreateBookmarkFolder();
 
   const handleSubmit = (e: React.FormEvent<Element>) => {
     e.preventDefault();
@@ -44,13 +47,13 @@ const NewFolderForm: React.FC = () => {
           <Input
             type='text'
             placeholder={label}
-            disabled={isSubmitting}
+            disabled={isPending}
             {...name}
           />
         </label>
 
         <Button
-          disabled={isSubmitting}
+          disabled={isPending}
           onClick={handleSubmit}
           theme='primary'
         >

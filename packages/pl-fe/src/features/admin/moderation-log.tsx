@@ -1,11 +1,13 @@
 import React from 'react';
 import { defineMessages, FormattedDate, useIntl } from 'react-intl';
 
-import { useModerationLog } from 'pl-fe/api/hooks/admin';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, Stack, Text } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useModerationLog } from 'pl-fe/queries/admin/use-moderation-log';
 
-import type { ModerationLogEntry } from 'pl-fe/schemas';
+import type { AdminModerationLogEntry } from 'pl-api';
 
 const messages = defineMessages({
   heading: { id: 'column.admin.moderation_log', defaultMessage: 'Moderation log' },
@@ -33,7 +35,6 @@ const ModerationLog = () => {
       <ScrollableList
         isLoading={isLoading}
         showLoading={showLoading}
-        scrollKey='moderation-log'
         emptyMessage={intl.formatMessage(messages.emptyMessage)}
         hasMore={hasNextPage}
         onLoadMore={handleLoadMore}
@@ -48,7 +49,7 @@ const ModerationLog = () => {
 };
 
 interface ILogItem {
-  log: ModerationLogEntry;
+  log: AdminModerationLogEntry;
 }
 
 const LogItem: React.FC<ILogItem> = ({ log }) => (

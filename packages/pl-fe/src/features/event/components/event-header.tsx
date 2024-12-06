@@ -4,20 +4,27 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose } from 'pl-fe/actions/compose';
-import { editEvent, fetchEventIcs } from 'pl-fe/actions/events';
+import { fetchEventIcs } from 'pl-fe/actions/events';
 import { toggleBookmark, togglePin, toggleReblog } from 'pl-fe/actions/interactions';
-import { openModal } from 'pl-fe/actions/modals';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
-import { initMuteModal } from 'pl-fe/actions/mutes';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { deleteStatus } from 'pl-fe/actions/statuses';
 import DropdownMenu, { type Menu as MenuType } from 'pl-fe/components/dropdown-menu';
 import Icon from 'pl-fe/components/icon';
 import StillImage from 'pl-fe/components/still-image';
-import { Button, HStack, IconButton, Stack, Text } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
-import { useAppDispatch, useFeatures, useOwnAccount, useSettings } from 'pl-fe/hooks';
+import Emojify from 'pl-fe/features/emoji/emojify';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import copy from 'pl-fe/utils/copy';
 import { download } from 'pl-fe/utils/download';
 import { shortNumberFormat } from 'pl-fe/utils/numbers';
@@ -26,7 +33,7 @@ import PlaceholderEventHeader from '../../placeholder/components/placeholder-eve
 import EventActionButton from '../components/event-action-button';
 import EventDate from '../components/event-date';
 
-import type { Status } from 'pl-fe/normalizers';
+import type { Status } from 'pl-fe/normalizers/status';
 
 const messages = defineMessages({
   bannerHeader: { id: 'event.banner', defaultMessage: 'Event banner' },
@@ -68,6 +75,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
   const dispatch = useAppDispatch();
   const history = useHistory();
 
+  const { openModal } = useModalsStore();
   const { getOrCreateChatByAccountId } = useChats();
 
   const features = useFeatures();
@@ -80,7 +88,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
     return (
       <>
         <div className='-mx-4 -mt-4'>
-          <div className='relative h-32 w-full bg-gray-200 black:rounded-t-none md:rounded-t-xl lg:h-48 dark:bg-gray-900/50' />
+          <div className='relative h-32 w-full bg-gray-200 black:rounded-t-none dark:bg-gray-900/50 md:rounded-t-xl lg:h-48' />
         </div>
 
         <PlaceholderEventHeader />
@@ -98,7 +106,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    dispatch(openModal('MEDIA', { media: [event.banner!], index: 0 }));
+    openModal('MEDIA', { media: [event.banner!], index: 0 });
   };
 
   const handleExportClick = () => {
@@ -122,7 +130,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
     if (!boostModal) {
       modalReblog();
     } else {
-      dispatch(openModal('BOOST', { statusId: status.id, onReblog: modalReblog }));
+      openModal('BOOST', { statusId: status.id, onReblog: modalReblog });
     }
   };
 
@@ -135,12 +143,12 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
   };
 
   const handleDeleteClick = () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.deleteHeading),
       message: intl.formatMessage(messages.deleteMessage),
       confirm: intl.formatMessage(messages.deleteConfirm),
       onConfirm: () => dispatch(deleteStatus(status.id)),
-    }));
+    });
   };
 
   const handleMentionClick = () => {
@@ -158,11 +166,11 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
   };
 
   const handleMuteClick = () => {
-    dispatch(initMuteModal(account));
+    openModal('MUTE', { accountId: account.id });
   };
 
   const handleBlockClick = () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: <FormattedMessage id='confirmations.block.heading' defaultMessage='Block @{name}' values={{ name: account.acct }} />,
       message: <FormattedMessage id='confirmations.block.message' defaultMessage='Are you sure you want to block {name}?' values={{ name: <strong>@{account.acct}</strong> }} />,
       confirm: intl.formatMessage(messages.blockConfirm),
@@ -172,7 +180,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
         dispatch(blockAccount(account.id));
         dispatch(initReport(ReportableEntities.STATUS, account, { status }));
       },
-    }));
+    });
   };
 
   const handleReport = () => {
@@ -180,7 +188,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
   };
 
   const handleModerate = () => {
-    dispatch(openModal('ACCOUNT_MODERATION', { accountId: account.id }));
+    openModal('ACCOUNT_MODERATION', { accountId: account.id });
   };
 
   const handleModerateStatus = () => {
@@ -338,29 +346,21 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
     return menu;
   };
 
-  const handleManageClick: React.MouseEventHandler = e => {
-    e.stopPropagation();
-
-    dispatch(editEvent(status.id));
-  };
-
   const handleParticipantsClick: React.MouseEventHandler = e => {
     e.preventDefault();
     e.stopPropagation();
 
     if (!ownAccount) {
-      dispatch(openModal('UNAUTHORIZED'));
+      openModal('UNAUTHORIZED');
     } else {
-      dispatch(openModal('EVENT_PARTICIPANTS', {
-        statusId: status.id,
-      }));
+      openModal('EVENT_PARTICIPANTS', { statusId: status.id });
     }
   };
 
   return (
     <>
       <div className='-mx-4 -mt-4'>
-        <div className='relative h-32 w-full bg-gray-200 black:rounded-t-none md:rounded-t-xl lg:h-48 dark:bg-gray-900/50'>
+        <div className='relative h-32 w-full bg-gray-200 black:rounded-t-none dark:bg-gray-900/50 md:rounded-t-xl lg:h-48'>
           {banner && (
             <a href={banner.url} onClick={handleHeaderClick} target='_blank'>
               <StillImage
@@ -382,7 +382,6 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
               theme='outlined'
               className='h-[30px] px-2'
               iconClassName='h-4 w-4'
-              children={null}
             />
           </DropdownMenu>
 
@@ -390,7 +389,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
             <Button
               size='sm'
               theme='secondary'
-              onClick={handleManageClick}
+              to={`/@${account.acct}/events/${status.id}/edit`}
             >
               <FormattedMessage id='event.manage' defaultMessage='Manage' />
             </Button>
@@ -408,7 +407,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
                   name: (
                     <Link className='mention inline-block' to={`/@${account.acct}`}>
                       <HStack space={1} alignItems='center' grow>
-                        <span dangerouslySetInnerHTML={{ __html: account.display_name_html }} />
+                        <span><Emojify text={account.display_name} emojis={account.emojis} /></span>
                         {account.verified && <VerificationBadge />}
                       </HStack>
                     </Link>

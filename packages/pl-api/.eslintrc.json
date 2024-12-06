@@ -15,6 +15,7 @@
     "ATTACHMENT_HOST": false
   },
   "plugins": [
+    "@stylistic",
     "import",
     "promise",
     "@typescript-eslint"
@@ -128,7 +129,8 @@
       {
         "vars": "all",
         "args": "none",
-        "ignoreRestSiblings": true
+        "ignoreRestSiblings": true,
+        "caughtErrors": "none"
       }
     ],
     "no-useless-escape": "warn",
@@ -190,7 +192,7 @@
         }
       }
     ],
-    "@typescript-eslint/member-delimiter-style": "error",
+    "@stylistic/member-delimiter-style": "error",
     "promise/catch-or-return": "error",
     "sort-imports": [
       "error",

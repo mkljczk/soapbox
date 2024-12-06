@@ -1,13 +1,19 @@
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useRelays } from 'pl-fe/api/hooks/admin';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Button, Column, Form, HStack, Input, Stack, Text } from 'pl-fe/components/ui';
-import { useTextField } from 'pl-fe/hooks/forms';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import Form from 'pl-fe/components/ui/form';
+import HStack from 'pl-fe/components/ui/hstack';
+import Input from 'pl-fe/components/ui/input';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
+import { useRelays } from 'pl-fe/queries/admin/use-relays';
 import toast from 'pl-fe/toast';
 
-import type { Relay as RelayEntity } from 'pl-fe/schemas';
+import type { AdminRelay as RelayEntity } from 'pl-api';
 
 const messages = defineMessages({
   heading: { id: 'column.admin.relays', defaultMessage: 'Instance relays' },
@@ -120,7 +126,6 @@ const Relays: React.FC = () => {
 
         {relays && (
           <ScrollableList
-            scrollKey='relays'
             emptyMessage={emptyMessage}
             itemClassName='py-3 first:pt-0 last:pb-0'
             isLoading={isFetching}

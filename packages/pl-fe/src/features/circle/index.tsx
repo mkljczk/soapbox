@@ -4,10 +4,20 @@ import { Link } from 'react-router-dom';
 
 import { processCircle } from 'pl-fe/actions/circle';
 import { resetCompose, uploadComposeSuccess, uploadFile } from 'pl-fe/actions/compose';
-import { openModal } from 'pl-fe/actions/modals';
 import Account from 'pl-fe/components/account';
-import { Accordion, Avatar, Button, Column, Form, FormActions, HStack, ProgressBar, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useOwnAccount } from 'pl-fe/hooks';
+import Accordion from 'pl-fe/components/ui/accordion';
+import Avatar from 'pl-fe/components/ui/avatar';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import HStack from 'pl-fe/components/ui/hstack';
+import ProgressBar from 'pl-fe/components/ui/progress-bar';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 const toRad = (x: number) => x * (Math.PI / 180);
 
@@ -38,6 +48,7 @@ const Circle: React.FC = () => {
   const dispatch = useAppDispatch();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const { openModal } = useModalsStore();
   const { account } = useOwnAccount();
 
   useEffect(() => {
@@ -62,7 +73,7 @@ const Circle: React.FC = () => {
 
       dispatch(uploadFile(file, intl, (data) => {
         dispatch(uploadComposeSuccess('compose-modal', data, file));
-        dispatch(openModal('COMPOSE'));
+        openModal('COMPOSE');
       }));
     }, 'image/png');
   };
@@ -135,7 +146,7 @@ const Circle: React.FC = () => {
       <Column label={intl.formatMessage(messages.heading)}>
         <Form onSubmit={handleRequest}>
           <Text size='xl' weight='semibold'>
-            <FormattedMessage id='interaction_circle.confirmation_heading' defaultMessage='Do you want to generate an interaction circle for the user @{username}?' values={{ username: account?.acct }} />
+            <FormattedMessage id='interactions_circle.confirmation_heading' defaultMessage='Do you want to generate an interaction circle for the user @{username}?' values={{ username: account?.acct }} />
           </Text>
 
           <div className='mx-auto max-w-md rounded-lg p-2 black:border black:border-gray-800'>
@@ -144,7 +155,7 @@ const Circle: React.FC = () => {
 
           <FormActions>
             <Button theme='primary' type='submit'>
-              <FormattedMessage id='interaction_circle.start' defaultMessage='Generate' />
+              <FormattedMessage id='interactions_circle.start' defaultMessage='Generate' />
             </Button>
           </FormActions>
         </Form>

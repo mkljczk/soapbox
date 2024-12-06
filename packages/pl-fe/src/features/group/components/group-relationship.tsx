@@ -2,7 +2,9 @@ import { GroupRoles, type Group } from 'pl-api';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HStack, Icon, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Text from 'pl-fe/components/ui/text';
 
 interface IGroupRelationship {
   group: Pick<Group, 'relationship'>;
@@ -24,7 +26,7 @@ const GroupRelationship = ({ group }: IGroupRelationship) => {
       className='text-primary-600 dark:text-accent-blue'
     >
       <Icon
-        className='h-4 w-4'
+        className='size-4'
         src={
           isOwner
             ? require('@tabler/icons/outline/users.svg')

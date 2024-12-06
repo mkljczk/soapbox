@@ -1,5 +1,8 @@
 import type { PaginationParams, WithRelationshipsParam } from './common';
 
+/**
+ * @category Request params
+ */
 interface MuteAccountParams {
   /** Boolean. Mute notifications in addition to statuses? Defaults to true. */
   notifications?: boolean;
@@ -7,12 +10,29 @@ interface MuteAccountParams {
   duration?: number;
 }
 
+/**
+ * @category Request params
+ */
 type GetMutesParams = Omit<PaginationParams, 'min_id'> & WithRelationshipsParam;
+
+/**
+ * @category Request params
+ */
 type GetBlocksParams = PaginationParams & WithRelationshipsParam;
+
+/**
+ * @category Request params
+ */
 type GetDomainBlocksParams = PaginationParams;
 
+/**
+ * @category Request params
+ */
 type FilterContext = 'home' | 'notifications' | 'public' | 'thread' | 'account';
 
+/**
+ * @category Request params
+ */
 interface CreateFilterParams {
   title: string;
   context: Array<FilterContext>;
@@ -24,6 +44,9 @@ interface CreateFilterParams {
   }>;
 }
 
+/**
+ * @category Request params
+ */
 interface UpdateFilterParams {
   title?: string;
   context?: Array<FilterContext>;

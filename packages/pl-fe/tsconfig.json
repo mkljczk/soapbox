@@ -24,8 +24,7 @@
     "types": [
       "vite/client",
       "vitest/globals",
-      "vite-plugin-compile-time/client",
-      "@webbtc/webln-types"
+      "vite-plugin-compile-time/client"
     ],
   },
   "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]

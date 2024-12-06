@@ -5,12 +5,10 @@ import { fetchInstance } from 'pl-fe/actions/instance';
 import { fetchMe } from 'pl-fe/actions/me';
 import { loadPlFeConfig } from 'pl-fe/actions/pl-fe';
 import LoadingScreen from 'pl-fe/components/loading-screen';
-import {
-  useAppSelector,
-  useAppDispatch,
-  useOwnAccount,
-  useLocale,
-} from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useLocale } from 'pl-fe/hooks/use-locale';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import MESSAGES from 'pl-fe/messages';
 
 /** Load initial data from the backend */
@@ -36,8 +34,7 @@ const PlFeLoad: React.FC<IPlFeLoad> = ({ children }) => {
 
   const me = useAppSelector(state => state.me);
   const { account } = useOwnAccount();
-  const swUpdating = useAppSelector(state => state.meta.swUpdating);
-  const { locale } = useLocale();
+  const locale = useLocale();
 
   const [messages, setMessages] = useState<Record<string, string>>({});
   const [localeLoading, setLocaleLoading] = useState(true);
@@ -49,7 +46,6 @@ const PlFeLoad: React.FC<IPlFeLoad> = ({ children }) => {
     me && !account,
     !isLoaded,
     localeLoading,
-    swUpdating,
   ].some(Boolean);
 
   // Load the user's locale

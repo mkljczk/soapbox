@@ -2,7 +2,10 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { CardTitle, HStack, IconButton, Stack } from 'pl-fe/components/ui';
+import { CardTitle } from 'pl-fe/components/ui/card';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Stack from 'pl-fe/components/ui/stack';
 
 import ChatSearch from '../../chat-search/chat-search';
 
@@ -19,12 +22,12 @@ const ChatPageNew: React.FC<IChatPageNew> = () => {
   const history = useHistory();
 
   return (
-    <Stack className='h-full space-y-4'>
+    <Stack className='h-full gap-4'>
       <Stack className='grow px-4 pt-6 sm:px-6'>
         <HStack alignItems='center'>
           <IconButton
             src={require('@tabler/icons/outline/arrow-left.svg')}
-            className='mr-2 h-7 w-7 sm:mr-0 sm:hidden rtl:rotate-180'
+            className='mr-2 size-7 sm:mr-0 sm:hidden rtl:rotate-180'
             onClick={() => history.push('/chats')}
           />
 

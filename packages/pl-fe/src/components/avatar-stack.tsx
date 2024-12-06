@@ -1,22 +1,18 @@
 import clsx from 'clsx';
-import { List as ImmutableList, OrderedSet as ImmutableOrderedSet } from 'immutable';
 import React from 'react';
 
-import { Avatar, HStack } from 'pl-fe/components/ui';
-import { useAppSelector } from 'pl-fe/hooks';
-import { makeGetAccount } from 'pl-fe/selectors';
-
-import type { Account } from 'pl-fe/normalizers';
-
-const getAccount = makeGetAccount();
+import Avatar from 'pl-fe/components/ui/avatar';
+import HStack from 'pl-fe/components/ui/hstack';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { selectAccounts } from 'pl-fe/selectors';
 
 interface IAvatarStack {
-  accountIds: ImmutableOrderedSet<string>;
+  accountIds: Array<string>;
   limit?: number;
 }
 
 const AvatarStack: React.FC<IAvatarStack> = ({ accountIds, limit = 3 }) => {
-  const accounts = useAppSelector(state => ImmutableList(accountIds.slice(0, limit).map(accountId => getAccount(state, accountId)).filter(account => account))) as ImmutableList<Account>;
+  const accounts = useAppSelector(state => selectAccounts(state, accountIds.slice(0, limit)));
 
   return (
     <HStack className='relative' aria-hidden>

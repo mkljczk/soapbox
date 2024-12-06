@@ -1,9 +1,3 @@
-import escapeTextContentForBrowser from 'escape-html';
-
-import emojify from 'pl-fe/features/emoji';
-import { unescapeHTML } from 'pl-fe/utils/html';
-import { makeEmojiMap } from 'pl-fe/utils/normalizers';
-
 import type { Group as BaseGroup } from 'pl-api';
 
 const getDomainFromURL = (group: Pick<BaseGroup, 'url'>): string => {
@@ -20,9 +14,6 @@ const normalizeGroup = (group: BaseGroup) => {
   const missingHeader = require('pl-fe/assets/images/header-missing.png');
 
   const domain = getDomainFromURL(group);
-  const note = group.note === '<p></p>' ? '' : group.note;
-
-  const emojiMap = makeEmojiMap(group.emojis);
 
   return {
     ...group,
@@ -31,10 +22,6 @@ const normalizeGroup = (group: BaseGroup) => {
     header: group.header || group.header_static || missingHeader,
     header_static: group.header_static || group.header || missingHeader,
     domain,
-    note,
-    display_name_html: emojify(escapeTextContentForBrowser(group.display_name), emojiMap),
-    note_emojified: emojify(group.note, emojiMap),
-    note_plain: unescapeHTML(group.note),
   };
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { Tooltip } from './ui';
+import Tooltip from 'pl-fe/components/ui/tooltip';
 
 import type { Mention as MentionEntity } from 'pl-api';
 

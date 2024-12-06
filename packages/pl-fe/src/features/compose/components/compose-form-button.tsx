@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React from 'react';
 
-import { IconButton } from 'pl-fe/components/ui';
+import IconButton from 'pl-fe/components/ui/icon-button';
 
 interface IComposeFormButton {
   icon: string;

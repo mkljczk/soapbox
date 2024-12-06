@@ -4,8 +4,14 @@ import { createSelector } from 'reselect';
 
 import { fetchLists } from 'pl-fe/actions/lists';
 import List, { ListItem } from 'pl-fe/components/list';
-import { Card, Column, HStack, Icon, Spinner, Stack } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import Card from 'pl-fe/components/ui/card';
+import Column from 'pl-fe/components/ui/column';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Spinner from 'pl-fe/components/ui/spinner';
+import Stack from 'pl-fe/components/ui/stack';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import NewListForm from './components/new-list-form';
 
@@ -22,7 +28,7 @@ const getOrderedLists = createSelector([(state: RootState) => state.lists], list
     return lists;
   }
 
-  return lists.toList().filter((item): item is ListEntity => !!item).sort((a, b) => a.title.localeCompare(b.title));
+  return Object.values(lists).filter((item): item is ListEntity => !!item).sort((a, b) => a.title.localeCompare(b.title));
 });
 
 const Lists: React.FC = () => {
@@ -50,7 +56,7 @@ const Lists: React.FC = () => {
       <Stack space={4}>
         <NewListForm />
 
-        {lists.isEmpty() ? (
+        {!Object.keys(lists).length ? (
           <Card variant='rounded' size='lg'>
             {emptyMessage}
           </Card>
@@ -75,4 +81,4 @@ const Lists: React.FC = () => {
   );
 };
 
-export { Lists as default };
+export { Lists as default, getOrderedLists };

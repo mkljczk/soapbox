@@ -1,7 +1,7 @@
 import { isIntegerId } from 'pl-fe/utils/numbers';
 
+import type { Status } from 'pl-fe/normalizers/status';
 import type { IntlShape } from 'react-intl';
-import type { Status } from 'pl-fe/normalizers';
 
 /** Get the initial visibility of media attachments from user settings. */
 const defaultMediaVisibility = (
@@ -34,7 +34,7 @@ const hasIntegerMediaIds = (status: Pick<Status, 'media_attachments'>): boolean 
 /** Sanitize status text for use with screen readers. */
 const textForScreenReader = (
   intl: IntlShape,
-  status: Pick<Status, 'account' | 'spoiler_text' | 'hidden' | 'search_index' | 'created_at'>,
+  status: Pick<Status, 'account' | 'spoiler_text' | 'search_index' | 'created_at'>,
   rebloggedByText?: string,
 ): string => {
   const { account } = status;
@@ -44,7 +44,7 @@ const textForScreenReader = (
 
   const values = [
     displayName.length === 0 ? account.acct.split('@')[0] : displayName,
-    status.spoiler_text && status.hidden ? status.spoiler_text : status.search_index.slice(status.spoiler_text.length),
+    status.spoiler_text ? status.spoiler_text : status.search_index?.slice(status.spoiler_text.length) || '',
     intl.formatDate(status.created_at, { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }),
     account.acct,
   ];
@@ -68,7 +68,6 @@ const getStatusIdsFromLinksInContent = (content: string): string[] => {
 
 export {
   defaultMediaVisibility,
-  getFirstExternalLink,
   shouldHaveCard,
   hasIntegerMediaIds,
   textForScreenReader,

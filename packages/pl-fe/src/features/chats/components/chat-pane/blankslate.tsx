@@ -1,7 +1,9 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Button, Stack, Text } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
 const messages = defineMessages({
   title: { id: 'chat_pane.blankslate.title', defaultMessage: 'No messages yet' },

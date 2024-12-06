@@ -19,7 +19,5 @@ const buildFullPath = (requestedURL: string, baseURL?: string, params?: Record<s
 };
 
 export {
-  isAbsoluteURL,
-  combineURLs,
   buildFullPath,
 };

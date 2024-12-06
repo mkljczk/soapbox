@@ -1,27 +1,29 @@
 import clsx from 'clsx';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { defaultSettings } from 'pl-fe/actions/settings';
 import BackgroundShapes from 'pl-fe/features/ui/components/background-shapes';
-import { useSystemTheme } from 'pl-fe/hooks';
-import { normalizePlFeConfig } from 'pl-fe/normalizers';
-import { generateThemeCss } from 'pl-fe/utils/theme';
+import { useSystemTheme } from 'pl-fe/hooks/use-system-theme';
+import { useThemeCss } from 'pl-fe/hooks/use-theme-css';
+import { useSettingsStore } from 'pl-fe/stores/settings';
+
+import type { PlFeConfig } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 
 interface ISitePreview {
   /** Raw pl-fe configuration. */
-  plFe: any;
+  plFe: PlFeConfig;
 }
 
 /** Renders a preview of the website's style with the configuration applied. */
 const SitePreview: React.FC<ISitePreview> = ({ plFe }) => {
-  const plFeConfig = useMemo(() => normalizePlFeConfig(plFe), [plFe]);
-  const settings = defaultSettings.mergeDeep(plFeConfig.defaultSettings);
+  const { defaultSettings } = useSettingsStore();
 
-  const userTheme = settings.get('themeMode');
+  const userTheme = defaultSettings.themeMode;
   const systemTheme = useSystemTheme();
 
   const dark = ['dark', 'black'].includes(userTheme as string) || (userTheme === 'system' && systemTheme === 'black');
+
+  const themeCss = useThemeCss(plFe);
 
   const bodyClass = clsx(
     'site-preview',
@@ -35,7 +37,7 @@ const SitePreview: React.FC<ISitePreview> = ({ plFe }) => {
 
   return (
     <div className={bodyClass}>
-      <style>{`.site-preview {${generateThemeCss(plFeConfig)}}`}</style>
+      <style>{`.site-preview {${themeCss}}`}</style>
       <BackgroundShapes position='absolute' />
 
       <div className='absolute z-[2] self-center overflow-hidden rounded-lg bg-accent-500 p-2 text-white'>

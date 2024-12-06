@@ -1,7 +1,9 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { HStack, Icon, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Text from 'pl-fe/components/ui/text';
 import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
 
 import ChatPaneHeader from '../chat-pane-header';
@@ -27,7 +29,7 @@ const ChatSearchHeader = () => {
           >
             <Icon
               src={require('@tabler/icons/outline/arrow-left.svg')}
-              className='h-6 w-6 text-gray-600 rtl:rotate-180 dark:text-gray-400'
+              className='size-6 text-gray-600 dark:text-gray-400 rtl:rotate-180'
             />
           </button>
 

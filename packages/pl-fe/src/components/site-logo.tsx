@@ -1,7 +1,12 @@
 import clsx from 'clsx';
 import React from 'react';
+import { defineMessages, useIntl } from 'react-intl';
 
-import { usePlFeConfig, useSettings, useTheme } from 'pl-fe/hooks';
+import { useLogo } from 'pl-fe/hooks/use-logo';
+
+const messages = defineMessages({
+  logo: { id: 'generic.logo', defaultMessage: 'Logo' },
+});
 
 interface ISiteLogo extends React.ComponentProps<'img'> {
   /** Extra class names for the <img> element. */
@@ -12,32 +17,17 @@ interface ISiteLogo extends React.ComponentProps<'img'> {
 
 /** Display the most appropriate site logo based on the theme and configuration. */
 const SiteLogo: React.FC<ISiteLogo> = ({ className, theme, ...rest }) => {
-  const { logo, logoDarkMode } = usePlFeConfig();
-  const { demo } = useSettings();
+  const intl = useIntl();
+  const logoSrc = useLogo();
 
-  let darkMode = ['dark', 'black'].includes(useTheme());
-  if (theme === 'dark') darkMode = true;
-
-  /** pl-fe logo. */
-  const plFeLogo = darkMode
-    ? require('pl-fe/assets/images/soapbox-logo-white.svg')
-    : require('pl-fe/assets/images/soapbox-logo.svg');
-
-  // Use the right logo if provided, then use fallbacks.
-  const getSrc = () => {
-    // In demo mode, use the pl-fe logo.
-    if (demo) return plFeLogo;
-
-    return (darkMode && logoDarkMode)
-      ? logoDarkMode
-      : logo || logoDarkMode || plFeLogo;
-  };
+  if (!logoSrc) return null;
 
   return (
     // eslint-disable-next-line jsx-a11y/alt-text
     <img
+      alt={intl.formatMessage(messages.logo)}
       className={clsx('object-contain', className)}
-      src={getSrc()}
+      src={logoSrc}
       {...rest}
     />
   );

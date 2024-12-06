@@ -1,19 +1,23 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-import { dateSchema, mimeSchema } from './utils';
+import { datetimeSchema, mimeSchema } from './utils';
 
-import type { Resolve } from '../utils/types';
-
-/** @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#post-apiv1pleromabackups} */
-const backupSchema = z.object({
-  id: z.coerce.string(),
-  contentType: mimeSchema,
-  file_size: z.number().catch(0),
-  inserted_at: dateSchema,
-  processed: z.boolean().catch(false),
-  url: z.string().catch(''),
+/**
+ * @category Schemas
+ * @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#post-apiv1pleromabackups}
+ */
+const backupSchema = v.object({
+  id: v.pipe(v.unknown(), v.transform(String)),
+  content_type: mimeSchema,
+  file_size: v.fallback(v.number(), 0),
+  inserted_at: datetimeSchema,
+  processed: v.fallback(v.boolean(), false),
+  url: v.fallback(v.string(), ''),
 });
 
-type Backup = Resolve<z.infer<typeof backupSchema>>;
+/**
+ * @category Entity types
+ */
+type Backup = v.InferOutput<typeof backupSchema>;
 
 export { backupSchema, type Backup };

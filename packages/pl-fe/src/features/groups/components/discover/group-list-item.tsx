@@ -3,14 +3,18 @@ import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import GroupAvatar from 'pl-fe/components/groups/group-avatar';
-import { HStack, Icon, Stack, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Emojify from 'pl-fe/features/emoji/emojify';
 import GroupActionButton from 'pl-fe/features/group/components/group-action-button';
 import { shortNumberFormat } from 'pl-fe/utils/numbers';
 
-import type { Group } from 'pl-fe/normalizers';
+import type { Group } from 'pl-fe/normalizers/group';
 
 interface IGroupListItem {
-  group: Pick<Group, 'id' | 'avatar' | 'avatar_description' | 'display_name_html' | 'locked' | 'members_count' | 'relationship'>;
+  group: Pick<Group, 'id' | 'avatar' | 'avatar_description' | 'display_name' | 'emojis' | 'locked' | 'members_count' | 'relationship'>;
   withJoinAction?: boolean;
 }
 
@@ -31,15 +35,13 @@ const GroupListItem = (props: IGroupListItem) => {
           />
 
           <Stack className='overflow-hidden'>
-            <Text
-              weight='bold'
-              dangerouslySetInnerHTML={{ __html: group.display_name_html }}
-              truncate
-            />
+            <Text weight='bold' truncate>
+              <Emojify text={group.display_name} emojis={group.emojis} />
+            </Text>
 
             <HStack className='text-gray-700 dark:text-gray-600' space={1} alignItems='center'>
               <Icon
-                className='h-4.5 w-4.5'
+                className='size-4.5'
                 src={group.locked ? require('@tabler/icons/outline/lock.svg') : require('@tabler/icons/outline/world.svg')}
               />
 

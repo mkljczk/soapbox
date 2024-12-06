@@ -1,42 +1,22 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { getSubscribersCsv, getUnsubscribersCsv, getCombinedCsv } from 'pl-fe/actions/admin';
 import List, { ListItem } from 'pl-fe/components/list';
-import { CardTitle, Icon, IconButton, Stack } from 'pl-fe/components/ui';
-import { useAppDispatch, useOwnAccount, useFeatures, useInstance } from 'pl-fe/hooks';
+import { CardTitle } from 'pl-fe/components/ui/card';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import sourceCode from 'pl-fe/utils/code';
-import { download } from 'pl-fe/utils/download';
 
 import { DashCounter, DashCounters } from '../components/dashcounter';
 import RegistrationModePicker from '../components/registration-mode-picker';
 
 const Dashboard: React.FC = () => {
-  const dispatch = useAppDispatch();
   const instance = useInstance();
   const features = useFeatures();
   const { account } = useOwnAccount();
-
-  const handleSubscribersClick: React.MouseEventHandler = e => {
-    dispatch(getSubscribersCsv()).then(({ data }) => {
-      download(data, 'subscribers.csv');
-    }).catch(() => {});
-    e.preventDefault();
-  };
-
-  const handleUnsubscribersClick: React.MouseEventHandler = e => {
-    dispatch(getUnsubscribersCsv()).then(({ data }) => {
-      download(data, 'unsubscribers.csv');
-    }).catch(() => {});
-    e.preventDefault();
-  };
-
-  const handleCombinedClick: React.MouseEventHandler = e => {
-    dispatch(getCombinedCsv()).then(({ data }) => {
-      download(data, 'combined.csv');
-    }).catch(() => {});
-    e.preventDefault();
-  };
 
   const v = features.version;
 
@@ -83,7 +63,7 @@ const Dashboard: React.FC = () => {
         {account.is_admin && (
           <ListItem
             to='/pl-fe/config'
-            label={<FormattedMessage id='navigation_bar.plfe_config' defaultMessage='pl-fe config' />}
+            label={<FormattedMessage id='navigation_bar.plfe_config' defaultMessage='Front-end configuration' />}
           />
         )}
 
@@ -92,14 +72,14 @@ const Dashboard: React.FC = () => {
           label={<FormattedMessage id='column.admin.moderation_log' defaultMessage='Moderation log' />}
         />
 
-        {features.adminAnnouncements && (
+        {features.pleromaAdminAnnouncements && (
           <ListItem
             to='/pl-fe/admin/announcements'
             label={<FormattedMessage id='column.admin.announcements' defaultMessage='Announcements' />}
           />
         )}
 
-        {features.adminRules && (
+        {features.pleromaAdminRules && (
           <ListItem
             to='/pl-fe/admin/rules'
             label={<FormattedMessage id='column.admin.rules' defaultMessage='Instance rules' />}
@@ -138,7 +118,7 @@ const Dashboard: React.FC = () => {
             <span>{sourceCode.displayName} {sourceCode.version}</span>
 
             <Icon
-              className='h-4 w-4'
+              className='size-4'
               src={require('@tabler/icons/outline/external-link.svg')}
             />
           </a>
@@ -148,40 +128,6 @@ const Dashboard: React.FC = () => {
           <span>{v.software + (v.build ? `+${v.build}` : '')} {v.version}</span>
         </ListItem>
       </List>
-
-      {(features.emailList && account.is_admin) && (
-        <>
-          <CardTitle
-            title={<FormattedMessage id='admin.dashwidgets.email_list_header' defaultMessage='Email list' />}
-          />
-
-          <List>
-            <ListItem label='subscribers.csv'>
-              <IconButton
-                src={require('@tabler/icons/outline/download.svg')}
-                onClick={handleSubscribersClick}
-                iconClassName='h-5 w-5'
-              />
-            </ListItem>
-
-            <ListItem label='unsubscribers.csv'>
-              <IconButton
-                src={require('@tabler/icons/outline/download.svg')}
-                onClick={handleUnsubscribersClick}
-                iconClassName='h-5 w-5'
-              />
-            </ListItem>
-
-            <ListItem label='combined.csv'>
-              <IconButton
-                src={require('@tabler/icons/outline/download.svg')}
-                onClick={handleCombinedClick}
-                iconClassName='h-5 w-5'
-              />
-            </ListItem>
-          </List>
-        </>
-      )}
     </Stack>
   );
 };

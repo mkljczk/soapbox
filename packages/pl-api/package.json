@@ -1,8 +1,8 @@
 {
   "name": "pl-api",
-  "version": "0.0.22",
+  "version": "1.0.0-rc.4",
   "type": "module",
-  "homepage": "https://github.com/mkljczk/pl-fe/tree/fork/packages/pl-api",
+  "homepage": "https://github.com/mkljczk/pl-fe/tree/develop/packages/pl-api",
   "repository": {
     "type": "git",
     "url": "https://github.com/mkljczk/pl-fe"
@@ -13,34 +13,43 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --p ./tsconfig-build.json && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "npx eslint --ext .js,.jsx,.cjs,.mjs,.ts,.tsx . --cache"
   },
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
+    "@stylistic/eslint-plugin": "^2.8.0",
     "@types/http-link-header": "^1.0.7",
+    "@types/lodash.omit": "^4.5.9",
     "@types/lodash.pick": "^4.4.9",
-    "@types/node": "^20.14.12",
+    "@types/node": "^22.9.3",
     "@types/semver": "^7.5.8",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
-    "eslint": "^8.49.0",
-    "eslint-import-resolver-typescript": "^3.6.0",
-    "eslint-plugin-compat": "^4.2.0",
-    "eslint-plugin-import": "^2.28.1",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.8.0",
+    "eslint": "8.57.1",
+    "eslint-import-resolver-typescript": "^3.6.3",
+    "eslint-plugin-compat": "^6.0.1",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-promise": "^6.0.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.4.0",
-    "vite-plugin-dts": "^4.0.3"
+    "typedoc": "^0.26.10",
+    "typedoc-material-theme": "^1.1.0",
+    "typedoc-plugin-valibot": "^1.0.0",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8",
+    "vite-plugin-dts": "^4.2.3",
+    "ws": "^8.18.0"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
   "dependencies": {
     "blurhash": "^2.0.5",
     "http-link-header": "^1.1.3",
+    "isows": "^1.0.6",
+    "lodash.omit": "^4.5.0",
     "lodash.pick": "^4.4.0",
     "object-to-formdata": "^4.5.1",
-    "query-string": "^9.1.0",
+    "query-string": "^9.1.1",
     "semver": "^7.6.3",
-    "zod": "^3.23.8"
+    "valibot": "^0.42.1"
   },
   "module": "./dist/main.es.js",
   "types": "dist/main.d.ts",

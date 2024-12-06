@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { defineMessages, IntlShape, useIntl } from 'react-intl';
 
-import { IconButton } from 'pl-fe/components/ui';
-import { useInstance } from 'pl-fe/hooks';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 const messages = defineMessages({
   upload: { id: 'upload_button.label', defaultMessage: 'Add media attachment' },
@@ -36,6 +36,9 @@ const UploadButton: React.FC<IUploadButton> = ({
 
   const fileElement = useRef<HTMLInputElement>(null);
   const attachmentTypes = configuration.media_attachments.supported_mime_types;
+
+  let accept = attachmentTypes?.join(',');
+  if (accept === 'application/octet-stream') accept = undefined;
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     if (e.target.files?.length) {
@@ -75,7 +78,7 @@ const UploadButton: React.FC<IUploadButton> = ({
           ref={fileElement}
           type='file'
           multiple
-          accept={attachmentTypes?.join(',')}
+          accept={accept}
           onChange={handleChange}
           disabled={disabled}
           className='hidden'
@@ -85,8 +88,4 @@ const UploadButton: React.FC<IUploadButton> = ({
   );
 };
 
-export {
-  onlyImages,
-  type IUploadButton,
-  UploadButton as default,
-};
+export { UploadButton as default };

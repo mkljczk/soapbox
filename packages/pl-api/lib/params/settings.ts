@@ -1,3 +1,6 @@
+/**
+ * @category Request params
+ */
 interface CreateAccountParams {
   /** String. The desired username for the account */
   username: string;
@@ -30,6 +33,9 @@ interface CreateAccountParams {
   accepts_email_list?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 interface UpdateCredentialsParams {
   /** String. The display name to use for the profile. */
   display_name?: string;
@@ -100,21 +106,25 @@ interface UpdateCredentialsParams {
 
   /**
    * Description of avatar image, for alt-text.
-   * Requires `features.accountAvatarDescription`.
+   *
+   * Requires features{@link Features['accountAvatarDescription']}.
    */
   avatar_description?: boolean;
   /**
    * Description of header image, for alt-text.
-   * Requires `features.accountAvatarDescription`.
+   * Requires features{@link Features['accountAvatarDescription']}.
    */
   header_description?: boolean;
   /**
    * Enable RSS feed for this account's Public posts at `/[username]/feed.rss`
-   * Requires `features.accountEnableRss`.
+   * Requires features{@link Features['accountEnableRss']}.
   */
   enable_rss?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 interface UpdateNotificationSettingsParams {
   /**
    * blocks notifications from accounts you do not follow
@@ -127,6 +137,9 @@ interface UpdateNotificationSettingsParams {
   hide_notification_contents?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 type UpdateInteractionPoliciesParams = Record<
   'public' | 'unlisted' | 'private' | 'direct',
   Record<

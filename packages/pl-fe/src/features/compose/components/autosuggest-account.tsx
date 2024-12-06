@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useAccount } from 'pl-fe/api/hooks';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import Account from 'pl-fe/components/account';
 
 interface IAutosuggestAccount {
@@ -13,7 +13,7 @@ const AutosuggestAccount: React.FC<IAutosuggestAccount> = ({ id }) => {
 
   return (
     <div className='snap-start snap-always'>
-      <Account account={account} hideActions showProfileHoverCard={false} />
+      <Account account={account} hideActions showAccountHoverCard={false} />
     </div>
   );
 

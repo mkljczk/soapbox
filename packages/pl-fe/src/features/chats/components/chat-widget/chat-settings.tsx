@@ -2,13 +2,22 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { blockAccount, unblockAccount } from 'pl-fe/actions/accounts';
-import { openModal } from 'pl-fe/actions/modals';
-import { Avatar, HStack, Icon, Stack, Text } from 'pl-fe/components/ui';
+import Avatar from 'pl-fe/components/ui/avatar';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
-import { useAppDispatch, useAppSelector, useFeatures } from 'pl-fe/hooks';
+import { Entities } from 'pl-fe/entity-store/entities';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useChatActions } from 'pl-fe/queries/chats';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import ChatPaneHeader from './chat-pane-header';
+
+import type { Relationship } from 'pl-api';
 
 const messages = defineMessages({
   blockMessage: { id: 'chat_settings.block.message', defaultMessage: 'Blocking will prevent this profile from direct messaging you and viewing your content. You can unblock later.' },
@@ -31,10 +40,11 @@ const ChatSettings = () => {
   const intl = useIntl();
   const features = useFeatures();
 
+  const { openModal } = useModalsStore();
   const { chat, changeScreen, toggleChatPane } = useChatContext();
   const { deleteChat } = useChatActions(chat?.id as string);
 
-  const isBlocking = useAppSelector((state) => state.getIn(['relationships', chat?.account?.id, 'blocking']));
+  const isBlocking = !!useAppSelector((state) => chat?.account?.id && (state.entities[Entities.RELATIONSHIPS]?.store[chat.account.id] as Relationship)?.blocked_by);
 
   const closeSettings = () => {
     changeScreen(ChatWidgetScreens.CHAT, chat?.id);
@@ -46,33 +56,33 @@ const ChatSettings = () => {
   };
 
   const handleBlockUser = () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.blockHeading, { acct: chat?.account.acct }),
       message: intl.formatMessage(messages.blockMessage),
       confirm: intl.formatMessage(messages.blockConfirm),
       confirmationTheme: 'primary',
       onConfirm: () => dispatch(blockAccount(chat?.account.id as string)),
-    }));
+    });
   };
 
   const handleUnblockUser = () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.unblockHeading, { acct: chat?.account.acct }),
       message: intl.formatMessage(messages.unblockMessage),
       confirm: intl.formatMessage(messages.unblockConfirm),
       confirmationTheme: 'primary',
       onConfirm: () => dispatch(unblockAccount(chat?.account.id as string)),
-    }));
+    });
   };
 
   const handleLeaveChat = () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.leaveHeading),
       message: intl.formatMessage(messages.leaveMessage),
       confirm: intl.formatMessage(messages.leaveConfirm),
       confirmationTheme: 'primary',
       onConfirm: () => deleteChat.mutate(),
-    }));
+    });
   };
 
   if (!chat) {
@@ -90,7 +100,7 @@ const ChatSettings = () => {
             <button onClick={closeSettings}>
               <Icon
                 src={require('@tabler/icons/outline/arrow-left.svg')}
-                className='h-6 w-6 text-gray-600 rtl:rotate-180 dark:text-gray-400'
+                className='size-6 text-gray-600 dark:text-gray-400 rtl:rotate-180'
               />
             </button>
 
@@ -112,13 +122,13 @@ const ChatSettings = () => {
 
         <Stack space={5}>
           <button onClick={isBlocking ? handleUnblockUser : handleBlockUser} className='flex w-full items-center space-x-2 text-sm font-bold text-primary-600 dark:text-accent-blue'>
-            <Icon src={require('@tabler/icons/outline/ban.svg')} className='h-5 w-5' />
+            <Icon src={require('@tabler/icons/outline/ban.svg')} className='size-5' />
             <span>{intl.formatMessage(isBlocking ? messages.unblockUser : messages.blockUser, { acct: chat.account.acct })}</span>
           </button>
 
           {features.chatsDelete && (
             <button onClick={handleLeaveChat} className='flex w-full items-center space-x-2 text-sm font-bold text-danger-600'>
-              <Icon src={require('@tabler/icons/outline/logout.svg')} className='h-5 w-5' />
+              <Icon src={require('@tabler/icons/outline/logout.svg')} className='size-5' />
               <span>{intl.formatMessage(messages.leaveChat)}</span>
             </button>
           )}

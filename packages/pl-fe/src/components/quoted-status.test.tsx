@@ -1,7 +1,8 @@
 import React from 'react';
 
 import { render, screen, rootState } from 'pl-fe/jest/test-helpers';
-import { normalizeStatus, normalizeAccount } from 'pl-fe/normalizers';
+import { normalizeAccount } from 'pl-fe/normalizers/account';
+import { normalizeStatus } from 'pl-fe/normalizers/status';
 
 import QuotedStatus from './quoted-status';
 
@@ -22,7 +23,7 @@ describe('<QuotedStatus />', () => {
       contentHtml: 'hello world',
     }) as ReducerStatus;
 
-    const state = rootState.setIn(['accounts', '1'], account);
+    const state = rootState/*.accounts.set('1', account)*/;
 
     render(<QuotedStatus status={status} />, undefined, state);
     screen.getByText(/hello world/i);

@@ -2,13 +2,17 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchPoll, vote } from 'pl-fe/actions/polls';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Tooltip from 'pl-fe/components/ui/tooltip';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
 import RelativeTimestamp from '../relative-timestamp';
-import { Button, HStack, Stack, Text, Tooltip } from '../ui';
 
 import type { Selected } from './poll';
-import type { Poll } from 'pl-fe/normalizers';
+import type { Poll } from 'pl-api';
 
 const messages = defineMessages({
   closed: { id: 'poll.closed', defaultMessage: 'Closed' },

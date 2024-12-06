@@ -1,4 +1,4 @@
-import type{ RecursiveKeyValuePair } from 'tailwindcss/types/config';
+import type { RecursiveKeyValuePair } from 'tailwindcss/types/config';
 
 /** https://tailwindcss.com/docs/customizing-colors#using-css-variables */
 const withOpacityValue = (variable: string): string => `rgb(var(${variable}) / <alpha-value>)`;

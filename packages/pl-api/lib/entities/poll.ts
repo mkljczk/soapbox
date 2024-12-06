@@ -1,32 +1,42 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
 import { customEmojiSchema } from './custom-emoji';
-import { filteredArray } from './utils';
+import { datetimeSchema, filteredArray } from './utils';
 
-const pollOptionSchema = z.object({
-  title: z.string().catch(''),
-  votes_count: z.number().catch(0),
+const pollOptionSchema = v.object({
+  title: v.fallback(v.string(), ''),
+  votes_count: v.fallback(v.number(), 0),
 
-  title_map: z.record(z.string()).nullable().catch(null),
+  title_map: v.fallback(v.nullable(v.record(v.string(), v.string())), null),
 });
 
-/** @see {@link https://docs.joinmastodon.org/entities/Poll/} */
-const pollSchema = z.object({
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Poll/}
+ */
+const pollSchema = v.object({
   emojis: filteredArray(customEmojiSchema),
-  expired: z.boolean().catch(false),
-  expires_at: z.string().datetime().nullable().catch(null),
-  id: z.string(),
-  multiple: z.boolean().catch(false),
-  options: z.array(pollOptionSchema).min(2),
-  voters_count: z.number().catch(0),
-  votes_count: z.number().catch(0),
-  own_votes: z.array(z.number()).nonempty().nullable().catch(null),
-  voted: z.boolean().catch(false),
+  expired: v.fallback(v.boolean(), false),
+  expires_at: v.fallback(v.nullable(datetimeSchema), null),
+  id: v.string(),
+  multiple: v.fallback(v.boolean(), false),
+  options: v.pipe(v.array(pollOptionSchema), v.minLength(2)),
+  voters_count: v.fallback(v.number(), 0),
+  votes_count: v.fallback(v.number(), 0),
+  own_votes: v.fallback(v.nullable(v.pipe(v.array(v.number()), v.minLength(1))), null),
+  voted: v.fallback(v.boolean(), false),
 
-  non_anonymous: z.boolean().catch(false),
+  non_anonymous: v.fallback(v.boolean(), false),
 });
 
-type Poll = z.infer<typeof pollSchema>;
+/**
+ * @category Entity types
+ */
+type Poll = v.InferOutput<typeof pollSchema>;
+
+/**
+ * @category Entity types
+ */
 type PollOption = Poll['options'][number];
 
 export { pollSchema, type Poll, type PollOption };

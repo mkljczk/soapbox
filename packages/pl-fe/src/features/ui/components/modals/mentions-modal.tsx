@@ -1,12 +1,13 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchStatusWithContext } from 'pl-fe/actions/statuses';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Modal, Spinner } from 'pl-fe/components/ui';
+import Modal from 'pl-fe/components/ui/modal';
+import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 import type { BaseModalProps } from '../modal-root';
@@ -16,12 +17,13 @@ interface MentionsModalProps {
 }
 
 const MentionsModal: React.FC<BaseModalProps & MentionsModalProps> = ({ onClose, statusId }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
   const intl = useIntl();
   const getStatus = useCallback(makeGetStatus(), []);
 
   const status = useAppSelector((state) => getStatus(state, { id: statusId }));
-  const accountIds = status ? ImmutableOrderedSet(status.mentions.map(m => m.id)) : null;
+  const accountIds = status ? status.mentions.map(m => m.id) : null;
 
   const fetchData = () => {
     dispatch(fetchStatusWithContext(statusId, intl));
@@ -42,9 +44,10 @@ const MentionsModal: React.FC<BaseModalProps & MentionsModalProps> = ({ onClose,
   } else {
     body = (
       <ScrollableList
-        scrollKey='mentions'
         listClassName='max-w-full'
         itemClassName='pb-3'
+        estimatedSize={42}
+        parentRef={modalRef}
       >
         {accountIds.map(id =>
           <AccountContainer key={id} id={id} />,
@@ -57,6 +60,7 @@ const MentionsModal: React.FC<BaseModalProps & MentionsModalProps> = ({ onClose,
     <Modal
       title={<FormattedMessage id='column.mentions' defaultMessage='Mentions' />}
       onClose={onClickClose}
+      ref={modalRef}
     >
       {body}
     </Modal>

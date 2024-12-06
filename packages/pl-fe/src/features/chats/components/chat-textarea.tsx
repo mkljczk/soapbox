@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { HStack, Textarea } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Textarea from 'pl-fe/components/ui/textarea';
 
 import ChatPendingUpload from './chat-pending-upload';
 import ChatUpload from './chat-upload';
@@ -15,7 +16,7 @@ interface IChatTextarea extends React.ComponentProps<typeof Textarea> {
 }
 
 /** Custom textarea for chats. */
-const ChatTextarea: React.FC<IChatTextarea> = React.forwardRef(({
+const ChatTextarea = React.forwardRef<HTMLTextAreaElement, IChatTextarea>(({
   attachment,
   onDeleteAttachment,
   uploading,
@@ -29,9 +30,9 @@ const ChatTextarea: React.FC<IChatTextarea> = React.forwardRef(({
       bg-white text-gray-900
       shadow-sm placeholder:text-gray-600
       focus-within:border-primary-500
-      focus-within:ring-1 focus-within:ring-primary-500 sm:text-sm dark:border-gray-800
-      dark:bg-gray-800 dark:text-gray-100 dark:ring-1 dark:ring-gray-800 dark:placeholder:text-gray-600
-      dark:focus-within:border-primary-500 dark:focus-within:ring-primary-500
+      focus-within:ring-1 focus-within:ring-primary-500 dark:border-gray-800 dark:bg-gray-800
+      dark:text-gray-100 dark:ring-1 dark:ring-gray-800 dark:placeholder:text-gray-600 dark:focus-within:border-primary-500
+      dark:focus-within:ring-primary-500 sm:text-sm
     `}
   >
     {(attachment || uploading) && (

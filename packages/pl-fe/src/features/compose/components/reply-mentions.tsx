@@ -1,33 +1,34 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { FormattedList, FormattedMessage } from 'react-intl';
 
-import { openModal } from 'pl-fe/actions/modals';
-import { useAppDispatch, useAppSelector, useCompose, useFeatures } from 'pl-fe/hooks';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useModalsStore } from 'pl-fe/stores/modals';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 
 interface IReplyMentions {
   composeId: string;
 }
 
 const ReplyMentions: React.FC<IReplyMentions> = ({ composeId }) => {
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
   const features = useFeatures();
   const compose = useCompose(composeId);
+  const to = compose.to;
 
-  const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector(state => getStatus(state, { id: compose.in_reply_to! }));
-  const to = compose.to.toArray();
+  const { forceImplicitAddressing } = useSettingsStore().settings;
+  const explicitAddressing = features.createStatusExplicitAddressing && !forceImplicitAddressing;
 
-  if (!features.createStatusExplicitAddressing || !status || !to) {
+  if (!explicitAddressing || !compose.in_reply_to || !to) {
     return null;
   }
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
 
-    dispatch(openModal('REPLY_MENTIONS', {
+    openModal('REPLY_MENTIONS', {
       composeId,
-    }));
+    });
   };
 
   if (!compose.parent_reblogged_by && to.length === 0) {

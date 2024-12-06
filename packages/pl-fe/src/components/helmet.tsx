@@ -1,8 +1,10 @@
 import React from 'react';
-import { Helmet as ReactHelmet } from 'react-helmet';
+import { Helmet as ReactHelmet } from 'react-helmet-async';
 
 import { useStatContext } from 'pl-fe/contexts/stat-context';
-import { useAppSelector, useInstance, useSettings } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { RootState } from 'pl-fe/store';
 import FaviconService from 'pl-fe/utils/favicon-service';
 
@@ -10,8 +12,8 @@ FaviconService.initFaviconService();
 
 const getNotifTotals = (state: RootState): number => {
   const notifications = state.notifications.unread || 0;
-  const reports = state.admin.openReports.count();
-  const approvals = state.admin.awaitingApproval.count();
+  const reports = state.admin.openReports.length;
+  const approvals = state.admin.awaitingApproval.length;
   return notifications + reports + approvals;
 };
 

@@ -1,6 +1,6 @@
 import range from 'lodash/range';
 
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 const getDomainFromURL = (account: Pick<Account, 'url'>): string => {
   try {
@@ -30,9 +30,10 @@ const getAcct = (account: Pick<Account, 'fqn' | 'acct'>, displayFqn: boolean): s
 
 /** Default header filenames from various backends */
 const DEFAULT_HEADERS: string[] = [
-  '/headers/original/missing.png', // Mastodon
-  '/images/banner.png', // Pleroma
   '/assets/default_header.webp', // GoToSocial
+  '/headers/original/missing.png', // Mastodon
+  '/api/v1/accounts/identicon', // Mitra
+  '/images/banner.png', // Pleroma
   require('pl-fe/assets/images/header-missing.png'), // header not provided by backend
 ];
 
@@ -41,10 +42,10 @@ const isDefaultHeader = (url: string) => DEFAULT_HEADERS.some(header => url.ends
 
 /** Default avatar filenames from various backends */
 const DEFAULT_AVATARS = [
-  '/avatars/original/missing.png', // Mastodon
-  '/images/avi.png', // Pleroma
   ...(range(1, 6).map(i => `/assets/default_avatars/GoToSocial_icon${i}.webp`)), // GoToSocial
-  '/assets/default_avatars/GoToSocial_icon2.webp', // GoToSocial
+  '/avatars/original/missing.png', // Mastodon
+  '/api/v1/accounts/identicon', // Mitra
+  '/images/avi.png', // Pleroma
   require('pl-fe/assets/images/avatar-missing.png'), // avatar not provided by backend
 ];
 

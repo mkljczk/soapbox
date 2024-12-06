@@ -1,12 +1,17 @@
-import clsx from 'clsx';
-import React, { useRef } from 'react';
-import { useIntl, defineMessages, FormattedMessage } from 'react-intl';
+import React, { useEffect, useMemo } from 'react';
+import { useIntl, defineMessages, IntlShape } from 'react-intl';
 
 import { changeComposeFederated, changeComposeVisibility } from 'pl-fe/actions/compose';
-import DropdownMenu from 'pl-fe/components/dropdown-menu';
-import Icon from 'pl-fe/components/icon';
-import { Button, Toggle } from 'pl-fe/components/ui';
-import { useAppDispatch, useCompose, useFeatures } from 'pl-fe/hooks';
+import { fetchLists } from 'pl-fe/actions/lists';
+import DropdownMenu, { MenuItem } from 'pl-fe/components/dropdown-menu';
+import Button from 'pl-fe/components/ui/button';
+import { getOrderedLists } from 'pl-fe/features/lists';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+
+import type { Features } from 'pl-api';
 
 const messages = defineMessages({
   public_short: { id: 'privacy.public.short', defaultMessage: 'Public' },
@@ -21,6 +26,8 @@ const messages = defineMessages({
   direct_long: { id: 'privacy.direct.long', defaultMessage: 'Post to mentioned users only' },
   local_short: { id: 'privacy.local.short', defaultMessage: 'Local-only' },
   local_long: { id: 'privacy.local.long', defaultMessage: 'Only visible on your instance' },
+  list_short: { id: 'privacy.list.short', defaultMessage: 'List only' },
+  list_long: { id: 'privacy.list.long', defaultMessage: 'Visible to members of a list' },
 
   change_privacy: { id: 'privacy.change', defaultMessage: 'Adjust post privacy' },
   local: { id: 'privacy.local', defaultMessage: '{privacy} (local-only)' },
@@ -30,142 +37,59 @@ interface Option {
   icon: string;
   value: string;
   text: string;
-  meta: string;
+  meta?: string;
+  items?: Array<Omit<Option, 'items'>>;
 }
 
-interface IPrivacyDropdownMenu {
-  items: any[];
-  value: string;
-  onClose: () => void;
-  onChange: (value: string | null) => void;
-  unavailable?: boolean;
-  showFederated?: boolean;
-  federated?: boolean;
-  onChangeFederated: () => void;
-}
-
-const PrivacyDropdownMenu: React.FC<IPrivacyDropdownMenu> = ({
-  items, value, onClose, onChange, showFederated, federated, onChangeFederated,
-}) => {
-  const node = useRef<HTMLUListElement>(null);
-  const focusedItem = useRef<HTMLLIElement>(null);
-
-  const handleKeyDown: React.KeyboardEventHandler = e => {
-    const index = [...e.currentTarget.parentElement!.children].indexOf(e.currentTarget);
-    let element: ChildNode | null | undefined = null;
-
-    switch (e.key) {
-      case 'Escape':
-        onClose();
-        break;
-      case 'Enter':
-        handleClick(e);
-        break;
-      case 'ArrowDown':
-        element = node.current?.childNodes[index + 1] || node.current?.firstChild;
-        break;
-      case 'ArrowUp':
-        element = node.current?.childNodes[index - 1] || node.current?.lastChild;
-        break;
-      case 'Tab':
-        if (e.shiftKey) {
-          element = node.current?.childNodes[index - 1] || node.current?.lastChild;
-        } else {
-          element = node.current?.childNodes[index + 1] || node.current?.firstChild;
-        }
-        break;
-      case 'Home':
-        element = node.current?.firstChild;
-        break;
-      case 'End':
-        element = node.current?.lastChild;
-        break;
-    }
-
-    if (element) {
-      (element as HTMLElement).focus();
-      const value = (element as HTMLElement).getAttribute('data-index');
-      if (value !== 'local_switch') onChange(value);
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
-
-  const handleClick: React.EventHandler<any> = (e: MouseEvent | KeyboardEvent) => {
-    const value = (e.currentTarget as HTMLElement)?.getAttribute('data-index');
-
-    e.preventDefault();
-
-    if (value === 'local_switch') onChangeFederated();
-    else {
-      onClose();
-      onChange(value);
-    }
-  };
-
-  return (
-    <ul ref={node}>
-      {items.map(item => {
-        const active = item.value === value;
-        return (
-          <li
-            role='option'
-            tabIndex={0}
-            key={item.value}
-            data-index={item.value}
-            onKeyDown={handleKeyDown}
-            onClick={handleClick}
-            className={clsx(
-              'flex cursor-pointer items-center p-2.5 text-gray-700 hover:bg-gray-100 black:hover:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800',
-              { 'bg-gray-100 dark:bg-gray-800 black:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700': active },
-            )}
-            aria-selected={active}
-            ref={active ? focusedItem : null}
-          >
-            <div className='mr-2.5 flex items-center justify-center rtl:ml-2.5 rtl:mr-0'>
-              <Icon src={item.icon} />
-            </div>
-
-            <div
-              className={clsx('flex-auto text-xs text-primary-600 dark:text-primary-400', {
-                'text-black dark:text-white': active,
-              })}
-            >
-              <strong className='block text-sm font-medium text-black dark:text-white'>{item.text}</strong>
-              {item.meta}
-            </div>
-          </li>
-        );
-      })}
-      {showFederated && (
-        <li
-          role='option'
-          tabIndex={0}
-          data-index='local_switch'
-          onKeyDown={handleKeyDown}
-          onClick={onChangeFederated}
-          className='flex cursor-pointer items-center p-2.5 text-xs text-gray-700 hover:bg-gray-100 focus:bg-gray-100 black:hover:bg-gray-900 black:focus:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:focus:bg-gray-800'
-        >
-          <div className='mr-2.5 flex items-center justify-center rtl:ml-2.5 rtl:mr-0'>
-            <Icon src={require('@tabler/icons/outline/affiliate.svg')} />
-          </div>
-
-          <div
-            className='flex-auto text-xs text-primary-600 dark:text-primary-400'
-          >
-            <strong className='block text-sm font-medium text-black focus:text-black dark:text-white dark:focus:text-primary-400'>
-              <FormattedMessage id='privacy.local.short' defaultMessage='Local-only' />
-            </strong>
-            <FormattedMessage id='privacy.local.long' defaultMessage='Only visible on your instance' />
-          </div>
-
-          <Toggle checked={!federated} onChange={onChangeFederated} />
-        </li>
-      )}
-
-    </ul>
-  );
-};
+const getItems = (features: Features, lists: ReturnType<typeof getOrderedLists>, intl: IntlShape) => [
+  {
+    icon: require('@tabler/icons/outline/world.svg'),
+    value: 'public',
+    text: intl.formatMessage(messages.public_short),
+    meta: intl.formatMessage(messages.public_long),
+  },
+  {
+    icon: require('@tabler/icons/outline/lock-open.svg'),
+    value: 'unlisted',
+    text: intl.formatMessage(messages.unlisted_short),
+    meta: intl.formatMessage(messages.unlisted_long),
+  },
+  {
+    icon: require('@tabler/icons/outline/lock.svg'),
+    value: 'private',
+    text: intl.formatMessage(messages.private_short),
+    meta: intl.formatMessage(messages.private_long),
+  },
+  features.visibilityMutualsOnly ? {
+    icon: require('@tabler/icons/outline/users-group.svg'),
+    value: 'mutuals_only',
+    text: intl.formatMessage(messages.mutuals_only_short),
+    meta: intl.formatMessage(messages.mutuals_only_long),
+  } : undefined,
+  {
+    icon: require('@tabler/icons/outline/mail.svg'),
+    value: 'direct',
+    text: intl.formatMessage(messages.direct_short),
+    meta: intl.formatMessage(messages.direct_long),
+  },
+  features.visibilityLocalOnly ? {
+    icon: require('@tabler/icons/outline/affiliate.svg'),
+    value: 'local',
+    text: intl.formatMessage(messages.local_short),
+    meta: intl.formatMessage(messages.local_long),
+  } : undefined,
+  features.addressableLists && Object.keys(lists).length ? {
+    icon: require('@tabler/icons/outline/list.svg'),
+    value: '',
+    items: Object.values(lists).map((list) => ({
+      icon: require('@tabler/icons/outline/list.svg'),
+      value: `list:${list.id}`,
+      text: list.title,
+    })),
+    text: intl.formatMessage(messages.list_short),
+    meta: intl.formatMessage(messages.list_long),
+  } as Option : undefined,
+].filter((option): option is Option => !!option);
 
 interface IPrivacyDropdown {
   composeId: string;
@@ -174,48 +98,55 @@ interface IPrivacyDropdown {
 const PrivacyDropdown: React.FC<IPrivacyDropdown> = ({
   composeId,
 }) => {
-  const dispatch = useAppDispatch();
   const intl = useIntl();
   const features = useFeatures();
+  const dispatch = useAppDispatch();
 
   const compose = useCompose(composeId);
+  const lists = useAppSelector((state) => getOrderedLists(state));
 
   const value = compose.privacy;
   const unavailable = compose.id;
 
-  const options = [
-    { icon: require('@tabler/icons/outline/world.svg'), value: 'public', text: intl.formatMessage(messages.public_short), meta: intl.formatMessage(messages.public_long) },
-    { icon: require('@tabler/icons/outline/lock-open.svg'), value: 'unlisted', text: intl.formatMessage(messages.unlisted_short), meta: intl.formatMessage(messages.unlisted_long) },
-    { icon: require('@tabler/icons/outline/lock.svg'), value: 'private', text: intl.formatMessage(messages.private_short), meta: intl.formatMessage(messages.private_long) },
-    features.visibilityMutualsOnly ? { icon: require('@tabler/icons/outline/users-group.svg'), value: 'mutuals_only', text: intl.formatMessage(messages.mutuals_only_short), meta: intl.formatMessage(messages.mutuals_only_long) } : undefined,
-    { icon: require('@tabler/icons/outline/mail.svg'), value: 'direct', text: intl.formatMessage(messages.direct_short), meta: intl.formatMessage(messages.direct_long) },
-    features.visibilityLocalOnly ? { icon: require('@tabler/icons/outline/affiliate.svg'), value: 'local', text: intl.formatMessage(messages.local_short), meta: intl.formatMessage(messages.local_long) } : undefined,
-  ].filter((option): option is Option => !!option);
+  const onChange = (value: string) => value && dispatch(changeComposeVisibility(composeId,
+    value));
 
-  const onChange = (value: string | null) => value && dispatch(changeComposeVisibility(composeId, value));
+  const options = useMemo(() => getItems(features, lists, intl), [features, lists]);
+  const items: Array<MenuItem> = options.map(item => ({
+    ...item,
+    action: item.value ? () => onChange(item.value) : undefined,
+    active: item.value === value || item.items?.some((item) => item.value === value),
+    items: item.items?.map(item => ({
+      ...item,
+      action: item.value ? () => onChange(item.value) : undefined,
+      active: item.value === value,
+    })),
+  }));
 
-  const onChangeFederated = () => dispatch(changeComposeFederated(composeId));
+  useEffect(() => {
+    if (features.addressableLists) dispatch(fetchLists());
+  }, []);
+
+  if (features.localOnlyStatuses) items.push({
+    icon: require('@tabler/icons/outline/affiliate.svg'),
+    text: intl.formatMessage(messages.local_short),
+    meta: intl.formatMessage(messages.local_long),
+    type: 'toggle',
+    checked: !compose.federated,
+    onChange: () => dispatch(changeComposeFederated(composeId)),
+  });
+
+  const valueOption = useMemo(() => [
+    options,
+    options.filter(option => option.items).map(option => option.items).flat(),
+  ].flat().find(item => item!.value === value), [value]);
 
   if (unavailable) {
     return null;
   }
 
-  const valueOption = options.find(item => item.value === value);
-
   return (
-    <DropdownMenu
-      component={({ handleClose }) => (
-        <PrivacyDropdownMenu
-          items={options}
-          value={value}
-          onClose={handleClose}
-          onChange={onChange}
-          showFederated={features.localOnlyStatuses}
-          federated={compose.federated}
-          onChangeFederated={onChangeFederated}
-        />
-      )}
-    >
+    <DropdownMenu items={items}>
       <Button
         theme='muted'
         size='xs'

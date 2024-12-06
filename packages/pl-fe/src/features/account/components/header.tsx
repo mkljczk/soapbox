@@ -3,33 +3,37 @@ import { GOTOSOCIAL, MASTODON, mediaAttachmentSchema } from 'pl-api';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
+import * as v from 'valibot';
 
 import { biteAccount, blockAccount, pinAccount, removeFromFollowers, unblockAccount, unmuteAccount, unpinAccount } from 'pl-fe/actions/accounts';
 import { mentionCompose, directCompose } from 'pl-fe/actions/compose';
 import { blockDomain, unblockDomain } from 'pl-fe/actions/domain-blocks';
-import { openModal } from 'pl-fe/actions/modals';
-import { initMuteModal } from 'pl-fe/actions/mutes';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
-import { setSearchAccount } from 'pl-fe/actions/search';
-import { getSettings } from 'pl-fe/actions/settings';
-import { useFollow } from 'pl-fe/api/hooks';
+import { useFollow } from 'pl-fe/api/hooks/accounts/use-follow';
 import Badge from 'pl-fe/components/badge';
 import DropdownMenu, { Menu } from 'pl-fe/components/dropdown-menu';
 import StillImage from 'pl-fe/components/still-image';
-import { Avatar, HStack, IconButton } from 'pl-fe/components/ui';
+import Avatar from 'pl-fe/components/ui/avatar';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import MovedNote from 'pl-fe/features/account-timeline/components/moved-note';
 import ActionButton from 'pl-fe/features/ui/components/action-button';
 import SubscriptionButton from 'pl-fe/features/ui/components/subscription-button';
-import { useAppDispatch, useAppSelector, useFeatures, useOwnAccount } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useChats } from 'pl-fe/queries/chats';
 import { queryClient } from 'pl-fe/queries/client';
+import { useModalsStore } from 'pl-fe/stores/modals';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 import toast from 'pl-fe/toast';
 import { isDefaultHeader } from 'pl-fe/utils/accounts';
 import copy from 'pl-fe/utils/copy';
 
 import type { PlfeResponse } from 'pl-fe/api';
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
   edit_profile: { id: 'account.edit_profile', defaultMessage: 'Edit profile' },
@@ -89,6 +93,8 @@ const Header: React.FC<IHeader> = ({ account }) => {
   const features = useFeatures();
   const { account: ownAccount } = useOwnAccount();
   const { follow } = useFollow();
+  const { openModal } = useModalsStore();
+  const { settings } = useSettingsStore();
 
   const { software } = useAppSelector((state) => state.auth.client.features.version);
 
@@ -112,14 +118,14 @@ const Header: React.FC<IHeader> = ({ account }) => {
     return (
       <div className='-mx-4 -mt-4 sm:-mx-6 sm:-mt-6'>
         <div>
-          <div className='relative h-32 w-full bg-gray-200 black:rounded-t-none md:rounded-t-xl lg:h-48 dark:bg-gray-900/50' />
+          <div className='relative h-32 w-full bg-gray-200 black:rounded-t-none dark:bg-gray-900/50 md:rounded-t-xl lg:h-48' />
         </div>
 
         <div className='px-4 sm:px-6'>
           <HStack alignItems='bottom' space={5} className='-mt-12'>
             <div className='relative flex'>
               <div
-                className='h-24 w-24 rounded-full bg-gray-400 ring-4 ring-white dark:ring-gray-800'
+                className='size-24 rounded-lg bg-gray-400 ring-4 ring-white dark:ring-gray-800'
               />
             </div>
           </HStack>
@@ -132,7 +138,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
     if (account.relationship?.blocking) {
       dispatch(unblockAccount(account.id));
     } else {
-      dispatch(openModal('CONFIRM', {
+      openModal('CONFIRM', {
         heading: <FormattedMessage id='confirmations.block.heading' defaultMessage='Block @{name}' values={{ name: account.acct }} />,
         message: <FormattedMessage id='confirmations.block.message' defaultMessage='Are you sure you want to block {name}?' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
         confirm: intl.formatMessage(messages.blockConfirm),
@@ -142,7 +148,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
           dispatch(blockAccount(account.id));
           dispatch(initReport(ReportableEntities.ACCOUNT, account));
         },
-      }));
+      });
     }
   };
 
@@ -188,17 +194,17 @@ const Header: React.FC<IHeader> = ({ account }) => {
     if (account.relationship?.muting) {
       dispatch(unmuteAccount(account.id));
     } else {
-      dispatch(initMuteModal(account));
+      openModal('MUTE', { accountId: account.id });
     }
   };
 
   const onBlockDomain = (domain: string) => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: <FormattedMessage id='confirmations.domain_block.heading' defaultMessage='Block {domain}' values={{ domain }} />,
       message: <FormattedMessage id='confirmations.domain_block.message' defaultMessage='Are you really, really sure you want to block the entire {domain}? In most cases a few targeted blocks or mutes are sufficient and preferable. You will not see content from that domain in any public timelines or your notifications.' values={{ domain: <strong>{domain}</strong> }} />,
       confirm: intl.formatMessage(messages.blockDomainConfirm),
       onConfirm: () => dispatch(blockDomain(domain)),
-    }));
+    });
   };
 
   const onUnblockDomain = (domain: string) => {
@@ -210,43 +216,36 @@ const Header: React.FC<IHeader> = ({ account }) => {
   };
 
   const onAddToList = () => {
-    dispatch(openModal('LIST_ADDER', {
+    openModal('LIST_ADDER', {
       accountId: account.id,
-    }));
-  };
-
-  const onModerate = () => {
-    dispatch(openModal('ACCOUNT_MODERATION', { accountId: account.id }));
-  };
-
-  const onRemoveFromFollowers = () => {
-    dispatch((_, getState) => {
-      const unfollowModal = getSettings(getState()).get('unfollowModal');
-      if (unfollowModal) {
-        dispatch(openModal('CONFIRM', {
-          heading: <FormattedMessage id='confirmations.remove_from_followers.heading' defaultMessage='Remove {name} from followers' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
-          message: <FormattedMessage id='confirmations.remove_from_followers.message' defaultMessage='Are you sure you want to remove {name} from your followers?' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
-          confirm: intl.formatMessage(messages.removeFromFollowersConfirm),
-          onConfirm: () => dispatch(removeFromFollowers(account.id)),
-        }));
-      } else {
-        dispatch(removeFromFollowers(account.id));
-      }
     });
   };
 
-  const onSearch = () => {
-    dispatch(setSearchAccount(account.id));
-    history.push('/search');
+  const onModerate = () => {
+    openModal('ACCOUNT_MODERATION', { accountId: account.id });
+  };
+
+  const onRemoveFromFollowers = () => {
+    const unfollowModal = settings.unfollowModal;
+    if (unfollowModal) {
+      openModal('CONFIRM', {
+        heading: <FormattedMessage id='confirmations.remove_from_followers.heading' defaultMessage='Remove {name} from followers' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
+        message: <FormattedMessage id='confirmations.remove_from_followers.message' defaultMessage='Are you sure you want to remove {name} from your followers?' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
+        confirm: intl.formatMessage(messages.removeFromFollowersConfirm),
+        onConfirm: () => dispatch(removeFromFollowers(account.id)),
+      });
+    } else {
+      dispatch(removeFromFollowers(account.id));
+    }
   };
 
   const onAvatarClick = () => {
-    const avatar = mediaAttachmentSchema.parse({
+    const avatar = v.parse(mediaAttachmentSchema, {
       id: '',
       type: 'image',
       url: account.avatar,
     });
-    dispatch(openModal('MEDIA', { media: [avatar], index: 0 }));
+    openModal('MEDIA', { media: [avatar], index: 0 });
   };
 
   const handleAvatarClick: React.MouseEventHandler = (e) => {
@@ -257,11 +256,11 @@ const Header: React.FC<IHeader> = ({ account }) => {
   };
 
   const onHeaderClick = () => {
-    const header = mediaAttachmentSchema.parse({
+    const header = v.parse(mediaAttachmentSchema, {
       type: 'image',
       url: account.header,
     });
-    dispatch(openModal('MEDIA', { media: [header], index: 0 }));
+    openModal('MEDIA', { media: [header], index: 0 });
   };
 
   const handleHeaderClick: React.MouseEventHandler = (e) => {
@@ -329,7 +328,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
     if (features.searchFromAccount) {
       menu.push({
         text: intl.formatMessage(account.id === ownAccount.id ? messages.searchSelf : messages.search, { name: account.username }),
-        action: onSearch,
+        to: '/search?' + new URLSearchParams({ type: 'statuses', accountId: account.id }).toString(),
         icon: require('@tabler/icons/outline/search.svg'),
       });
     }
@@ -635,7 +634,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
       )}
 
       <div>
-        <div className='relative isolate flex h-32 w-full flex-col justify-center overflow-hidden bg-gray-200 black:rounded-t-none md:rounded-t-xl lg:h-48 dark:bg-gray-900/50'>
+        <div className='relative isolate flex h-32 w-full flex-col justify-center overflow-hidden bg-gray-200 black:rounded-t-none dark:bg-gray-900/50 md:rounded-t-xl lg:h-48'>
           {renderHeader()}
 
           <div className='absolute left-2 top-2'>
@@ -654,12 +653,12 @@ const Header: React.FC<IHeader> = ({ account }) => {
                 src={account.avatar}
                 alt={account.avatar_description}
                 size={96}
-                className='relative h-24 w-24 rounded-full bg-white ring-4 ring-white black:ring-black dark:bg-primary-900 dark:ring-primary-900'
+                className='relative size-24 rounded-lg bg-white ring-4 ring-white black:ring-black dark:bg-primary-900 dark:ring-primary-900'
               />
             </a>
             {account.verified && (
-              <div className='absolute bottom-0 right-0'>
-                <VerificationBadge className='h-6 w-6 rounded-full bg-white ring-2 ring-white dark:bg-primary-900 dark:ring-primary-900' />
+              <div className='absolute -bottom-2 -right-2'>
+                <VerificationBadge className='!size-[24px] rounded-full !p-[2px] ring-2 ring-white black:ring-black dark:ring-primary-900' />
               </div>
             )}
           </div>
@@ -677,7 +676,6 @@ const Header: React.FC<IHeader> = ({ account }) => {
                     theme='outlined'
                     className='px-2'
                     iconClassName='h-4 w-4'
-                    children={null}
                   />
                 </DropdownMenu>
               )}

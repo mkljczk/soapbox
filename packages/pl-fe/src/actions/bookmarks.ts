@@ -1,6 +1,6 @@
 import { getClient } from '../api';
 
-import { importFetchedStatuses } from './importer';
+import { importEntities } from './importer';
 
 import type { PaginatedResponse, Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -17,14 +17,14 @@ const noOp = () => new Promise(f => f(undefined));
 
 const fetchBookmarkedStatuses = (folderId?: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    if (getState().status_lists.get(folderId ? `bookmarks:${folderId}` : 'bookmarks')?.isLoading) {
+    if (getState().status_lists[folderId ? `bookmarks:${folderId}` : 'bookmarks']?.isLoading) {
       return dispatch(noOp);
     }
 
     dispatch(fetchBookmarkedStatusesRequest(folderId));
 
     return getClient(getState()).myAccount.getBookmarks({ folder_id: folderId }).then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       return dispatch(fetchBookmarkedStatusesSuccess(response.items, response.next, folderId));
     }).catch(error => {
       dispatch(fetchBookmarkedStatusesFail(error, folderId));
@@ -52,16 +52,16 @@ const fetchBookmarkedStatusesFail = (error: unknown, folderId?: string) => ({
 const expandBookmarkedStatuses = (folderId?: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const list = folderId ? `bookmarks:${folderId}` : 'bookmarks';
-    const next = getState().status_lists.get(list)?.next || null;
+    const next = getState().status_lists[list]?.next || null;
 
-    if (next === null || getState().status_lists.get(list)?.isLoading) {
+    if (next === null || getState().status_lists[list]?.isLoading) {
       return dispatch(noOp);
     }
 
     dispatch(expandBookmarkedStatusesRequest(folderId));
 
     return next().then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       return dispatch(expandBookmarkedStatusesSuccess(response.items, response.next, folderId));
     }).catch(error => {
       dispatch(expandBookmarkedStatusesFail(error, folderId));
@@ -90,7 +90,6 @@ type BookmarksAction =
   ReturnType<typeof fetchBookmarkedStatusesRequest>
   | ReturnType<typeof fetchBookmarkedStatusesSuccess>
   | ReturnType<typeof fetchBookmarkedStatusesFail>
-  | ReturnType<typeof expandBookmarkedStatuses>
   | ReturnType<typeof expandBookmarkedStatusesRequest>
   | ReturnType<typeof expandBookmarkedStatusesSuccess>
   | ReturnType<typeof expandBookmarkedStatusesFail>;
@@ -103,12 +102,6 @@ export {
   BOOKMARKED_STATUSES_EXPAND_SUCCESS,
   BOOKMARKED_STATUSES_EXPAND_FAIL,
   fetchBookmarkedStatuses,
-  fetchBookmarkedStatusesRequest,
-  fetchBookmarkedStatusesSuccess,
-  fetchBookmarkedStatusesFail,
   expandBookmarkedStatuses,
-  expandBookmarkedStatusesRequest,
-  expandBookmarkedStatusesSuccess,
-  expandBookmarkedStatusesFail,
   type BookmarksAction,
 };

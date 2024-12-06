@@ -1,7 +1,7 @@
 /** Register the ServiceWorker. */
 const registerSW = (path: string) => {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register(path, { scope: '/' });
+    navigator.serviceWorker.register?.(path, { scope: '/' });
   }
 };
 

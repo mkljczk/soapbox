@@ -16,10 +16,10 @@ const messages = defineMessages({
   exceededVideoDurationLimit: { id: 'upload_error.video_duration_limit', defaultMessage: 'Video exceeds the current duration limit ({limit, plural, one {# second} other {# seconds}})' },
 });
 
-const noOp = (e: any) => {};
+const noOp = () => {};
 
 const updateMedia = (mediaId: string, params: Record<string, any>) =>
-  (dispatch: any, getState: () => RootState) =>
+  (_dispatch: AppDispatch, getState: () => RootState) =>
     getClient(getState()).media.updateMedia(mediaId, params);
 
 const uploadMedia = (body: UploadMediaParams, onUploadProgress: (e: ProgressEvent) => void = noOp) =>

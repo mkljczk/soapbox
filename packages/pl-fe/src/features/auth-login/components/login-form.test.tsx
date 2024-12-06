@@ -1,7 +1,8 @@
+import { instanceSchema } from 'pl-api';
 import React from 'react';
+import * as v from 'valibot';
 
 import { fireEvent, render, screen } from 'pl-fe/jest/test-helpers';
-import { instanceSchema } from 'pl-fe/schemas';
 
 import LoginForm from './login-form';
 
@@ -9,7 +10,7 @@ describe('<LoginForm />', () => {
   it('renders for Pleroma', () => {
     const mockFn = vi.fn();
     const store = {
-      instance: instanceSchema.parse({
+      instance: v.parse(instanceSchema, {
         version: '2.7.2 (compatible; Pleroma 2.3.0)',
       }),
     };
@@ -22,7 +23,7 @@ describe('<LoginForm />', () => {
   it('renders for Mastodon', () => {
     const mockFn = vi.fn();
     const store = {
-      instance: instanceSchema.parse({
+      instance: v.parse(instanceSchema, {
         version: '3.0.0',
       }),
     };

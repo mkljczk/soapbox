@@ -15,7 +15,6 @@ yarn-error.log*
 /dist/
 /static/
 /public/
-/dist/
 /pl-fe.zip
 
 .idea
@@ -27,9 +26,3 @@ yarn-error.log*
 /custom/*.*
 !/custom/.gitkeep
 !/custom/**/.gitkeep
-
-# surge.sh
-/CNAME
-/AUTH
-/CORS
-/ROUTER

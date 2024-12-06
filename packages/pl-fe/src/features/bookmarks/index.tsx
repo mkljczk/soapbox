@@ -1,18 +1,19 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import debounce from 'lodash/debounce';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { fetchBookmarkedStatuses, expandBookmarkedStatuses } from 'pl-fe/actions/bookmarks';
-import { openModal } from 'pl-fe/actions/modals';
-import { useBookmarkFolder, useDeleteBookmarkFolder } from 'pl-fe/api/hooks';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import StatusList from 'pl-fe/components/status-list';
-import { Column } from 'pl-fe/components/ui';
-import { useAppSelector, useAppDispatch, useTheme } from 'pl-fe/hooks';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
+import Column from 'pl-fe/components/ui/column';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useTheme } from 'pl-fe/hooks/use-theme';
+import { useBookmarkFolder, useDeleteBookmarkFolder } from 'pl-fe/queries/statuses/use-bookmark-folders';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({
@@ -45,14 +46,15 @@ const Bookmarks: React.FC<IBookmarks> = ({ params }) => {
 
   const folderId = params?.id;
 
-  const { bookmarkFolder: folder } = useBookmarkFolder(folderId);
-  const { deleteBookmarkFolder } = useDeleteBookmarkFolder();
+  const { openModal } = useModalsStore();
+  const { data: folder } = useBookmarkFolder(folderId);
+  const { mutate: deleteBookmarkFolder } = useDeleteBookmarkFolder();
 
   const bookmarksKey = folderId ? `bookmarks:${folderId}` : 'bookmarks';
 
-  const statusIds = useAppSelector((state) => state.status_lists.get(bookmarksKey)?.items || ImmutableOrderedSet<string>());
-  const isLoading = useAppSelector((state) => state.status_lists.get(bookmarksKey)?.isLoading === true);
-  const hasMore = useAppSelector((state) => !!state.status_lists.get(bookmarksKey)?.next);
+  const statusIds = useAppSelector((state) => state.status_lists[bookmarksKey]?.items || []);
+  const isLoading = useAppSelector((state) => state.status_lists[bookmarksKey]?.isLoading === true);
+  const hasMore = useAppSelector((state) => !!state.status_lists[bookmarksKey]?.next);
 
   React.useEffect(() => {
     dispatch(fetchBookmarkedStatuses(folderId));
@@ -62,11 +64,11 @@ const Bookmarks: React.FC<IBookmarks> = ({ params }) => {
 
   const handleEditFolder = () => {
     if (!folderId) return;
-    dispatch(openModal('EDIT_BOOKMARK_FOLDER', { folderId }));
+    openModal('EDIT_BOOKMARK_FOLDER', { folderId });
   };
 
   const handleDeleteFolder = () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.deleteFolderHeading, { name: folder?.name }),
       message: intl.formatMessage(messages.deleteFolderMessage),
       confirm: intl.formatMessage(messages.deleteFolderConfirm),
@@ -81,7 +83,7 @@ const Bookmarks: React.FC<IBookmarks> = ({ params }) => {
           },
         });
       },
-    }));
+    });
   };
 
   const emptyMessage = folderId
@@ -109,7 +111,7 @@ const Bookmarks: React.FC<IBookmarks> = ({ params }) => {
     >
       <PullToRefresh onRefresh={handleRefresh}>
         <StatusList
-          className='black:p-0 black:sm:p-4'
+          className='black:p-0 black:sm:p-4 black:sm:pt-0'
           loadMoreClassName='black:sm:mx-4'
           statusIds={statusIds}
           scrollKey='bookmarked_statuses'

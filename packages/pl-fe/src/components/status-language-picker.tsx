@@ -1,41 +1,45 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { changeStatusLanguage } from 'pl-fe/actions/statuses';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Text from 'pl-fe/components/ui/text';
 import { type Language, languages } from 'pl-fe/features/preferences';
-import { useAppDispatch } from 'pl-fe/hooks';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
 import DropdownMenu from './dropdown-menu';
-import { HStack, Icon, Text } from './ui';
 
-import type { Status } from 'pl-fe/normalizers';
+import type { Status } from 'pl-fe/normalizers/status';
 
 const messages = defineMessages({
   languageVersions: { id: 'status.language_versions', defaultMessage: 'The post has multiple language versions.' },
 });
 
 interface IStatusLanguagePicker {
-  status: Pick<Status, 'id' | 'contentMapHtml' | 'currentLanguage'>;
+  status: Pick<Status, 'id' | 'content_map'>;
   showLabel?: boolean;
 }
 
 const StatusLanguagePicker: React.FC<IStatusLanguagePicker> = ({ status, showLabel }) => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
 
-  if (!status.contentMapHtml || Object.keys(status.contentMapHtml).length < 2) return null;
+  const { statuses, setStatusLanguage } = useStatusMetaStore();
 
-  const icon = <Icon className='h-5 w-5 text-gray-700 dark:text-gray-600' src={require('@tabler/icons/outline/language.svg')} />;
+  const { currentLanguage } = statuses[status.id] || {};
+
+  if (!status.content_map || Object.keys(status.content_map).length < 2) return null;
+
+  const icon = <Icon className='size-4 text-gray-700 dark:text-gray-600' src={require('@tabler/icons/outline/language.svg')} />;
 
   return (
     <>
       <Text tag='span' theme='muted' size='sm'>&middot;</Text>
 
       <DropdownMenu
-        items={Object.keys(status.contentMapHtml).map((language) => ({
+        items={Object.keys(status.content_map).map((language) => ({
           text: languages[language as Language] || language,
-          action: () => dispatch(changeStatusLanguage(status.id, language)),
-          active: language === status.currentLanguage,
+          action: () => setStatusLanguage(status.id, language),
+          active: language === currentLanguage,
         }))}
       >
         <button title={intl.formatMessage(messages.languageVersions)} className='hover:underline'>
@@ -43,7 +47,7 @@ const StatusLanguagePicker: React.FC<IStatusLanguagePicker> = ({ status, showLab
             <HStack space={1} alignItems='center'>
               {icon}
               <Text tag='span' theme='muted' size='sm'>
-                {languages[status.currentLanguage as Language] || status.currentLanguage}
+                {languages[currentLanguage as Language] || currentLanguage}
               </Text>
             </HStack>
           ) : icon}

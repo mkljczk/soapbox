@@ -19,9 +19,10 @@ import { $createRemarkExport, $createRemarkImport } from '@mkljczk/lexical-remar
 import clsx from 'clsx';
 import { $createParagraphNode, $createTextNode, $getRoot, type EditorState, type LexicalEditor } from 'lexical';
 import React, { useMemo, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, useIntl } from 'react-intl';
 
-import { useAppDispatch, useCompose } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 
 import { importImage } from './handlers/image';
 import { useNodes } from './nodes';
@@ -41,6 +42,12 @@ const LINK_MATCHERS = [
   ),
 ];
 
+const messages = defineMessages({
+  placeholder: { id: 'compose_form.placeholder', defaultMessage: 'What\'s on your mind?' },
+  eventPlaceholder: { id: 'compose_form.event_placeholder', defaultMessage: 'Post to this event' },
+  pollPlaceholder: { id: 'compose_form.poll_placeholder', defaultMessage: 'Add a poll topic…' },
+});
+
 interface IComposeEditor {
   className?: string;
   editableClassName?: string;
@@ -54,7 +61,7 @@ interface IComposeEditor {
   onPaste?(files: FileList): void;
   onChange?(text: string): void;
   onFocus?: React.FocusEventHandler<HTMLDivElement>;
-  placeholder?: JSX.Element | string;
+  placeholder?: string;
 }
 
 const theme: InitialConfigType['theme'] = {
@@ -92,9 +99,10 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
   placeholder,
 }, ref) => {
   const dispatch = useAppDispatch();
-  const { content_type: contentType } = useCompose(composeId);
+  const { content_type: contentType, modified_language: language } = useCompose(composeId);
   const isWysiwyg = contentType === 'wysiwyg';
   const nodes = useNodes(isWysiwyg);
+  const intl = useIntl();
 
   const [suggestionsHidden, setSuggestionsHidden] = useState(true);
 
@@ -105,13 +113,13 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
     theme,
     editorState: dispatch((_, getState) => {
       const state = getState();
-      const compose = state.compose.get(composeId);
+      const compose = state.compose[composeId];
 
       if (!compose) return;
 
       const editorState = !compose.modified_language || compose.modified_language === compose.language
         ? compose.editorState
-        : compose.editorStateMap.get(compose.modified_language, '');
+        : compose.editorStateMap[compose.modified_language] || '';
 
       if (editorState) {
         return editorState;
@@ -120,7 +128,18 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
       return () => {
         const text = !compose.modified_language || compose.modified_language === compose.language
           ? compose.text
-          : compose.textMap.get(compose.modified_language, '');
+          : compose.textMap[compose.modified_language] || '';
+
+        if (!text && navigator.userAgent.includes('Ladybird/')) {
+          const paragraph = $createParagraphNode();
+          const textNode = $createTextNode(placeholder || intl.formatMessage(messages.placeholder));
+
+          paragraph.append(textNode);
+
+          $getRoot().clear().append(paragraph);
+
+          return;
+        }
 
         if (isWysiwyg) {
           $createRemarkImport({
@@ -134,9 +153,7 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
 
           paragraph.append(textNode);
 
-          $getRoot()
-            .clear()
-            .append(paragraph);
+          $getRoot().clear().append(paragraph);
         }
       };
     }),
@@ -169,12 +186,12 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
     }
   };
 
-  let textareaPlaceholder = placeholder || <FormattedMessage id='compose_form.placeholder' defaultMessage="What's on your mind?" />;
+  let textareaPlaceholder = placeholder || intl.formatMessage(messages.placeholder);
 
   if (eventDiscussion) {
-    textareaPlaceholder = <FormattedMessage id='compose_form.event_placeholder' defaultMessage='Post to this event' />;
+    textareaPlaceholder = intl.formatMessage(messages.eventPlaceholder);
   } else if (hasPoll) {
-    textareaPlaceholder = <FormattedMessage id='compose_form.poll_placeholder' defaultMessage='Add a poll topic…' />;
+    textareaPlaceholder = intl.formatMessage(messages.pollPlaceholder);
   }
 
   return (
@@ -184,6 +201,7 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
           contentEditable={
             <div onFocus={onFocus} onPaste={handlePaste} ref={onRef}>
               <ContentEditable
+                tabIndex={0}
                 className={clsx(
                   'relative z-10 text-[1rem] outline-none transition-[min-height] motion-reduce:transition-none',
                   editableClassName,
@@ -192,6 +210,7 @@ const ComposeEditor = React.forwardRef<LexicalEditor, IComposeEditor>(({
                     'min-h-[99px]': !condensed,
                   },
                 )}
+                lang={language || undefined}
               />
             </div>
           }

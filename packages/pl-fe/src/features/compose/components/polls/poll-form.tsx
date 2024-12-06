@@ -3,8 +3,15 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { addPollOption, changePollOption, changePollSettings, clearComposeSuggestions, fetchComposeSuggestions, removePoll, removePollOption, selectComposeSuggestion } from 'pl-fe/actions/compose';
 import AutosuggestInput from 'pl-fe/components/autosuggest-input';
-import { Button, Divider, HStack, Stack, Text, Toggle } from 'pl-fe/components/ui';
-import { useAppDispatch, useCompose, useInstance } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Divider from 'pl-fe/components/ui/divider';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Toggle from 'pl-fe/components/ui/toggle';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import DurationSelector from './duration-selector';
 
@@ -48,7 +55,7 @@ const Option: React.FC<IOption> = ({
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
-  const { suggestions } = useCompose(composeId);
+  const { suggestions, modified_language: language } = useCompose(composeId);
 
   const handleOptionTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => onChange(index, event.target.value);
 
@@ -89,6 +96,7 @@ const Option: React.FC<IOption> = ({
           onSuggestionSelected={onSuggestionSelected}
           searchTokens={[':']}
           autoFocus={index === 0 || index >= 2}
+          lang={language || undefined}
         />
       </HStack>
 
@@ -114,7 +122,7 @@ const PollForm: React.FC<IPollForm> = ({ composeId }) => {
 
   const { poll, language, modified_language: modifiedLanguage } = useCompose(composeId);
 
-  const options = !modifiedLanguage || modifiedLanguage === language ? poll?.options : poll?.options_map.map((option, key) => option.get(modifiedLanguage, poll.options.get(key)!));
+  const options = !modifiedLanguage || modifiedLanguage === language ? poll?.options : poll?.options_map.map((option, key) => option[modifiedLanguage] || poll.options[key]);
   const expiresIn = poll?.expires_in;
   const isMultiple = poll?.multiple;
 
@@ -148,7 +156,7 @@ const PollForm: React.FC<IPollForm> = ({ composeId }) => {
             onChange={onChangeOption}
             onRemove={onRemoveOption}
             maxChars={maxOptionChars}
-            numOptions={options.size}
+            numOptions={options.length}
             onRemovePoll={onRemovePoll}
           />
         ))}
@@ -156,7 +164,7 @@ const PollForm: React.FC<IPollForm> = ({ composeId }) => {
         <HStack space={2}>
           <div className='w-6' />
 
-          {options.size < maxOptions && (
+          {options.length < maxOptions && (
             <Button
               theme='secondary'
               onClick={handleAddOption}

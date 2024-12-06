@@ -2,9 +2,12 @@ import React, { useEffect } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchJoinedEvents, fetchRecentEvents } from 'pl-fe/actions/events';
-import { openModal } from 'pl-fe/actions/modals';
-import { Button, CardBody, CardHeader, CardTitle, Column, HStack } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import { CardBody, CardHeader, CardTitle } from 'pl-fe/components/ui/card';
+import Column from 'pl-fe/components/ui/column';
+import HStack from 'pl-fe/components/ui/hstack';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import EventCarousel from './components/event-carousel';
 
@@ -17,14 +20,10 @@ const Events = () => {
 
   const dispatch = useAppDispatch();
 
-  const recentEvents = useAppSelector((state) => state.status_lists.get('recent_events')!.items);
-  const recentEventsLoading = useAppSelector((state) => state.status_lists.get('recent_events')!.isLoading);
-  const joinedEvents = useAppSelector((state) => state.status_lists.get('joined_events')!.items);
-  const joinedEventsLoading = useAppSelector((state) => state.status_lists.get('joined_events')!.isLoading);
-
-  const onComposeEvent = () => {
-    dispatch(openModal('COMPOSE_EVENT'));
-  };
+  const recentEvents = useAppSelector((state) => state.status_lists.recent_events!.items);
+  const recentEventsLoading = useAppSelector((state) => state.status_lists.recent_events!.isLoading);
+  const joinedEvents = useAppSelector((state) => state.status_lists.joined_events!.items);
+  const joinedEventsLoading = useAppSelector((state) => state.status_lists.joined_events!.isLoading);
 
   useEffect(() => {
     dispatch(fetchRecentEvents());
@@ -35,12 +34,7 @@ const Events = () => {
     <Column label={intl.formatMessage(messages.title)}>
       <HStack className='mb-2' space={2} justifyContent='between'>
         <CardTitle title={<FormattedMessage id='events.recent_events' defaultMessage='Recent events' />} />
-        <Button
-          className='ml-auto xl:hidden'
-          theme='primary'
-          size='sm'
-          onClick={onComposeEvent}
-        >
+        <Button className='ml-auto xl:hidden' theme='primary' size='sm' to='/events/new'>
           <FormattedMessage id='events.create_event' defaultMessage='Create event' />
         </Button>
       </HStack>

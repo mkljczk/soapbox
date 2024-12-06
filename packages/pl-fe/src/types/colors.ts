@@ -6,7 +6,7 @@ type TailwindColorObject = {
 };
 
 type TailwindColorPalette = {
-  [key: string]: TailwindColorObject | string;
+  [key: string]: TailwindColorObject | string | null;
 }
 
 export type { Rgb, Hsl, TailwindColorObject, TailwindColorPalette };

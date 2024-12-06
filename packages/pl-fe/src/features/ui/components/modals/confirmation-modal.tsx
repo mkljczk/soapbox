@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import List, { ListItem } from 'pl-fe/components/list';
-import { Modal, Stack, Text, Toggle } from 'pl-fe/components/ui';
+import Modal from 'pl-fe/components/ui/modal';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Toggle from 'pl-fe/components/ui/toggle';
 
 import type { BaseModalProps } from '../modal-root';
 import type { ButtonThemes } from 'pl-fe/components/ui/button/useButtonStyles';

@@ -1,5 +1,4 @@
 import React from 'react';
-import { VirtuosoMockContext } from 'react-virtuoso';
 
 import { __stub } from 'pl-fe/api';
 import { ChatContext } from 'pl-fe/contexts/chat-context';
@@ -10,13 +9,11 @@ import { render, screen, waitFor } from 'pl-fe/jest/test-helpers';
 import ChatPane from './chat-pane';
 
 const renderComponentWithChatContext = (store = {}) => render(
-  <VirtuosoMockContext.Provider value={{ viewportHeight: 300, itemHeight: 100 }}>
-    <StatProvider>
-      <ChatContext.Provider value={{ isOpen: true }}>
-        <ChatPane />
-      </ChatContext.Provider>
-    </StatProvider>
-  </VirtuosoMockContext.Provider>,
+  <StatProvider>
+    <ChatContext.Provider value={{ isOpen: true }}>
+      <ChatPane />
+    </ChatContext.Provider>
+  </StatProvider>,
   undefined,
   store,
 );

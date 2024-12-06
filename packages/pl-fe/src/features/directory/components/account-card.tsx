@@ -2,15 +2,18 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { getSettings } from 'pl-fe/actions/settings';
-import { useAccount } from 'pl-fe/api/hooks';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 import Account from 'pl-fe/components/account';
 import Badge from 'pl-fe/components/badge';
-import HoverRefWrapper from 'pl-fe/components/hover-ref-wrapper';
+import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
+import { ParsedContent } from 'pl-fe/components/parsed-content';
 import RelativeTimestamp from 'pl-fe/components/relative-timestamp';
-import { Avatar, Stack, Text } from 'pl-fe/components/ui';
+import Avatar from 'pl-fe/components/ui/avatar';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import ActionButton from 'pl-fe/features/ui/components/action-button';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 import { shortNumberFormat } from 'pl-fe/utils/numbers';
 
 interface IAccountCard {
@@ -20,7 +23,7 @@ interface IAccountCard {
 const AccountCard: React.FC<IAccountCard> = ({ id }) => {
   const me = useAppSelector((state) => state.me);
   const { account } = useAccount(id);
-  const autoPlayGif = useAppSelector((state) => getSettings(state).get('autoPlayGif'));
+  const { autoPlayGif } = useSettingsStore().settings;
 
   if (!account) return null;
 
@@ -48,7 +51,7 @@ const AccountCard: React.FC<IAccountCard> = ({ id }) => {
           className='h-32 w-full rounded-t-lg object-cover'
         />
 
-        <HoverRefWrapper key={account.id} accountId={account.id} inline>
+        <HoverAccountWrapper key={account.id} accountId={account.id} element='span'>
           <Link to={`/@${account.acct}`} title={account.acct}>
             <Avatar
               src={account.avatar}
@@ -57,7 +60,7 @@ const AccountCard: React.FC<IAccountCard> = ({ id }) => {
               size={64}
             />
           </Link>
-        </HoverRefWrapper>
+        </HoverAccountWrapper>
       </div>
 
       <Stack space={4} className='p-3 pt-10'>
@@ -67,12 +70,15 @@ const AccountCard: React.FC<IAccountCard> = ({ id }) => {
           withRelationship={false}
         />
 
-        <Text
-          truncate
-          align='left'
-          className='line-clamp-2 [&_br]:hidden [&_p:first-child]:inline [&_p:first-child]:truncate [&_p]:hidden'
-          dangerouslySetInnerHTML={{ __html: account.note_emojified || '&nbsp;' }}
-        />
+        {!!account.note && (
+          <Text
+            truncate
+            align='left'
+            className='line-clamp-2 inline text-ellipsis [&_br]:hidden [&_p:first-child]:inline [&_p:first-child]:truncate [&_p]:hidden'
+          >
+            <ParsedContent html={account.note} emojis={account.emojis} />
+          </Text>
+        )}
       </Stack>
 
       <div className='grid grid-cols-3 gap-1 py-4'>

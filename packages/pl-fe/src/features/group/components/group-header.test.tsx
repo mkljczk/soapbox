@@ -2,9 +2,10 @@ import React from 'react';
 
 import { buildGroup } from 'pl-fe/jest/factory';
 import { render, screen } from 'pl-fe/jest/test-helpers';
-import { Group } from 'pl-fe/normalizers';
 
 import GroupHeader from './group-header';
+
+import type { Group } from 'pl-fe/normalizers/group';
 
 let group: Group;
 

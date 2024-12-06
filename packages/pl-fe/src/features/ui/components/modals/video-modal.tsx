@@ -1,41 +1,29 @@
 import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import Video from 'pl-fe/features/video';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 import type { BaseModalProps } from '../modal-root';
 import type { MediaAttachment } from 'pl-api';
-import type { Account } from 'pl-fe/normalizers';
 
 type VideoModalProps = {
   media: MediaAttachment;
   statusId: string;
-  account?: Pick<Account, 'id' | 'acct'>;
   time?: number;
 };
 
-const VideoModal: React.FC<VideoModalProps & BaseModalProps> = ({ statusId, account, media, time }) => {
+const VideoModal: React.FC<VideoModalProps & BaseModalProps> = ({ statusId, media, time }) => {
   const getStatus = useCallback(makeGetStatus(), []);
 
   const status = useAppSelector(state => getStatus(state, { id: statusId }))!;
-  const history = useHistory();
 
-  const handleStatusClick: React.MouseEventHandler = e => {
-    if (!account) return;
-
-    if (e.button === 0 && !(e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      history.push(`/@${account.acct}/posts/${status.id}`);
-    }
-  };
-
-  const link = status && account && (
-    <a href={status.url} onClick={handleStatusClick}>
+  const link = status && (
+    <Link to={`/@${status.account.acct}/posts/${status.id}`}>
       <FormattedMessage id='lightbox.view_context' defaultMessage='View context' />
-    </a>
+    </Link>
   );
 
   return (

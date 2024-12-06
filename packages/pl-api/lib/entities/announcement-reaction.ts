@@ -1,17 +1,21 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-import type { Resolve } from '../utils/types';
-
-/** @see {@link https://docs.joinmastodon.org/entities/announcement/} */
-const announcementReactionSchema = z.object({
-  name: z.string().catch(''),
-  count: z.number().int().nonnegative().catch(0),
-  me: z.boolean().catch(false),
-  url: z.string().nullable().catch(null),
-  static_url: z.string().nullable().catch(null),
-  announcement_id: z.string().catch(''),
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/announcement/}
+ */
+const announcementReactionSchema = v.object({
+  name: v.fallback(v.string(), ''),
+  count: v.fallback(v.pipe(v.number(), v.integer(), v.minValue(0)), 0),
+  me: v.fallback(v.boolean(), false),
+  url: v.fallback(v.nullable(v.string()), null),
+  static_url: v.fallback(v.nullable(v.string()), null),
+  announcement_id: v.fallback(v.string(), ''),
 });
 
-type AnnouncementReaction = Resolve<z.infer<typeof announcementReactionSchema>>;
+/**
+ * @category Entity types
+ */
+type AnnouncementReaction = v.InferOutput<typeof announcementReactionSchema>;
 
 export { announcementReactionSchema, type AnnouncementReaction };

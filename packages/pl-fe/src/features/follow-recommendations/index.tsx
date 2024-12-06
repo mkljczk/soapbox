@@ -1,28 +1,23 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { fetchSuggestions } from 'pl-fe/actions/suggestions';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, Stack, Text } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useSuggestions } from 'pl-fe/queries/suggestions';
 
 const messages = defineMessages({
   heading: { id: 'follow_recommendations.heading', defaultMessage: 'Suggested profiles' },
 });
 
 const FollowRecommendations: React.FC = () => {
-  const dispatch = useAppDispatch();
   const intl = useIntl();
 
-  const suggestions = useAppSelector((state) => state.suggestions.items);
-  const isLoading = useAppSelector((state) => state.suggestions.isLoading);
+  const { data: suggestions, isFetching } = useSuggestions();
 
-  useEffect(() => {
-    dispatch(fetchSuggestions(20));
-  }, []);
-
-  if (suggestions.size === 0 && !isLoading) {
+  if (suggestions.length === 0 && !isFetching) {
     return (
       <Column label={intl.formatMessage(messages.heading)}>
         <Text align='center'>
@@ -35,15 +30,11 @@ const FollowRecommendations: React.FC = () => {
   return (
     <Column label={intl.formatMessage(messages.heading)}>
       <Stack space={4}>
-        <ScrollableList
-          isLoading={isLoading}
-          scrollKey='suggestions'
-          itemClassName='pb-4'
-        >
+        <ScrollableList isLoading={isFetching} itemClassName='pb-4'>
           {suggestions.map((suggestion) => (
             <AccountContainer
-              key={suggestion.account}
-              id={suggestion.account}
+              key={suggestion.account_id}
+              id={suggestion.account_id}
               withAccountNote
             />
           ))}

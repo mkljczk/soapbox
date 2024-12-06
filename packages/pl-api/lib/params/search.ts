@@ -1,5 +1,8 @@
 import type { PaginationParams, WithRelationshipsParam } from './common';
 
+/**
+ * @category Request params
+ */
 interface SearchParams extends Exclude<PaginationParams, 'since_id'>, WithRelationshipsParam {
   /** String. Specify whether to search for only `accounts`, `hashtags`, `statuses` */
   type?: 'accounts' | 'hashtags' | 'statuses' | 'groups';

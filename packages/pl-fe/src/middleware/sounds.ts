@@ -1,8 +1,7 @@
-
 import { play, soundCache } from 'pl-fe/utils/sounds';
 
-import type { AnyAction, Middleware } from 'redux';
 import type { Sounds } from 'pl-fe/utils/sounds';
+import type { AnyAction, Middleware } from 'redux';
 
 interface Action extends AnyAction {
   meta: {

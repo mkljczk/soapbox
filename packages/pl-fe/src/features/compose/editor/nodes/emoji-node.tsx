@@ -1,7 +1,7 @@
 import { $applyNodeReplacement, DecoratorNode } from 'lexical';
 import React from 'react';
 
-import { Emoji as Component } from 'pl-fe/components/ui';
+import Component from 'pl-fe/components/ui/emoji';
 import { isNativeEmoji, type Emoji } from 'pl-fe/features/emoji';
 
 import type {
@@ -81,9 +81,9 @@ class EmojiNode extends DecoratorNode<JSX.Element> {
   decorate(): JSX.Element {
     const emoji = this.__emoji;
     if (isNativeEmoji(emoji)) {
-      return <Component emoji={emoji.native} alt={emoji.colons} title={emoji.colons} className='emojione h-4 w-4' />;
+      return <Component emoji={emoji.native} alt={emoji.colons} title={emoji.colons} className='emojione size-4' />;
     } else {
-      return <Component src={emoji.imageUrl} alt={emoji.colons} className='emojione h-4 w-4' />;
+      return <Component src={emoji.imageUrl} alt={emoji.colons} className='emojione size-4' />;
     }
   }
 

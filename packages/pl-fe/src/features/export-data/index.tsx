@@ -6,7 +6,7 @@ import {
   exportBlocks,
   exportMutes,
 } from 'pl-fe/actions/export-data';
-import { Column } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
 
 import CSVExporter from './components/csv-exporter';
 

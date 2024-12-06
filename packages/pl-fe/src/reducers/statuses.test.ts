@@ -10,7 +10,7 @@ import {
   STATUS_DELETE_REQUEST,
   STATUS_DELETE_FAIL,
 } from 'pl-fe/actions/statuses';
-import { normalizeStatus } from 'pl-fe/normalizers';
+import { normalizeStatus } from 'pl-fe/normalizers/status';
 
 import reducer, { ReducerStatus } from './statuses';
 

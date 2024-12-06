@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Button } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
 
 interface ILoadMore {
   onClick: React.MouseEventHandler;

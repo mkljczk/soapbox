@@ -55,5 +55,4 @@ const tagHistory = new Settings('plfe_tag_history');
 export {
   pushNotificationsSetting,
   tagHistory,
-  Settings as default,
 };

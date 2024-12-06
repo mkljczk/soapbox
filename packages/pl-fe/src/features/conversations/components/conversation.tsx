@@ -3,7 +3,8 @@ import { useHistory } from 'react-router-dom';
 
 import { markConversationRead } from 'pl-fe/actions/conversations';
 import StatusContainer from 'pl-fe/containers/status-container';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { selectAccount } from 'pl-fe/selectors';
 
 interface IConversation {

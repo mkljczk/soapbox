@@ -7,10 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+/.eslintcache
+
 node_modules
 dist
 dist-ssr
+docs
 *.local
+
+.idea
+.DS_Store
 
 # Editor directories and files
 .vscode/*

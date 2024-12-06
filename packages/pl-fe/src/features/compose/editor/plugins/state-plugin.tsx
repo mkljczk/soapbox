@@ -7,7 +7,8 @@ import { useIntl } from 'react-intl';
 
 import { addSuggestedLanguage, addSuggestedQuote, setEditorState } from 'pl-fe/actions/compose';
 import { fetchStatus } from 'pl-fe/actions/statuses';
-import { useAppDispatch, useFeatures } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { getStatusIdsFromLinksInContent } from 'pl-fe/utils/status';
 
 import type { LanguageIdentificationModel } from 'fasttext.wasm.js/dist/models/language-identification/common.js';
@@ -28,7 +29,7 @@ const StatePlugin: React.FC<IStatePlugin> = ({ composeId, isWysiwyg }) => {
   const getQuoteSuggestions = useCallback(debounce((text: string) => {
     dispatch(async (_, getState) => {
       const state = getState();
-      const compose = state.compose.get(composeId);
+      const compose = state.compose[composeId];
 
       if (!features.quotePosts || compose?.quote) return;
 
@@ -39,7 +40,7 @@ const StatePlugin: React.FC<IStatePlugin> = ({ composeId, isWysiwyg }) => {
       for (const id of ids) {
         if (compose?.dismissed_quotes.includes(id)) continue;
 
-        if (state.statuses.get(id)) {
+        if (state.statuses[id]) {
           quoteId = id;
           break;
         }
@@ -59,7 +60,7 @@ const StatePlugin: React.FC<IStatePlugin> = ({ composeId, isWysiwyg }) => {
   const detectLanguage = useCallback(debounce(async (text: string) => {
     dispatch(async (dispatch, getState) => {
       const state = getState();
-      const compose = state.compose.get(composeId);
+      const compose = state.compose[composeId];
 
       if (!features.postLanguages || features.languageDetection || compose?.language) return;
 

@@ -2,7 +2,9 @@ import clsx from 'clsx';
 import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HStack, IconButton, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Text from 'pl-fe/components/ui/text';
 
 interface IAuthorizeRejectButtons {
   onAuthorize(): Promise<unknown> | unknown;
@@ -160,8 +162,8 @@ const AuthorizeRejectButton: React.FC<IAuthorizeRejectButton> = ({ theme, icon, 
         src={isLoading ? require('@tabler/icons/filled/player-stop.svg') : icon}
         onClick={action}
         theme='seamless'
-        className='h-10 w-10 items-center justify-center bg-white focus:!ring-0 dark:!bg-gray-900'
-        iconClassName={clsx('h-6 w-6', {
+        className='size-10 items-center justify-center bg-white focus:!ring-0 dark:!bg-gray-900'
+        iconClassName={clsx('size-6', {
           'text-primary-500': theme === 'primary',
           'text-danger-600': theme === 'danger',
         })}

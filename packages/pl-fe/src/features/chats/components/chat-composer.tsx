@@ -2,12 +2,19 @@ import React, { useState } from 'react';
 import { defineMessages, IntlShape, useIntl } from 'react-intl';
 
 import { unblockAccount } from 'pl-fe/actions/accounts';
-import { openModal } from 'pl-fe/actions/modals';
-import { Button, Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover, HStack, IconButton, Stack, Text } from 'pl-fe/components/ui';
+import { useRelationship } from 'pl-fe/api/hooks/accounts/use-relationship';
+import Button from 'pl-fe/components/ui/button';
+import Combobox, { ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from 'pl-fe/components/ui/combobox';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import { useChatContext } from 'pl-fe/contexts/chat-context';
 import UploadButton from 'pl-fe/features/compose/components/upload-button';
 import emojiSearch from 'pl-fe/features/emoji/search';
-import { useAppDispatch, useAppSelector, useInstance } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import { textAtCursorMatchesToken } from 'pl-fe/utils/suggestions';
 
 import ChatTextarea from './chat-textarea';
@@ -71,10 +78,13 @@ const ChatComposer = React.forwardRef<HTMLTextAreaElement | null, IChatComposer>
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
+  const { openModal } = useModalsStore();
   const { chat } = useChatContext();
+  const { relationship } = useRelationship(chat?.account.id, { enabled: !!chat });
 
-  const isBlocked = useAppSelector((state) => state.getIn(['relationships', chat?.account?.id, 'blocked_by']));
-  const isBlocking = useAppSelector((state) => state.getIn(['relationships', chat?.account?.id, 'blocking']));
+  const isBlocked = relationship?.blocked_by && false;
+  const isBlocking = relationship?.blocking && false;
+
   const maxCharacterCount = useInstance().configuration.chats.max_characters;
 
   const [suggestions, setSuggestions] = useState<Suggestion>(initialSuggestionState);
@@ -131,13 +141,13 @@ const ChatComposer = React.forwardRef<HTMLTextAreaElement | null, IChatComposer>
   };
 
   const handleUnblockUser = () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.unblockHeading, { acct: chat?.account.acct }),
       message: intl.formatMessage(messages.unblockMessage),
       confirm: intl.formatMessage(messages.unblockConfirm),
       confirmationTheme: 'primary',
       onConfirm: () => dispatch(unblockAccount(chat?.account.id as string)),
-    }));
+    });
   };
 
   if (isBlocking) {

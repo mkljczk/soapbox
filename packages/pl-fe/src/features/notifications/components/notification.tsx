@@ -4,22 +4,29 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { mentionCompose } from 'pl-fe/actions/compose';
 import { reblog, favourite, unreblog, unfavourite } from 'pl-fe/actions/interactions';
-import { openModal } from 'pl-fe/actions/modals';
-import { getSettings } from 'pl-fe/actions/settings';
-import { toggleStatusMediaHidden } from 'pl-fe/actions/statuses';
+import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
 import Icon from 'pl-fe/components/icon';
 import RelativeTimestamp from 'pl-fe/components/relative-timestamp';
-import { HStack, Text, Emoji } from 'pl-fe/components/ui';
+import Emoji from 'pl-fe/components/ui/emoji';
+import HStack from 'pl-fe/components/ui/hstack';
+import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
 import StatusContainer from 'pl-fe/containers/status-container';
+import Emojify from 'pl-fe/features/emoji/emojify';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
-import { useAppDispatch, useAppSelector, useInstance } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { makeGetNotification } from 'pl-fe/selectors';
+import { useModalsStore } from 'pl-fe/stores/modals';
+import { useSettingsStore } from 'pl-fe/stores/settings';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { NotificationType } from 'pl-fe/utils/notification';
 
-import type { Notification as BaseNotification } from 'pl-api';
-import type { Account, Notification as NotificationEntity, Status as StatusEntity } from 'pl-fe/normalizers';
-import type { MinifiedNotification } from 'pl-fe/reducers/notifications';
+import type { NotificationGroup } from 'pl-api';
+import type { Account } from 'pl-fe/normalizers/account';
+import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
 
 const notificationForScreenReader = (intl: IntlShape, message: string, timestamp: string) => {
   const output = [message];
@@ -29,22 +36,23 @@ const notificationForScreenReader = (intl: IntlShape, message: string, timestamp
   return output.join(', ');
 };
 
-const buildLink = (account: Pick<Account, 'acct' | 'display_name_html'>): JSX.Element => (
-  <bdi key={account.acct}>
+const buildLink = (account: Pick<Account, 'acct' | 'display_name' | 'emojis' | 'id'>): JSX.Element => (
+  <HoverAccountWrapper key={account.acct} element='bdi' accountId={account.id}>
     <Link
       className='font-bold text-gray-800 hover:underline dark:text-gray-200'
       title={account.acct}
       to={`/@${account.acct}`}
-      dangerouslySetInnerHTML={{ __html: account.display_name_html }}
-    />
-  </bdi>
+    >
+      <Emojify text={account.display_name} emojis={account.emojis} />
+    </Link>
+  </HoverAccountWrapper>
 );
 
-const icons: Partial<Record<NotificationType, string>> = {
+const icons: Partial<Record<NotificationType | 'reply', string>> = {
   follow: require('@tabler/icons/outline/user-plus.svg'),
   follow_request: require('@tabler/icons/outline/user-plus.svg'),
   mention: require('@tabler/icons/outline/at.svg'),
-  favourite: require('@tabler/icons/outline/heart.svg'),
+  favourite: require('@tabler/icons/outline/star.svg'),
   reblog: require('@tabler/icons/outline/repeat.svg'),
   status: require('@tabler/icons/outline/bell-ringing.svg'),
   poll: require('@tabler/icons/outline/chart-bar.svg'),
@@ -56,9 +64,10 @@ const icons: Partial<Record<NotificationType, string>> = {
   participation_request: require('@tabler/icons/outline/calendar-event.svg'),
   participation_accepted: require('@tabler/icons/outline/calendar-event.svg'),
   bite: require('@tabler/icons/outline/pacman.svg'),
+  reply: require('@tabler/icons/outline/corner-up-left.svg'),
 };
 
-const messages: Record<NotificationType, MessageDescriptor> = defineMessages({
+const messages: Record<NotificationType | 'reply', MessageDescriptor> = defineMessages({
   follow: {
     id: 'notification.follow',
     defaultMessage: '{name} followed you',
@@ -135,12 +144,16 @@ const messages: Record<NotificationType, MessageDescriptor> = defineMessages({
     id: 'notification.bite',
     defaultMessage: '{name} has bit you',
   },
+  reply: {
+    id: 'notification.reply',
+    defaultMessage: '{name} replied to your post',
+  },
 });
 
 const buildMessage = (
   intl: IntlShape,
-  type: NotificationType,
-  accounts: Array<Pick<Account, 'acct' | 'display_name_html'>>,
+  type: NotificationType | 'reply',
+  accounts: Array<Pick<Account, 'acct' | 'display_name' | 'emojis' | 'id'>>,
   targetName: string,
   instanceTitle: string,
 ): React.ReactNode => {
@@ -168,14 +181,13 @@ const buildMessage = (
 const avatarSize = 48;
 
 interface INotification {
-  hidden?: boolean;
-  notification: MinifiedNotification;
+  notification: NotificationGroup;
   onMoveUp?: (notificationId: string) => void;
   onMoveDown?: (notificationId: string) => void;
   onReblog?: (status: StatusEntity, e?: KeyboardEvent) => void;
 }
 
-const getNotificationStatus = (n: NotificationEntity | BaseNotification) => {
+const getNotificationStatus = (n: Pick<NotificationGroup, 'type'> & ({ status: StatusEntity } | { })): StatusEntity | null => {
   if (['mention', 'status', 'reblog', 'favourite', 'poll', 'update', 'emoji_reaction', 'event_reminder', 'participation_accepted', 'participation_request'].includes(n.type))
     // @ts-ignore
     return n.status;
@@ -183,21 +195,27 @@ const getNotificationStatus = (n: NotificationEntity | BaseNotification) => {
 };
 
 const Notification: React.FC<INotification> = (props) => {
-  const { hidden = false, onMoveUp, onMoveDown } = props;
+  const { onMoveUp, onMoveDown } = props;
 
   const dispatch = useAppDispatch();
 
   const getNotification = useCallback(makeGetNotification(), []);
 
+  const { me } = useLoggedIn();
+  const { toggleStatusMediaHidden } = useStatusMetaStore();
+  const { openModal } = useModalsStore();
+  const { settings } = useSettingsStore();
+
   const notification = useAppSelector((state) => getNotification(state, props.notification));
+  const status = getNotificationStatus(notification);
 
   const history = useHistory();
   const intl = useIntl();
   const instance = useInstance();
 
   const type = notification.type;
-  const { account, accounts } = notification;
-  const status = getNotificationStatus(notification);
+  const { accounts } = notification;
+  const account = accounts[0];
 
   const getHandlers = () => ({
     reply: handleMention,
@@ -245,40 +263,43 @@ const Notification: React.FC<INotification> = (props) => {
 
   const handleHotkeyBoost = useCallback((e?: KeyboardEvent) => {
     if (status && typeof status === 'object') {
-      dispatch((_, getState) => {
-        const boostModal = getSettings(getState()).get('boostModal');
-        if (status.reblogged) {
-          dispatch(unreblog(status));
+      const boostModal = settings.boostModal;
+      if (status.reblogged) {
+        dispatch(unreblog(status));
+      } else {
+        if (e?.shiftKey || !boostModal) {
+          dispatch(reblog(status));
         } else {
-          if (e?.shiftKey || !boostModal) {
-            dispatch(reblog(status));
-          } else {
-            dispatch(openModal('BOOST', { statusId: status.id, onReblog: (status) => {
+          openModal('BOOST', {
+            statusId: status.id,
+            onReblog: (status) => {
               dispatch(reblog(status));
-            } }));
-          }
+            },
+          });
         }
-      });
+      }
     }
   }, [status]);
 
-  const handleHotkeyToggleSensitive = useCallback((e?: KeyboardEvent) => {
+  const handleHotkeyToggleSensitive = useCallback(() => {
     if (status && typeof status === 'object') {
-      dispatch(toggleStatusMediaHidden(status));
+      toggleStatusMediaHidden(status.id);
     }
   }, [status]);
 
   const handleMoveUp = () => {
     if (onMoveUp) {
-      onMoveUp(notification.id);
+      onMoveUp(notification.group_key);
     }
   };
 
   const handleMoveDown = () => {
     if (onMoveDown) {
-      onMoveDown(notification.id);
+      onMoveDown(notification.group_key);
     }
   };
+
+  const displayedType = notification.type === 'mention' && (notification.subtype === 'reply' || status?.in_reply_to_account_id === me) ? 'reply' : notification.type;
 
   const renderIcon = (): React.ReactNode => {
     if (type === 'emoji_reaction' && notification.emoji) {
@@ -286,13 +307,13 @@ const Notification: React.FC<INotification> = (props) => {
         <Emoji
           emoji={notification.emoji}
           src={notification.emoji_url || undefined}
-          className='h-4 w-4 flex-none'
+          className='size-4 flex-none'
         />
       );
-    } else if (icons[type]) {
+    } else if (icons[displayedType]) {
       return (
         <Icon
-          src={icons[type]!}
+          src={icons[displayedType]!}
           className='flex-none text-primary-600 dark:text-primary-400'
         />
       );
@@ -308,7 +329,6 @@ const Notification: React.FC<INotification> = (props) => {
         return account && typeof account === 'object' ? (
           <AccountContainer
             id={account.id}
-            hidden={hidden}
             avatarSize={avatarSize}
             actionType='follow_request'
             withRelationship
@@ -318,7 +338,6 @@ const Notification: React.FC<INotification> = (props) => {
         return account && typeof account === 'object' ? (
           <AccountContainer
             id={account.id}
-            hidden={hidden}
             avatarSize={avatarSize}
             actionType='biting'
             withRelationship
@@ -327,8 +346,7 @@ const Notification: React.FC<INotification> = (props) => {
       case 'move':
         return account && typeof account === 'object' && notification.target && typeof notification.target === 'object' ? (
           <AccountContainer
-            id={notification.target.id}
-            hidden={hidden}
+            id={notification.target_id}
             avatarSize={avatarSize}
             withRelationship
           />
@@ -346,7 +364,6 @@ const Notification: React.FC<INotification> = (props) => {
         return status && typeof status === 'object' ? (
           <StatusContainer
             id={status.id}
-            hidden={hidden}
             onMoveDown={handleMoveDown}
             onMoveUp={handleMoveUp}
             avatarSize={avatarSize}
@@ -362,17 +379,17 @@ const Notification: React.FC<INotification> = (props) => {
   const targetName = notification.type === 'move' ? notification.target.acct : '';
 
   const message: React.ReactNode = account && typeof account === 'object'
-    ? buildMessage(intl, type, accounts, targetName, instance.title)
+    ? buildMessage(intl, displayedType, accounts, targetName, instance.title)
     : null;
 
   const ariaLabel = (
     notificationForScreenReader(
       intl,
-      intl.formatMessage(messages[type], {
+      intl.formatMessage(messages[displayedType], {
         name: account && typeof account === 'object' ? account.acct : '',
         targetName,
       }),
-      notification.created_at,
+      notification.latest_page_notification_at!,
     )
   );
 
@@ -412,7 +429,7 @@ const Notification: React.FC<INotification> = (props) => {
                     truncate
                     data-testid='message'
                   >
-                    <RelativeTimestamp timestamp={notification.created_at} theme='muted' size='sm' className='whitespace-nowrap' />
+                    <RelativeTimestamp timestamp={notification.latest_page_notification_at!} theme='muted' size='sm' className='whitespace-nowrap' />
                   </Text>
                 </div>
               )}
@@ -428,4 +445,4 @@ const Notification: React.FC<INotification> = (props) => {
   );
 };
 
-export { Notification as default, getNotificationStatus };
+export { Notification as default, buildLink, getNotificationStatus };

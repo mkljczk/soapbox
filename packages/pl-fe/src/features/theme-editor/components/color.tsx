@@ -1,26 +1,26 @@
 import React from 'react';
 
-import ColorWithPicker from 'pl-fe/features/pl-fe-config/components/color-with-picker';
+import ColorPicker from 'pl-fe/features/pl-fe-config/components/color-picker';
 
 import type { ColorChangeHandler } from 'react-color';
 
 interface IColor {
   color: string;
-  onChange: (color: string) => void;
+  onChange?: (color: string) => void;
 }
 
 /** Color input. */
 const Color: React.FC<IColor> = ({ color, onChange }) => {
 
   const handleChange: ColorChangeHandler = (result) => {
-    onChange(result.hex);
+    onChange?.(result.hex);
   };
 
   return (
-    <ColorWithPicker
-      className='h-full w-full'
+    <ColorPicker
+      className='size-full'
       value={color}
-      onChange={handleChange}
+      onChange={onChange ? handleChange : undefined}
     />
   );
 };

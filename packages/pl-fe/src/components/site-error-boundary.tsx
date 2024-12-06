@@ -3,8 +3,12 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { FormattedMessage } from 'react-intl';
 
 import { NODE_ENV } from 'pl-fe/build-config';
-import { HStack, Text, Stack, Textarea } from 'pl-fe/components/ui';
-import { usePlFeConfig } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Textarea from 'pl-fe/components/ui/textarea';
+import { useLogo } from 'pl-fe/hooks/use-logo';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { captureSentryException } from 'pl-fe/sentry';
 import KVStore from 'pl-fe/storage/kv-store';
 import sourceCode from 'pl-fe/utils/code';
@@ -20,10 +24,11 @@ interface ISiteErrorBoundary {
 /** Application-level error boundary. Fills the whole screen. */
 const SiteErrorBoundary: React.FC<ISiteErrorBoundary> = ({ children }) => {
   const { links, sentryDsn } = usePlFeConfig();
+  const logoSrc = useLogo();
   const textarea = useRef<HTMLTextAreaElement>(null);
 
   const [error, setError] = useState<unknown>();
-  const [componentStack, setComponentStack] = useState<string>();
+  const [componentStack, setComponentStack] = useState<string | null | undefined>();
   const [browser, setBrowser] = useState<Bowser.Parser.Parser>();
   const [sentryEventId, setSentryEventId] = useState<string>();
 
@@ -76,15 +81,17 @@ const SiteErrorBoundary: React.FC<ISiteErrorBoundary> = ({ children }) => {
   const fallback = (
     <div className='flex h-screen flex-col bg-white pb-12 pt-16 black:bg-black dark:bg-primary-900'>
       <main className='mx-auto flex w-full max-w-7xl grow flex-col justify-center px-4 sm:px-6 lg:px-8'>
-        <div className='flex shrink-0 justify-center'>
-          <a href='/' className='inline-flex'>
-            <SiteLogo alt='Logo' className='h-12 w-auto cursor-pointer' />
-          </a>
-        </div>
+        {logoSrc && (
+          <div className='flex shrink-0 justify-center'>
+            <a href='/' className='inline-flex'>
+              <SiteLogo className='h-12 w-auto cursor-pointer' />
+            </a>
+          </div>
+        )}
 
         <div className='py-8'>
           <div className='mx-auto max-w-xl space-y-2 text-center'>
-            <h1 className='text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl dark:text-gray-500'>
+            <h1 className='text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-500 sm:text-4xl'>
               <FormattedMessage id='alert.unexpected.message' defaultMessage='Something went wrong.' />
             </h1>
             <p className='text-lg text-gray-700 dark:text-gray-600'>
@@ -151,20 +158,20 @@ const SiteErrorBoundary: React.FC<ISiteErrorBoundary> = ({ children }) => {
 
       <footer className='mx-auto w-full max-w-7xl shrink-0 px-4 sm:px-6 lg:px-8'>
         <HStack justifyContent='center' space={4} element='nav'>
-          {links.get('status') && (
-            <SiteErrorBoundaryLink href={links.get('status')!}>
+          {links.status && (
+            <SiteErrorBoundaryLink href={links.status}>
               <FormattedMessage id='alert.unexpected.links.status' defaultMessage='Status' />
             </SiteErrorBoundaryLink>
           )}
 
-          {links.get('help') && (
-            <SiteErrorBoundaryLink href={links.get('help')!}>
+          {links.help && (
+            <SiteErrorBoundaryLink href={links.help}>
               <FormattedMessage id='alert.unexpected.links.help' defaultMessage='Help Center' />
             </SiteErrorBoundaryLink>
           )}
 
-          {links.get('support') && (
-            <SiteErrorBoundaryLink href={links.get('support')!}>
+          {links.support && (
+            <SiteErrorBoundaryLink href={links.support}>
               <FormattedMessage id='alert.unexpected.links.support' defaultMessage='Support' />
             </SiteErrorBoundaryLink>
           )}

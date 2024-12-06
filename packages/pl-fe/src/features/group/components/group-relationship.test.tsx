@@ -3,9 +3,10 @@ import React from 'react';
 
 import { buildGroup, buildGroupRelationship } from 'pl-fe/jest/factory';
 import { render, screen } from 'pl-fe/jest/test-helpers';
-import { Group } from 'pl-fe/normalizers';
 
 import GroupRelationship from './group-relationship';
+
+import type { Group } from 'pl-fe/normalizers/group';
 
 let group: Group;
 

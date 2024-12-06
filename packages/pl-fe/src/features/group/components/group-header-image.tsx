@@ -2,9 +2,9 @@ import clsx from 'clsx';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Icon } from 'pl-fe/components/ui';
+import Icon from 'pl-fe/components/ui/icon';
 
-import type { Group } from 'pl-fe/normalizers';
+import type { Group } from 'pl-fe/normalizers/group';
 
 const messages = defineMessages({
   header: { id: 'group.header.alt', defaultMessage: 'Group header' },
@@ -31,7 +31,7 @@ const GroupHeaderImage: React.FC<IGroupHeaderImage> = ({ className, group }) => 
       >
         <Icon
           src={require('@tabler/icons/outline/photo-off.svg')}
-          className='h-6 w-6 text-gray-500 dark:text-gray-700'
+          className='size-6 text-gray-500 dark:text-gray-700'
         />
       </div>
     );

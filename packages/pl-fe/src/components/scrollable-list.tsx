@@ -1,43 +1,14 @@
-import debounce from 'lodash/debounce';
-import React, { useEffect, useRef, useMemo, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Virtuoso, Components, VirtuosoProps, VirtuosoHandle, ListRange, IndexLocationWithAlign } from 'react-virtuoso';
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useVirtualizer, useWindowVirtualizer, type Virtualizer } from '@tanstack/react-virtual';
+import clsx from 'clsx';
+import React, { useEffect, useMemo, useRef } from 'react';
 
-import { useSettings } from 'pl-fe/hooks';
+import LoadMore from 'pl-fe/components/load-more';
+import Card from 'pl-fe/components/ui/card';
+import Spinner from 'pl-fe/components/ui/spinner';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
-import LoadMore from './load-more';
-import { Card, Spinner } from './ui';
-
-/** Custom Viruoso component context. */
-type Context = {
-  itemClassName?: string;
-  listClassName?: string;
-}
-
-/** Scroll position saved in sessionStorage. */
-type SavedScrollPosition = {
-  index: number;
-  offset: number;
-}
-
-/** Custom Virtuoso Item component representing a single scrollable item. */
-// NOTE: It's crucial to space lists with **padding** instead of margin!
-// Pass an `itemClassName` like `pb-3`, NOT a `space-y-3` className
-// https://virtuoso.dev/troubleshooting#list-does-not-scroll-to-the-bottom--items-jump-around
-const Item: Components<JSX.Element, Context>['Item'] = ({ context, ...rest }) => (
-  <div className={context?.itemClassName} {...rest} />
-);
-
-/** Custom Virtuoso List component for the outer container. */
-// Ensure the className winds up here
-const List: Components<JSX.Element, Context>['List'] = React.forwardRef((props, ref) => {
-  const { context, ...rest } = props;
-  return <div ref={ref} className={context?.listClassName} {...rest} />;
-});
-
-interface IScrollableList extends VirtuosoProps<any, any> {
-  /** Unique key to preserve the scroll position when navigating back. */
-  scrollKey?: string;
+interface IScrollableListBase {
   /** Pagination callback when the end of the list is reached. */
   onLoadMore?: () => void;
   /** Whether the data is currently being fetched. */
@@ -56,38 +27,42 @@ interface IScrollableList extends VirtuosoProps<any, any> {
   emptyMessageCard?: boolean;
   /** Scrollable content. */
   children: Iterable<React.ReactNode>;
-  /** Callback when the list is scrolled to the top. */
-  onScrollToTop?: () => void;
   /** Callback when the list is scrolled. */
-  onScroll?: () => void;
+  onScroll?: (startIndex?: number, endIndex?: number) => void;
   /** Placeholder component to render while loading. */
   placeholderComponent?: React.ComponentType | React.NamedExoticComponent;
   /** Number of placeholders to render while loading. */
   placeholderCount?: number;
-  /**
-   * Pull to refresh callback.
-   * @deprecated Put a PTR around the component instead.
-   */
-  onRefresh?: () => Promise<any>;
-  /** Extra class names on the Virtuoso element. */
-  className?: string;
   /** Extra class names on the list element. */
   listClassName?: string;
   /** Class names on each item container. */
   itemClassName?: string;
   /** Extra class names on the LoadMore element */
   loadMoreClassName?: string;
-  /** `id` attribute on the Virtuoso element. */
+  /** `id` attribute on the parent element. */
   id?: string;
-  /** CSS styles on the Virtuoso element. */
-  style?: React.CSSProperties;
-  /** Whether to use the window to scroll the content instead of Virtuoso's container. */
-  useWindowScroll?: boolean;
+  /** Initial item index to scroll to. */
+  initialIndex?: number;
+  /** Estimated size for items. */
+  estimatedSize?: number;
+  /** Align the items to the bottom of the list. */
+  alignToBottom?: boolean;
 }
 
-/** Legacy ScrollableList with Virtuoso for backwards-compatibility. */
-const ScrollableList = React.forwardRef<VirtuosoHandle, IScrollableList>(({
-  scrollKey,
+interface IScrollableListWithContainer extends IScrollableListBase {
+  /** Extra class names on the container element. */
+  className?: string;
+  /** CSS styles on the container element. */
+  style?: React.CSSProperties;
+}
+
+interface IScrollableListWithoutContainer extends IScrollableListBase {
+  parentRef: React.RefObject<HTMLElement>;
+}
+
+type IScrollableList = IScrollableListWithContainer | IScrollableListWithoutContainer;
+
+const ScrollableList = React.forwardRef<Virtualizer<any, any>, IScrollableList>(({
   prepend = null,
   alwaysPrepend,
   children,
@@ -95,11 +70,8 @@ const ScrollableList = React.forwardRef<VirtuosoHandle, IScrollableList>(({
   emptyMessage,
   emptyMessageCard = true,
   showLoading,
-  onRefresh,
   onScroll,
-  onScrollToTop,
   onLoadMore,
-  className,
   listClassName,
   itemClassName,
   loadMoreClassName,
@@ -107,58 +79,67 @@ const ScrollableList = React.forwardRef<VirtuosoHandle, IScrollableList>(({
   hasMore,
   placeholderComponent: Placeholder,
   placeholderCount = 0,
-  initialTopMostItemIndex = 0,
-  style = {},
-  useWindowScroll = true,
+  initialIndex,
+  estimatedSize = 300,
+  alignToBottom,
+  ...props
 }, ref) => {
-  const history = useHistory();
-  const { autoloadMore } = useSettings();
+  const listRef = useRef<HTMLDivElement>(null);
 
-  // Preserve scroll position
-  const scrollDataKey = `plfe:scrollData:${scrollKey}`;
-  const scrollData: SavedScrollPosition | null = useMemo(() => JSON.parse(sessionStorage.getItem(scrollDataKey)!), [scrollDataKey]);
-  const topIndex = useRef<number>(scrollData ? scrollData.index : 0);
-  const topOffset = useRef<number>(scrollData ? scrollData.offset : 0);
+  const { autoloadMore } = useSettings();
 
   /** Normalized children. */
   const elements = Array.from(children || []);
 
   const showPlaceholder = showLoading && Placeholder && placeholderCount > 0;
 
-  // NOTE: We are doing some trickery to load a feed of placeholders
-  // Virtuoso's `EmptyPlaceholder` unfortunately doesn't work for our use-case
   const data = showPlaceholder ? Array(placeholderCount).fill('') : elements;
 
-  // Add a placeholder at the bottom for loading
-  // (Don't use Virtuoso's `Footer` component because it doesn't preserve its height)
-  if (hasMore && (autoloadMore || isLoading) && Placeholder) {
-    data.push(<Placeholder />);
-  } else if (hasMore && (autoloadMore || isLoading)) {
-    data.push(<Spinner />);
-  }
-
-  const handleScroll = useCallback(debounce(() => {
-    // HACK: Virtuoso has no better way to get this...
-    const node = document.querySelector(`[data-virtuoso-scroller] [data-item-index="${topIndex.current}"]`);
-    if (node) {
-      topOffset.current = node.getBoundingClientRect().top * -1;
-    } else {
-      topOffset.current = 0;
-    }
-  }, 150, { trailing: true }), []);
+  const virtualizer = 'parentRef' in props ? useVirtualizer({
+    count: data.length + (hasMore ? 1 : 0),
+    overscan: 3,
+    estimateSize: () => estimatedSize,
+    getScrollElement: () => props.parentRef.current,
+  }) : useWindowVirtualizer({
+    count: data.length + (hasMore ? 1 : 0),
+    overscan: 3,
+    estimateSize: () => estimatedSize,
+    scrollMargin: listRef.current ? listRef.current.getBoundingClientRect().top + window.scrollY : 0,
+  });
 
   useEffect(() => {
-    document.addEventListener('scroll', handleScroll);
-    sessionStorage.removeItem(scrollDataKey);
+    if (typeof ref === 'function') ref(virtualizer); else if (ref !== null) ref.current = virtualizer;
+  }, [virtualizer]);
 
-    return () => {
-      if (scrollKey) {
-        const data: SavedScrollPosition = { index: topIndex.current, offset: topOffset.current };
-        sessionStorage.setItem(scrollDataKey, JSON.stringify(data));
-      }
-      document.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+  const range = virtualizer.calculateRange();
+
+  useEffect(() => {
+    if (showLoading) return;
+
+    if (typeof initialIndex === 'number') virtualizer.scrollToIndex(initialIndex);
+  }, [showLoading, initialIndex]);
+
+  useEffect(() => {
+    onScroll?.(range?.startIndex, range?.endIndex);
+  }, [range?.startIndex, range?.endIndex]);
+
+  useEffect(() => {
+    if (onLoadMore && range?.endIndex === data.length && !showLoading && autoloadMore && hasMore) {
+      onLoadMore();
+    }
+  }, [range?.endIndex]);
+
+  const loadMore = useMemo(() => {
+    if (autoloadMore || !hasMore || !onLoadMore) {
+      return null;
+    } else {
+      const button = <LoadMore className='mt-4' visible={!isLoading} onClick={onLoadMore} />;
+
+      if (loadMoreClassName) return <div className={loadMoreClassName}>{button}</div>;
+
+      return button;
+    }
+  }, [autoloadMore, hasMore, isLoading]);
 
   /* Render an empty state instead of the scrollable list. */
   const renderEmpty = (): JSX.Element => (
@@ -179,80 +160,65 @@ const ScrollableList = React.forwardRef<VirtuosoHandle, IScrollableList>(({
     </div>
   );
 
-  /** Render a single item. */
-  const renderItem = (_i: number, element: JSX.Element): JSX.Element => {
-    if (showPlaceholder) {
-      return <Placeholder />;
-    } else {
-      return element;
-    }
+  const renderItem = (index: number): JSX.Element => {
+    const PlaceholderComponent = Placeholder || Spinner;
+    if (alignToBottom && hasMore ? index === 0 : index === data.length) return (isLoading) ? <PlaceholderComponent /> : loadMore || <div className='h-4' />;
+    if (showPlaceholder) return <PlaceholderComponent />;
+    return data[alignToBottom && hasMore ? index - 1 : index];
   };
 
-  const handleEndReached = () => {
-    if (autoloadMore && hasMore && onLoadMore) {
-      onLoadMore();
-    }
-  };
+  const virtualItems = virtualizer.getVirtualItems();
 
-  const loadMore = () => {
-    if (autoloadMore || !hasMore || !onLoadMore) {
-      return null;
-    } else {
-      return <LoadMore className={loadMoreClassName} visible={!isLoading} onClick={onLoadMore} />;
-    }
-  };
+  const body = (
+    <div
+      ref={listRef}
+      id={'parentRef' in props ? id : undefined}
+      className={listClassName}
+      style={{
+        height: (!showLoading || showPlaceholder) && data.length ? virtualizer.getTotalSize() : undefined,
+        width: '100%',
+        position: 'relative',
+      }}
+    >
+      {(!showLoading || showPlaceholder) && data.length ? (
+        <>
+          {prepend}
+          {virtualItems.map((item) => (
+            <div
+              className={item.index === data.length ? '' : itemClassName}
+              key={item.key as number}
+              data-index={item.index}
+              ref={virtualizer.measureElement}
+              style={{
+                position: 'absolute',
+                width: '100%',
+                transform: `translateY(${item.start - virtualizer.options.scrollMargin}px)`,
+              }}
+            >
+              {renderItem(item.index)}
+            </div>
+          ))}
+        </>
+      ) : renderEmpty()}
+    </div>
+  );
 
-  const handleRangeChange = (range: ListRange) => {
-    // HACK: using the first index can be buggy.
-    // Track the second item instead, unless the endIndex comes before it (eg one 1 item in view).
-    topIndex.current = Math.min(range.startIndex + 1, range.endIndex);
-    handleScroll();
-  };
-
-  /** Figure out the initial index to scroll to. */
-  const initialIndex = useMemo<number | IndexLocationWithAlign>(() => {
-    if (showLoading) return 0;
-    if (initialTopMostItemIndex) return initialTopMostItemIndex;
-
-    if (scrollData && history.action === 'POP') {
-      return {
-        align: 'start',
-        index: scrollData.index,
-        offset: scrollData.offset,
-      };
-    }
-
-    return 0;
-  }, [showLoading, initialTopMostItemIndex]);
+  if ('parentRef' in props) return body;
 
   return (
-    <Virtuoso
-      ref={ref}
+    <div
       id={id}
-      useWindowScroll={useWindowScroll}
-      data={data}
-      startReached={onScrollToTop}
-      endReached={handleEndReached}
-      isScrolling={isScrolling => isScrolling && onScroll && onScroll()}
-      itemContent={renderItem}
-      initialTopMostItemIndex={initialIndex}
-      rangeChanged={handleRangeChange}
-      className={className}
-      style={style}
-      context={{
-        listClassName,
-        itemClassName,
-      }}
-      components={{
-        Header: () => <>{prepend}</>,
-        ScrollSeekPlaceholder: Placeholder as any,
-        EmptyPlaceholder: () => renderEmpty(),
-        List,
-        Item,
-        Footer: loadMore,
-      }}
-    />
+      className={clsx(props.className, 'w-full')}
+      style={props.style}
+    >
+      {body}
+    </div>
   );
 });
 
-export { type IScrollableList, ScrollableList as default };
+export {
+  type IScrollableList,
+  type IScrollableListWithContainer,
+  type IScrollableListWithoutContainer,
+  ScrollableList as default,
+};

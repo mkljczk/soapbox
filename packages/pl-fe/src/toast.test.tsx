@@ -12,7 +12,7 @@ const renderApp = () => ({
   toast,
   ...render(
     <IntlProvider locale='en'>
-      <Toaster />,
+      <Toaster />
     </IntlProvider>,
   ),
 });

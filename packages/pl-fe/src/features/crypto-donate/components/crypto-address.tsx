@@ -1,14 +1,15 @@
 import React from 'react';
 
-import { openModal } from 'pl-fe/actions/modals';
 import CopyableInput from 'pl-fe/components/copyable-input';
-import { Text, Icon, Stack, HStack } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { CryptoIcon } from 'pl-fe/features/ui/util/async-components';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import { getExplorerUrl } from '../utils/block-explorer';
 import { getTitle } from '../utils/coin-db';
-
-import CryptoIcon from './crypto-icon';
 
 interface ICryptoAddress {
   address: string;
@@ -19,10 +20,10 @@ interface ICryptoAddress {
 const CryptoAddress: React.FC<ICryptoAddress> = (props): JSX.Element => {
   const { address, ticker, note } = props;
 
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
 
   const handleModalClick = (e: React.MouseEvent<HTMLElement>): void => {
-    dispatch(openModal('CRYPTO_DONATE', props));
+    openModal('CRYPTO_DONATE', props);
     e.preventDefault();
   };
 

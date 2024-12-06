@@ -1,3 +1,6 @@
+/**
+ * @category Request params
+ */
 interface OauthAuthorizeParams {
   /** String. Should be set equal to `code`. */
   response_type: string;
@@ -13,6 +16,9 @@ interface OauthAuthorizeParams {
   lang?: string;
 }
 
+/**
+ * @category Request params
+ */
 interface GetTokenParams {
   /** String. Set equal to `authorization_code` if `code` is provided in order to gain user-level access. Otherwise, set equal to `client_credentials` to obtain app-level access only. */
   grant_type: string;
@@ -28,6 +34,9 @@ interface GetTokenParams {
   scope?: string;
 }
 
+/**
+ * @category Request params
+ */
 interface RevokeTokenParams {
   /** String. The client ID, obtained during app registration. */
   client_id: string;
@@ -37,6 +46,9 @@ interface RevokeTokenParams {
   token: string;
 }
 
+/**
+ * @category Request params
+ */
 interface MfaChallengeParams {
   client_id: string;
   client_secret: string;

@@ -4,9 +4,17 @@ import { useHistory } from 'react-router-dom';
 
 import { changeSetting } from 'pl-fe/actions/settings';
 import List, { ListItem } from 'pl-fe/components/list';
-import { Button, CardBody, CardTitle, Form, HStack, IconButton, Stack, Toggle } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import { CardBody, CardTitle } from 'pl-fe/components/ui/card';
+import Form from 'pl-fe/components/ui/form';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Stack from 'pl-fe/components/ui/stack';
+import Toggle from 'pl-fe/components/ui/toggle';
 import SettingToggle from 'pl-fe/features/notifications/components/setting-toggle';
-import { useAppDispatch, useOwnAccount, useSettings } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useUpdateCredentials } from 'pl-fe/queries/accounts';
 
 type FormData = {
@@ -49,7 +57,7 @@ const ChatPageSettings = () => {
       <HStack alignItems='center'>
         <IconButton
           src={require('@tabler/icons/outline/arrow-left.svg')}
-          className='mr-2 h-7 w-7 sm:mr-0 sm:hidden rtl:rotate-180'
+          className='mr-2 size-7 sm:mr-0 sm:hidden rtl:rotate-180'
           onClick={() => history.push('/chats')}
         />
 

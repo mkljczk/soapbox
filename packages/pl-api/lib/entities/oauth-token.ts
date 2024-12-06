@@ -1,15 +1,27 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-/** @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#get-apioauth_tokens} */
-const oauthTokenSchema = z.preprocess((token: any) => ({
-  ...token,
-  valid_until: token?.valid_until?.padEnd(27, 'Z'),
-}), z.object({
-  app_name: z.string(),
-  id: z.number(),
-  valid_until: z.string().datetime({ offset: true }),
-}));
+import { datetimeSchema } from './utils';
 
-type OauthToken = z.infer<typeof oauthTokenSchema>;
+/**
+ * @category Schemas
+ * @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#get-apioauth_tokens}
+ */
+const oauthTokenSchema = v.pipe(
+  v.any(),
+  v.transform((token: any) => ({
+    ...token,
+    valid_until: token?.valid_until?.padEnd(27, 'Z'),
+  })),
+  v.object({
+    app_name: v.string(),
+    id: v.number(),
+    valid_until: datetimeSchema,
+  }),
+);
+
+/**
+ * @category Entity types
+ */
+type OauthToken = v.InferOutput<typeof oauthTokenSchema>;
 
 export { oauthTokenSchema, type OauthToken };

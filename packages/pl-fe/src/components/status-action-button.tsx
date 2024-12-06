@@ -1,8 +1,11 @@
+import { useLongPress } from '@uidotdev/usehooks';
 import clsx from 'clsx';
 import React from 'react';
 
-import { Text, Icon, Emoji } from 'pl-fe/components/ui';
-import { useSettings } from 'pl-fe/hooks';
+import Emoji from 'pl-fe/components/ui/emoji';
+import Icon from 'pl-fe/components/ui/icon';
+import Text from 'pl-fe/components/ui/text';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 import AnimatedNumber from './animated-number';
 
@@ -40,16 +43,26 @@ interface IStatusActionButton extends React.ButtonHTMLAttributes<HTMLButtonEleme
   emoji?: EmojiReaction;
   text?: React.ReactNode;
   theme?: 'default' | 'inverse';
+  onLongPress?: (event: Event) => void;
 }
 
 const StatusActionButton = React.forwardRef<HTMLButtonElement, IStatusActionButton>((props, ref): JSX.Element => {
-  const { icon, className, iconClassName, active, color, filled = false, count = 0, emoji, text, theme = 'default', ...filteredProps } = props;
+  const { icon, className, iconClassName, active, color, filled = false, count = 0, emoji, text, theme = 'default', onLongPress, ...filteredProps } = props;
+
+  const longPressBind = useLongPress((e) => {
+    if (!onLongPress || e.type !== 'touchstart') return;
+
+    e.stopPropagation();
+
+    if ('vibrate' in navigator) navigator.vibrate(1);
+    onLongPress(e);
+  });
 
   const renderIcon = () => {
     if (emoji) {
       return (
-        <span className='flex h-6 w-6 items-center justify-center'>
-          <Emoji className='h-full w-full p-0.5' emoji={emoji.name} src={emoji.url} />
+        <span className='flex size-6 items-center justify-center'>
+          <Emoji className='size-full p-0.5' emoji={emoji.name} src={emoji.url} />
         </span>
       );
     } else {
@@ -100,6 +113,7 @@ const StatusActionButton = React.forwardRef<HTMLButtonElement, IStatusActionButt
         },
         className,
       )}
+      {...longPressBind}
       {...filteredProps}
     >
       {renderIcon()}

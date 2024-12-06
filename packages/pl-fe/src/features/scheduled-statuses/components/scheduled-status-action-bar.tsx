@@ -1,13 +1,14 @@
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { openModal } from 'pl-fe/actions/modals';
 import { cancelScheduledStatus } from 'pl-fe/actions/scheduled-statuses';
-import { getSettings } from 'pl-fe/actions/settings';
-import { Button, HStack } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import HStack from 'pl-fe/components/ui/hstack';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useModalsStore } from 'pl-fe/stores/modals';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 
-import type { Status as StatusEntity } from 'pl-fe/normalizers';
+import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
 
 const messages = defineMessages({
   cancel: { id: 'scheduled_status.cancel', defaultMessage: 'Cancel' },
@@ -24,22 +25,21 @@ const ScheduledStatusActionBar: React.FC<IScheduledStatusActionBar> = ({ status 
   const intl = useIntl();
 
   const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
+  const { settings } = useSettingsStore();
 
   const handleCancelClick = () => {
-    dispatch((_, getState) => {
-
-      const deleteModal = getSettings(getState()).get('deleteModal');
-      if (!deleteModal) {
-        dispatch(cancelScheduledStatus(status.id));
-      } else {
-        dispatch(openModal('CONFIRM', {
-          heading: intl.formatMessage(messages.deleteHeading),
-          message: intl.formatMessage(messages.deleteMessage),
-          confirm: intl.formatMessage(messages.deleteConfirm),
-          onConfirm: () => dispatch(cancelScheduledStatus(status.id)),
-        }));
-      }
-    });
+    const deleteModal = settings.deleteModal;
+    if (!deleteModal) {
+      dispatch(cancelScheduledStatus(status.id));
+    } else {
+      openModal('CONFIRM', {
+        heading: intl.formatMessage(messages.deleteHeading),
+        message: intl.formatMessage(messages.deleteMessage),
+        confirm: intl.formatMessage(messages.deleteConfirm),
+        onConfirm: () => dispatch(cancelScheduledStatus(status.id)),
+      });
+    }
   };
 
   return (

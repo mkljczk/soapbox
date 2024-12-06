@@ -2,10 +2,10 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { Text } from 'pl-fe/components/ui';
+import Text from 'pl-fe/components/ui/text';
 import { shortNumberFormat } from 'pl-fe/utils/numbers';
 
-import type { Group } from 'pl-fe/normalizers';
+import type { Group } from 'pl-fe/normalizers/group';
 
 interface IGroupMemberCount {
   group: Pick<Group, 'id' | 'members_count'>;

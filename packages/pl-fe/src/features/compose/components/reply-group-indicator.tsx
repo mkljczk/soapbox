@@ -2,8 +2,9 @@ import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import Link from 'pl-fe/components/link';
-import { Text } from 'pl-fe/components/ui';
-import { useAppSelector } from 'pl-fe/hooks';
+import Text from 'pl-fe/components/ui/text';
+import Emojify from 'pl-fe/features/emoji/emojify';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 interface IReplyGroupIndicator {
@@ -15,7 +16,7 @@ const ReplyGroupIndicator = (props: IReplyGroupIndicator) => {
 
   const getStatus = useCallback(makeGetStatus(), []);
 
-  const status = useAppSelector((state) => getStatus(state, { id: state.compose.get(composeId)?.in_reply_to! }));
+  const status = useAppSelector((state) => getStatus(state, { id: state.compose[composeId]?.in_reply_to! }));
   const group = status?.group;
 
   if (!group) {
@@ -28,10 +29,11 @@ const ReplyGroupIndicator = (props: IReplyGroupIndicator) => {
         id='compose.reply_group_indicator.message'
         defaultMessage='Posting to {groupLink}'
         values={{
-          groupLink: <Link
-            to={`/groups/${group.id}`}
-            dangerouslySetInnerHTML={{ __html: group.display_name_html }}
-          />,
+          groupLink: (
+            <Link to={`/groups/${group.id}`}>
+              <Emojify text={group.display_name} emojis={group.emojis} />
+            </Link>
+          ),
         }}
       />
     </Text>

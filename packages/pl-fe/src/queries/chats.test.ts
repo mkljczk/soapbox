@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { __stub } from 'pl-fe/api';
 import { buildAccount, buildRelationship } from 'pl-fe/jest/factory';
 import { createTestStore, mockStore, queryClient, renderHook, rootState, waitFor } from 'pl-fe/jest/test-helpers';
-import { normalizeChatMessage } from 'pl-fe/normalizers';
+import { normalizeChatMessage } from 'pl-fe/normalizers/chat-message';
 import { Store } from 'pl-fe/store';
 import { flattenPages } from 'pl-fe/utils/queries';
 
@@ -60,11 +60,11 @@ describe('useChatMessages', () => {
 
   describe('when the user is blocked', () => {
     beforeEach(() => {
-      const state = rootState
-        .set(
-          'relationships',
-          ImmutableMap({ '1': buildRelationship({ blocked_by: true }) }),
-        );
+      const state = {
+        ...rootState,
+        relationships: ImmutableMap({ '1': buildRelationship({ blocked_by: true }) }),
+      };
+
       store = mockStore(state);
     });
 

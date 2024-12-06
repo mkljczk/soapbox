@@ -9,12 +9,10 @@ import * as BuildConfig from 'pl-fe/build-config';
 import LoadingScreen from 'pl-fe/components/loading-screen';
 import SiteErrorBoundary from 'pl-fe/components/site-error-boundary';
 import { ModalRoot, OnboardingWizard } from 'pl-fe/features/ui/util/async-components';
-import {
-  useAppSelector,
-  useLoggedIn,
-  useOwnAccount,
-  usePlFeConfig,
-} from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { useCachedLocationHandler } from 'pl-fe/utils/redirect';
 
 const GdprBanner = React.lazy(() => import('pl-fe/components/gdpr-banner'));

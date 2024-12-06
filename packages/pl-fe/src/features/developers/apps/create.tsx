@@ -3,11 +3,19 @@ import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
 
 import { createApp } from 'pl-fe/actions/apps';
 import { obtainOAuthToken } from 'pl-fe/actions/oauth';
-import { Column, Button, Form, FormActions, FormGroup, Input, Stack, Text, Textarea } from 'pl-fe/components/ui';
-import { useAppDispatch, useOwnAccount } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Input from 'pl-fe/components/ui/input';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Textarea from 'pl-fe/components/ui/textarea';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { getBaseURL } from 'pl-fe/utils/accounts';
 
-import type { Token } from 'pl-api';
+import type { CredentialApplication, Token } from 'pl-api';
 
 const messages = defineMessages({
   heading: { id: 'column.app_create', defaultMessage: 'Create app' },
@@ -26,7 +34,6 @@ type Params = typeof BLANK_PARAMS;
 
 const CreateApp: React.FC = () => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
   const { account } = useOwnAccount();
 
   const [app, setApp] = useState<Record<string, any> | null>(null);
@@ -37,25 +44,25 @@ const CreateApp: React.FC = () => {
   const handleCreateApp = () => {
     const baseURL = getBaseURL(account!);
 
-    return dispatch(createApp(params, baseURL))
+    return createApp(params, baseURL)
       .then(app => {
         setApp(app);
         return app;
       });
   };
 
-  const handleCreateToken = (app: Record<string, string>) => {
+  const handleCreateToken = (app: CredentialApplication) => {
     const baseURL = getBaseURL(account!);
 
     const tokenParams = {
-      client_id:     app!.client_id,
+      client_id: app!.client_id,
       client_secret: app!.client_secret,
-      redirect_uri:  params.redirect_uris,
-      grant_type:    'client_credentials',
-      scope:         params.scopes,
+      redirect_uri: params.redirect_uris,
+      grant_type: 'client_credentials',
+      scope: params.scopes,
     };
 
-    return dispatch(obtainOAuthToken(tokenParams, baseURL))
+    return obtainOAuthToken(tokenParams, baseURL)
       .then(setToken);
   };
 

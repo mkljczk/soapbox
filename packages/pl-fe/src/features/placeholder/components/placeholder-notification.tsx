@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { HStack } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
 
 import PlaceholderAvatar from './placeholder-avatar';
 import PlaceholderDisplayName from './placeholder-display-name';

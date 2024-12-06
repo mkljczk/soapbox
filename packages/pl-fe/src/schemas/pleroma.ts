@@ -1,20 +1,23 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
 import { coerceObject } from './utils';
 
-const mrfSimpleSchema = coerceObject({
-  accept: z.string().array().catch([]),
-  avatar_removal: z.string().array().catch([]),
-  banner_removal: z.string().array().catch([]),
-  federated_timeline_removal: z.string().array().catch([]),
-  followers_only: z.string().array().catch([]),
-  media_nsfw: z.string().array().catch([]),
-  media_removal: z.string().array().catch([]),
-  reject: z.string().array().catch([]),
-  reject_deletes: z.string().array().catch([]),
-  report_removal: z.string().array().catch([]),
-});
+const mrfSimpleSchema = coerceObject(v.entriesFromList(
+  [
+    'accept',
+    'avatar_removal',
+    'banner_removal',
+    'federated_timeline_removal',
+    'followers_only',
+    'media_nsfw',
+    'media_removal',
+    'reject',
+    'reject_deletes',
+    'report_removal',
+  ],
+  v.fallback(v.array(v.string()), []),
+));
 
-type MRFSimple = z.infer<typeof mrfSimpleSchema>;
+type MRFSimple = v.InferOutput<typeof mrfSimpleSchema>;
 
 export { mrfSimpleSchema, type MRFSimple };

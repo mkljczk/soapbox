@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 
-import { openModal } from 'pl-fe/actions/modals';
-import { useAppDispatch } from 'pl-fe/hooks';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 const NewStatus = () => {
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
 
   useEffect(() => {
-    dispatch(openModal('COMPOSE'));
+    openModal('COMPOSE');
   }, []);
 
   return (

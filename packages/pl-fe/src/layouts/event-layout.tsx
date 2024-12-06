@@ -1,18 +1,21 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { Column, Layout, Tabs } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import Layout from 'pl-fe/components/ui/layout';
+import Tabs from 'pl-fe/components/ui/tabs';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import LinkFooter from 'pl-fe/features/ui/components/link-footer';
 import {
   EventHeader,
-  CtaBanner,
   SignUpPanel,
   TrendsPanel,
   WhoToFollowPanel,
 } from 'pl-fe/features/ui/util/async-components';
-import { useAppSelector, useFeatures } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 const getStatus = makeGetStatus();
@@ -62,6 +65,11 @@ const EventLayout: React.FC<IEventLayout> = ({ params, children }) => {
 
   return (
     <>
+      {status?.account.local === false && (
+        <Helmet>
+          <meta content='noindex, noarchive' name='robots' />
+        </Helmet>
+      )}
       <Layout.Main>
         <Column label={event?.name} withHeader={false}>
           <div className='space-y-4'>
@@ -74,10 +82,6 @@ const EventLayout: React.FC<IEventLayout> = ({ params, children }) => {
             {children}
           </div>
         </Column>
-
-        {!me && (
-          <CtaBanner />
-        )}
       </Layout.Main>
 
       <Layout.Aside>

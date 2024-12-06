@@ -1,60 +1,44 @@
-import clsx from 'clsx';import React from 'react';
+import clsx from 'clsx';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { openModal } from 'pl-fe/actions/modals';
 import AnimatedNumber from 'pl-fe/components/animated-number';
-import { HStack, Text, Emoji } from 'pl-fe/components/ui';
-import { useAppSelector, usePlFeConfig, useFeatures, useAppDispatch } from 'pl-fe/hooks';
-import { reduceEmoji } from 'pl-fe/utils/emoji-reacts';
+import HStack from 'pl-fe/components/ui/hstack';
+import Text from 'pl-fe/components/ui/text';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
-import type { Status } from 'pl-fe/normalizers';
+import type { Status } from 'pl-fe/normalizers/status';
 
 interface IStatusInteractionBar {
-  status: Pick<Status, 'id' | 'account' | 'dislikes_count' | 'emoji_reactions' | 'favourited' | 'favourites_count' | 'reblogs_count' | 'quotes_count'>;
+  status: Pick<Status, 'id' | 'account' | 'dislikes_count' | 'favourited' | 'favourites_count' | 'reblogs_count' | 'quotes_count'>;
 }
 
 const StatusInteractionBar: React.FC<IStatusInteractionBar> = ({ status }): JSX.Element | null => {
-  const me = useAppSelector(({ me }) => me);
-  const { allowedEmoji } = usePlFeConfig();
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
   const features = useFeatures();
   const { account } = status;
 
   if (!account || typeof account !== 'object') return null;
 
-  const onOpenUnauthorizedModal = () => {
-    dispatch(openModal('UNAUTHORIZED'));
+  const onOpenReblogsModal = (statusId: string): void => {
+    openModal('REBLOGS', { statusId });
   };
 
-  const onOpenReblogsModal = (username: string, statusId: string): void => {
-    dispatch(openModal('REBLOGS', { statusId }));
+  const onOpenFavouritesModal = (statusId: string): void => {
+    openModal('FAVOURITES', { statusId });
   };
 
-  const onOpenFavouritesModal = (username: string, statusId: string): void => {
-    dispatch(openModal('FAVOURITES', { statusId }));
+  const onOpenDislikesModal = (statusId: string): void => {
+    openModal('DISLIKES', { statusId });
   };
-
-  const onOpenDislikesModal = (username: string, statusId: string): void => {
-    dispatch(openModal('DISLIKES', { statusId }));
-  };
-
-  const onOpenReactionsModal = (username: string, statusId: string): void => {
-    dispatch(openModal('REACTIONS', { statusId }));
-  };
-
-  const getNormalizedReacts = () => reduceEmoji(
-    status.emoji_reactions,
-    status.favourites_count,
-    status.favourited,
-    allowedEmoji,
-  );
 
   const handleOpenReblogsModal: React.EventHandler<React.MouseEvent> = (e) => {
     e.preventDefault();
 
-    if (!me) onOpenUnauthorizedModal();
-    else onOpenReblogsModal(account.acct, status.id);
+    // if (!me) onOpenUnauthorizedModal();
+    onOpenReblogsModal(status.id);
   };
 
   const getReposts = () => {
@@ -92,15 +76,15 @@ const StatusInteractionBar: React.FC<IStatusInteractionBar> = ({ status }): JSX.
   const handleOpenFavouritesModal: React.EventHandler<React.MouseEvent<HTMLButtonElement>> = (e) => {
     e.preventDefault();
 
-    if (!me) onOpenUnauthorizedModal();
-    else onOpenFavouritesModal(account.acct, status.id);
+    // if (!me) onOpenUnauthorizedModal();
+    onOpenFavouritesModal(status.id);
   };
 
   const handleOpenDislikesModal: React.EventHandler<React.MouseEvent<HTMLButtonElement>> = (e) => {
     e.preventDefault();
 
-    if (!me) onOpenUnauthorizedModal();
-    else onOpenDislikesModal(account.acct, status.id);
+    // if (!me) onOpenUnauthorizedModal();
+    onOpenDislikesModal(status.id);
   };
 
   const getFavourites = () => {
@@ -137,49 +121,11 @@ const StatusInteractionBar: React.FC<IStatusInteractionBar> = ({ status }): JSX.
     return null;
   };
 
-  const handleOpenReactionsModal = () => {
-    if (!me) {
-      return onOpenUnauthorizedModal();
-    }
-
-    onOpenReactionsModal(account.acct, status.id);
-  };
-
-  const getEmojiReacts = () => {
-    const emojiReacts = getNormalizedReacts();
-    const count = emojiReacts.reduce((acc, cur) => (
-      acc + (cur.count || 0)
-    ), 0);
-
-    const handleClick = features.emojiReacts ? handleOpenReactionsModal : handleOpenFavouritesModal;
-
-    if (count) {
-      return (
-        <InteractionCounter count={count} onClick={features.exposableReactions ? handleClick : undefined}>
-          <HStack space={0.5} alignItems='center'>
-            {emojiReacts.slice(0, 3).map((e, i) => {
-              return (
-                <Emoji
-                  key={i}
-                  className='h-4.5 w-4.5 flex-none'
-                  emoji={e.name}
-                  src={e.url}
-                />
-              );
-            })}
-          </HStack>
-        </InteractionCounter>
-      );
-    }
-
-    return null;
-  };
-
   return (
     <HStack space={3}>
       {getReposts()}
       {getQuotes()}
-      {(features.emojiReacts || features.emojiReactsMastodon) ? getEmojiReacts() : getFavourites()}
+      {getFavourites()}
       {getDislikes()}
     </HStack>
   );
@@ -205,7 +151,6 @@ const InteractionCounter: React.FC<IInteractionCounter> = ({ count, children, on
     <HStack space={1} alignItems='center'>
       <Text weight='bold'>
         <AnimatedNumber value={count} short />
-        {/* {shortNumberFormat(count)} */}
       </Text>
 
       <Text tag='div' theme='muted'>

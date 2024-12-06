@@ -2,7 +2,7 @@ import React from 'react';
 import toast from 'react-hot-toast';
 import { defineMessages, MessageDescriptor } from 'react-intl';
 
-import { Toast } from './components/ui';
+import Toast from './components/ui/toast';
 import { httpErrorMessages } from './utils/errors';
 
 import type { PlfeResponse } from './api';

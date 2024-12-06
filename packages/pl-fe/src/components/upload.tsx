@@ -12,12 +12,14 @@ import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { spring } from 'react-motion';
 
-import { openModal } from 'pl-fe/actions/modals';
 import AltIndicator from 'pl-fe/components/alt-indicator';
 import Blurhash from 'pl-fe/components/blurhash';
-import { HStack, Icon, IconButton } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import IconButton from 'pl-fe/components/ui/icon-button';
 import Motion from 'pl-fe/features/ui/util/optional-motion';
-import { useAppDispatch, useSettings } from 'pl-fe/hooks';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import type { MediaAttachment } from 'pl-api';
 
@@ -83,7 +85,7 @@ const Upload: React.FC<IUpload> = ({
   withPreview = true,
 }) => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
 
   const { missingDescriptionModal } = useSettings();
 
@@ -135,7 +137,7 @@ const Upload: React.FC<IUpload> = ({
   };
 
   const handleOpenModal = () => {
-    dispatch(openModal('MEDIA', { media: [media], index: 0 }));
+    openModal('MEDIA', { media: [media], index: 0 });
   };
 
   const active = hovered || focused;
@@ -149,7 +151,7 @@ const Upload: React.FC<IUpload> = ({
 
   const uploadIcon = mediaType === 'unknown' && (
     <Icon
-      className='mx-auto my-12 h-16 w-16 text-gray-800 dark:text-gray-200'
+      className='mx-auto my-12 size-16 text-gray-800 dark:text-gray-200'
       src={MIMETYPE_ICONS[mimeType || ''] || defaultIcon}
     />
   );
@@ -235,9 +237,9 @@ const Upload: React.FC<IUpload> = ({
               />
             )}
 
-            <div className='absolute inset-0 -z-[1] h-full w-full'>
+            <div className='absolute inset-0 z-[-1] size-full'>
               {mediaType === 'video' && (
-                <video className='h-full w-full object-cover' autoPlay playsInline muted loop>
+                <video className='size-full object-cover' autoPlay playsInline muted loop>
                   <source src={media.preview_url} />
                 </video>
               )}

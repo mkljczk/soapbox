@@ -2,13 +2,12 @@ import { configureMockStore } from '@jedmao/redux-mock-store';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { render, RenderOptions } from '@testing-library/react';
 import { renderHook, RenderHookOptions } from '@testing-library/react-hooks';
-import { merge } from 'immutable';
 import React, { FC, ReactElement } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import { Action, applyMiddleware, createStore } from 'redux';
+import { applyMiddleware, createStore } from 'redux';
 import { thunk } from 'redux-thunk';
 
 import { ChatProvider } from 'pl-fe/contexts/chat-context';
@@ -17,8 +16,8 @@ import { queryClient } from 'pl-fe/queries/client';
 
 import { default as rootReducer } from '../reducers';
 
-import type { AnyAction } from 'redux';
 import type { AppDispatch } from 'pl-fe/store';
+import type { Action, AnyAction } from 'redux';
 
 // Mock Redux
 // https://redux.js.org/recipes/writing-tests/
@@ -37,7 +36,7 @@ const TestApp: FC<any> = ({ children, storeProps, routerProps = {} }) => {
   if (storeProps && typeof storeProps.getState !== 'undefined') { // storeProps is a store
     store = storeProps;
   } else if (storeProps) { // storeProps is state
-    appState = merge(rootState, storeProps);
+    appState = { ...rootState, ...storeProps };
     store = createTestStore(appState);
   } else {
     store = createTestStore(appState);
@@ -113,7 +112,6 @@ export {
   mockStore,
   applyActions,
   rootState,
-  rootReducer,
   mockWindowProperty,
   createTestStore,
   queryClient,

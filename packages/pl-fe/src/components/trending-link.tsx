@@ -5,7 +5,10 @@ import { getTextDirection } from 'pl-fe/utils/rtl';
 
 import Blurhash from './blurhash';
 import { accountsCountRenderer } from './hashtag';
-import { HStack, Icon, Stack, Text } from './ui';
+import HStack from './ui/hstack';
+import Icon from './ui/icon';
+import Stack from './ui/stack';
+import Text from './ui/text';
 
 interface ITrendingLink {
   trendingLink: TrendsLink;
@@ -20,14 +23,14 @@ const TrendingLink: React.FC<ITrendingLink> = ({ trendingLink }) => {
 
   if (trendingLink.image) {
     media = (
-      <div className='relative h-32 w-32 overflow-hidden rounded-md'>
+      <div className='relative size-32 overflow-hidden rounded-md'>
         {trendingLink.blurhash && (
           <Blurhash
-            className='absolute inset-0 z-0 h-full w-full'
+            className='absolute inset-0 z-0 size-full'
             hash={trendingLink.blurhash}
           />
         )}
-        <img className='relative h-full w-full object-cover' src={trendingLink.image} alt={trendingLink.image_description || undefined} />
+        <img className='relative size-full object-cover' src={trendingLink.image} alt={trendingLink.image_description || undefined} />
       </div>
     );
   }

@@ -1,11 +1,13 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useAccountLookup, useFollowers } from 'pl-fe/api/hooks';
+import { useFollowers } from 'pl-fe/api/hooks/accounts/use-account-list';
+import { useAccountLookup } from 'pl-fe/api/hooks/accounts/use-account-lookup';
 import Account from 'pl-fe/components/account';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, Spinner } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import Spinner from 'pl-fe/components/ui/spinner';
 
 const messages = defineMessages({
   heading: { id: 'column.followers', defaultMessage: 'Followers' },
@@ -53,7 +55,6 @@ const Followers: React.FC<IFollowers> = ({ params }) => {
   return (
     <Column label={intl.formatMessage(messages.heading)} transparent>
       <ScrollableList
-        scrollKey='followers'
         hasMore={hasNextPage}
         onLoadMore={fetchNextPage}
         emptyMessage={<FormattedMessage id='account.followers.empty' defaultMessage='No one follows this user yet.' />}

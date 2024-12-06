@@ -2,14 +2,20 @@ import React, { useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { openModal } from 'pl-fe/actions/modals';
+import { useRelationship } from 'pl-fe/api/hooks/accounts/use-relationship';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
+import { ParsedContent } from 'pl-fe/components/parsed-content';
 import RelativeTimestamp from 'pl-fe/components/relative-timestamp';
-import { Avatar, HStack, IconButton, Stack, Text } from 'pl-fe/components/ui';
+import Avatar from 'pl-fe/components/ui/avatar';
+import HStack from 'pl-fe/components/ui/hstack';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import { useChatContext } from 'pl-fe/contexts/chat-context';
-import { useAppDispatch, useAppSelector, useFeatures } from 'pl-fe/hooks';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useChatActions } from 'pl-fe/queries/chats';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import type { Chat } from 'pl-api';
 import type { Menu } from 'pl-fe/components/dropdown-menu';
@@ -29,22 +35,24 @@ interface IChatListItemInterface {
 }
 
 const ChatListItem: React.FC<IChatListItemInterface> = ({ chat, onClick }) => {
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
   const intl = useIntl();
   const features = useFeatures();
   const history = useHistory();
 
   const { isUsingMainChatPage } = useChatContext();
   const { deleteChat } = useChatActions(chat?.id as string);
-  const isBlocked = useAppSelector((state) => state.getIn(['relationships', chat.account.id, 'blocked_by']));
-  const isBlocking = useAppSelector((state) => state.getIn(['relationships', chat?.account?.id, 'blocking']));
+  const { relationship } = useRelationship(chat?.account.id, { enabled: !!chat });
+
+  const isBlocked = relationship?.blocked_by && false;
+  const isBlocking = relationship?.blocking && false;
 
   const menu = useMemo((): Menu => [{
     text: intl.formatMessage(messages.leaveChat),
     action: (event) => {
       event.stopPropagation();
 
-      dispatch(openModal('CONFIRM', {
+      openModal('CONFIRM', {
         heading: intl.formatMessage(messages.leaveHeading),
         message: intl.formatMessage(messages.leaveMessage),
         confirm: intl.formatMessage(messages.leaveConfirm),
@@ -58,7 +66,7 @@ const ChatListItem: React.FC<IChatListItemInterface> = ({ chat, onClick }) => {
             },
           });
         },
-      }));
+      });
     },
     icon: require('@tabler/icons/outline/logout.svg'),
   }], []);
@@ -117,8 +125,9 @@ const ChatListItem: React.FC<IChatListItemInterface> = ({ chat, onClick }) => {
                     truncate
                     className='truncate-child pointer-events-none h-5 w-full'
                     data-testid='chat-last-message'
-                    dangerouslySetInnerHTML={{ __html: chat.last_message?.content }}
-                  />
+                  >
+                    <ParsedContent html={chat.last_message?.content} emojis={chat.last_message.emojis} />
+                  </Text>
                 )}
               </>
             )}
@@ -143,7 +152,7 @@ const ChatListItem: React.FC<IChatListItemInterface> = ({ chat, onClick }) => {
             <>
               {chat.last_message.unread && (
                 <div
-                  className='h-2 w-2 rounded-full bg-secondary-500'
+                  className='size-2 rounded-full bg-secondary-500'
                   data-testid='chat-unread-indicator'
                 />
               )}

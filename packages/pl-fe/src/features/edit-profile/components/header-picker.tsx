@@ -2,10 +2,13 @@ import clsx from 'clsx';
 import React, { useRef } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { openModal } from 'pl-fe/actions/modals';
 import AltIndicator from 'pl-fe/components/alt-indicator';
-import { HStack, Icon, IconButton, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useDraggedFiles } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Text from 'pl-fe/components/ui/text';
+import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 const messages = defineMessages({
   title: { id: 'group.upload_banner.title', defaultMessage: 'Upload background picture' },
@@ -27,7 +30,7 @@ interface IMediaInput {
 const HeaderPicker = React.forwardRef<HTMLInputElement, IMediaInput>(({
   src, onChange, onClear, accept, disabled, description, onChangeDescription,
 }, ref) => {
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
   const intl = useIntl();
 
   const picker = useRef<HTMLLabelElement>(null);
@@ -45,7 +48,7 @@ const HeaderPicker = React.forwardRef<HTMLInputElement, IMediaInput>(({
   const handleChangeDescriptionClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
 
-    dispatch(openModal('TEXT_FIELD', {
+    openModal('TEXT_FIELD', {
       heading: intl.formatMessage(messages.changeHeaderDescriptionHeading),
       placeholder: intl.formatMessage(messages.changeHeaderDescriptionPlaceholder),
       confirm: intl.formatMessage(messages.changeHeaderDescriptionConfirm),
@@ -53,14 +56,14 @@ const HeaderPicker = React.forwardRef<HTMLInputElement, IMediaInput>(({
         onChangeDescription?.(description || '');
       },
       text: description,
-    }));
+    });
   };
 
   return (
     <label
       ref={picker}
       className={clsx(
-        'dark:sm:shadow-inset relative h-24 w-full cursor-pointer overflow-hidden rounded-lg bg-primary-100 text-primary-500 sm:h-36 sm:shadow dark:bg-gray-800 dark:text-accent-blue',
+        'dark:sm:shadow-inset relative h-24 w-full cursor-pointer overflow-hidden rounded-lg bg-primary-100 text-primary-500 dark:bg-gray-800 dark:text-accent-blue sm:h-36 sm:shadow',
         {
           'border-2 border-primary-600 border-dashed !z-[99]': isDragging,
           'ring-2 ring-offset-2 ring-primary-600': isDraggedOver,
@@ -69,9 +72,9 @@ const HeaderPicker = React.forwardRef<HTMLInputElement, IMediaInput>(({
       title={intl.formatMessage(messages.title)}
       tabIndex={0}
     >
-      {src && <img className='h-full w-full object-cover' src={src} alt='' />}
+      {src && <img className='size-full object-cover' src={src} alt='' />}
       <HStack
-        className={clsx('absolute top-0 h-full w-full transition-opacity', {
+        className={clsx('absolute top-0 size-full transition-opacity', {
           'opacity-0 hover:opacity-90 bg-primary-100 dark:bg-gray-800': src,
         })}
         space={1.5}
@@ -80,7 +83,7 @@ const HeaderPicker = React.forwardRef<HTMLInputElement, IMediaInput>(({
       >
         <Icon
           src={require('@tabler/icons/outline/photo-plus.svg')}
-          className='h-4.5 w-4.5'
+          className='size-4.5'
         />
 
         <Text size='md' theme='primary' weight='semibold'>

@@ -1,17 +1,23 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
+import { accountSchema } from './account';
+import { statusSchema } from './status';
 import { filteredArray } from './utils';
 
-import { accountSchema, statusSchema } from '.';
-
-/** @see {@link https://docs.joinmastodon.org/entities/Conversation} */
-const conversationSchema = z.object({
-  id: z.string(),
-  unread: z.boolean().catch(false),
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Conversation}
+ */
+const conversationSchema = v.object({
+  id: v.string(),
+  unread: v.fallback(v.boolean(), false),
   accounts: filteredArray(accountSchema),
-  last_status: statusSchema.nullable().catch(null),
+  last_status: v.fallback(v.nullable(statusSchema), null),
 });
 
-type Conversation = z.infer<typeof conversationSchema>;
+/**
+ * @category Entity types
+ */
+type Conversation = v.InferOutput<typeof conversationSchema>;
 
 export { conversationSchema, type Conversation };

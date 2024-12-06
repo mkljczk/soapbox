@@ -1,4 +1,3 @@
-import { Record as ImmutableRecord } from 'immutable';
 import { MediaAttachment } from 'pl-api';
 import React, { useState } from 'react';
 
@@ -7,12 +6,12 @@ interface IPlaceholderMediaGallery {
   defaultWidth?: number;
 }
 
-const SizeData = ImmutableRecord({
-  style: {} as React.CSSProperties,
-  itemsDimensions: [] as Record<string, string>[],
-  size: 1 as number,
-  width: 0 as number,
-});
+interface SizeData {
+  style: React.CSSProperties;
+  itemsDimensions: Record<string, string>[];
+  size: number;
+  width: number;
+}
 
 const PlaceholderMediaGallery: React.FC<IPlaceholderMediaGallery> = ({ media, defaultWidth }) => {
   const [width, setWidth] = useState(defaultWidth);
@@ -23,7 +22,7 @@ const PlaceholderMediaGallery: React.FC<IPlaceholderMediaGallery> = ({ media, de
     }
   };
 
-  const getSizeData = (size: number) => {
+  const getSizeData = (size: number): SizeData => {
     const style: React.CSSProperties = {};
     let itemsDimensions: Record<string, string>[] = [];
 
@@ -59,12 +58,12 @@ const PlaceholderMediaGallery: React.FC<IPlaceholderMediaGallery> = ({ media, de
       ];
     }
 
-    return SizeData({
+    return {
       style,
       itemsDimensions,
       size,
-      width,
-    });
+      width: width || 0,
+    };
   };
 
   const renderItem = (dimensions: Record<string, string>, i: number) => {

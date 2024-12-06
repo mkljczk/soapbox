@@ -3,20 +3,23 @@ import { GroupRoles } from 'pl-api';
 import React, { useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { groupKick } from 'pl-fe/actions/groups';
-import { openModal } from 'pl-fe/actions/modals';
-import { useAccount, useBlockGroupMember, useDemoteGroupMember, usePromoteGroupMember } from 'pl-fe/api/hooks';
+import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import { useDemoteGroupMember } from 'pl-fe/api/hooks/groups/use-demote-group-member';
+import { usePromoteGroupMember } from 'pl-fe/api/hooks/groups/use-promote-group-member';
 import Account from 'pl-fe/components/account';
 import DropdownMenu from 'pl-fe/components/dropdown-menu/dropdown-menu';
-import { HStack } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
 import { deleteEntities } from 'pl-fe/entity-store/actions';
 import { Entities } from 'pl-fe/entity-store/entities';
 import PlaceholderAccount from 'pl-fe/features/placeholder/components/placeholder-account';
-import { useAppDispatch } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/use-group-blocks';
+import { useKickGroupMemberMutation, type MinifiedGroupMember } from 'pl-fe/queries/groups/use-group-members';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
 import type { Menu as IMenu } from 'pl-fe/components/dropdown-menu';
-import type { Group, GroupMember } from 'pl-fe/normalizers';
+import type { Group } from 'pl-fe/normalizers/group';
 
 const messages = defineMessages({
   adminLimitTitle: { id: 'group.member.admin.limit.title', defaultMessage: 'Admin limit reached' },
@@ -40,21 +43,21 @@ const messages = defineMessages({
 });
 
 interface IGroupMemberListItem {
-  member: GroupMember;
+  member: MinifiedGroupMember;
   group: Pick<Group, 'id' | 'relationship'>;
 }
 
-const GroupMemberListItem = (props: IGroupMemberListItem) => {
-  const { member, group } = props;
-
+const GroupMemberListItem = ({ member, group }: IGroupMemberListItem) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
+  const { openModal } = useModalsStore();
 
-  const blockGroupMember = useBlockGroupMember(group, member.account);
+  const { mutate: blockGroupMember } = useBlockGroupUserMutation(group.id, member.account_id);
+  const { mutate: kickGroupMember } = useKickGroupMemberMutation(group.id, member.account_id);
   const promoteGroupMember = usePromoteGroupMember(group, member);
   const demoteGroupMember = useDemoteGroupMember(group, member);
 
-  const { account, isLoading } = useAccount(member.account.id);
+  const { account, isLoading } = useAccount(member.account_id);
 
   // Current user role
   const isCurrentUserOwner = group.relationship?.role === GroupRoles.OWNER;
@@ -66,40 +69,40 @@ const GroupMemberListItem = (props: IGroupMemberListItem) => {
   const isMemberUser = member.role === GroupRoles.USER;
 
   const handleKickFromGroup = () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.kickFromGroupHeading, { name: account?.username }),
       message: intl.formatMessage(messages.kickFromGroupMessage, { name: account?.username }),
       confirm: intl.formatMessage(messages.kickConfirm),
-      onConfirm: () => dispatch(groupKick(group.id, account?.id as string)).then(() =>
-        toast.success(intl.formatMessage(messages.kicked, { name: account?.acct })),
-      ),
-    }));
+      onConfirm: () => kickGroupMember(undefined, {
+        onSuccess: () => toast.success(intl.formatMessage(messages.kicked, { name: account?.acct })),
+      }),
+    });
   };
 
   const handleBlockFromGroup = () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.blockFromGroupHeading),
       message: intl.formatMessage(messages.blockFromGroupMessage, { name: account?.username }),
       confirm: intl.formatMessage(messages.blockConfirm),
       onConfirm: () => {
-        blockGroupMember([member.account.id], {
+        blockGroupMember(undefined, {
           onSuccess() {
             dispatch(deleteEntities([member.id], Entities.GROUP_MEMBERSHIPS));
             toast.success(intl.formatMessage(messages.blocked, { name: account?.acct }));
           },
         });
       },
-    }));
+    });
   };
 
   const handleAdminAssignment = () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.promoteConfirm),
       message: intl.formatMessage(messages.promoteConfirmMessage, { name: account?.username }),
       confirm: intl.formatMessage(messages.promoteConfirm),
       confirmationTheme: 'primary',
       onConfirm: () => {
-        promoteGroupMember({ role: GroupRoles.ADMIN, account_ids: [member.account.id] }, {
+        promoteGroupMember({ role: GroupRoles.ADMIN, account_ids: [member.account_id] }, {
           onSuccess() {
             toast.success(
               intl.formatMessage(messages.promotedToAdmin, { name: account?.acct }),
@@ -107,11 +110,11 @@ const GroupMemberListItem = (props: IGroupMemberListItem) => {
           },
         });
       },
-    }));
+    });
   };
 
   const handleUserAssignment = () => {
-    demoteGroupMember({ role: GroupRoles.USER, account_ids: [member.account.id] }, {
+    demoteGroupMember({ role: GroupRoles.USER, account_ids: [member.account_id] }, {
       onSuccess() {
         toast.success(intl.formatMessage(messages.demotedToUser, { name: account?.acct }));
       },
@@ -164,7 +167,7 @@ const GroupMemberListItem = (props: IGroupMemberListItem) => {
     return items;
   }, [group, account?.id]);
 
-  if (isLoading) {
+  if (isLoading || !account) {
     return <PlaceholderAccount />;
   }
 
@@ -175,7 +178,7 @@ const GroupMemberListItem = (props: IGroupMemberListItem) => {
       data-testid='group-member-list-item'
     >
       <div className='w-full'>
-        <Account account={member.account} withRelationship={false} />
+        <Account account={account} withRelationship={false} />
       </div>
 
       <HStack alignItems='center' space={2}>

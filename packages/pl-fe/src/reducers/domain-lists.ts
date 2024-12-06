@@ -1,4 +1,4 @@
-import { OrderedSet as ImmutableOrderedSet, Record as ImmutableRecord } from 'immutable';
+import { create } from 'mutative';
 
 import {
   DOMAIN_BLOCKS_FETCH_SUCCESS,
@@ -9,25 +9,36 @@ import {
 
 import type { PaginatedResponse } from 'pl-api';
 
-const BlocksRecord = ImmutableRecord({
-  items: ImmutableOrderedSet<string>(),
-  next: null as (() => Promise<PaginatedResponse<string>>) | null,
-});
+interface State {
+  blocks: {
+    items: Array<string>;
+    next: (() => Promise<PaginatedResponse<string>>) | null;
+  };
+}
 
-const ReducerRecord = ImmutableRecord({
-  blocks: BlocksRecord(),
-});
+const initialState: State = {
+  blocks: {
+    items: [],
+    next: null,
+  },
+};
 
-type State = ReturnType<typeof ReducerRecord>;
-
-const domainLists = (state: State = ReducerRecord(), action: DomainBlocksAction) => {
+const domainLists = (state: State = initialState, action: DomainBlocksAction): State => {
   switch (action.type) {
     case DOMAIN_BLOCKS_FETCH_SUCCESS:
-      return state.setIn(['blocks', 'items'], ImmutableOrderedSet(action.domains)).setIn(['blocks', 'next'], action.next);
+      return create(state, (draft) => {
+        draft.blocks.items = action.domains;
+        draft.blocks.next = action.next;
+      });
     case DOMAIN_BLOCKS_EXPAND_SUCCESS:
-      return state.updateIn(['blocks', 'items'], set => (set as ImmutableOrderedSet<string>).union(action.domains)).setIn(['blocks', 'next'], action.next);
+      return create(state, (draft) => {
+        draft.blocks.items = [...new Set([...draft.blocks.items, ...action.domains])];
+        draft.blocks.next = action.next;
+      });
     case DOMAIN_UNBLOCK_SUCCESS:
-      return state.updateIn(['blocks', 'items'], set => (set as ImmutableOrderedSet<string>).delete(action.domain));
+      return create(state, (draft) => {
+        draft.blocks.items = draft.blocks.items.filter(item => item !== action.domain);
+      });
     default:
       return state;
   }

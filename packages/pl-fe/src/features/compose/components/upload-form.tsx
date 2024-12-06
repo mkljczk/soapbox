@@ -2,8 +2,9 @@ import clsx from 'clsx';
 import React, { useCallback, useRef } from 'react';
 
 import { changeMediaOrder } from 'pl-fe/actions/compose';
-import { HStack } from 'pl-fe/components/ui';
-import { useAppDispatch, useCompose } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 
 import Upload from './upload';
 import UploadProgress from './upload-progress';
@@ -16,7 +17,9 @@ interface IUploadForm {
 const UploadForm: React.FC<IUploadForm> = ({ composeId, onSubmit }) => {
   const dispatch = useAppDispatch();
 
-  const mediaIds = useCompose(composeId).media_attachments.map((item) => item.id);
+  const { is_uploading: isUploading, media_attachments: mediaAttachments } = useCompose(composeId);
+
+  const mediaIds = mediaAttachments.map((item) => item.id);
 
   const dragItem = useRef<string | null>();
   const dragOverItem = useRef<string | null>();
@@ -35,11 +38,13 @@ const UploadForm: React.FC<IUploadForm> = ({ composeId, onSubmit }) => {
     dragOverItem.current = null;
   }, [dragItem, dragOverItem]);
 
+  if (!isUploading && !mediaIds.length) return null;
+
   return (
     <div className='overflow-hidden'>
       <UploadProgress composeId={composeId} />
 
-      <HStack wrap className={clsx('overflow-hidden', mediaIds.size !== 0 && 'p-1')}>
+      <HStack wrap className={clsx('overflow-hidden', mediaIds.length > 0 && 'm-[-5px]')}>
         {mediaIds.map((id: string) => (
           <Upload
             id={id}
