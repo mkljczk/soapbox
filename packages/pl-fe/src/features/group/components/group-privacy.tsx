@@ -1,8 +1,13 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HStack, Icon, Popover, Stack, Text } from 'pl-fe/components/ui';
-import { Group } from 'pl-fe/normalizers';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Popover from 'pl-fe/components/ui/popover';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+
+import type { Group } from 'pl-fe/normalizers/group';
 
 interface IGroupPolicy {
   group: Pick<Group, 'locked'>;
@@ -20,7 +25,7 @@ const GroupPrivacy = ({ group }: IGroupPolicy) => (
                 ? require('@tabler/icons/outline/lock.svg')
                 : require('@tabler/icons/outline/world.svg')
             }
-            className='h-6 w-6 text-gray-600 dark:text-gray-600'
+            className='size-6 text-gray-600 dark:text-gray-600'
           />
         </div>
 
@@ -46,7 +51,7 @@ const GroupPrivacy = ({ group }: IGroupPolicy) => (
   >
     <HStack space={1} alignItems='center' data-testid='group-privacy'>
       <Icon
-        className='h-4 w-4'
+        className='size-4'
         src={
           group.locked
             ? require('@tabler/icons/outline/lock.svg')

@@ -1,5 +1,8 @@
 import { PaginationParams } from './common';
 
+/**
+ * @category Request params
+ */
 interface GetInteractionRequestsParams extends PaginationParams {
   /** If set, then only interactions targeting the given status_id will be included in the results. */
   status_id?: string;

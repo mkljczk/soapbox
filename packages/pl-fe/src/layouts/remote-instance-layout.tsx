@@ -1,15 +1,15 @@
 import React from 'react';
 
+import Layout from 'pl-fe/components/ui/layout';
 import LinkFooter from 'pl-fe/features/ui/components/link-footer';
 import {
   PromoPanel,
   InstanceInfoPanel,
   InstanceModerationPanel,
 } from 'pl-fe/features/ui/util/async-components';
-import { useAppSelector, useOwnAccount } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { federationRestrictionsDisclosed } from 'pl-fe/utils/state';
-
-import { Layout } from '../components/ui';
 
 interface IRemoteInstanceLayout {
   params?: {

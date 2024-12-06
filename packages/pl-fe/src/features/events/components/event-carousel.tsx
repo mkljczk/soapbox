@@ -3,13 +3,12 @@ import { Link } from 'react-router-dom';
 import ReactSwipeableViews from 'react-swipeable-views';
 
 import EventPreview from 'pl-fe/components/event-preview';
-import { Card, Icon } from 'pl-fe/components/ui';
-import { useAppSelector } from 'pl-fe/hooks';
+import Card from 'pl-fe/components/ui/card';
+import Icon from 'pl-fe/components/ui/icon';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 import PlaceholderEventPreview from '../../placeholder/components/placeholder-event-preview';
-
-import type { OrderedSet as ImmutableOrderedSet } from 'immutable';
 
 const Event = ({ id }: { id: string }) => {
   const getStatus = useCallback(makeGetStatus(), []);
@@ -28,7 +27,7 @@ const Event = ({ id }: { id: string }) => {
 };
 
 interface IEventCarousel {
-  statusIds: ImmutableOrderedSet<string>;
+  statusIds: Array<string>;
   isLoading?: boolean | null;
   emptyMessage: React.ReactNode;
 }
@@ -37,10 +36,10 @@ const EventCarousel: React.FC<IEventCarousel> = ({ statusIds, isLoading, emptyMe
   const [index, setIndex] = useState(0);
 
   const handleChangeIndex = (index: number) => {
-    setIndex(index % statusIds.size);
+    setIndex(index % statusIds.length);
   };
 
-  if (statusIds.size === 0) {
+  if (statusIds.length === 0) {
     if (isLoading) {
       return <PlaceholderEventPreview />;
     }
@@ -57,22 +56,22 @@ const EventCarousel: React.FC<IEventCarousel> = ({ statusIds, isLoading, emptyMe
         <div className='absolute left-3 top-1/2 z-10 -mt-4'>
           <button
             onClick={() => handleChangeIndex(index - 1)}
-            className='flex h-8 w-8 items-center justify-center rounded-full bg-white/50 backdrop-blur dark:bg-gray-900/50'
+            className='flex size-8 items-center justify-center rounded-full bg-white/50 backdrop-blur dark:bg-gray-900/50'
           >
-            <Icon src={require('@tabler/icons/outline/chevron-left.svg')} className='h-6 w-6 text-black dark:text-white' />
+            <Icon src={require('@tabler/icons/outline/chevron-left.svg')} className='size-6 text-black dark:text-white' />
           </button>
         </div>
       )}
       <ReactSwipeableViews animateHeight index={index} onChangeIndex={handleChangeIndex}>
         {statusIds.map(statusId => <Event key={statusId} id={statusId} />)}
       </ReactSwipeableViews>
-      {index !== statusIds.size - 1 && (
+      {index !== statusIds.length - 1 && (
         <div className='absolute right-3 top-1/2 z-10 -mt-4'>
           <button
             onClick={() => handleChangeIndex(index + 1)}
-            className='flex h-8 w-8 items-center justify-center rounded-full bg-white/50 backdrop-blur dark:bg-gray-900/50'
+            className='flex size-8 items-center justify-center rounded-full bg-white/50 backdrop-blur dark:bg-gray-900/50'
           >
-            <Icon src={require('@tabler/icons/outline/chevron-right.svg')} className='h-6 w-6 text-black dark:text-white' />
+            <Icon src={require('@tabler/icons/outline/chevron-right.svg')} className='size-6 text-black dark:text-white' />
           </button>
         </div>
       )}

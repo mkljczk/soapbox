@@ -5,9 +5,10 @@ import Account from 'pl-fe/components/account';
 import AttachmentThumbs from 'pl-fe/components/attachment-thumbs';
 import StatusContent from 'pl-fe/components/status-content';
 import StatusReplyMentions from 'pl-fe/components/status-reply-mentions';
-import { HStack, Stack } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
 import PollPreview from 'pl-fe/features/ui/components/poll-preview';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import { buildStatus } from '../builder';
 
@@ -19,7 +20,7 @@ interface IScheduledStatus {
 
 const ScheduledStatus: React.FC<IScheduledStatus> = ({ statusId, ...other }) => {
   const status = useAppSelector((state) => {
-    const scheduledStatus = state.scheduled_statuses.get(statusId);
+    const scheduledStatus = state.scheduled_statuses[statusId];
     if (!scheduledStatus) return null;
     return buildStatus(state, scheduledStatus);
   });
@@ -48,13 +49,12 @@ const ScheduledStatus: React.FC<IScheduledStatus> = ({ statusId, ...other }) => 
         <Stack space={4}>
           <StatusContent
             status={status}
-            collapsable
+            collapsable={false}
           />
 
           {status.media_attachments.length > 0 && (
             <AttachmentThumbs
-              media={status.media_attachments}
-              sensitive={status.sensitive}
+              status={status}
             />
           )}
 

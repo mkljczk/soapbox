@@ -1,32 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 
 import { patchMeSuccess } from 'pl-fe/actions/me';
-import { useAppDispatch, useClient } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useClient } from 'pl-fe/hooks/use-client';
 import toast from 'pl-fe/toast';
-
-type IAccount = {
-  acct: string;
-  avatar: string;
-  avatar_static: string;
-  bot: boolean;
-  created_at: string;
-  discoverable: boolean;
-  display_name: string;
-  followers_count: number;
-  following_count: number;
-  group: boolean;
-  header: string;
-  header_static: string;
-  id: string;
-  last_status_at: string;
-  location: string;
-  locked: boolean;
-  note: string;
-  statuses_count: number;
-  url: string;
-  username: string;
-  verified: boolean;
-}
 
 type UpdateCredentialsData = {
   accepts_chat_messages?: boolean;
@@ -57,4 +34,4 @@ const useUpdateCredentials = () => {
   });
 };
 
-export { type IAccount, useUpdateCredentials };
+export { useUpdateCredentials };

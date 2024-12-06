@@ -2,7 +2,9 @@ import React, { useCallback } from 'react';
 
 import { undoUploadCompose, changeUploadCompose } from 'pl-fe/actions/compose';
 import Upload from 'pl-fe/components/upload';
-import { useAppDispatch, useCompose, useInstance } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 interface IUploadCompose {
   id: string;

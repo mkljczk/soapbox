@@ -1,19 +1,16 @@
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import 'wicg-inert';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { cancelReplyCompose } from 'pl-fe/actions/compose';
 import { saveDraftStatus } from 'pl-fe/actions/draft-statuses';
-import { cancelEventCompose } from 'pl-fe/actions/events';
-import { openModal, closeModal } from 'pl-fe/actions/modals';
-import { useAppDispatch, useAppSelector, usePrevious } from 'pl-fe/hooks';
-import { userTouching } from 'pl-fe/is-mobile';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { usePrevious } from 'pl-fe/hooks/use-previous';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import type { ModalType } from 'pl-fe/features/ui/components/modal-root';
-import type { ReducerCompose } from 'pl-fe/reducers/compose';
-import type { ReducerRecord as ReducerComposeEvent } from 'pl-fe/reducers/compose-event';
+import type { Compose } from 'pl-fe/reducers/compose';
 
 const messages = defineMessages({
   confirm: { id: 'confirmations.cancel.confirm', defaultMessage: 'Discard' },
@@ -21,20 +18,12 @@ const messages = defineMessages({
   saveDraft: { id: 'confirmations.cancel_editing.save_draft', defaultMessage: 'Save draft' },
 });
 
-const checkComposeContent = (compose?: ReturnType<typeof ReducerCompose>) =>
+const checkComposeContent = (compose?: Compose) =>
   !!compose && [
     compose.editorState && compose.editorState.length > 0,
     compose.spoiler_text.length > 0,
-    compose.media_attachments.size > 0,
+    compose.media_attachments.length > 0,
     compose.poll !== null,
-  ].some(check => check === true);
-
-const checkEventComposeContent = (compose?: ReturnType<typeof ReducerComposeEvent>) =>
-  !!compose && [
-    compose.name.length > 0,
-    compose.status.length > 0,
-    compose.location !== null,
-    compose.banner !== null,
   ].some(check => check === true);
 
 interface IModalRoot {
@@ -49,9 +38,9 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
   const history = useHistory();
   const dispatch = useAppDispatch();
 
+  const { openModal } = useModalsStore();
+
   const [revealed, setRevealed] = useState(!!children);
-  const isDropdownOpen = useAppSelector(state => state.dropdown_menu.isOpen);
-  const wasDropdownOpen = usePrevious(isDropdownOpen);
 
   const ref = useRef<HTMLDivElement>(null);
   const activeElement = useRef<HTMLDivElement | null>(revealed ? document.activeElement as HTMLDivElement | null : null);
@@ -70,13 +59,12 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
 
   const handleOnClose = () => {
     dispatch((_, getState) => {
-      const compose = getState().compose.get('compose-modal');
+      const compose = getState().compose['compose-modal'];
       const hasComposeContent = checkComposeContent(compose);
-      const hasEventComposeContent = checkEventComposeContent(getState().compose_event);
 
       if (hasComposeContent && type === 'COMPOSE') {
         const isEditing = compose!.id !== null;
-        dispatch(openModal('CONFIRM', {
+        openModal('CONFIRM', {
           heading: isEditing
             ? <FormattedMessage id='confirmations.cancel_editing.heading' defaultMessage='Cancel post editing' />
             : <FormattedMessage id='confirmations.cancel.heading' defaultMessage='Discard post' />,
@@ -85,39 +73,21 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
             : <FormattedMessage id='confirmations.cancel.message' defaultMessage='Are you sure you want to cancel creating this post?' />,
           confirm: intl.formatMessage(messages.confirm),
           onConfirm: () => {
-            dispatch(closeModal('COMPOSE'));
+            onClose('COMPOSE');
             dispatch(cancelReplyCompose());
           },
           onCancel: () => {
-            dispatch(closeModal('CONFIRM'));
+            onClose('CONFIRM');
           },
           secondary: intl.formatMessage(messages.saveDraft),
           onSecondary: isEditing ? undefined : () => {
             dispatch(saveDraftStatus('compose-modal'));
-            dispatch(closeModal('COMPOSE'));
+            onClose('COMPOSE');
             dispatch(cancelReplyCompose());
           },
-        }));
-      } else if (hasEventComposeContent && type === 'COMPOSE_EVENT') {
-        const isEditing = getState().compose_event.id !== null;
-        dispatch(openModal('CONFIRM', {
-          heading: isEditing
-            ? <FormattedMessage id='confirmations.cancel_event_editing.heading' defaultMessage='Cancel event editing' />
-            : <FormattedMessage id='confirmations.delete_event.heading' defaultMessage='Delete event' />,
-          message: isEditing
-            ? <FormattedMessage id='confirmations.cancel_event_editing.message' defaultMessage='Are you sure you want to cancel editing this event? All changes will be lost.' />
-            : <FormattedMessage id='confirmations.delete_event.message' defaultMessage='Are you sure you want to delete this event?' />,
-          confirm: intl.formatMessage(isEditing ? messages.cancelEditing : messages.confirm),
-          onConfirm: () => {
-            dispatch(closeModal('COMPOSE_EVENT'));
-            dispatch(cancelEventCompose());
-          },
-          onCancel: () => {
-            dispatch(closeModal('CONFIRM'));
-          },
-        }));
-      } else if ((hasComposeContent || hasEventComposeContent) && type === 'CONFIRM') {
-        dispatch(closeModal('CONFIRM'));
+        });
+      } else if (hasComposeContent && type === 'CONFIRM') {
+        onClose('CONFIRM');
       } else {
         onClose();
       }
@@ -148,9 +118,7 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
   const handleModalOpen = () => {
     modalHistoryKey.current = Date.now();
     unlistenHistory.current = history.listen(({ state }, action) => {
-      if ((state as any)?.plFeDropdownKey) {
-        return;
-      } else if (!(state as any)?.plFeModalKey) {
+      if (!(state as any)?.plFeModalKey) {
         onClose();
       } else if (action === 'POP') {
         handleOnClose();
@@ -220,17 +188,6 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
     }
   }, [children]);
 
-  useEffect(() => {
-    if (!userTouching.matches) return;
-
-    if (isDropdownOpen && unlistenHistory.current) {
-      unlistenHistory.current();
-    } else if (!isDropdownOpen && wasDropdownOpen) {
-      // TODO find a better solution
-      setTimeout(() => handleModalOpen(), 50);
-    }
-  }, [isDropdownOpen]);
-
   if (!visible) {
     return (
       <div className='z-50 transition-all' ref={ref} style={{ opacity: 0 }} />
@@ -240,7 +197,7 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
   return (
     <div
       ref={ref}
-      className={clsx('fixed left-0 top-0 z-[100] h-full w-full overflow-y-auto overflow-x-hidden transition-opacity ease-in-out', {
+      className={clsx('fixed left-0 top-0 z-[100] size-full overflow-y-auto overflow-x-hidden transition-opacity ease-in-out', {
         'pointer-events-none': !visible,
       })}
       style={{ opacity: revealed ? 1 : 0 }}
@@ -248,7 +205,9 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
       <div
         role='presentation'
         id='modal-overlay'
-        className='fixed inset-0 bg-gray-500/90 backdrop-blur black:bg-gray-900/90 dark:bg-gray-700/90'
+        className={clsx('fixed inset-0 bg-gray-500/90 black:bg-gray-900/90 dark:bg-gray-700/90', {
+          'opacity-60': type === 'DROPDOWN_MENU',
+        })}
         onClick={handleOnClose}
       />
 
@@ -257,7 +216,7 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
         className={clsx({
           'my-2 mx-auto relative pointer-events-none flex items-center min-h-[calc(100%-3.5rem)]': true,
           'p-4 md:p-0': type !== 'MEDIA',
-          '!my-0': type === 'MEDIA',
+          '!my-0': type === 'MEDIA' || type === 'DROPDOWN_MENU',
         })}
       >
         {children}
@@ -268,6 +227,5 @@ const ModalRoot: React.FC<IModalRoot> = ({ children, onCancel, onClose, type }) 
 
 export {
   checkComposeContent,
-  checkEventComposeContent,
   ModalRoot as default,
 };

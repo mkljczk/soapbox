@@ -3,24 +3,18 @@ import { Map as ImmutableMap } from 'immutable';
 import { __stub } from 'pl-fe/api';
 import { buildInstance, buildRelationship } from 'pl-fe/jest/factory';
 import { mockStore, rootState } from 'pl-fe/jest/test-helpers';
-import { normalizeAccount } from 'pl-fe/normalizers';
-import { ListRecord, ReducerRecord } from 'pl-fe/reducers/user-lists';
+import { normalizeAccount } from 'pl-fe/normalizers/account';
 
 import {
-  authorizeFollowRequest,
   blockAccount,
   createAccount,
-  expandFollowRequests,
   fetchAccount,
   fetchAccountByUsername,
-  fetchFollowRequests,
   fetchRelationships,
   muteAccount,
   removeFromFollowers,
-  subscribeAccount,
   unblockAccount,
   unmuteAccount,
-  unsubscribeAccount,
 } from './accounts';
 
 let store: ReturnType<typeof mockStore>;
@@ -69,15 +63,17 @@ describe('fetchAccount()', () => {
         avatar: 'test.jpg',
       });
 
-      const state = rootState
-        .set('entities', {
+      const state = {
+        ...rootState,
+        entities: {
           'ACCOUNTS': {
             store: {
               [id]: account,
             },
             lists: {},
           },
-        });
+        },
+      };
 
       store = mockStore(state);
 
@@ -166,15 +162,17 @@ describe('fetchAccountByUsername()', () => {
       birthday: undefined,
     });
 
-    state = rootState
-      .set('entities', {
+    state = {
+      ...rootState,
+      entities: {
         'ACCOUNTS': {
           store: {
             [id]: account,
           },
           lists: {},
         },
-      });
+      },
+    };
 
     store = mockStore(state);
 
@@ -185,16 +183,19 @@ describe('fetchAccountByUsername()', () => {
 
   describe('when "accountByUsername" feature is enabled', () => {
     beforeEach(() => {
-      const state = rootState
-        .set('instance', buildInstance({
+      const state = {
+        ...rootState,
+        me: '123',
+        instance: buildInstance({
           version: '2.7.2 (compatible; Pleroma 2.4.52-1337-g4779199e.gleasonator+soapbox)',
           pleroma: {
             metadata: {
               features: [],
             },
           },
-        }))
-        .set('me', '123');
+        }),
+      };
+
       store = mockStore(state);
     });
 
@@ -247,16 +248,19 @@ describe('fetchAccountByUsername()', () => {
 
   describe('when "accountLookup" feature is enabled', () => {
     beforeEach(() => {
-      const state = rootState
-        .set('instance', buildInstance({
+      const state = {
+        ...rootState,
+        me: '123',
+        instance: buildInstance({
           version: '3.4.1 (compatible; TruthSocial 1.0.0)',
           pleroma: {
             metadata: {
               features: [],
             },
           },
-        }))
-        .set('me', '123');
+        }),
+      };
+
       store = mockStore(state);
     });
 
@@ -312,7 +316,7 @@ describe('fetchAccountByUsername()', () => {
 
   describe('when using the accountSearch function', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -378,7 +382,7 @@ describe('blockAccount()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -392,7 +396,7 @@ describe('blockAccount()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -445,7 +449,7 @@ describe('unblockAccount()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -459,7 +463,7 @@ describe('unblockAccount()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -511,7 +515,7 @@ describe('muteAccount()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -525,7 +529,7 @@ describe('muteAccount()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -578,7 +582,7 @@ describe('unmuteAccount()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -592,7 +596,7 @@ describe('unmuteAccount()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -644,7 +648,7 @@ describe('subscribeAccount()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -658,7 +662,7 @@ describe('subscribeAccount()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -710,7 +714,7 @@ describe('unsubscribeAccount()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -724,7 +728,7 @@ describe('unsubscribeAccount()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -776,7 +780,7 @@ describe('removeFromFollowers()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -790,7 +794,7 @@ describe('removeFromFollowers()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState.set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
@@ -842,7 +846,7 @@ describe('fetchRelationships()', () => {
 
   describe('when logged out', () => {
     beforeEach(() => {
-      const state = rootState.set('me', null);
+      const state = { ...rootState, me: null };
       store = mockStore(state);
     });
 
@@ -856,16 +860,18 @@ describe('fetchRelationships()', () => {
 
   describe('when logged in', () => {
     beforeEach(() => {
-      const state = rootState
-        .set('me', '123');
+      const state = { ...rootState, me: '123' };
       store = mockStore(state);
     });
 
     describe('without newAccountIds', () => {
       beforeEach(() => {
-        const state = rootState
-          .set('relationships', ImmutableMap({ [id]: buildRelationship() }))
-          .set('me', '123');
+        const state = {
+          ...rootState,
+          me: '123',
+          relationships: ImmutableMap({ [id]: buildRelationship() }),
+        };
+
         store = mockStore(state);
       });
 
@@ -879,9 +885,12 @@ describe('fetchRelationships()', () => {
 
     describe('with a successful API request', () => {
       beforeEach(() => {
-        const state = rootState
-          .set('relationships', ImmutableMap({}))
-          .set('me', '123');
+        const state = {
+          ...rootState,
+          me: '123',
+          relationships: ImmutableMap(),
+        };
+
         store = mockStore(state);
 
         __stub((mock) => {
@@ -918,237 +927,6 @@ describe('fetchRelationships()', () => {
           { type: 'RELATIONSHIPS_FETCH_FAIL', error: new Error('Network Error') },
         ];
         await store.dispatch(fetchRelationships([id]));
-        const actions = store.getActions();
-
-        expect(actions).toEqual(expectedActions);
-      });
-    });
-  });
-});
-
-describe('fetchFollowRequests()', () => {
-  describe('when logged out', () => {
-    beforeEach(() => {
-      const state = rootState.set('me', null);
-      store = mockStore(state);
-    });
-
-    it('should do nothing', async() => {
-      await store.dispatch(fetchFollowRequests());
-      const actions = store.getActions();
-
-      expect(actions).toEqual([]);
-    });
-  });
-
-  describe('when logged in', () => {
-    beforeEach(() => {
-      const state = rootState
-        .set('me', '123');
-      store = mockStore(state);
-    });
-
-    describe('with a successful API request', () => {
-      beforeEach(() => {
-        const state = rootState
-          .set('relationships', ImmutableMap({}))
-          .set('me', '123');
-        store = mockStore(state);
-
-        __stub((mock) => {
-          mock.onGet('/api/v1/follow_requests').reply(200, [], {
-            link: '<https://example.com/api/v1/follow_requests?since_id=1>; rel=\'prev\'',
-          });
-        });
-      });
-
-      it('should dispatch the correct actions', async() => {
-        const expectedActions = [
-          { type: 'FOLLOW_REQUESTS_FETCH_REQUEST' },
-          { type: 'ACCOUNTS_IMPORT', accounts: [] },
-          {
-            type: 'FOLLOW_REQUESTS_FETCH_SUCCESS',
-            accounts: [],
-            next: null,
-          },
-        ];
-        await store.dispatch(fetchFollowRequests());
-        const actions = store.getActions();
-
-        expect(actions).toEqual(expectedActions);
-      });
-    });
-
-    describe('with an unsuccessful API request', () => {
-      beforeEach(() => {
-        __stub((mock) => {
-          mock.onGet('/api/v1/follow_requests').networkError();
-        });
-      });
-
-      it('should dispatch the correct actions', async() => {
-        const expectedActions = [
-          { type: 'FOLLOW_REQUESTS_FETCH_REQUEST' },
-          { type: 'FOLLOW_REQUESTS_FETCH_FAIL', error: new Error('Network Error') },
-        ];
-        await store.dispatch(fetchFollowRequests());
-        const actions = store.getActions();
-
-        expect(actions).toEqual(expectedActions);
-      });
-    });
-  });
-});
-
-describe('expandFollowRequests()', () => {
-  describe('when logged out', () => {
-    beforeEach(() => {
-      const state = rootState.set('me', null);
-      store = mockStore(state);
-    });
-
-    it('should do nothing', async() => {
-      await store.dispatch(expandFollowRequests());
-      const actions = store.getActions();
-
-      expect(actions).toEqual([]);
-    });
-  });
-
-  describe('when logged in', () => {
-    beforeEach(() => {
-      const state = rootState
-        .set('user_lists', ReducerRecord({
-          follow_requests: ListRecord({
-            next: 'next_url',
-          }),
-        }))
-        .set('me', '123');
-      store = mockStore(state);
-    });
-
-    describe('when the url is null', () => {
-      beforeEach(() => {
-        const state = rootState
-          .set('user_lists', ReducerRecord({
-            follow_requests: ListRecord({
-              next: null,
-            }),
-          }))
-          .set('me', '123');
-        store = mockStore(state);
-      });
-
-      it('should do nothing', async() => {
-        await store.dispatch(expandFollowRequests());
-        const actions = store.getActions();
-
-        expect(actions).toEqual([]);
-      });
-    });
-
-    describe('with a successful API request', () => {
-      beforeEach(() => {
-        __stub((mock) => {
-          mock.onGet('next_url').reply(200, [], {
-            link: '<next_url>; rel=\'prev\'',
-          });
-        });
-      });
-
-      it('should dispatch the correct actions', async() => {
-        const expectedActions = [
-          { type: 'FOLLOW_REQUESTS_EXPAND_REQUEST' },
-          { type: 'ACCOUNTS_IMPORT', accounts: [] },
-          {
-            type: 'FOLLOW_REQUESTS_EXPAND_SUCCESS',
-            accounts: [],
-            next: null,
-          },
-        ];
-        await store.dispatch(expandFollowRequests());
-        const actions = store.getActions();
-
-        expect(actions).toEqual(expectedActions);
-      });
-    });
-
-    describe('with an unsuccessful API request', () => {
-      beforeEach(() => {
-        __stub((mock) => {
-          mock.onGet('next_url').networkError();
-        });
-      });
-
-      it('should dispatch the correct actions', async() => {
-        const expectedActions = [
-          { type: 'FOLLOW_REQUESTS_EXPAND_REQUEST' },
-          { type: 'FOLLOW_REQUESTS_EXPAND_FAIL', error: new Error('Network Error') },
-        ];
-        await store.dispatch(expandFollowRequests());
-        const actions = store.getActions();
-
-        expect(actions).toEqual(expectedActions);
-      });
-    });
-  });
-});
-
-describe('authorizeFollowRequest()', () => {
-  const id = '1';
-
-  describe('when logged out', () => {
-    beforeEach(() => {
-      const state = rootState.set('me', null);
-      store = mockStore(state);
-    });
-
-    it('should do nothing', async() => {
-      await store.dispatch(authorizeFollowRequest(id));
-      const actions = store.getActions();
-
-      expect(actions).toEqual([]);
-    });
-  });
-
-  describe('when logged in', () => {
-    beforeEach(() => {
-      const state = rootState.set('me', '123');
-      store = mockStore(state);
-    });
-
-    describe('with a successful API request', () => {
-      beforeEach(() => {
-        __stub((mock) => {
-          mock.onPost(`/api/v1/follow_requests/${id}/authorize`).reply(200);
-        });
-      });
-
-      it('should dispatch the correct actions', async() => {
-        const expectedActions = [
-          { type: 'FOLLOW_REQUEST_AUTHORIZE_REQUEST', id },
-          { type: 'FOLLOW_REQUEST_AUTHORIZE_SUCCESS', id },
-        ];
-        await store.dispatch(authorizeFollowRequest(id));
-        const actions = store.getActions();
-
-        expect(actions).toEqual(expectedActions);
-      });
-    });
-
-    describe('with an unsuccessful API request', () => {
-      beforeEach(() => {
-        __stub((mock) => {
-          mock.onPost(`/api/v1/follow_requests/${id}/authorize`).networkError();
-        });
-      });
-
-      it('should dispatch the correct actions', async() => {
-        const expectedActions = [
-          { type: 'FOLLOW_REQUEST_AUTHORIZE_REQUEST', id },
-          { type: 'FOLLOW_REQUEST_AUTHORIZE_FAIL', id, error: new Error('Network Error') },
-        ];
-        await store.dispatch(authorizeFollowRequest(id));
         const actions = store.getActions();
 
         expect(actions).toEqual(expectedActions);

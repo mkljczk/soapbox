@@ -1,16 +1,15 @@
 import React from 'react';
 
+import Layout from 'pl-fe/components/ui/layout';
 import LinkFooter from 'pl-fe/features/ui/components/link-footer';
 import {
   WhoToFollowPanel,
   TrendsPanel,
   SignUpPanel,
-  CtaBanner,
 } from 'pl-fe/features/ui/util/async-components';
-import { useAppSelector, useFeatures } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { isStandalone } from 'pl-fe/utils/state';
-
-import { Layout } from '../components/ui';
 
 interface IExternalLoginLayout {
   children: React.ReactNode;
@@ -25,10 +24,6 @@ const ExternalLoginLayout: React.FC<IExternalLoginLayout> = ({ children }) => {
     <>
       <Layout.Main>
         {children}
-
-        {!me && (
-          <CtaBanner />
-        )}
       </Layout.Main>
 
       <Layout.Aside>

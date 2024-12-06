@@ -1,35 +1,35 @@
 import clsx from 'clsx';
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, CSSProperties } from 'react';
 
 import Blurhash from 'pl-fe/components/blurhash';
 import Icon from 'pl-fe/components/icon';
 import StillImage from 'pl-fe/components/still-image';
 import { MIMETYPE_ICONS } from 'pl-fe/components/upload';
-import { useSettings, usePlFeConfig } from 'pl-fe/hooks';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { truncateFilename } from 'pl-fe/utils/media';
 
 import { isIOS } from '../is-mobile';
 import { isPanoramic, isPortrait, isNonConformingRatio, minimumAspectRatio, maximumAspectRatio } from '../utils/media-aspect-ratio';
 
-import type { Property } from 'csstype';
 import type { MediaAttachment } from 'pl-api';
 
 const ATTACHMENT_LIMIT = 4;
 const MAX_FILENAME_LENGTH = 45;
 
 interface Dimensions {
-  w: Property.Width | number;
-  h: Property.Height | number;
-  t?: Property.Top;
-  r?: Property.Right;
-  b?: Property.Bottom;
-  l?: Property.Left;
-  float?: Property.Float;
-  pos?: Property.Position;
+  w: CSSProperties['width'];
+  h: CSSProperties['height'];
+  t?: CSSProperties['top'];
+  r?: CSSProperties['right'];
+  b?: CSSProperties['bottom'];
+  l?: CSSProperties['left'];
+  float?: CSSProperties['float'];
+  pos?: CSSProperties['position'];
 }
 
 interface SizeData {
-  style: React.CSSProperties;
+  style: CSSProperties;
   itemsDimensions: Dimensions[];
   size: number;
   width: number;
@@ -58,6 +58,7 @@ interface IItem {
   dimensions: Dimensions;
   last?: boolean;
   total: number;
+  visible?: boolean;
 }
 
 const Item: React.FC<IItem> = ({
@@ -68,6 +69,7 @@ const Item: React.FC<IItem> = ({
   dimensions,
   last,
   total,
+  visible,
 }) => {
   const { autoPlayGif } = useSettings();
   const { mediaPreview } = usePlFeConfig();
@@ -143,17 +145,14 @@ const Item: React.FC<IItem> = ({
     const filename = truncateFilename(attachment.url, MAX_FILENAME_LENGTH);
     const attachmentIcon = (
       <Icon
-        className='h-16 w-16 text-gray-800 dark:text-gray-200'
+        className='size-16 text-gray-800 dark:text-gray-200'
         src={MIMETYPE_ICONS[attachment.mime_type as string] || require('@tabler/icons/outline/paperclip.svg')}
       />
     );
 
     return (
       <div
-        className={clsx('media-gallery__item', {
-          standalone,
-          'rounded-md': total > 1,
-        })}
+        className={clsx('media-gallery__item', standalone)}
         key={attachment.id}
         style={{ position, float, left, top, right, bottom, height, width: `${width}%` }}
       >
@@ -175,7 +174,7 @@ const Item: React.FC<IItem> = ({
         target='_blank'
       >
         <StillImage
-          className='h-full w-full'
+          className='size-full'
           src={mediaPreview ? attachment.preview_url : attachment.url}
           alt={attachment.description}
           letterboxed={letterboxed}
@@ -248,10 +247,7 @@ const Item: React.FC<IItem> = ({
 
   return (
     <div
-      className={clsx('media-gallery__item', `media-gallery__item--${attachment.type}`, {
-        standalone,
-        'rounded-md': total > 1,
-      })}
+      className={clsx('media-gallery__item', `media-gallery__item--${attachment.type}`, standalone)}
       key={attachment.id}
       style={{ position, float, left, top, right, bottom, height, width: `${width}%` }}
     >
@@ -264,7 +260,7 @@ const Item: React.FC<IItem> = ({
         hash={attachment.blurhash}
         className='media-gallery__preview'
       />
-      {thumbnail}
+      {(visible || !attachment.blurhash) && thumbnail}
     </div>
   );
 };
@@ -278,6 +274,7 @@ interface IMediaGallery {
   displayMedia?: string;
   compact?: boolean;
   className?: string;
+  visible?: boolean;
 }
 
 const MediaGallery: React.FC<IMediaGallery> = (props) => {
@@ -289,7 +286,9 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
     cacheWidth,
     compact,
     height,
+    visible,
   } = props;
+
   const [width, setWidth] = useState<number>(defaultWidth);
 
   const node = useRef<HTMLDivElement>(null);
@@ -322,12 +321,10 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
     const panoSize = Math.floor(w / maximumAspectRatio);
     const panoSize_px = `${Math.floor(w / maximumAspectRatio)}px`;
 
-    const style: React.CSSProperties = {};
+    const style: CSSProperties = {};
     let itemsDimensions: Dimensions[] = [];
 
-    const ratios = Array(size).fill(null).map((_, i) =>
-      getAspectRatio(media[i]) as number,
-    );
+    const ratios = Array(size).fill(null).map((_, i) => getAspectRatio(media[i]));
 
     const [ar1, ar2, ar3, ar4] = ratios;
 
@@ -349,34 +346,34 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
 
       if (isPortrait(ar1) && isPortrait(ar2)) {
         itemsDimensions = [
-          { w: 50, h: '100%', r: '2px' },
-          { w: 50, h: '100%', l: '2px' },
+          { w: 50, h: '100%', r: '1px' },
+          { w: 50, h: '100%', l: '1px' },
         ];
       } else if (isPanoramic(ar1) && isPanoramic(ar2)) {
         itemsDimensions = [
-          { w: 100, h: panoSize_px, b: '2px' },
-          { w: 100, h: panoSize_px, t: '2px' },
+          { w: 100, h: panoSize_px, b: '1px' },
+          { w: 100, h: panoSize_px, t: '1px' },
         ];
       } else if (
         (isPanoramic(ar1) && isPortrait(ar2)) ||
         (isPanoramic(ar1) && isNonConformingRatio(ar2))
       ) {
         itemsDimensions = [
-          { w: 100, h: `${(w / maximumAspectRatio)}px`, b: '2px' },
-          { w: 100, h: `${(w * 0.6)}px`, t: '2px' },
+          { w: 100, h: `${(w / maximumAspectRatio)}px`, b: '1px' },
+          { w: 100, h: `${(w * 0.6)}px`, t: '1px' },
         ];
       } else if (
         (isPortrait(ar1) && isPanoramic(ar2)) ||
         (isNonConformingRatio(ar1) && isPanoramic(ar2))
       ) {
         itemsDimensions = [
-          { w: 100, h: `${(w * 0.6)}px`, b: '2px' },
-          { w: 100, h: `${(w / maximumAspectRatio)}px`, t: '2px' },
+          { w: 100, h: `${(w * 0.6)}px`, b: '1px' },
+          { w: 100, h: `${(w / maximumAspectRatio)}px`, t: '1px' },
         ];
       } else {
         itemsDimensions = [
-          { w: 50, h: '100%', r: '2px' },
-          { w: 50, h: '100%', l: '2px' },
+          { w: 50, h: '100%', r: '1px' },
+          { w: 50, h: '100%', l: '1px' },
         ];
       }
     } else if (size === 3) {
@@ -390,9 +387,9 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
 
       if (isPanoramic(ar1) && isNonConformingRatio(ar2) && isNonConformingRatio(ar3)) {
         itemsDimensions = [
-          { w: 100, h: '50%', b: '2px' },
-          { w: 50, h: '50%', t: '2px', r: '2px' },
-          { w: 50, h: '50%', t: '2px', l: '2px' },
+          { w: 100, h: '50%', b: '1px' },
+          { w: 50, h: '50%', t: '1px', r: '1px' },
+          { w: 50, h: '50%', t: '1px', l: '1px' },
         ];
       } else if (isPanoramic(ar1) && isPanoramic(ar2) && isPanoramic(ar3)) {
         itemsDimensions = [
@@ -402,13 +399,13 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
         ];
       } else if (isPortrait(ar1) && isNonConformingRatio(ar2) && isNonConformingRatio(ar3)) {
         itemsDimensions = [
-          { w: 50, h: '100%', r: '2px' },
-          { w: 50, h: '50%', b: '2px', l: '2px' },
-          { w: 50, h: '50%', t: '2px', l: '2px' },
+          { w: 50, h: '100%', r: '1px' },
+          { w: 50, h: '50%', b: '1px', l: '1px' },
+          { w: 50, h: '50%', t: '1px', l: '1px' },
         ];
       } else if (isNonConformingRatio(ar1) && isNonConformingRatio(ar2) && isPortrait(ar3)) {
         itemsDimensions = [
-          { w: 50, h: '50%', b: '2px', r: '2px' },
+          { w: 50, h: '50%', b: '1px', r: '1px' },
           { w: 50, h: '50%', l: '-2px', b: '-2px', pos: 'absolute', float: 'none' },
           { w: 50, h: '100%', r: '-2px', t: '0px', b: '0px', pos: 'absolute', float: 'none' },
         ];
@@ -417,33 +414,33 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
         (isPortrait(ar1) && isPortrait(ar2) && isPortrait(ar3))
       ) {
         itemsDimensions = [
-          { w: 50, h: '50%', b: '2px', r: '2px' },
-          { w: 50, h: '100%', l: '2px', float: 'right' },
-          { w: 50, h: '50%', t: '2px', r: '2px' },
+          { w: 50, h: '50%', b: '1px', r: '1px' },
+          { w: 50, h: '100%', l: '1px', float: 'right' },
+          { w: 50, h: '50%', t: '1px', r: '1px' },
         ];
       } else if (
         (isPanoramic(ar1) && isPanoramic(ar2) && isNonConformingRatio(ar3)) ||
         (isPanoramic(ar1) && isPanoramic(ar2) && isPortrait(ar3))
       ) {
         itemsDimensions = [
-          { w: 50, h: panoSize_px, b: '2px', r: '2px' },
-          { w: 50, h: panoSize_px, b: '2px', l: '2px' },
-          { w: 100, h: `${w - panoSize}px`, t: '2px' },
+          { w: 50, h: panoSize_px, b: '1px', r: '1px' },
+          { w: 50, h: panoSize_px, b: '1px', l: '1px' },
+          { w: 100, h: `${w - panoSize}px`, t: '1px' },
         ];
       } else if (
         (isNonConformingRatio(ar1) && isPanoramic(ar2) && isPanoramic(ar3)) ||
         (isPortrait(ar1) && isPanoramic(ar2) && isPanoramic(ar3))
       ) {
         itemsDimensions = [
-          { w: 100, h: `${w - panoSize}px`, b: '2px' },
-          { w: 50, h: panoSize_px, t: '2px', r: '2px' },
-          { w: 50, h: panoSize_px, t: '2px', l: '2px' },
+          { w: 100, h: `${w - panoSize}px`, b: '1px' },
+          { w: 50, h: panoSize_px, t: '1px', r: '1px' },
+          { w: 50, h: panoSize_px, t: '1px', l: '1px' },
         ];
       } else {
         itemsDimensions = [
-          { w: 50, h: '50%', b: '2px', r: '2px' },
-          { w: 50, h: '50%', b: '2px', l: '2px' },
-          { w: 100, h: '50%', t: '2px' },
+          { w: 50, h: '50%', b: '1px', r: '1px' },
+          { w: 50, h: '50%', b: '1px', l: '1px' },
+          { w: 100, h: '50%', t: '1px' },
         ];
       }
     } else if (size >= 4) {
@@ -468,34 +465,34 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
 
       if (isPanoramic(ar1) && isPanoramic(ar2) && isNonConformingRatio(ar3) && isNonConformingRatio(ar4)) {
         itemsDimensions = [
-          { w: 50, h: panoSize_px, b: '2px', r: '2px' },
-          { w: 50, h: panoSize_px, b: '2px', l: '2px' },
-          { w: 50, h: `${(w / 2)}px`, t: '2px', r: '2px' },
-          { w: 50, h: `${(w / 2)}px`, t: '2px', l: '2px' },
+          { w: 50, h: panoSize_px, b: '1px', r: '1px' },
+          { w: 50, h: panoSize_px, b: '1px', l: '1px' },
+          { w: 50, h: `${(w / 2)}px`, t: '1px', r: '1px' },
+          { w: 50, h: `${(w / 2)}px`, t: '1px', l: '1px' },
         ];
       } else if (isNonConformingRatio(ar1) && isNonConformingRatio(ar2) && isPanoramic(ar3) && isPanoramic(ar4)) {
         itemsDimensions = [
-          { w: 50, h: `${(w / 2)}px`, b: '2px', r: '2px' },
-          { w: 50, h: `${(w / 2)}px`, b: '2px', l: '2px' },
-          { w: 50, h: panoSize_px, t: '2px', r: '2px' },
-          { w: 50, h: panoSize_px, t: '2px', l: '2px' },
+          { w: 50, h: `${(w / 2)}px`, b: '1px', r: '1px' },
+          { w: 50, h: `${(w / 2)}px`, b: '1px', l: '1px' },
+          { w: 50, h: panoSize_px, t: '1px', r: '1px' },
+          { w: 50, h: panoSize_px, t: '1px', l: '1px' },
         ];
       } else if (
         (isPortrait(ar1) && isNonConformingRatio(ar2) && isNonConformingRatio(ar3) && isNonConformingRatio(ar4)) ||
         (isPortrait(ar1) && isPanoramic(ar2) && isPanoramic(ar3) && isPanoramic(ar4))
       ) {
         itemsDimensions = [
-          { w: 67, h: '100%', r: '2px' },
-          { w: 33, h: '33%', b: '4px', l: '2px' },
-          { w: 33, h: '33%', l: '2px' },
-          { w: 33, h: '33%', t: '4px', l: '2px' },
+          { w: 67, h: '100%', r: '1px' },
+          { w: 33, h: '33%', b: '4px', l: '1px' },
+          { w: 33, h: '33%', l: '1px' },
+          { w: 33, h: '33%', t: '4px', l: '1px' },
         ];
       } else {
         itemsDimensions = [
-          { w: 50, h: '50%', b: '2px', r: '2px' },
-          { w: 50, h: '50%', b: '2px', l: '2px' },
-          { w: 50, h: '50%', t: '2px', r: '2px' },
-          { w: 50, h: '50%', t: '2px', l: '2px' },
+          { w: 50, h: '50%', b: '1px', r: '1px' },
+          { w: 50, h: '50%', b: '1px', l: '1px' },
+          { w: 50, h: '50%', t: '1px', r: '1px' },
+          { w: 50, h: '50%', t: '1px', l: '1px' },
         ];
       }
     }
@@ -537,6 +534,7 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
       dimensions={sizeData.itemsDimensions[i]}
       last={i === ATTACHMENT_LIMIT - 1}
       total={media.length}
+      visible={visible}
     />
   ));
 
@@ -554,7 +552,9 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
 
   return (
     <div
-      className={clsx(className, 'media-gallery', { 'media-gallery--compact !h-12 bg-transparent': compact })}
+      className={clsx(className, 'media-gallery overflow-hidden rounded-md', {
+        'media-gallery--compact !h-12 bg-transparent': compact,
+      })}
       style={sizeData.style}
       ref={node}
     >
@@ -563,7 +563,4 @@ const MediaGallery: React.FC<IMediaGallery> = (props) => {
   );
 };
 
-export {
-  type IMediaGallery,
-  MediaGallery as default,
-};
+export { MediaGallery as default };

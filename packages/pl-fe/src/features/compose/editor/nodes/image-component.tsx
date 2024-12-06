@@ -26,10 +26,13 @@ import { mediaAttachmentSchema } from 'pl-api';
 import * as React from 'react';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
+import * as v from 'valibot';
 
-import { openModal } from 'pl-fe/actions/modals';
-import { HStack, Icon, IconButton } from 'pl-fe/components/ui';
-import { useAppDispatch, useSettings } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import { $isImageNode } from './image-node';
 
@@ -92,7 +95,7 @@ const ImageComponent = ({
   src: string;
 }): JSX.Element => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
   const { missingDescriptionModal } = useSettings();
 
   const imageRef = useRef<null | HTMLImageElement>(null);
@@ -122,14 +125,14 @@ const ImageComponent = ({
   );
 
   const previewImage = () => {
-    const image = mediaAttachmentSchema.parse({
+    const image = v.parse(mediaAttachmentSchema, {
       id: '',
       type: 'image',
       url: src,
       altText,
     });
 
-    dispatch(openModal('MEDIA', { media: [image], index: 0 }));
+    openModal('MEDIA', { media: [image], index: 0 });
   };
 
   const onDelete = useCallback(
@@ -352,7 +355,7 @@ const ImageComponent = ({
                 'opacity-100': !active,
               })}
             >
-              <Icon className='h-4 w-4' src={require('@tabler/icons/outline/alert-triangle.svg')} />
+              <Icon className='size-4' src={require('@tabler/icons/outline/alert-triangle.svg')} />
               <FormattedMessage id='upload_form.description_missing.indicator' defaultMessage='Alt' />
             </span>
           )}

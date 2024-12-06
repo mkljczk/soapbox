@@ -2,7 +2,7 @@
  * globals: do things through the console.
  * This feature is for developers.
  */
-import { changeSettingImmediate } from 'pl-fe/actions/settings';
+import { changeSetting } from 'pl-fe/actions/settings';
 
 import type { Store } from 'pl-fe/store';
 
@@ -14,7 +14,7 @@ const createGlobals = (store: Store) => {
       if (![true, false].includes(bool)) {
         throw `Invalid option ${bool}. Must be true or false.`;
       }
-      store.dispatch(changeSettingImmediate(['isDeveloper'], bool) as any);
+      store.dispatch(changeSetting(['isDeveloper'], bool) as any);
       return bool;
     },
   };

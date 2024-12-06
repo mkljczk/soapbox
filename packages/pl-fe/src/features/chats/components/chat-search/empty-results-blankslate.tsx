@@ -1,7 +1,8 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Stack, Text } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
 const messages = defineMessages({
   title: { id: 'chat_search.empty_results_blankslate.title', defaultMessage: 'No matches found' },

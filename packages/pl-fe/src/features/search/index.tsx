@@ -1,9 +1,9 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Column } from 'pl-fe/components/ui';
-import Search from 'pl-fe/features/compose/components/search';
-import SearchResults from 'pl-fe/features/compose/components/search-results';
+import Column from 'pl-fe/components/ui/column';
+import Search from 'pl-fe/features/search/components/search';
+import SearchResults from 'pl-fe/features/search/components/search-results';
 
 const messages = defineMessages({
   heading: { id: 'column.search', defaultMessage: 'Search' },
@@ -15,7 +15,7 @@ const SearchPage = () => {
   return (
     <Column label={intl.formatMessage(messages.heading)}>
       <div className='space-y-4'>
-        <Search autoFocus autoSubmit />
+        <Search />
         <SearchResults />
       </div>
     </Column>

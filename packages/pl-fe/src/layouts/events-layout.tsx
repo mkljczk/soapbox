@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { Layout } from 'pl-fe/components/ui';
+import Layout from 'pl-fe/components/ui/layout';
 import LinkFooter from 'pl-fe/features/ui/components/link-footer';
 import {
   WhoToFollowPanel,
   TrendsPanel,
   NewEventPanel,
 } from 'pl-fe/features/ui/util/async-components';
-import { useFeatures } from 'pl-fe/hooks';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 
 interface IEventsLayout {
   children: React.ReactNode;

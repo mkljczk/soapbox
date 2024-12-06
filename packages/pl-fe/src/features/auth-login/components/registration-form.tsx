@@ -1,17 +1,25 @@
-import { Map as ImmutableMap } from 'immutable';
 import debounce from 'lodash/debounce';
 import React, { useState, useRef, useCallback } from 'react';
 import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 
 import { accountLookup } from 'pl-fe/actions/accounts';
 import { register, verifyCredentials } from 'pl-fe/actions/auth';
-import { openModal } from 'pl-fe/actions/modals';
 import BirthdayInput from 'pl-fe/components/birthday-input';
-import { Checkbox, Form, FormGroup, FormActions, Button, Input, Textarea, Select } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import Checkbox from 'pl-fe/components/ui/checkbox';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Input from 'pl-fe/components/ui/input';
+import Select from 'pl-fe/components/ui/select';
+import Textarea from 'pl-fe/components/ui/textarea';
 import CaptchaField from 'pl-fe/features/auth-login/components/captcha';
-import { useAppDispatch, useSettings, useFeatures, useInstance } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import type { CreateAccountParams } from 'pl-api';
 
@@ -45,10 +53,10 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
   const { locale } = useSettings();
   const features = useFeatures();
   const instance = useInstance();
+  const { openModal } = useModalsStore();
 
   const needsConfirmation = instance.pleroma.metadata.account_activation_required;
   const needsApproval = instance.registrations.approval_required;
-  const supportsEmailList = features.emailList;
   const supportsAccountLookup = features.accountLookup;
   const birthdayRequired = instance.pleroma.metadata.birthday_required;
   const domains = instance.pleroma.metadata.multitenancy.enabled ? instance.pleroma.metadata.multitenancy.domains!.filter((domain) => domain.public) : undefined;
@@ -62,7 +70,7 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
     agreement: false,
     locale: '',
   });
-  const [captchaIdempotencyKey, setCaptchaIdempotencyKey] = useState(uuidv4());
+  const [captchaIdempotencyKey, setCaptchaIdempotencyKey] = useState(crypto.randomUUID());
   const [usernameUnavailable, setUsernameUnavailable] = useState(false);
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
@@ -142,7 +150,7 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
         /></p>}
     </>);
 
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: needsConfirmation
         ? intl.formatMessage(messages.needsConfirmationHeader)
         : needsApproval
@@ -151,7 +159,7 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
       message,
       confirm: intl.formatMessage(messages.close),
       onConfirm: () => {},
-    }));
+    });
   };
 
   const postRegisterAction = ({ access_token }: any) => {
@@ -212,12 +220,12 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
     refreshCaptcha();
   };
 
-  const onFetchCaptcha = (captcha: ImmutableMap<string, any>) => {
+  const onFetchCaptcha = (captcha: Record<string, any>) => {
     setCaptchaLoading(false);
     setParams(params => ({
       ...params,
-      captcha_token: captcha.get('token'),
-      captcha_answer_data: captcha.get('answer_data'),
+      captcha_token: captcha.token,
+      captcha_answer_data: captcha.answer_data,
     }));
   };
 
@@ -226,7 +234,7 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
   };
 
   const refreshCaptcha = () => {
-    setCaptchaIdempotencyKey(uuidv4());
+    setCaptchaIdempotencyKey(crypto.randomUUID());
     setParams(params => ({ ...params, captcha_solution: '' }));
   };
 
@@ -353,16 +361,6 @@ const RegistrationForm: React.FC<IRegistrationForm> = ({ inviteToken }) => {
               required
             />
           </FormGroup>
-
-          {supportsEmailList && (
-            <FormGroup labelText={intl.formatMessage(messages.newsletter)}>
-              <Checkbox
-                name='accepts_email_list'
-                onChange={onCheckboxChange}
-                checked={params.accepts_email_list}
-              />
-            </FormGroup>
-          )}
 
           <FormActions>
             <Button type='submit'>

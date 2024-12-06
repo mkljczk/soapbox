@@ -1,21 +1,27 @@
 import React, { useRef } from 'react';
-import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import Account from 'pl-fe/components/account';
 import StatusContent from 'pl-fe/components/status-content';
 import StatusLanguagePicker from 'pl-fe/components/status-language-picker';
-import StatusMedia from 'pl-fe/components/status-media';
+import StatusReactionsBar from 'pl-fe/components/status-reactions-bar';
 import StatusReplyMentions from 'pl-fe/components/status-reply-mentions';
-import SensitiveContentOverlay from 'pl-fe/components/statuses/sensitive-content-overlay';
 import StatusInfo from 'pl-fe/components/statuses/status-info';
-import TranslateButton from 'pl-fe/components/translate-button';
-import { HStack, Icon, Stack, Text } from 'pl-fe/components/ui';
-import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Emojify from 'pl-fe/features/emoji/emojify';
 
 import StatusInteractionBar from './status-interaction-bar';
+import StatusTypeIcon from './status-type-icon';
 
 import type { SelectedStatus } from 'pl-fe/selectors';
+
+const messages = defineMessages({
+  applicationName: { id: 'status.application_name', defaultMessage: 'Sent from {name}' },
+});
 
 interface IDetailedStatus {
   status: SelectedStatus;
@@ -45,7 +51,7 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
             icon={
               <Icon
                 src={require('@tabler/icons/outline/circles.svg')}
-                className='h-4 w-4 text-primary-600 dark:text-accent-blue'
+                className='size-4 text-primary-600 dark:text-accent-blue'
               />
             }
             text={
@@ -57,7 +63,7 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
                     <Link to={`/groups/${status.group.id}`} className='hover:underline'>
                       <bdi className='truncate'>
                         <strong className='text-gray-800 dark:text-gray-200'>
-                          <span dangerouslySetInnerHTML={{ __html: status.group.display_name_html }} />
+                          <Emojify text={status.account.display_name} emojis={status.account.emojis} />
                         </strong>
                       </bdi>
                     </Link>
@@ -75,28 +81,6 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
   if (!actualStatus) return null;
   const { account } = actualStatus;
   if (!account || typeof account !== 'object') return null;
-
-  let statusTypeIcon = null;
-
-  let quote;
-
-  if (actualStatus.quote_id) {
-    if (actualStatus.quote_visible === false) {
-      quote = (
-        <div className='quoted-actualStatus-tombstone'>
-          <p><FormattedMessage id='status.quote_tombstone' defaultMessage='Post is unavailable.' /></p>
-        </div>
-      );
-    } else {
-      quote = <QuotedStatus statusId={actualStatus.quote_id} />;
-    }
-  }
-
-  if (actualStatus.visibility === 'direct') {
-    statusTypeIcon = <Icon className='h-4 w-4 text-gray-700 dark:text-gray-600' src={require('@tabler/icons/outline/mail.svg')} />;
-  } else if (actualStatus.visibility === 'private' || actualStatus.visibility === 'mutuals_only') {
-    statusTypeIcon = <Icon className='h-4 w-4 text-gray-700 dark:text-gray-600' src={require('@tabler/icons/outline/lock.svg')} />;
-  }
 
   return (
     <div className='border-box'>
@@ -121,58 +105,58 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
               status={actualStatus}
               textSize='lg'
               translatable
+              withMedia
             />
-
-            <TranslateButton status={actualStatus} />
-
-            {(withMedia && (quote || actualStatus.card || actualStatus.media_attachments.length > 0)) && (
-              <Stack space={4}>
-                {actualStatus.media_attachments.length > 0 && (
-                  <div className='relative'>
-                    <SensitiveContentOverlay status={status} />
-                    <StatusMedia status={actualStatus} />
-                  </div>
-                )}
-
-                {quote}
-              </Stack>
-            )}
           </Stack>
         </Stack>
+
+        <StatusReactionsBar status={actualStatus} />
 
         <HStack justifyContent='between' alignItems='center' className='py-3' wrap>
           <StatusInteractionBar status={actualStatus} />
 
           <HStack space={1} alignItems='center'>
-            {statusTypeIcon}
-
             <span>
-              <a href={actualStatus.url} target='_blank' rel='noopener' className='hover:underline'>
-                <Text tag='span' theme='muted' size='sm'>
+              <Text tag='span' theme='muted' size='sm'>
+                <a href={actualStatus.url} target='_blank' rel='noopener' className='hover:underline'>
                   <FormattedDate value={new Date(actualStatus.created_at)} hour12 year='numeric' month='short' day='2-digit' hour='numeric' minute='2-digit' />
-                </Text>
-              </a>
+                </a>
 
-              {actualStatus.edited_at && (
-                <>
-                  {' · '}
-                  <div
-                    className='inline hover:underline'
-                    onClick={handleOpenCompareHistoryModal}
-                    role='button'
-                    tabIndex={0}
-                  >
-                    <Text tag='span' theme='muted' size='sm'>
+                {actualStatus.application && (
+                  <>
+                    {' · '}
+                    <a
+                      href={(actualStatus.application.website) ? actualStatus.application.website : '#'}
+                      target='_blank'
+                      rel='noopener'
+                      className='hover:underline'
+                      title={intl.formatMessage(messages.applicationName, { name: actualStatus.application.name })}
+                    >
+                      {actualStatus.application.name}
+                    </a>
+                  </>
+                )}
+
+                {actualStatus.edited_at && (
+                  <>
+                    {' · '}
+                    <div
+                      className='inline hover:underline'
+                      onClick={handleOpenCompareHistoryModal}
+                      role='button'
+                      tabIndex={0}
+                    >
                       <FormattedMessage id='status.edited' defaultMessage='Edited {date}' values={{ date: intl.formatDate(new Date(actualStatus.edited_at), { hour12: true, month: 'short', day: '2-digit', hour: 'numeric', minute: '2-digit' }) }} />
-                    </Text>
-                  </div>
-                </>
-              )}
+                    </div>
+                  </>
+                )}
+              </Text>
             </span>
 
-            <StatusLanguagePicker status={status} showLabel />
-          </HStack>
+            <StatusTypeIcon status={actualStatus} />
 
+            <StatusLanguagePicker status={actualStatus} showLabel />
+          </HStack>
         </HStack>
       </div>
     </div>

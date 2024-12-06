@@ -2,7 +2,7 @@ import { isLoggedIn } from 'pl-fe/utils/auth';
 
 import { getClient } from '../api';
 
-import { importFetchedStatuses } from './importer';
+import { importEntities } from './importer';
 
 import type { PaginatedResponse, Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -27,14 +27,14 @@ const fetchFavouritedStatuses = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
-    if (getState().status_lists.get('favourites')?.isLoading) {
+    if (getState().status_lists.favourites?.isLoading) {
       return;
     }
 
     dispatch(fetchFavouritedStatusesRequest());
 
     return getClient(getState()).myAccount.getFavourites().then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       dispatch(fetchFavouritedStatusesSuccess(response.items, response.next));
     }).catch(error => {
       dispatch(fetchFavouritedStatusesFail(error));
@@ -60,16 +60,16 @@ const expandFavouritedStatuses = () =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
-    const next = getState().status_lists.get('favourites')?.next || null;
+    const next = getState().status_lists.favourites?.next || null;
 
-    if (next === null || getState().status_lists.get('favourites')?.isLoading) {
+    if (next === null || getState().status_lists.favourites?.isLoading) {
       return;
     }
 
     dispatch(expandFavouritedStatusesRequest());
 
     return next().then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       dispatch(expandFavouritedStatusesSuccess(response.items, response.next));
     }).catch(error => {
       dispatch(expandFavouritedStatusesFail(error));
@@ -95,14 +95,14 @@ const fetchAccountFavouritedStatuses = (accountId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
-    if (getState().status_lists.get(`favourites:${accountId}`)?.isLoading) {
+    if (getState().status_lists[`favourites:${accountId}`]?.isLoading) {
       return;
     }
 
     dispatch(fetchAccountFavouritedStatusesRequest(accountId));
 
     return getClient(getState).accounts.getAccountFavourites(accountId).then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       dispatch(fetchAccountFavouritedStatusesSuccess(accountId, response.items, response.next));
     }).catch(error => {
       dispatch(fetchAccountFavouritedStatusesFail(accountId, error));
@@ -131,16 +131,16 @@ const expandAccountFavouritedStatuses = (accountId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
 
-    const next = getState().status_lists.get(`favourites:${accountId}`)?.next || null;
+    const next = getState().status_lists[`favourites:${accountId}`]?.next || null;
 
-    if (next === null || getState().status_lists.get(`favourites:${accountId}`)?.isLoading) {
+    if (next === null || getState().status_lists[`favourites:${accountId}`]?.isLoading) {
       return;
     }
 
     dispatch(expandAccountFavouritedStatusesRequest(accountId));
 
     return next().then(response => {
-      dispatch(importFetchedStatuses(response.items));
+      dispatch(importEntities({ statuses: response.items }));
       dispatch(expandAccountFavouritedStatusesSuccess(accountId, response.items, response.next));
     }).catch(error => {
       dispatch(expandAccountFavouritedStatusesFail(accountId, error));
@@ -193,20 +193,8 @@ export {
   ACCOUNT_FAVOURITED_STATUSES_EXPAND_SUCCESS,
   ACCOUNT_FAVOURITED_STATUSES_EXPAND_FAIL,
   fetchFavouritedStatuses,
-  fetchFavouritedStatusesRequest,
-  fetchFavouritedStatusesSuccess,
-  fetchFavouritedStatusesFail,
   expandFavouritedStatuses,
-  expandFavouritedStatusesRequest,
-  expandFavouritedStatusesSuccess,
-  expandFavouritedStatusesFail,
   fetchAccountFavouritedStatuses,
-  fetchAccountFavouritedStatusesRequest,
-  fetchAccountFavouritedStatusesSuccess,
-  fetchAccountFavouritedStatusesFail,
   expandAccountFavouritedStatuses,
-  expandAccountFavouritedStatusesRequest,
-  expandAccountFavouritedStatusesSuccess,
-  expandAccountFavouritedStatusesFail,
   type FavouritesAction,
 };

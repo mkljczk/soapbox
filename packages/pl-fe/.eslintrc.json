@@ -16,14 +16,15 @@
     "ATTACHMENT_HOST": false
   },
   "plugins": [
-    "jsdoc",
-    "react",
-    "jsx-a11y",
-    "import",
-    "promise",
-    "react-hooks",
+    "@stylistic",
     "@typescript-eslint",
-    "formatjs"
+    "formatjs",
+    "import",
+    "jsdoc",
+    "jsx-a11y",
+    "promise",
+    "react",
+    "react-hooks"
   ],
   "parserOptions": {
     "sourceType": "module",
@@ -158,7 +159,8 @@
       {
         "vars": "all",
         "args": "none",
-        "ignoreRestSiblings": true
+        "ignoreRestSiblings": true,
+        "caughtErrors": "none"
       }
     ],
     "no-useless-escape": "warn",
@@ -303,7 +305,7 @@
         }
       }
     ],
-    "@typescript-eslint/member-delimiter-style": "error",
+    "@stylistic/member-delimiter-style": "error",
     "promise/catch-or-return": "error",
     "react-hooks/rules-of-hooks": "error",
     "tailwindcss/classnames-order": [
@@ -314,7 +316,7 @@
       }
     ],
     "tailwindcss/migration-from-tailwind-2": "error",
-
+    "tailwindcss/no-custom-classname": "off",
 
     "formatjs/enforce-default-message": "error",
     "formatjs/enforce-id": "error",

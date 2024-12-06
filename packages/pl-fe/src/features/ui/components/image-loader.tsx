@@ -136,7 +136,7 @@ class ImageLoader extends React.PureComponent<IImageLoader> {
     const { loading } = this.state;
 
     return (
-      <div className='relative flex h-full w-full flex-col items-center justify-center'>
+      <div className='relative flex size-full flex-col items-center justify-center'>
         {loading ? (
           <canvas
             className={clsx({ 'hidden': !this.hasSize() })}

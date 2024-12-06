@@ -1,5 +1,8 @@
 import type { PaginationParams } from './common';
 
+/**
+ * @category Request params
+ */
 interface CreateListParams {
   /** String. The title of the list to be created. */
   title: string;
@@ -9,7 +12,14 @@ interface CreateListParams {
   exclusive?: boolean;
 }
 
+/**
+ * @category Request params
+ */
 type UpdateListParams = CreateListParams;
+
+/**
+ * @category Request params
+ */
 type GetListAccountsParams = PaginationParams;
 
 export type {

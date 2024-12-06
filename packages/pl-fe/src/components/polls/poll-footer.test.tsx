@@ -5,9 +5,10 @@ import { Provider } from 'react-redux';
 
 import { __stub } from 'pl-fe/api';
 import { mockStore, render, screen, rootState } from 'pl-fe/jest/test-helpers';
-import { type Poll } from 'pl-fe/schemas';
 
 import PollFooter from './poll-footer';
+
+import type { Poll } from 'pl-api';
 
 let poll: Poll = {
   id: '1',

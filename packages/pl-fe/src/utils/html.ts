@@ -6,28 +6,6 @@ const unescapeHTML = (html: string = ''): string => {
   return wrapper.textContent || '';
 };
 
-/** Remove compatibility markup for features pl-fe supports. */
-const stripCompatibilityFeatures = (html: string): string => {
-  const node = document.createElement('div');
-  node.innerHTML = html;
-
-  const selectors = [
-    // Quote posting
-    '.quote-inline',
-    // Explicit mentions
-    '.recipients-inline',
-  ];
-
-  // Remove all instances of all selectors
-  selectors.forEach(selector => {
-    node.querySelectorAll(selector).forEach(elem => {
-      elem.remove();
-    });
-  });
-
-  return node.innerHTML;
-};
-
 /** Convert HTML to plaintext. */
 // https://stackoverflow.com/a/822486
 const stripHTML = (html: string) => {
@@ -38,6 +16,5 @@ const stripHTML = (html: string) => {
 
 export {
   unescapeHTML,
-  stripCompatibilityFeatures,
   stripHTML,
 };

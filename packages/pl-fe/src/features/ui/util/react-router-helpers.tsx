@@ -2,8 +2,9 @@ import React, { Suspense, useEffect, useRef } from 'react';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { Redirect, Route, useHistory, RouteProps, RouteComponentProps, match as MatchType, useLocation } from 'react-router-dom';
 
-import { Layout } from 'pl-fe/components/ui';
-import { useOwnAccount, useSettings } from 'pl-fe/hooks';
+import Layout from 'pl-fe/components/ui/layout';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 import ColumnForbidden from '../components/column-forbidden';
 import ColumnLoading from '../components/column-loading';
@@ -15,7 +16,7 @@ type LayoutProps = {
 };
 
 interface IWrappedRoute extends RouteProps {
-  component: React.LazyExoticComponent<any>;
+  component: React.ExoticComponent<any>;
   layout: React.ComponentType<LayoutProps>;
   content?: React.ReactNode;
   componentParams?: Record<string, any>;

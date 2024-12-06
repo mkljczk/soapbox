@@ -2,8 +2,8 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Switch, Route } from 'react-router-dom';
 
-import { Column } from 'pl-fe/components/ui';
-import { useOwnAccount } from 'pl-fe/hooks';
+import Column from 'pl-fe/components/ui/column';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 
 import AdminTabs from './components/admin-tabs';
 import Waitlist from './tabs/awaiting-approval';

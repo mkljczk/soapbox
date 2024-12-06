@@ -1,5 +1,5 @@
-import { List as ImmutableList, Record as ImmutableRecord } from 'immutable';
 import pick from 'lodash/pick';
+import { create } from 'mutative';
 
 import {
   CONVERSATIONS_MOUNT,
@@ -9,21 +9,27 @@ import {
   CONVERSATIONS_FETCH_FAIL,
   CONVERSATIONS_UPDATE,
   CONVERSATIONS_READ,
+  type ConversationsAction,
 } from '../actions/conversations';
 import { compareDate } from '../utils/comparators';
 
 import type { Conversation, PaginatedResponse } from 'pl-api';
-import type { AnyAction } from 'redux';
 
-const ReducerRecord = ImmutableRecord({
-  items: ImmutableList<MinifiedConversation>(),
+interface State {
+  items: Array<MinifiedConversation>;
+  isLoading: boolean;
+  hasMore: boolean;
+  next: (() => Promise<PaginatedResponse<Conversation>>) | null;
+  mounted: number;
+}
+
+const initialState: State = {
+  items: [],
   isLoading: false,
   hasMore: true,
-  next: null as (() => Promise<PaginatedResponse<Conversation>>) | null,
+  next: null,
   mounted: 0,
-});
-
-type State = ReturnType<typeof ReducerRecord>;
+};
 
 const minifyConversation = (conversation: Conversation) => ({
   ...(pick(conversation, ['id', 'unread'])),
@@ -34,79 +40,85 @@ const minifyConversation = (conversation: Conversation) => ({
 
 type MinifiedConversation = ReturnType<typeof minifyConversation>;
 
-const updateConversation = (state: State, item: Conversation) => state.update('items', list => {
-  const index = list.findIndex(x => x.id === item.id);
+const updateConversation = (state: State, item: Conversation) => {
+  const index = state.items.findIndex(x => x.id === item.id);
   const newItem = minifyConversation(item);
 
   if (index === -1) {
-    return list.unshift(newItem);
+    state.items = [newItem, ...state.items];
   } else {
-    return list.set(index, newItem);
+    state.items[index] = newItem;
   }
-});
-
-const expandNormalizedConversations = (state: State, conversations: Conversation[], next: (() => Promise<PaginatedResponse<Conversation>>) | null, isLoadingRecent?: boolean) => {
-  let items = ImmutableList(conversations.map(minifyConversation));
-
-  return state.withMutations(mutable => {
-    if (!items.isEmpty()) {
-      mutable.update('items', list => {
-        list = list.map(oldItem => {
-          const newItemIndex = items.findIndex(x => x.id === oldItem.id);
-
-          if (newItemIndex === -1) {
-            return oldItem;
-          }
-
-          const newItem = items.get(newItemIndex);
-          items = items.delete(newItemIndex);
-
-          return newItem!;
-        });
-
-        list = list.concat(items);
-
-        return list.sortBy(x => x.last_status_created_at, (a, b) => {
-          if (a === null || b === null) {
-            return -1;
-          }
-
-          return compareDate(a, b);
-        });
-      });
-    }
-
-    if (!next && !isLoadingRecent) {
-      mutable.set('hasMore', false);
-    }
-
-    mutable.set('next', next);
-    mutable.set('isLoading', false);
-  });
 };
 
-const conversations = (state = ReducerRecord(), action: AnyAction) => {
+const expandNormalizedConversations = (state: State, conversations: Conversation[], next: (() => Promise<PaginatedResponse<Conversation>>) | null, isLoadingRecent?: boolean) => {
+  let items = conversations.map(minifyConversation);
+
+  if (items.length) {
+    let list = state.items.map(oldItem => {
+      const newItemIndex = items.findIndex(x => x.id === oldItem.id);
+
+      if (newItemIndex === -1) {
+        return oldItem;
+      }
+
+      const newItem = items[newItemIndex];
+      items = items.filter((_, index) => index !== newItemIndex);
+
+      return newItem!;
+    });
+
+    list = list.concat(items);
+
+    state.items = list.toSorted((a, b) => {
+      if (a.last_status_created_at === null || b.last_status_created_at === null) {
+        return -1;
+      }
+
+      return compareDate(a.last_status_created_at, b.last_status_created_at);
+    });
+  }
+
+  if (!next && !isLoadingRecent) {
+    state.hasMore = false;
+  }
+
+  state.next = next;
+  state.isLoading = false;
+};
+
+const conversations = (state = initialState, action: ConversationsAction): State => {
   switch (action.type) {
     case CONVERSATIONS_FETCH_REQUEST:
-      return state.set('isLoading', true);
+      return create(state, (draft) => {
+        draft.isLoading = true;
+      });
     case CONVERSATIONS_FETCH_FAIL:
-      return state.set('isLoading', false);
+      return create(state, (draft) => {
+        draft.isLoading = false;
+      });
     case CONVERSATIONS_FETCH_SUCCESS:
-      return expandNormalizedConversations(state, action.conversations, action.next, action.isLoadingRecent);
+      return create(state, (draft) => expandNormalizedConversations(draft, action.conversations, action.next, action.isLoadingRecent));
     case CONVERSATIONS_UPDATE:
-      return updateConversation(state, action.conversation);
+      return create(state, (draft) => updateConversation(state, action.conversation));
     case CONVERSATIONS_MOUNT:
-      return state.update('mounted', count => count + 1);
+      return create(state, (draft) => {
+        draft.mounted += 1;
+      });
     case CONVERSATIONS_UNMOUNT:
-      return state.update('mounted', count => count - 1);
+      return create(state, (draft) => {
+        draft.mounted -= 1;
+      });
     case CONVERSATIONS_READ:
-      return state.update('items', list => list.map(item => {
-        if (item.id === action.conversationId) {
-          return { ...item, unread: false };
-        }
+      return create(state, (draft) => {
+        state.items = state.items.map(item => {
+          if (item.id === action.conversationId) {
+            return { ...item, unread: false };
+          }
 
-        return item;
-      }));
+          return item;
+        });
+      });
     default:
       return state;
   }

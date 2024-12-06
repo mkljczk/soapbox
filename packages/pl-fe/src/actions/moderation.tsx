@@ -3,11 +3,12 @@ import { defineMessages, IntlShape } from 'react-intl';
 
 import { fetchAccountByUsername } from 'pl-fe/actions/accounts';
 import { deactivateUser, deleteUser, deleteStatus, toggleStatusSensitivity } from 'pl-fe/actions/admin';
-import { openModal } from 'pl-fe/actions/modals';
 import OutlineBox from 'pl-fe/components/outline-box';
-import { Stack, Text } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
 import { selectAccount } from 'pl-fe/selectors';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -57,7 +58,7 @@ const deactivateUserModal = (intl: IntlShape, accountId: string, afterConfirm = 
       </Stack>
     );
 
-    dispatch(openModal('CONFIRM', {
+    useModalsStore.getState().openModal('CONFIRM', {
       heading: intl.formatMessage(messages.deactivateUserHeading, { acct }),
       message,
       confirm: intl.formatMessage(messages.deactivateUserConfirm, { name }),
@@ -68,7 +69,7 @@ const deactivateUserModal = (intl: IntlShape, accountId: string, afterConfirm = 
           afterConfirm();
         }).catch(() => {});
       },
-    }));
+    });
   };
 
 const deleteUserModal = (intl: IntlShape, accountId: string, afterConfirm = () => {}) =>
@@ -94,7 +95,7 @@ const deleteUserModal = (intl: IntlShape, accountId: string, afterConfirm = () =
     const confirm = intl.formatMessage(messages.deleteUserConfirm, { name });
     const checkbox = local ? intl.formatMessage(messages.deleteLocalUserCheckbox) : false;
 
-    dispatch(openModal('CONFIRM', {
+    useModalsStore.getState().openModal('CONFIRM', {
       heading: intl.formatMessage(messages.deleteUserHeading, { acct }),
       message,
       confirm,
@@ -107,15 +108,15 @@ const deleteUserModal = (intl: IntlShape, accountId: string, afterConfirm = () =
           afterConfirm();
         }).catch(() => {});
       },
-    }));
+    });
   };
 
 const toggleStatusSensitivityModal = (intl: IntlShape, statusId: string, sensitive: boolean, afterConfirm = () => {}) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const acct = state.statuses.get(statusId)!.account.acct;
+    const acct = state.statuses[statusId]!.account.acct;
 
-    dispatch(openModal('CONFIRM', {
+    useModalsStore.getState().openModal('CONFIRM', {
       heading: intl.formatMessage(sensitive === false ? messages.markStatusSensitiveHeading : messages.markStatusNotSensitiveHeading),
       message: intl.formatMessage(sensitive === false ? messages.markStatusSensitivePrompt : messages.markStatusNotSensitivePrompt, { acct }),
       confirm: intl.formatMessage(sensitive === false ? messages.markStatusSensitiveConfirm : messages.markStatusNotSensitiveConfirm),
@@ -126,15 +127,15 @@ const toggleStatusSensitivityModal = (intl: IntlShape, statusId: string, sensiti
         }).catch(() => {});
         afterConfirm();
       },
-    }));
+    });
   };
 
 const deleteStatusModal = (intl: IntlShape, statusId: string, afterConfirm = () => {}) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const acct = state.statuses.get(statusId)!.account.acct;
+    const acct = state.statuses[statusId]!.account.acct;
 
-    dispatch(openModal('CONFIRM', {
+    useModalsStore.getState().openModal('CONFIRM', {
       heading: intl.formatMessage(messages.deleteStatusHeading),
       message: intl.formatMessage(messages.deleteStatusPrompt, { acct: <strong className='break-words'>{acct}</strong> }),
       confirm: intl.formatMessage(messages.deleteStatusConfirm),
@@ -145,7 +146,7 @@ const deleteStatusModal = (intl: IntlShape, statusId: string, afterConfirm = () 
         }).catch(() => {});
         afterConfirm();
       },
-    }));
+    });
   };
 
 export {

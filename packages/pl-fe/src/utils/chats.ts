@@ -1,6 +1,6 @@
 import sumBy from 'lodash/sumBy';
 
-import { normalizeChatMessage } from 'pl-fe/normalizers';
+import { normalizeChatMessage } from 'pl-fe/normalizers/chat-message';
 import { ChatKeys } from 'pl-fe/queries/chats';
 import { queryClient } from 'pl-fe/queries/client';
 

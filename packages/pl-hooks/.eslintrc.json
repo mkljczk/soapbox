@@ -1,0 +1,214 @@
+{
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/typescript",
+    "plugin:compat/recommended"
+  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true,
+    "jest": true
+  },
+  "globals": {
+    "ATTACHMENT_HOST": false
+  },
+  "plugins": [
+    "import",
+    "promise",
+    "@typescript-eslint"
+  ],
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    },
+    "ecmaVersion": 2018
+  },
+  "settings": {
+    "import/extensions": [
+      ".js",
+      ".cjs",
+      ".mjs",
+      ".ts"
+    ],
+    "import/ignore": [
+      "node_modules",
+      "\\.(css|scss|json)$"
+    ],
+    "import/resolver": {
+      "typescript": true,
+      "node": true
+    },
+    "polyfills": [
+      "es:all",
+      "fetch",
+      "IntersectionObserver",
+      "Promise",
+      "ResizeObserver",
+      "URL",
+      "URLSearchParams"
+    ],
+    "tailwindcss": {
+      "config": "tailwind.config.ts"
+    }
+  },
+  "rules": {
+    "brace-style": "error",
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
+    "comma-spacing": [
+      "warn",
+      {
+        "before": false,
+        "after": true
+      }
+    ],
+    "comma-style": [
+      "warn",
+      "last"
+    ],
+    "import/no-duplicates": "error",
+    "space-before-function-paren": [
+      "error",
+      "never"
+    ],
+    "space-infix-ops": "error",
+    "space-in-parens": [
+      "error",
+      "never"
+    ],
+    "keyword-spacing": "error",
+    "dot-notation": "error",
+    "eqeqeq": "error",
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1,
+        "ignoredNodes": [
+          "TemplateLiteral"
+        ]
+      }
+    ],
+    "key-spacing": [
+      "error",
+      {
+        "mode": "minimum"
+      }
+    ],
+    "no-catch-shadow": "error",
+    "no-cond-assign": "error",
+    "no-console": [
+      "warn",
+      {
+        "allow": [
+          "error",
+          "warn"
+        ]
+      }
+    ],
+    "no-extra-semi": "error",
+    "no-const-assign": "error",
+    "no-fallthrough": "error",
+    "no-irregular-whitespace": "error",
+    "no-loop-func": "error",
+    "no-mixed-spaces-and-tabs": "error",
+    "no-nested-ternary": "warn",
+    "no-trailing-spaces": "warn",
+    "no-undef": "error",
+    "no-unreachable": "error",
+    "no-unused-expressions": "error",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "none",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "no-useless-escape": "warn",
+    "no-var": "error",
+    "object-curly-spacing": [
+      "error",
+      "always"
+    ],
+    "padded-blocks": [
+      "error",
+      {
+        "classes": "always"
+      }
+    ],
+    "prefer-const": "error",
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": "error",
+    "space-unary-ops": [
+      "error",
+      {
+        "words": true,
+        "nonwords": false
+      }
+    ],
+    "strict": "off",
+    "valid-typeof": "error",
+    "import/extensions": [
+      "error",
+      "always",
+      {
+        "js": "never",
+        "mjs": "ignorePackages",
+        "ts": "never"
+      }
+    ],
+    "import/newline-after-import": "error",
+    "import/no-extraneous-dependencies": "error",
+    "import/no-unresolved": "error",
+    "import/no-webpack-loader-syntax": "error",
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type"
+        ],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc"
+        }
+      }
+    ],
+    "@typescript-eslint/member-delimiter-style": "error",
+    "promise/catch-or-return": "error",
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": true,
+        "ignoreDeclarationSort": true
+      }
+    ],
+    "eol-last": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts"],
+      "rules": {
+        "no-undef": "off",
+        "space-before-function-paren": "off"
+      },
+      "parser": "@typescript-eslint/parser"
+    }
+  ]
+}

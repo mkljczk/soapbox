@@ -2,8 +2,9 @@ import React from 'react';
 import { useIntl, defineMessages } from 'react-intl';
 
 import { prepareRequest } from 'pl-fe/actions/consumer-auth';
-import { IconButton, Tooltip } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Tooltip from 'pl-fe/components/ui/tooltip';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { capitalize } from 'pl-fe/utils/strings';
 
 const messages = defineMessages({

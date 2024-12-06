@@ -1,27 +1,25 @@
 import React, { Suspense, lazy } from 'react';
 
 import { cancelReplyCompose } from 'pl-fe/actions/compose';
-import { cancelEventCompose } from 'pl-fe/actions/events';
-import { closeModal } from 'pl-fe/actions/modals';
-import { cancelReport } from 'pl-fe/actions/reports';
 import Base from 'pl-fe/components/modal-root';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import ModalLoading from './modal-loading';
 
 /* eslint sort-keys: "error" */
 const MODAL_COMPONENTS = {
-  ACCOUNT_MODERATION: lazy(() => import('pl-fe/features/ui/components/modals/account-moderation-modal/account-moderation-modal')),
+  ACCOUNT_MODERATION: lazy(() => import('pl-fe/features/ui/components/modals/account-moderation-modal')),
   BIRTHDAYS: lazy(() => import('pl-fe/features/ui/components/modals/birthdays-modal')),
   BOOST: lazy(() => import('pl-fe/features/ui/components/modals/boost-modal')),
   COMPARE_HISTORY: lazy(() => import('pl-fe/features/ui/components/modals/compare-history-modal')),
   COMPONENT: lazy(() => import('pl-fe/features/ui/components/modals/component-modal')),
   COMPOSE: lazy(() => import('pl-fe/features/ui/components/modals/compose-modal')),
-  COMPOSE_EVENT: lazy(() => import('pl-fe/features/ui/components/modals/compose-event-modal/compose-event-modal')),
   CONFIRM: lazy(() => import('pl-fe/features/ui/components/modals/confirmation-modal')),
-  CREATE_GROUP: lazy(() => import('pl-fe/features/ui/components/modals/manage-group-modal/create-group-modal')),
+  CREATE_GROUP: lazy(() => import('pl-fe/features/ui/components/modals/manage-group-modal')),
   CRYPTO_DONATE: lazy(() => import('pl-fe/features/ui/components/modals/crypto-donate-modal')),
   DISLIKES: lazy(() => import('pl-fe/features/ui/components/modals/dislikes-modal')),
+  DROPDOWN_MENU: lazy(() => import('pl-fe/features/ui/components/modals/dropdown-menu-modal')),
   EDIT_ANNOUNCEMENT: lazy(() => import('pl-fe/features/ui/components/modals/edit-announcement-modal')),
   EDIT_BOOKMARK_FOLDER: lazy(() => import('pl-fe/features/ui/components/modals/edit-bookmark-folder-modal')),
   EDIT_DOMAIN: lazy(() => import('pl-fe/features/ui/components/modals/edit-domain-modal')),
@@ -43,7 +41,7 @@ const MODAL_COMPONENTS = {
   REACTIONS: lazy(() => import('pl-fe/features/ui/components/modals/reactions-modal')),
   REBLOGS: lazy(() => import('pl-fe/features/ui/components/modals/reblogs-modal')),
   REPLY_MENTIONS: lazy(() => import('pl-fe/features/ui/components/modals/reply-mentions-modal')),
-  REPORT: lazy(() => import('pl-fe/features/ui/components/modals/report-modal/report-modal')),
+  REPORT: lazy(() => import('pl-fe/features/ui/components/modals/report-modal')),
   SELECT_BOOKMARK_FOLDER: lazy(() => import('pl-fe/features/ui/components/modals/select-bookmark-folder-modal')),
   TEXT_FIELD: lazy(() => import('pl-fe/features/ui/components/modals/text-field-modal')),
   UNAUTHORIZED: lazy(() => import('pl-fe/features/ui/components/modals/unauthorized-modal')),
@@ -61,30 +59,22 @@ const ModalRoot: React.FC = () => {
   const renderLoading = (modalId: string) => !['MEDIA', 'VIDEO', 'BOOST', 'CONFIRM'].includes(modalId) ? <ModalLoading /> : null;
 
   const dispatch = useAppDispatch();
-  const { modalType: type, modalProps: props } = useAppSelector((state) => state.modals.last({
-    modalProps: {},
-    modalType: null,
-  }));
+  const { modals, closeModal } = useModalsStore();
+  const { modalType: type, modalProps: props } = modals.at(-1) || { modalProps: {}, modalType: null };
 
   const onClickClose = (type?: ModalType) => {
     switch (type) {
       case 'COMPOSE':
         dispatch(cancelReplyCompose());
         break;
-      case 'COMPOSE_EVENT':
-        dispatch(cancelEventCompose());
-        break;
-      case 'REPORT':
-        dispatch(cancelReport());
-        break;
       default:
         break;
     }
 
-    dispatch(closeModal(type));
+    closeModal(type);
   };
 
-  const Component = type !== null ? (MODAL_COMPONENTS as Record<keyof typeof MODAL_COMPONENTS, React.LazyExoticComponent<any>>)[type] : null;
+  const Component = type !== null ? (MODAL_COMPONENTS as Record<keyof typeof MODAL_COMPONENTS, React.ExoticComponent<any>>)[type] : null;
 
   return (
     <Base onClose={onClickClose} type={type}>

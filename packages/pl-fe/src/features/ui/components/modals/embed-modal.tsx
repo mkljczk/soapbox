@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { closeModal } from 'pl-fe/actions/modals';
 import CopyableInput from 'pl-fe/components/copyable-input';
 import SafeEmbed from 'pl-fe/components/safe-embed';
-import { Modal, Stack, Text, Divider } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Divider from 'pl-fe/components/ui/divider';
+import Modal from 'pl-fe/components/ui/modal';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import useEmbed from 'pl-fe/queries/embed';
 
 import type { BaseModalProps } from '../modal-root';
@@ -15,8 +16,7 @@ interface EmbedModalProps {
   onError: (error: any) => void;
 }
 
-const EmbedModal: React.FC<BaseModalProps & EmbedModalProps> = ({ url, onError }) => {
-  const dispatch = useAppDispatch();
+const EmbedModal: React.FC<BaseModalProps & EmbedModalProps> = ({ onClose, onError, url }) => {
   const { data: embed, error, isError } = useEmbed(url);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const EmbedModal: React.FC<BaseModalProps & EmbedModalProps> = ({ url, onError }
   }, [isError]);
 
   const handleClose = () => {
-    dispatch(closeModal('EMBED'));
+    onClose('EMBED');
   };
 
   return (

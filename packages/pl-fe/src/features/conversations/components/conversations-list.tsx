@@ -1,18 +1,16 @@
 import debounce from 'lodash/debounce';
-import React, { useRef } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { expandConversations } from 'pl-fe/actions/conversations';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import Conversation from './conversation';
 
-import type { VirtuosoHandle } from 'react-virtuoso';
-
 const ConversationsList: React.FC = () => {
   const dispatch = useAppDispatch();
-  const ref = useRef<VirtuosoHandle>(null);
 
   const conversations = useAppSelector((state) => state.conversations.items);
   const isLoading = useAppSelector((state) => state.conversations.isLoading);
@@ -31,17 +29,10 @@ const ConversationsList: React.FC = () => {
   };
 
   const selectChild = (index: number) => {
-    ref.current?.scrollIntoView({
-      index,
-      behavior: 'smooth',
-      done: () => {
-        const element = document.querySelector<HTMLDivElement>(`#direct-list [data-index="${index}"] .focusable`);
+    const selector = `#direct-list [data-index="${index}"] .focusable`;
+    const element = document.querySelector<HTMLDivElement>(selector);
 
-        if (element) {
-          element.focus();
-        }
-      },
-    });
+    if (element) element.focus();
   };
 
   const handleLoadOlder = debounce(() => {
@@ -53,10 +44,8 @@ const ConversationsList: React.FC = () => {
       hasMore={hasMore}
       onLoadMore={handleLoadOlder}
       id='direct-list'
-      scrollKey='direct'
-      ref={ref}
       isLoading={isLoading}
-      showLoading={isLoading && conversations.size === 0}
+      showLoading={isLoading && conversations.length === 0}
       emptyMessage={<FormattedMessage id='empty_column.direct' defaultMessage="You don't have any direct messages yet. When you send or receive one, it will show up here." />}
     >
       {conversations.map((item: any) => (

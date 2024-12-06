@@ -1,17 +1,17 @@
 import clsx from 'clsx';
-import { List as ImmutableList } from 'immutable';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { fetchFavourites, fetchReactions } from 'pl-fe/actions/interactions';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Emoji, Modal, Spinner, Tabs } from 'pl-fe/components/ui';
+import Emoji from 'pl-fe/components/ui/emoji';
+import Modal from 'pl-fe/components/ui/modal';
+import Spinner from 'pl-fe/components/ui/spinner';
+import Tabs from 'pl-fe/components/ui/tabs';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
-import { ReactionRecord } from 'pl-fe/reducers/user-lists';
+import { useStatusReactions } from 'pl-fe/queries/statuses/use-status-interactions';
 
 import type { BaseModalProps } from '../modal-root';
-import type { Item } from 'pl-fe/components/ui/tabs/tabs';
+import type { Item } from 'pl-fe/components/ui/tabs';
 
 const messages = defineMessages({
   all: { id: 'reactions.all', defaultMessage: 'All' },
@@ -29,19 +29,11 @@ interface ReactionsModalProps {
 }
 
 const ReactionsModal: React.FC<BaseModalProps & ReactionsModalProps> = ({ onClose, statusId, reaction: initialReaction }) => {
-  const dispatch = useAppDispatch();
+  const modalRef = useRef<HTMLDivElement>(null);
   const intl = useIntl();
   const [reaction, setReaction] = useState(initialReaction);
-  const reactions = useAppSelector<ImmutableList<ReturnType<typeof ReactionRecord>> | undefined>((state) => {
-    const favourites = state.user_lists.favourited_by.get(statusId)?.items;
-    const reactions = state.user_lists.reactions.get(statusId)?.items;
-    return favourites && reactions && ImmutableList(favourites?.size ? [ReactionRecord({ accounts: favourites, count: favourites.size, name: '👍' })] : []).concat(reactions || []);
-  });
 
-  const fetchData = () => {
-    dispatch(fetchFavourites(statusId));
-    dispatch(fetchReactions(statusId));
-  };
+  const { data: reactions, isLoading } = useStatusReactions(statusId);
 
   const onClickClose = () => {
     onClose('REACTIONS');
@@ -59,7 +51,7 @@ const ReactionsModal: React.FC<BaseModalProps & ReactionsModalProps> = ({ onClos
     reactions!.forEach(reaction => items.push(
       {
         text: <div className='flex items-center gap-1'>
-          <Emoji className='h-4 w-4' emoji={reaction.name} src={reaction.url || undefined} />
+          <Emoji className='size-4' emoji={reaction.name} src={reaction.url || undefined} />
           {reaction.count}
         </div>,
         action: () => setReaction(reaction.name),
@@ -70,21 +62,17 @@ const ReactionsModal: React.FC<BaseModalProps & ReactionsModalProps> = ({ onClos
     return <Tabs items={items} activeItem={reaction || 'all'} />;
   };
 
-  const accounts = useMemo((): ImmutableList<IAccountWithReaction> | undefined => {
+  const accounts = useMemo((): Array<IAccountWithReaction> | undefined => {
     if (!reactions) return;
 
     if (reaction) {
       const reactionRecord = reactions.find(({ name }) => name === reaction);
 
-      if (reactionRecord) return reactionRecord.accounts.map(account => ({ id: account, reaction: reaction, reactionUrl: reactionRecord.url || undefined })).toList();
+      if (reactionRecord) return reactionRecord.account_ids.map(account => ({ id: account, reaction: reaction, reactionUrl: reactionRecord.url || undefined }));
     } else {
-      return reactions.map(({ accounts, name, url }) => accounts.map(account => ({ id: account, reaction: name, reactionUrl: url }))).flatten() as ImmutableList<IAccountWithReaction>;
+      return reactions.map(({ account_ids, name, url }) => account_ids.map(account => ({ id: account, reaction: name, reactionUrl: url || undefined }))).flat();
     }
   }, [reactions, reaction]);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   let body;
 
@@ -94,16 +82,17 @@ const ReactionsModal: React.FC<BaseModalProps & ReactionsModalProps> = ({ onClos
     const emptyMessage = <FormattedMessage id='status.reactions.empty' defaultMessage='No one has reacted to this post yet. When someone does, they will show up here.' />;
 
     body = (<>
-      {reactions.size > 0 && renderFilterBar()}
+      {reactions.length > 0 && renderFilterBar()}
       <ScrollableList
-        scrollKey='reactions'
         emptyMessage={emptyMessage}
-        className={clsx({
-          'mt-4': reactions.size > 0,
+        listClassName={clsx('max-w-full', {
+          'mt-4': reactions.length > 0,
         })}
-        listClassName='max-w-full'
         itemClassName='pb-3'
-        style={{ height: '80vh' }}
+        style={{ height: 'calc(80vh - 88px)' }}
+        isLoading={typeof isLoading === 'boolean' ? isLoading : true}
+        estimatedSize={42}
+        parentRef={modalRef}
       >
         {accounts.map((account) =>
           <AccountContainer key={`${account.id}-${account.reaction}`} id={account.id} emoji={account.reaction} emojiUrl={account.reactionUrl} />,
@@ -116,6 +105,7 @@ const ReactionsModal: React.FC<BaseModalProps & ReactionsModalProps> = ({ onClos
     <Modal
       title={<FormattedMessage id='column.reactions' defaultMessage='Reactions' />}
       onClose={onClickClose}
+      ref={modalRef}
     >
       {body}
     </Modal>

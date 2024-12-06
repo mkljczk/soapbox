@@ -1,7 +1,9 @@
 import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Button, HStack, Input } from './ui';
+import Button from 'pl-fe/components/ui/button';
+import HStack from 'pl-fe/components/ui/hstack';
+import Input from 'pl-fe/components/ui/input';
 
 interface ICopyableInput {
   /** Text to be copied. */

@@ -4,8 +4,13 @@ import { defineMessages, FormattedMessage } from 'react-intl';
 
 import { patchMe } from 'pl-fe/actions/me';
 import { BigCard } from 'pl-fe/components/big-card';
-import { Avatar, Button, Icon, Spinner, Stack } from 'pl-fe/components/ui';
-import { useAppDispatch, useOwnAccount } from 'pl-fe/hooks';
+import Avatar from 'pl-fe/components/ui/avatar';
+import Button from 'pl-fe/components/ui/button';
+import Icon from 'pl-fe/components/ui/icon';
+import Spinner from 'pl-fe/components/ui/spinner';
+import Stack from 'pl-fe/components/ui/stack';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import toast from 'pl-fe/toast';
 import { isDefaultAvatar } from 'pl-fe/utils/accounts';
 import resizeImage from 'pl-fe/utils/resize-image';
@@ -54,7 +59,7 @@ const AvatarSelectionStep = ({ onNext }: { onNext: () => void }) => {
         setSelectedFile(null);
 
         if (error.response?.status === 422) {
-          toast.error((error.response.json as any).error.replace('Validation failed: ', ''));
+          toast.error(error.response.json.error.replace('Validation failed: ', ''));
         } else {
           toast.error(messages.error);
         }
@@ -68,13 +73,13 @@ const AvatarSelectionStep = ({ onNext }: { onNext: () => void }) => {
       subtitle={<FormattedMessage id='onboarding.avatar.subtitle' defaultMessage='Just have fun with it.' />}
     >
       <Stack space={10}>
-        <div className='relative mx-auto rounded-full bg-gray-200'>
+        <div className='relative mx-auto rounded-lg bg-gray-200'>
           {account && (
             <Avatar src={selectedFile || account.avatar} alt={account.avatar_description} size={175} />
           )}
 
           {isSubmitting && (
-            <div className='absolute inset-0 flex items-center justify-center rounded-full bg-white/80 dark:bg-primary-900/80'>
+            <div className='absolute inset-0 flex items-center justify-center rounded-lg bg-white/80 dark:bg-primary-900/80'>
               <Spinner withText={false} />
             </div>
           )}
@@ -83,12 +88,12 @@ const AvatarSelectionStep = ({ onNext }: { onNext: () => void }) => {
             onClick={openFilePicker}
             type='button'
             className={clsx({
-              'absolute bottom-3 right-2 p-1 bg-primary-600 rounded-full ring-2 ring-white dark:ring-primary-900 hover:bg-primary-700': true,
+              'absolute bottom-3 right-2 p-1 bg-primary-600 rounded-lg ring-2 ring-white dark:ring-primary-900 hover:bg-primary-700': true,
               'opacity-50 pointer-events-none': isSubmitting,
             })}
             disabled={isSubmitting}
           >
-            <Icon src={require('@tabler/icons/outline/plus.svg')} className='h-5 w-5 text-white' />
+            <Icon src={require('@tabler/icons/outline/plus.svg')} className='size-5 text-white' />
           </button>
 
           <input type='file' className='hidden' ref={fileInput} onChange={handleFileChange} />

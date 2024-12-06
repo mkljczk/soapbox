@@ -1,10 +1,11 @@
 import clsx from 'clsx';
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import Blurhash from 'pl-fe/components/blurhash';
 import Icon from 'pl-fe/components/icon';
 import StillImage from 'pl-fe/components/still-image';
-import { useSettings } from 'pl-fe/hooks';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { isIOS } from 'pl-fe/is-mobile';
 
 import type { AccountGalleryAttachment } from 'pl-fe/selectors';
@@ -12,9 +13,10 @@ import type { AccountGalleryAttachment } from 'pl-fe/selectors';
 interface IMediaItem {
   attachment: AccountGalleryAttachment;
   onOpenMedia: (attachment: AccountGalleryAttachment) => void;
+  isLast?: boolean;
 }
 
-const MediaItem: React.FC<IMediaItem> = ({ attachment, onOpenMedia }) => {
+const MediaItem: React.FC<IMediaItem> = ({ attachment, onOpenMedia, isLast }) => {
   const { autoPlayGif, displayMedia } = useSettings();
   const [visible, setVisible] = useState<boolean>(displayMedia !== 'hide_all' && !attachment.status?.sensitive || displayMedia === 'show_all');
 
@@ -66,7 +68,7 @@ const MediaItem: React.FC<IMediaItem> = ({ attachment, onOpenMedia }) => {
         src={attachment.preview_url}
         alt={attachment.description}
         style={{ objectPosition: `${x}% ${y}%` }}
-        className='h-full w-full overflow-hidden rounded-lg'
+        className={clsx('size-full overflow-hidden', { 'rounded-br-md': isLast })}
       />
     );
   } else if (['gifv', 'video'].indexOf(attachment.type) !== -1) {
@@ -80,7 +82,7 @@ const MediaItem: React.FC<IMediaItem> = ({ attachment, onOpenMedia }) => {
     thumbnail = (
       <div className={clsx('media-gallery__gifv', { autoplay: autoPlayGif })}>
         <video
-          className='media-gallery__item-gifv-thumbnail'
+          className={clsx('media-gallery__item-gifv-thumbnail overflow-hidden', { 'rounded-br-md': isLast })}
           aria-label={attachment.description}
           title={attachment.description}
           role='application'
@@ -100,7 +102,7 @@ const MediaItem: React.FC<IMediaItem> = ({ attachment, onOpenMedia }) => {
     const fileExtensionLastIndex = remoteURL.lastIndexOf('.');
     const fileExtension = remoteURL.slice(fileExtensionLastIndex + 1).toUpperCase();
     thumbnail = (
-      <div className='media-gallery__item-thumbnail'>
+      <div className={clsx('media-gallery__item-thumbnail', { 'rounded-br-md': isLast })}>
         <span className='media-gallery__item__icons'><Icon src={require('@tabler/icons/outline/volume.svg')} /></span>
         <span className='media-gallery__file-extension__label'>{fileExtension}</span>
       </div>
@@ -117,16 +119,17 @@ const MediaItem: React.FC<IMediaItem> = ({ attachment, onOpenMedia }) => {
 
   return (
     <div className='col-span-1'>
-      <a className='media-gallery__item-thumbnail aspect-1' href={status.url} target='_blank' onClick={handleClick} title={title}>
+      <Link className='media-gallery__item-thumbnail aspect-1' to={`/@${status.account.acct}/posts/${status.id}`} onClick={handleClick} title={title}>
         <Blurhash
           hash={attachment.blurhash}
           className={clsx('media-gallery__preview', {
             'hidden': visible,
+            'rounded-br-md': isLast,
           })}
         />
         {visible && thumbnail}
         {!visible && icon}
-      </a>
+      </Link>
     </div>
   );
 };

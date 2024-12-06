@@ -9,7 +9,7 @@ const checkCanvasExtractPermission = () => {
   const ctx = canvas.getContext('2d')!;
   if (!ctx) return false;
 
-  ctx.fillStyle = '#0482d8';
+  ctx.fillStyle = '#d80482';
   ctx.fillRect(0, 0, 1, 1);
 
   const { data } = ctx.getImageData(0, 0, 1, 1);

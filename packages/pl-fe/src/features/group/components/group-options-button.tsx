@@ -2,11 +2,10 @@ import { GroupRoles, type Group } from 'pl-api';
 import React, { useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { openModal } from 'pl-fe/actions/modals';
-import { useLeaveGroup } from 'pl-fe/api/hooks';
+import { useLeaveGroup } from 'pl-fe/api/hooks/groups/use-leave-group';
 import DropdownMenu, { Menu } from 'pl-fe/components/dropdown-menu';
-import { IconButton } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({
@@ -23,7 +22,7 @@ interface IGroupActionButton {
 }
 
 const GroupOptionsButton = ({ group }: IGroupActionButton) => {
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
   const intl = useIntl();
 
   const leaveGroup = useLeaveGroup(group);
@@ -42,7 +41,7 @@ const GroupOptionsButton = ({ group }: IGroupActionButton) => {
   };
 
   const handleLeave = () =>
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.confirmationHeading),
       message: intl.formatMessage(messages.confirmationMessage),
       confirm: intl.formatMessage(messages.confirmationConfirm),
@@ -52,7 +51,7 @@ const GroupOptionsButton = ({ group }: IGroupActionButton) => {
           toast.success(intl.formatMessage(messages.leaveSuccess));
         },
       }),
-    }));
+    });
 
   const menu: Menu = useMemo(() => {
     const canShare = 'share' in navigator;

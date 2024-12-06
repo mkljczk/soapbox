@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { changeSettingImmediate } from 'pl-fe/actions/settings';
-import { Column, Button, Form, FormActions, FormGroup, Input, Text } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import { changeSetting } from 'pl-fe/actions/settings';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Input from 'pl-fe/components/ui/input';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({
@@ -25,8 +31,8 @@ const DevelopersChallenge = () => {
   };
 
   const handleSubmit = () => {
-    if (answer === 'boxsoap') {
-      dispatch(changeSettingImmediate(['isDeveloper'], true));
+    if (answer === 'fe-pl') {
+      dispatch(changeSetting(['isDeveloper'], true));
       toast.success(intl.formatMessage(messages.success));
     } else {
       toast.error(intl.formatMessage(messages.fail));
@@ -34,7 +40,7 @@ const DevelopersChallenge = () => {
   };
 
   const challenge = `function plFe() {
-  return 'soap|box'.split('|').reverse().join('');
+  return 'pl-fe'.split('-').reverse().join('-');
 }`;
 
   return (

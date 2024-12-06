@@ -1,10 +1,10 @@
 import clsx from 'clsx';
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import React from 'react';
 
+import Tombstone from 'pl-fe/components/tombstone';
 import StatusContainer from 'pl-fe/containers/status-container';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 interface IThreadStatus {
   id: string;
@@ -18,9 +18,18 @@ interface IThreadStatus {
 const ThreadStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
   const { id, focusedStatusId } = props;
 
-  const replyToId = useAppSelector(state => state.contexts.inReplyTos.get(id));
-  const replyCount = useAppSelector(state => state.contexts.replies.get(id, ImmutableOrderedSet()).size);
-  const isLoaded = useAppSelector(state => Boolean(state.statuses.get(id)));
+  const replyToId = useAppSelector(state => state.contexts.inReplyTos[id]);
+  const replyCount = useAppSelector(state => (state.contexts.replies[id] || []).length);
+  const isLoaded = useAppSelector(state => Boolean(state.statuses[id]));
+  const isDeleted = useAppSelector(state => Boolean(state.statuses[id]?.deleted));
+
+  if (isDeleted) {
+    return (
+      <div className='py-4 pb-8'>
+        <Tombstone id={id} onMoveUp={props.onMoveUp} onMoveDown={props.onMoveDown} deleted />
+      </div>
+    );
+  }
 
   const renderConnector = (): JSX.Element | null => {
     const isConnectedTop = replyToId && replyToId !== focusedStatusId;
@@ -31,7 +40,7 @@ const ThreadStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
 
     return (
       <div
-        className={clsx('absolute left-5 z-[1] hidden w-0.5 bg-gray-200 black:bg-gray-800 rtl:left-auto rtl:right-5 dark:bg-primary-800', {
+        className={clsx('absolute left-5 z-[1] hidden w-0.5 bg-gray-200 black:bg-gray-800 dark:bg-primary-800 rtl:left-auto rtl:right-5', {
           '!block top-[calc(12px+42px)] h-[calc(100%-42px-8px-1rem)]': isConnectedBottom,
         })}
       />

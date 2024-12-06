@@ -1,13 +1,18 @@
 import React from 'react';
 import { FormattedDate, FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { openModal } from 'pl-fe/actions/modals';
-import { useAnnouncements } from 'pl-fe/api/hooks/admin/useAnnouncements';
+import { ParsedContent } from 'pl-fe/components/parsed-content';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Button, Column, HStack, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
-import { AdminAnnouncement } from 'pl-fe/schemas';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAnnouncements, useDeleteAnnouncementMutation } from 'pl-fe/queries/admin/use-announcements';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
+
+import type { AdminAnnouncement } from 'pl-api';
 
 const messages = defineMessages({
   heading: { id: 'column.admin.announcements', defaultMessage: 'Announcements' },
@@ -23,28 +28,30 @@ interface IAnnouncement {
 
 const Announcement: React.FC<IAnnouncement> = ({ announcement }) => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
-  const { deleteAnnouncement } = useAnnouncements();
+  const { mutate: deleteAnnouncement } = useDeleteAnnouncementMutation();
+  const { openModal } = useModalsStore();
 
   const handleEditAnnouncement = () => {
-    dispatch(openModal('EDIT_ANNOUNCEMENT', { announcement }));
+    openModal('EDIT_ANNOUNCEMENT', { announcement });
   };
 
   const handleDeleteAnnouncement = () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.deleteHeading),
       message: intl.formatMessage(messages.deleteMessage),
       confirm: intl.formatMessage(messages.deleteConfirm),
       onConfirm: () => deleteAnnouncement(announcement.id, {
         onSuccess: () => toast.success(messages.deleteSuccess),
       }),
-    }));
+    });
   };
 
   return (
     <div key={announcement.id} className='rounded-lg bg-gray-100 p-4 dark:bg-primary-800'>
       <Stack space={2}>
-        <Text dangerouslySetInnerHTML={{ __html: announcement.contentHtml }} />
+        <Text>
+          <ParsedContent html={announcement.content} emojis={announcement.emojis} />
+        </Text>
         {(announcement.starts_at || announcement.ends_at || announcement.all_day) && (
           <HStack space={2} wrap>
             {announcement.starts_at && (
@@ -87,12 +94,12 @@ const Announcement: React.FC<IAnnouncement> = ({ announcement }) => {
 
 const Announcements: React.FC = () => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
 
-  const { data: announcements, isLoading } = useAnnouncements();
+  const { data: announcements, isLoading, isPending } = useAnnouncements();
 
   const handleCreateAnnouncement = () => {
-    dispatch(openModal('EDIT_ANNOUNCEMENT'));
+    openModal('EDIT_ANNOUNCEMENT');
   };
 
   const emptyMessage = <FormattedMessage id='empty_column.admin.announcements' defaultMessage='There are no announcements yet.' />;
@@ -110,11 +117,10 @@ const Announcements: React.FC = () => {
           <FormattedMessage id='admin.announcements.action' defaultMessage='Create announcement' />
         </Button>
         <ScrollableList
-          scrollKey='announcements'
           emptyMessage={emptyMessage}
           itemClassName='py-3 first:pt-0 last:pb-0'
           isLoading={isLoading}
-          showLoading={isLoading && !announcements?.length}
+          showLoading={isLoading && isPending}
         >
           {announcements!.map((announcement) => (
             <Announcement key={announcement.id} announcement={announcement} />

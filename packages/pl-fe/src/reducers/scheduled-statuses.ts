@@ -1,41 +1,44 @@
-import { Map as ImmutableMap } from 'immutable';
+import { create } from 'mutative';
 
-import { STATUS_IMPORT, STATUSES_IMPORT } from 'pl-fe/actions/importer';
+import { STATUS_IMPORT, STATUSES_IMPORT, type ImporterAction } from 'pl-fe/actions/importer';
 import {
   SCHEDULED_STATUSES_FETCH_SUCCESS,
   SCHEDULED_STATUS_CANCEL_REQUEST,
   SCHEDULED_STATUS_CANCEL_SUCCESS,
+  type ScheduledStatusesAction,
 } from 'pl-fe/actions/scheduled-statuses';
-import { STATUS_CREATE_SUCCESS } from 'pl-fe/actions/statuses';
+import { STATUS_CREATE_SUCCESS, type StatusesAction } from 'pl-fe/actions/statuses';
 
 import type { Status, ScheduledStatus } from 'pl-api';
-import type { AnyAction } from 'redux';
 
-type State = ImmutableMap<string, ScheduledStatus>;
+type State = Record<string, ScheduledStatus>;
 
-const initialState: State = ImmutableMap();
+const initialState: State = {};
 
 const importStatus = (state: State, status: Status | ScheduledStatus) => {
   if (!status.scheduled_at) return state;
-  return state.set(status.id, status);
+  state[status.id] = status;
 };
 
-const importStatuses = (state: State, statuses: Array<Status | ScheduledStatus>) =>
-  state.withMutations(mutable => statuses.forEach(status => importStatus(mutable, status)));
+const importStatuses = (state: State, statuses: Array<Status | ScheduledStatus>) => {
+  statuses.forEach(status => importStatus(state, status));
+};
 
-const deleteStatus = (state: State, statusId: string) => state.delete(statusId);
+const deleteStatus = (state: State, statusId: string) => {
+  delete state[statusId];
+};
 
-const scheduled_statuses = (state: State = initialState, action: AnyAction) => {
+const scheduled_statuses = (state: State = initialState, action: ImporterAction | ScheduledStatusesAction | StatusesAction) => {
   switch (action.type) {
     case STATUS_IMPORT:
     case STATUS_CREATE_SUCCESS:
-      return importStatus(state, action.status);
+      return create(state, (draft) => importStatus(draft, action.status));
     case STATUSES_IMPORT:
     case SCHEDULED_STATUSES_FETCH_SUCCESS:
-      return importStatuses(state, action.statuses);
+      return create(state, (draft) => importStatuses(draft, action.statuses));
     case SCHEDULED_STATUS_CANCEL_REQUEST:
     case SCHEDULED_STATUS_CANCEL_SUCCESS:
-      return deleteStatus(state, action.statusId);
+      return create(state, (draft) => deleteStatus(draft, action.statusId));
     default:
       return state;
   }

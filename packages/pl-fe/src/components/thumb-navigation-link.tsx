@@ -3,15 +3,15 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 
 import IconWithCounter from 'pl-fe/components/icon-with-counter';
-import { Icon } from 'pl-fe/components/ui';
-import { useSettings } from 'pl-fe/hooks';
+import Icon from 'pl-fe/components/ui/icon';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 interface IThumbNavigationLink {
   count?: number;
   countMax?: number;
   src: string;
   activeSrc?: string;
-  text: string | React.ReactElement;
+  text: string;
   to: string;
   exact?: boolean;
   paths?: Array<string>;
@@ -34,7 +34,7 @@ const ThumbNavigationLink: React.FC<IThumbNavigationLink> = ({ count, countMax, 
   const icon = (active && activeSrc) || src;
 
   return (
-    <NavLink to={to} exact={exact} className='flex flex-1 flex-col items-center space-y-1 px-2 py-4 text-lg text-gray-600'>
+    <NavLink to={to} exact={exact} className='flex flex-1 flex-col items-center space-y-1 px-2 py-4 text-lg text-gray-600' title={text}>
       {!demetricator && count !== undefined ? (
         <IconWithCounter
           src={icon}

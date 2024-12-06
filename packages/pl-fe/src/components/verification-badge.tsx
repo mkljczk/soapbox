@@ -2,8 +2,8 @@ import clsx from 'clsx';
 import React from 'react';
 import { useIntl, defineMessages } from 'react-intl';
 
-import { Icon } from 'pl-fe/components/ui';
-import { usePlFeConfig } from 'pl-fe/hooks';
+import Icon from 'pl-fe/components/ui/icon';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
 const messages = defineMessages({
   verified: { id: 'account.verified', defaultMessage: 'Verified Account' },
@@ -18,14 +18,14 @@ const VerificationBadge: React.FC<IVerificationBadge> = ({ className }) => {
   const plFeConfig = usePlFeConfig();
 
   // Prefer a custom icon if found
-  const icon = plFeConfig.verifiedIcon || require('pl-fe/assets/icons/verified.svg');
+  const icon = plFeConfig.verifiedIcon || require('@tabler/icons/outline/check.svg');
 
   // Render component based on file extension
   const Element = icon.endsWith('.svg') ? Icon : 'img';
 
   return (
-    <span className='verified-icon' data-testid='verified-badge'>
-      <Element className={clsx('w-4 text-accent-500', className)} src={icon} alt={intl.formatMessage(messages.verified)} />
+    <span className='rounded-full bg-accent-500' data-testid='verified-badge'>
+      <Element className={clsx('size-[16px] rounded-full bg-accent-500 stroke-[4] p-px text-white', className)} src={icon} alt={intl.formatMessage(messages.verified)} />
     </span>
   );
 };

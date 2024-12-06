@@ -1,16 +1,21 @@
 import React, { useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { v4 as uuidv4 } from 'uuid';
+import * as v from 'valibot';
 
 import { updatePlFeConfig } from 'pl-fe/actions/admin';
 import { getHost } from 'pl-fe/actions/instance';
 import { fetchPlFeConfig } from 'pl-fe/actions/pl-fe';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import List, { ListItem } from 'pl-fe/components/list';
-import { Button, Column, Form, FormActions } from 'pl-fe/components/ui';
-import ColorWithPicker from 'pl-fe/features/pl-fe-config/components/color-with-picker';
-import { useAppDispatch, useAppSelector, usePlFeConfig } from 'pl-fe/hooks';
-import { normalizePlFeConfig } from 'pl-fe/normalizers';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import ColorPicker from 'pl-fe/features/pl-fe-config/components/color-picker';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
+import { plFeConfigSchema } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import toast from 'pl-fe/toast';
 import { download } from 'pl-fe/utils/download';
 
@@ -49,13 +54,15 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
   const host = useAppSelector(state => getHost(state));
   const rawConfig = useAppSelector(state => state.plfe);
 
-  const [colors, setColors] = useState(plFe.colors.toJS() as any);
+  const [colors, setColors] = useState(plFe.colors);
   const [submitting, setSubmitting] = useState(false);
-  const [resetKey, setResetKey] = useState(uuidv4());
+  const [resetKey, setResetKey] = useState(crypto.randomUUID());
 
   const fileInput = useRef<HTMLInputElement>(null);
 
   const updateColors = (key: string) => (newColors: ColorGroup) => {
+    if (typeof colors[key] === 'string') return;
+
     setColors({
       ...colors,
       [key]: {
@@ -73,21 +80,21 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
   };
 
   const setTheme = (theme: any) => {
-    setResetKey(uuidv4());
+    setResetKey(crypto.randomUUID());
     setTimeout(() => setColors(theme));
   };
 
   const resetTheme = () => {
-    setTheme(plFe.colors.toJS() as any);
+    setTheme(plFe.colors);
   };
 
   const updateTheme = async () => {
-    const params = rawConfig.set('colors', colors).toJS();
+    const params = { ...rawConfig, colors };
     await dispatch(updatePlFeConfig(params));
   };
 
   const restoreDefaultTheme = () => {
-    const colors = normalizePlFeConfig({ brandColor: '#0482d8' }).colors.toJS();
+    const colors = v.parse(plFeConfigSchema, { brandColor: '#d80482' }).colors;
     setTheme(colors);
   };
 
@@ -106,7 +113,7 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
     if (file) {
       const text = await file.text();
       const json = JSON.parse(text);
-      const colors = normalizePlFeConfig({ colors: json }).colors.toJS();
+      const colors = v.parse(plFeConfigSchema, { colors: json }).colors;
 
       setTheme(colors);
       toast.success(intl.formatMessage(messages.importSuccess));
@@ -239,33 +246,36 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
 
 interface IPaletteListItem {
   label: React.ReactNode;
-  palette: ColorGroup;
+  palette: ColorGroup | string;
   onChange: (palette: ColorGroup) => void;
   resetKey?: string;
+  allowTintChange?: boolean;
 }
 
 /** Palette editor inside a ListItem. */
-const PaletteListItem: React.FC<IPaletteListItem> = ({ label, palette, onChange, resetKey }) => (
+const PaletteListItem: React.FC<IPaletteListItem> = ({ label, palette, onChange, resetKey, allowTintChange }) => typeof palette === 'string' ? null : (
   <ListItem label={<div className='w-20'>{label}</div>}>
-    <Palette palette={palette} onChange={onChange} resetKey={resetKey} />
+    <Palette palette={palette} onChange={onChange} resetKey={resetKey} allowTintChange={allowTintChange} />
   </ListItem>
 );
 
 interface IColorListItem {
   label: React.ReactNode;
-  value: string;
+  value: string | Record<string, string>;
   onChange: (hex: string) => void;
 }
 
 /** Single-color picker. */
 const ColorListItem: React.FC<IColorListItem> = ({ label, value, onChange }) => {
+  if (typeof value !== 'string') return null;
+
   const handleChange: ColorChangeHandler = (color, _e) => {
     onChange(color.hex);
   };
 
   return (
     <ListItem label={label}>
-      <ColorWithPicker
+      <ColorPicker
         value={value}
         onChange={handleChange}
         className='h-8 w-10 overflow-hidden rounded-md'
@@ -274,4 +284,4 @@ const ColorListItem: React.FC<IColorListItem> = ({ label, value, onChange }) => 
   );
 };
 
-export { ThemeEditor as default };
+export { ThemeEditor as default, PaletteListItem };

@@ -1,7 +1,8 @@
 import React from 'react';
 
 import { uploadCompose } from 'pl-fe/actions/compose';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 
 import UploadButton from '../components/upload-button';
 
@@ -13,10 +14,7 @@ interface IUploadButtonContainer {
 
 const UploadButtonContainer: React.FC<IUploadButtonContainer> = ({ composeId }) => {
   const dispatch = useAppDispatch();
-  const { disabled, resetFileKey } = useAppSelector((state) => ({
-    disabled: state.compose.get(composeId)?.is_uploading,
-    resetFileKey: state.compose.get(composeId)?.resetFileKey!,
-  }));
+  const { is_uploading: disabled, resetFileKey } = useCompose(composeId);
 
   const onSelectFile = (files: FileList, intl: IntlShape) => {
     dispatch(uploadCompose(composeId, files, intl));

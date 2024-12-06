@@ -1,12 +1,19 @@
 import { InfiniteData, keepPreviousData, useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 import sumBy from 'lodash/sumBy';
-import { type Chat, type ChatMessage as BaseChatMessage, type PaginatedResponse, chatMessageSchema } from 'pl-api';
+import { type Chat, type ChatMessage as BaseChatMessage, type PaginatedResponse, chatMessageSchema, type Relationship } from 'pl-api';
+import * as v from 'valibot';
 
-import { importFetchedAccount, importFetchedAccounts } from 'pl-fe/actions/importer';
+import { importEntities } from 'pl-fe/actions/importer';
 import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
 import { useStatContext } from 'pl-fe/contexts/stat-context';
-import { useAppDispatch, useAppSelector, useClient, useFeatures, useLoggedIn, useOwnAccount } from 'pl-fe/hooks';
-import { type ChatMessage, normalizeChatMessage } from 'pl-fe/normalizers';
+import { Entities } from 'pl-fe/entity-store/entities';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useClient } from 'pl-fe/hooks/use-client';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { type ChatMessage, normalizeChatMessage } from 'pl-fe/normalizers/chat-message';
 import { reOrderChatListItems } from 'pl-fe/utils/chats';
 import { flattenPages, updatePageItem } from 'pl-fe/utils/queries';
 
@@ -20,7 +27,7 @@ const ChatKeys = {
 
 const useChatMessages = (chat: Chat) => {
   const client = useClient();
-  const isBlocked = useAppSelector((state) => state.getIn(['relationships', chat.account.id, 'blocked_by']));
+  const isBlocked = useAppSelector((state) => (state.entities[Entities.RELATIONSHIPS]?.store[chat.account.id] as Relationship)?.blocked_by);
 
   const getChatMessages = async (chatId: string, pageParam?: Pick<PaginatedResponse<BaseChatMessage>, 'next'>) => {
     const response = await (pageParam?.next ? pageParam.next() : client.chats.getChatMessages(chatId));
@@ -65,7 +72,7 @@ const useChats = () => {
 
     // Set the relationships to these users in the redux store.
     fetchRelationships.mutate({ accountIds: items.map((item) => item.account.id) });
-    dispatch(importFetchedAccounts(items.map((item) => item.account)));
+    dispatch(importEntities({ accounts: items.map((item) => item.account) }));
 
     return response;
   };
@@ -102,7 +109,7 @@ const useChat = (chatId?: string) => {
       const data = await client.chats.getChat(chatId);
 
       fetchRelationships.mutate({ accountIds: [data.account.id] });
-      dispatch(importFetchedAccount(data.account));
+      dispatch(importEntities({ accounts: [data.account] }));
 
       return data;
     }
@@ -167,18 +174,19 @@ const useChatActions = (chatId: string) => {
           if (idx === 0) {
             return {
               ...page,
-              result: [
+              items: [
                 normalizeChatMessage({
-                  ...chatMessageSchema.parse({
+                  ...v.parse(chatMessageSchema, {
+                    chat_id: variables.chatId,
                     content: variables.content,
                     id: pendingId,
-                    created_at: new Date(),
+                    created_at: new Date().toISOString(),
                     account_id: account?.id,
                     unread: true,
                   }),
                   pending: true,
                 }),
-                ...page.result,
+                ...page.items,
               ],
             };
           }

@@ -2,7 +2,7 @@
   @apply rounded-lg box-border overflow-hidden isolate relative w-full h-auto;
 
   &__item {
-    @apply rounded-sm border-0 box-border block float-left relative overflow-hidden;
+    @apply border-0 box-border block float-left relative overflow-hidden;
 
     &__icons {
       @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
@@ -21,13 +21,13 @@
       @apply text-gray-400 cursor-zoom-in block no-underline leading-[0] relative z-[1] h-full w-full;
 
       video {
-        @apply w-full h-full object-cover
+        @apply w-full h-full object-cover;
       }
     }
   }
 
   &__preview {
-    @apply bg-gray-200 dark:bg-gray-900 rounded-lg w-full h-full object-cover absolute top-0 left-0 z-0;
+    @apply bg-gray-200 dark:bg-gray-900 w-full h-full object-cover absolute top-0 left-0 z-0;
   }
 
   &__gifv {
@@ -35,7 +35,7 @@
   }
 
   &__item-gifv-thumbnail {
-    @apply rounded-md cursor-zoom-in h-full object-cover relative w-full z-[1] transform-none top-0;
+    @apply cursor-zoom-in h-full object-cover relative w-full z-[1] transform-none top-0;
   }
 
   &__gifv__label,
@@ -60,8 +60,10 @@
   }
 
   &--compact {
+    @apply flex rounded-sm w-fit gap-0.5;
+
     .media-gallery__item {
-      @apply h-12 w-12 inset-auto float-left mr-[5px] #{!important};
+      @apply h-12 w-12 inset-auto float-left #{!important};
 
       &-overflow {
         @apply text-xl;

@@ -1,12 +1,17 @@
 import { mediaAttachmentSchema } from 'pl-api';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
+import * as v from 'valibot';
 
-import { openModal } from 'pl-fe/actions/modals';
 import GroupAvatar from 'pl-fe/components/groups/group-avatar';
+import { ParsedContent } from 'pl-fe/components/parsed-content';
 import StillImage from 'pl-fe/components/still-image';
-import { HStack, Icon, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Emojify from 'pl-fe/features/emoji/emojify';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import { isDefaultHeader } from 'pl-fe/utils/accounts';
 
 import GroupActionButton from './group-action-button';
@@ -15,7 +20,7 @@ import GroupOptionsButton from './group-options-button';
 import GroupPrivacy from './group-privacy';
 import GroupRelationship from './group-relationship';
 
-import type { Group } from 'pl-fe/normalizers';
+import type { Group } from 'pl-fe/normalizers/group';
 
 const messages = defineMessages({
   header: { id: 'group.header.alt', defaultMessage: 'Group header' },
@@ -27,7 +32,7 @@ interface IGroupHeader {
 
 const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
 
   const [isHeaderMissing, setIsHeaderMissing] = useState<boolean>(false);
 
@@ -35,14 +40,14 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
     return (
       <div className='-mx-4 -mt-4 sm:-mx-6 sm:-mt-6' data-testid='group-header-missing'>
         <div>
-          <div className='relative h-32 w-full bg-gray-200 black:rounded-t-none md:rounded-t-xl lg:h-48 dark:bg-gray-900/50' />
+          <div className='relative h-32 w-full bg-gray-200 black:rounded-t-none dark:bg-gray-900/50 md:rounded-t-xl lg:h-48' />
         </div>
 
         <div className='px-4 sm:px-6'>
           <HStack alignItems='bottom' space={5} className='-mt-12'>
             <div className='relative flex'>
               <div
-                className='h-24 w-24 rounded-full bg-gray-400 ring-4 ring-white dark:ring-gray-800'
+                className='size-24 rounded-lg bg-gray-400 ring-4 ring-white dark:ring-gray-800'
               />
             </div>
           </HStack>
@@ -52,12 +57,12 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
   }
 
   const onAvatarClick = () => {
-    const avatar = mediaAttachmentSchema.parse({
+    const avatar = v.parse(mediaAttachmentSchema, {
       id: '',
       type: 'image',
       url: group.avatar,
     });
-    dispatch(openModal('MEDIA', { media: [avatar], index: 0 }));
+    openModal('MEDIA', { media: [avatar], index: 0 });
   };
 
   const handleAvatarClick: React.MouseEventHandler = (e) => {
@@ -68,12 +73,12 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
   };
 
   const onHeaderClick = () => {
-    const header = mediaAttachmentSchema.parse({
+    const header = v.parse(mediaAttachmentSchema, {
       id: '',
       type: 'image',
       url: group.header,
     });
-    dispatch(openModal('MEDIA', { media: [header], index: 0 }));
+    openModal('MEDIA', { media: [header], index: 0 });
   };
 
   const handleHeaderClick: React.MouseEventHandler = (e) => {
@@ -91,7 +96,7 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
         <StillImage
           src={group.header}
           alt={group.header_description || intl.formatMessage(messages.header)}
-          className='relative h-32 w-full bg-gray-200 object-center black:rounded-t-none md:rounded-t-xl lg:h-52 dark:bg-gray-900/50'
+          className='relative h-32 w-full bg-gray-200 object-center black:rounded-t-none dark:bg-gray-900/50 md:rounded-t-xl lg:h-52'
           onError={() => setIsHeaderMissing(true)}
         />
       );
@@ -108,10 +113,10 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
     return (
       <div
         data-testid='group-header-image'
-        className='flex h-32 w-full items-center justify-center bg-gray-200 md:rounded-t-xl lg:h-52 dark:bg-gray-800/30'
+        className='flex h-32 w-full items-center justify-center bg-gray-200 dark:bg-gray-800/30 md:rounded-t-xl lg:h-52'
       >
         {isHeaderMissing ? (
-          <Icon src={require('@tabler/icons/outline/photo-off.svg')} className='h-6 w-6 text-gray-500 dark:text-gray-700' />
+          <Icon src={require('@tabler/icons/outline/photo-off.svg')} className='size-6 text-gray-500 dark:text-gray-700' />
         ) : header}
       </div>
     );
@@ -137,9 +142,10 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
         <Text
           size='xl'
           weight='bold'
-          dangerouslySetInnerHTML={{ __html: group.display_name_html }}
           data-testid='group-name'
-        />
+        >
+          <Emojify text={group.display_name} emojis={group.emojis} />
+        </Text>
 
         <Stack data-testid='group-meta' space={1} alignItems='center'>
           <HStack className='text-gray-700 dark:text-gray-600' space={2} wrap>
@@ -151,9 +157,10 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
           <Text
             theme='muted'
             align='center'
-            dangerouslySetInnerHTML={{ __html: group.note_emojified }}
             className='[&_a]:text-primary-600 [&_a]:hover:underline [&_a]:dark:text-accent-blue'
-          />
+          >
+            <ParsedContent html={group.note} emojis={group.emojis} />
+          </Text>
         </Stack>
 
         <HStack alignItems='center' space={2} data-testid='group-actions'>

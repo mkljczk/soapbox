@@ -1,16 +1,16 @@
+import { autoUpdate, shift, useFloating, useTransitionStyles } from '@floating-ui/react';
 import clsx from 'clsx';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { useIntl } from 'react-intl';
-import { usePopper } from 'react-popper';
 import { useHistory } from 'react-router-dom';
 
-import { closeStatusHoverCard, updateStatusHoverCard } from 'pl-fe/actions/status-hover-card';
 import { fetchStatus } from 'pl-fe/actions/statuses';
+import { showStatusHoverCard } from 'pl-fe/components/hover-status-wrapper';
+import Card, { CardBody } from 'pl-fe/components/ui/card';
 import StatusContainer from 'pl-fe/containers/status-container';
-import { useAppSelector, useAppDispatch } from 'pl-fe/hooks';
-
-import { showStatusHoverCard } from './hover-status-wrapper';
-import { Card, CardBody } from './ui';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useStatusHoverCardStore } from 'pl-fe/stores/status-hover-card';
 
 interface IStatusHoverCard {
   visible?: boolean;
@@ -22,11 +22,9 @@ const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
   const intl = useIntl();
   const history = useHistory();
 
-  const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
+  const { statusId, ref, closeStatusHoverCard, updateStatusHoverCard } = useStatusHoverCardStore();
 
-  const statusId: string | undefined = useAppSelector(state => state.status_hover_card.statusId || undefined);
-  const status = useAppSelector(state => state.statuses.get(statusId!));
-  const targetRef = useAppSelector(state => state.status_hover_card.ref?.current);
+  const status = useAppSelector(state => state.statuses[statusId!]);
 
   useEffect(() => {
     if (statusId && !status) {
@@ -37,7 +35,7 @@ const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
   useEffect(() => {
     const unlisten = history.listen(() => {
       showStatusHoverCard.cancel();
-      dispatch(closeStatusHoverCard());
+      closeStatusHoverCard(true);
     });
 
     return () => {
@@ -45,17 +43,39 @@ const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
     };
   }, []);
 
-  const { styles, attributes } = usePopper(targetRef, popperElement, {
+  const { x, y, strategy, refs, context, placement } = useFloating({
+    open: !!statusId,
+    elements: {
+      reference: ref?.current,
+    },
     placement: 'top',
+    middleware: [
+      shift({
+        padding: 8,
+      }),
+    ],
+    whileElementsMounted: autoUpdate,
   });
 
-  const handleMouseEnter = useCallback((): React.MouseEventHandler => () => {
-    dispatch(updateStatusHoverCard());
-  }, []);
+  const { styles } = useTransitionStyles(context, {
+    initial: {
+      opacity: 0,
+      transform: 'scale(0.8)',
+      transformOrigin: placement === 'bottom' ? 'top' : 'bottom',
+    },
+    duration: {
+      open: 100,
+      close: 100,
+    },
+  });
 
-  const handleMouseLeave = useCallback((): React.MouseEventHandler => () => {
-    dispatch(closeStatusHoverCard(true));
-  }, []);
+  const handleMouseEnter = () => {
+    updateStatusHoverCard();
+  };
+
+  const handleMouseLeave = () => {
+    closeStatusHoverCard(true);
+  };
 
   if (!statusId) return null;
 
@@ -77,13 +97,17 @@ const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
         'opacity-100': visible,
         'opacity-0 pointer-events-none': !visible,
       })}
-      ref={setPopperElement}
-      style={styles.popper}
-      {...attributes.popper}
-      onMouseEnter={handleMouseEnter()}
-      onMouseLeave={handleMouseLeave()}
+      ref={refs.setFloating}
+      style={{
+        position: strategy,
+        top: y ?? 0,
+        left: x ?? 0,
+        ...styles,
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      <Card className='relative black:rounded-xl black:border black:border-gray-800'>
+      <Card className='relative overflow-hidden black:rounded-xl black:border black:border-gray-800'>
         <CardBody>
           {renderStatus(statusId)}
         </CardBody>

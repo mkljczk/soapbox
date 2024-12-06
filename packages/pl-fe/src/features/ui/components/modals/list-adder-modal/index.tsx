@@ -1,32 +1,22 @@
 import React, { useEffect } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { createSelector } from 'reselect';
 
 import { setupListAdder, resetListAdder } from 'pl-fe/actions/lists';
-import { CardHeader, CardTitle, Modal } from 'pl-fe/components/ui';
+import { CardHeader, CardTitle } from 'pl-fe/components/ui/card';
+import Modal from 'pl-fe/components/ui/modal';
 import AccountContainer from 'pl-fe/containers/account-container';
+import { getOrderedLists } from 'pl-fe/features/lists';
 import NewListForm from 'pl-fe/features/lists/components/new-list-form';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import List from './components/list';
 
-import type { List as ImmutableList } from 'immutable';
-import type { List as ListEntity } from 'pl-api';
 import type { BaseModalProps } from 'pl-fe/features/ui/components/modal-root';
-import type { RootState } from 'pl-fe/store';
 
 const messages = defineMessages({
   subheading: { id: 'lists.subheading', defaultMessage: 'Your lists' },
   add: { id: 'lists.new.create', defaultMessage: 'Add list' },
-});
-
-// hack
-const getOrderedLists = createSelector([(state: RootState) => state.lists], lists => {
-  if (!lists) {
-    return lists;
-  }
-
-  return lists.toList().filter(item => !!item).sort((a, b) => (a as ListEntity).title.localeCompare((b as ListEntity).title)) as ImmutableList<ListEntity>;
 });
 
 interface ListAdderModalProps {
@@ -71,7 +61,7 @@ const ListAdderModal: React.FC<BaseModalProps & ListAdderModalProps> = ({ accoun
         <CardTitle title={intl.formatMessage(messages.subheading)} />
       </CardHeader>
       <div>
-        {listIds.map(ListId => <List key={ListId} listId={ListId} />)}
+        {listIds.map(listId => <List key={listId} listId={listId} />)}
       </div>
     </Modal>
   );

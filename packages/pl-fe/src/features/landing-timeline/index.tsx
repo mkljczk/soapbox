@@ -2,11 +2,13 @@ import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { fetchPublicTimeline } from 'pl-fe/actions/timelines';
-import { useCommunityStream } from 'pl-fe/api/hooks';
+import { useCommunityStream } from 'pl-fe/api/hooks/streaming/use-community-stream';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
-import { Column } from 'pl-fe/components/ui';
-import { useAppDispatch, useInstance, useTheme } from 'pl-fe/hooks';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
+import Column from 'pl-fe/components/ui/column';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 
 import AboutPage from '../about';
 import Timeline from '../ui/components/timeline';
@@ -27,9 +29,7 @@ const LandingTimeline = () => {
     dispatch(fetchPublicTimeline({ local: true }, true));
   };
 
-  const handleRefresh = () => {
-    return dispatch(fetchPublicTimeline({ local: true }));
-  };
+  const handleRefresh = () => dispatch(fetchPublicTimeline({ local: true }));
 
   useCommunityStream({ enabled: timelineEnabled });
 
@@ -48,7 +48,7 @@ const LandingTimeline = () => {
       {timelineEnabled ? (
         <PullToRefresh onRefresh={handleRefresh}>
           <Timeline
-            className='black:p-0 black:sm:p-4'
+            listClassName='black:p-0 black:sm:p-4 black:sm:pt-0'
             loadMoreClassName='black:sm:mx-4'
             scrollKey={`${timelineId}_timeline`}
             timelineId={timelineId}

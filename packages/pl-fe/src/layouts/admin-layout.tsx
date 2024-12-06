@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Layout } from 'pl-fe/components/ui';
+import Layout from 'pl-fe/components/ui/layout';
 import { LatestAccountsPanel } from 'pl-fe/features/ui/util/async-components';
 
 import LinkFooter from '../features/ui/components/link-footer';

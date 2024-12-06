@@ -4,17 +4,19 @@ import React from 'react';
 import Account from 'pl-fe/components/account';
 import StatusContent from 'pl-fe/components/status-content';
 import StatusReplyMentions from 'pl-fe/components/status-reply-mentions';
-import { Card, HStack, Stack } from 'pl-fe/components/ui';
+import Card from 'pl-fe/components/ui/card';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
 import PlaceholderCard from 'pl-fe/features/placeholder/components/placeholder-card';
 import PlaceholderMediaGallery from 'pl-fe/features/placeholder/components/placeholder-media-gallery';
 import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import { buildStatus } from '../util/pending-status-builder';
 
 import PollPreview from './poll-preview';
 
-import type { Status as StatusEntity } from 'pl-fe/normalizers';
+import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
 
 const shouldHaveCard = (pendingStatus: StatusEntity) => Boolean(pendingStatus.content.match(/https?:\/\/\S*/));
 
@@ -45,7 +47,7 @@ const PendingStatusMedia: React.FC<IPendingStatusMedia> = ({ status }) => {
 
 const PendingStatus: React.FC<IPendingStatus> = ({ idempotencyKey, className, muted, variant = 'rounded' }) => {
   const status = useAppSelector((state) => {
-    const pendingStatus = state.pending_statuses.get(idempotencyKey);
+    const pendingStatus = state.pending_statuses[idempotencyKey];
     return pendingStatus ? buildStatus(state, pendingStatus, idempotencyKey) : null;
   });
 

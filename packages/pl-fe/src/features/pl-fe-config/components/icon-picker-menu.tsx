@@ -1,48 +1,23 @@
 import clsx from 'clsx';
-import { supportsPassiveEvents } from 'detect-passive-events';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { Text } from 'pl-fe/components/ui';
+import Text from 'pl-fe/components/ui/text';
 
 const messages = defineMessages({
   emoji: { id: 'icon_button.label', defaultMessage: 'Select icon' },
 });
 
-const listenerOptions = supportsPassiveEvents ? { passive: true } : false;
-
 interface IIconPickerMenu {
   icons: Record<string, Array<string>>;
-  onClose: () => void;
   onPick: (icon: string) => void;
   style?: React.CSSProperties;
 }
 
-const IconPickerMenu: React.FC<IIconPickerMenu> = ({ icons, onClose, onPick, style }) => {
+const IconPickerMenu: React.FC<IIconPickerMenu> = ({ icons, onPick, style }) => {
   const intl = useIntl();
 
-  const node = useRef<HTMLDivElement | null>(null);
-
-  const handleDocumentClick = useCallback((e: MouseEvent | TouchEvent) => {
-    if (node.current && !node.current.contains(e.target as Node)) {
-      onClose();
-    }
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener('click', handleDocumentClick, false);
-    document.addEventListener('touchend', handleDocumentClick, listenerOptions);
-
-    return () => {
-      document.removeEventListener('click', handleDocumentClick, false);
-      document.removeEventListener('touchend', handleDocumentClick, listenerOptions as any);
-
-    };
-  }, []);
-
   const setRef = (c: HTMLDivElement) => {
-    node.current = c;
-
     if (!c) return;
 
     // Nice and dirty hack to display the icons
@@ -54,7 +29,6 @@ const IconPickerMenu: React.FC<IIconPickerMenu> = ({ icons, onClose, onPick, sty
   };
 
   const handleClick = (icon: string) => {
-    onClose();
     onPick(icon);
   };
 
@@ -69,7 +43,7 @@ const IconPickerMenu: React.FC<IIconPickerMenu> = ({ icons, onClose, onPick, sty
           title={name}
           onClick={() => handleClick(name)}
         >
-          <i className={clsx(icon, 'h-[1.375rem] w-[1.375rem] text-lg leading-[1.15]')} />
+          <i className={clsx(icon, 'size-[1.375rem] text-lg leading-[1.15]')} />
         </button>
       </li>
     );
@@ -79,16 +53,14 @@ const IconPickerMenu: React.FC<IIconPickerMenu> = ({ icons, onClose, onPick, sty
 
   return (
     <div
-      className='absolute z-[101] -my-0.5'
-      style={{ transform: 'translateX(calc(-1 * env(safe-area-inset-right)))', ...style }}
+      className='h-[270px] overflow-x-hidden overflow-y-scroll rounded bg-white p-1.5 text-gray-900 dark:bg-primary-900 dark:text-gray-100'
+      aria-label={title}
       ref={setRef}
     >
-      <div className='h-[270px] overflow-x-hidden overflow-y-scroll rounded bg-white p-1.5 text-gray-900 dark:bg-primary-900 dark:text-gray-100' aria-label={title}>
-        <Text className='px-1.5 py-1'><FormattedMessage id='icon_button.icons' defaultMessage='Icons' /></Text>
-        <ul className='grid grid-cols-8'>
-          {Object.values(icons).flat().map(icon => renderIcon(icon))}
-        </ul>
-      </div>
+      <Text className='px-1.5 py-1'><FormattedMessage id='icon_button.icons' defaultMessage='Icons' /></Text>
+      <ul className='grid grid-cols-8'>
+        {Object.values(icons).flat().map(icon => renderIcon(icon))}
+      </ul>
     </div>
   );
 };

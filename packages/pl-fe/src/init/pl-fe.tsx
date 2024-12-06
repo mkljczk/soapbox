@@ -1,5 +1,6 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { Provider } from 'react-redux';
 
 import { StatProvider } from 'pl-fe/contexts/stat-context';
@@ -25,17 +26,20 @@ store.dispatch(checkOnboardingStatus() as any);
 
 /** The root React node of the application. */
 const PlFe: React.FC = () => (
-  <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <StatProvider>
-        <PlFeHead>
-          <PlFeLoad>
-            <PlFeMount />
-          </PlFeLoad>
-        </PlFeHead>
-      </StatProvider>
-    </QueryClientProvider>
-  </Provider>
+  <>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <StatProvider>
+          <HelmetProvider>
+            <PlFeHead />
+            <PlFeLoad>
+              <PlFeMount />
+            </PlFeLoad>
+          </HelmetProvider>
+        </StatProvider>
+      </QueryClientProvider>
+    </Provider>
+  </>
 );
 
 export { PlFe as default };

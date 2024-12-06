@@ -1,12 +1,18 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Admin_CanonicalEmailBlock/} */
-const adminCanonicalEmailBlockSchema = z.object({
-  id: z.string(),
-  canonical_email_hash: z.string(),
+/**
+ * @category Admin schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Admin_CanonicalEmailBlock/}
+ */
+const adminCanonicalEmailBlockSchema = v.object({
+  id: v.string(),
+  canonical_email_hash: v.string(),
 });
 
-type AdminCanonicalEmailBlock = z.infer<typeof adminCanonicalEmailBlockSchema>;
+/**
+ * @category Admin entity types
+ */
+type AdminCanonicalEmailBlock = v.InferOutput<typeof adminCanonicalEmailBlockSchema>;
 
 export {
   adminCanonicalEmailBlockSchema,

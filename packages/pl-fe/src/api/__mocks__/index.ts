@@ -1,5 +1,4 @@
 // import MockAdapter from 'axios-mock-adapter';
-import LinkHeader from 'http-link-header';
 import { vi } from 'vitest';
 
 const api = await vi.importActual('../index') as Record<string, Function>;
@@ -15,19 +14,6 @@ const __clear = (): Function[] => mocks = [];
 
 const staticClient = api.staticClient;
 
-const getLinks = (response: Response): LinkHeader =>
-  new LinkHeader(response.headers?.get('link') || undefined);
-
-const getNextLink = (response: Response) => {
-  const nextLink = new LinkHeader(response.headers?.get('link') || undefined);
-  return nextLink.refs.find(link => link.rel === 'next')?.uri;
-};
-
-const getPrevLink = (response: Response) => {
-  const prevLink = new LinkHeader(response.headers?.get('link') || undefined);
-  return prevLink.refs.find(link => link.rel === 'prev')?.uri;
-};
-
 const baseClient = (...params: any[]) => {
   const axios = api.baseClient(...params);
   // setupMock(axios);
@@ -40,4 +26,4 @@ export default (...params: any[]) => {
   return axios;
 };
 
-export { __stub, __clear, staticClient, getLinks, getNextLink, getPrevLink, baseClient };
+export { __stub, __clear, staticClient, baseClient };

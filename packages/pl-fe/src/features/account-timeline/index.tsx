@@ -4,11 +4,16 @@ import { useHistory } from 'react-router-dom';
 
 import { fetchAccountByUsername } from 'pl-fe/actions/accounts';
 import { fetchAccountTimeline } from 'pl-fe/actions/timelines';
-import { useAccountLookup } from 'pl-fe/api/hooks';
+import { useAccountLookup } from 'pl-fe/api/hooks/accounts/use-account-lookup';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import StatusList from 'pl-fe/components/status-list';
-import { Card, CardBody, Spinner, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector, useFeatures, useSettings } from 'pl-fe/hooks';
+import Card, { CardBody } from 'pl-fe/components/ui/card';
+import Spinner from 'pl-fe/components/ui/spinner';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { makeGetStatusIds } from 'pl-fe/selectors';
 
 const getStatusIds = makeGetStatusIds();
@@ -34,10 +39,10 @@ const AccountTimeline: React.FC<IAccountTimeline> = ({ params, withReplies = fal
   const statusIds = useAppSelector(state => getStatusIds(state, { type: `account:${path}`, prefix: 'account_timeline' }));
   const featuredStatusIds = useAppSelector(state => getStatusIds(state, { type: `account:${account?.id}:with_replies:pinned`, prefix: 'account_timeline' }));
 
-  const isBlocked = useAppSelector(state => state.relationships.getIn([account?.id, 'blocked_by']) === true);
+  const isBlocked = account?.relationship?.blocked_by;
   const unavailable = isBlocked && !features.blockersVisible;
-  const isLoading = useAppSelector(state => state.timelines.get(`account:${path}`)?.isLoading === true);
-  const hasMore = useAppSelector(state => state.timelines.get(`account:${path}`)?.hasMore === true);
+  const isLoading = useAppSelector(state => state.timelines[`account:${path}`]?.isLoading === true);
+  const hasMore = useAppSelector(state => state.timelines[`account:${path}`]?.hasMore === true);
 
   const accountUsername = account?.username || params.username;
 

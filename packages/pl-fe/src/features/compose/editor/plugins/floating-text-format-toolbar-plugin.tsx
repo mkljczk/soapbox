@@ -39,8 +39,8 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { Icon } from 'pl-fe/components/ui';
-import { useInstance } from 'pl-fe/hooks';
+import Icon from 'pl-fe/components/ui/icon';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import { getDOMRangeRect } from '../utils/get-dom-range-rect';
 import { getSelectedNode } from '../utils/get-selected-node';
@@ -99,7 +99,7 @@ export const ToolbarButton: React.FC<IToolbarButton> = ({ active, icon, ...props
     type='button'
     {...props}
   >
-    <Icon className='h-5 w-5' src={icon} />
+    <Icon className='size-5' src={icon} />
   </button>
 );
 
@@ -190,10 +190,10 @@ const BlockTypeDropdown = ({ editor, anchorElem, blockType, icon }: {
         type='button'
       >
         <Icon src={icon} />
-        <Icon src={require('@tabler/icons/outline/chevron-down.svg')} className='-bottom-2 h-4 w-4' />
+        <Icon src={require('@tabler/icons/outline/chevron-down.svg')} className='-bottom-2 size-4' />
         {showDropDown && (
           <div
-            className='absolute left-0 top-9 z-10 flex h-[38px] gap-0.5 rounded-lg bg-white p-1 shadow-lg transition-[opacity] dark:bg-gray-900'
+            className='absolute left-0 top-9 z-10 flex h-[38px] gap-0.5 rounded-lg bg-white p-1 shadow-lg transition-opacity dark:bg-gray-900'
           >
             <ToolbarButton
               onClick={formatParagraph}
@@ -350,7 +350,7 @@ const TextFormatFloatingToolbar = ({
   return (
     <div
       ref={popupCharStylesEditorRef}
-      className='absolute left-0 top-0 z-10 flex h-[38px] gap-0.5 rounded-lg bg-white p-1 opacity-0 shadow-lg transition-[opacity] dark:bg-gray-900'
+      className='absolute left-0 top-0 z-10 flex h-[38px] gap-0.5 rounded-lg bg-white p-1 opacity-0 shadow-lg transition-opacity dark:bg-gray-900'
     >
       {editor.isEditable() && (
         <>

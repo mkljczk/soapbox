@@ -1,18 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
-import { openModal } from 'pl-fe/actions/modals';
 import { fetchStatus } from 'pl-fe/actions/statuses';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import StatusContent from 'pl-fe/components/status-content';
-import StatusMedia from 'pl-fe/components/status-media';
-import TranslateButton from 'pl-fe/components/translate-button';
-import { HStack, Icon, Stack, Text } from 'pl-fe/components/ui';
-import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
-import { useAppDispatch, useAppSelector, usePlFeConfig } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { makeGetStatus } from 'pl-fe/selectors';
-
-import type { Status as StatusEntity } from 'pl-fe/normalizers';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 type RouteParams = { statusId: string };
 
@@ -25,8 +25,9 @@ const EventInformation: React.FC<IEventInformation> = ({ params }) => {
   const getStatus = useCallback(makeGetStatus(), []);
   const intl = useIntl();
 
-  const status = useAppSelector(state => getStatus(state, { id: params.statusId })) as StatusEntity;
+  const status = useAppSelector(state => getStatus(state, { id: params.statusId }))!;
 
+  const { openModal } = useModalsStore();
   const { tileServer } = usePlFeConfig();
 
   const [isLoaded, setIsLoaded] = useState<boolean>(!!status);
@@ -42,9 +43,9 @@ const EventInformation: React.FC<IEventInformation> = ({ params }) => {
   const handleShowMap: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
     e.preventDefault();
 
-    dispatch(openModal('EVENT_MAP', {
+    openModal('EVENT_MAP', {
       statusId: status.id,
-    }));
+    });
   };
 
   const renderEventLocation = useCallback(() => {
@@ -175,22 +176,14 @@ const EventInformation: React.FC<IEventInformation> = ({ params }) => {
 
   return (
     <Stack className='mt-4 sm:p-2' space={2}>
-      {!!status.contentHtml.trim() && (
+      {!!status.content.trim() && (
         <Stack space={1}>
           <Text size='xl' weight='bold'>
             <FormattedMessage id='event.description' defaultMessage='Description' />
           </Text>
 
-          <StatusContent status={status} collapsable={false} translatable />
-
-          <TranslateButton status={status} />
+          <StatusContent status={status} translatable withMedia />
         </Stack>
-      )}
-
-      <StatusMedia status={status} />
-
-      {status.quote_id && (status.quote_visible ?? true) && (
-        <QuotedStatus statusId={status.quote_id} />
       )}
 
       {renderEventLocation()}

@@ -7,7 +7,7 @@ import { parseColorMatrix } from './tailwind/colors';
 
 import type { Config } from 'tailwindcss';
 
-const blackVariantPlugin = plugin(({ addVariant }) => addVariant('black', '.black &'));
+const blackVariantPlugin = plugin(({ addVariant }) => addVariant('black', '&:is(.dark.black *)'));
 const reducedMotionPlugin = plugin(({ addVariant }) => addVariant('no-reduce-motion', '.no-reduce-motion &'));
 
 const config: Config = {
@@ -77,6 +77,7 @@ const config: Config = {
         'sonar-scale-1': 'sonar-scale-1 3s 1.5s linear infinite',
         'enter': 'enter 200ms ease-out',
         'leave': 'leave 150ms ease-in forwards',
+        'text-overflow': 'text-overflow 8s linear infinite',
       },
       keyframes: {
         'sonar-scale-4': {
@@ -102,6 +103,11 @@ const config: Config = {
         leave: {
           from: { transform: 'scale(1)', opacity: '1' },
           to: { transform: 'scale(0.9)', opacity: '0' },
+        },
+        // https://stackoverflow.com/posts/78825869/revisions
+        'text-overflow': {
+          '10%, 90%': { transform: 'translate(0, 0)', left: '0%' },
+          '40%, 60%': { transform: 'translate(-100%, 0)', left: '100%' },
         },
       },
     },

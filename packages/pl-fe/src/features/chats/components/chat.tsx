@@ -3,8 +3,8 @@ import React, { MutableRefObject, useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { uploadMedia } from 'pl-fe/actions/media';
-import { Stack } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Stack from 'pl-fe/components/ui/stack';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useChatActions } from 'pl-fe/queries/chats';
 import toast from 'pl-fe/toast';
 
@@ -161,7 +161,7 @@ const Chat: React.FC<ChatInterface> = ({ chat, inputRef, className }) => {
   return (
     <Stack className={clsx('flex grow overflow-hidden', className)} onMouseOver={handleMouseOver}>
       <div className='flex h-full grow justify-center overflow-hidden'>
-        <ChatMessageList chat={chat} />
+        <ChatMessageList key={chat.id} chat={chat} />
       </div>
 
       <ChatComposer

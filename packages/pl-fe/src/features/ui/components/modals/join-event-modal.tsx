@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { joinEvent } from 'pl-fe/actions/events';
-import { closeModal } from 'pl-fe/actions/modals';
-import { FormGroup, Modal, Textarea } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Modal from 'pl-fe/components/ui/modal';
+import Textarea from 'pl-fe/components/ui/textarea';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
 import { BaseModalProps } from '../modal-root';
 
@@ -18,15 +19,15 @@ interface JoinEventModalProps {
   statusId: string;
 }
 
-const JoinEventModal: React.FC<BaseModalProps & JoinEventModalProps> = ({ statusId }) => {
+const JoinEventModal: React.FC<BaseModalProps & JoinEventModalProps> = ({ onClose, statusId }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
   const [participationMessage, setParticipationMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onClose = () => {
-    dispatch(closeModal('JOIN_EVENT'));
+  const handleClose = () => {
+    onClose('JOIN_EVENT');
   };
 
   const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = e => {
@@ -36,7 +37,7 @@ const JoinEventModal: React.FC<BaseModalProps & JoinEventModalProps> = ({ status
   const handleSubmit = () => {
     setIsSubmitting(true);
     dispatch(joinEvent(statusId, participationMessage)).then(() => {
-      onClose();
+      handleClose();
     }).catch(() => {});
   };
 
@@ -49,7 +50,7 @@ const JoinEventModal: React.FC<BaseModalProps & JoinEventModalProps> = ({ status
   return (
     <Modal
       title={<FormattedMessage id='join_event.title' defaultMessage='Join event' />}
-      onClose={onClose}
+      onClose={handleClose}
       confirmationAction={handleSubmit}
       confirmationText={intl.formatMessage(messages.join)}
       confirmationDisabled={isSubmitting}

@@ -6,17 +6,19 @@ import {
   unblockAccount,
   muteAccount,
   unmuteAccount,
-  authorizeFollowRequest,
-  rejectFollowRequest,
   biteAccount,
 } from 'pl-fe/actions/accounts';
-import { openModal } from 'pl-fe/actions/modals';
-import { useFollow } from 'pl-fe/api/hooks';
-import { Button, HStack } from 'pl-fe/components/ui';
-import { useAppDispatch, useFeatures, useLoggedIn } from 'pl-fe/hooks';
+import { useFollow } from 'pl-fe/api/hooks/accounts/use-follow';
+import Button from 'pl-fe/components/ui/button';
+import HStack from 'pl-fe/components/ui/hstack';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
+import { useAcceptFollowRequestMutation, useRejectFollowRequestMutation } from 'pl-fe/queries/accounts/use-follow-requests';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
   block: { id: 'account.block', defaultMessage: 'Block @{name}' },
@@ -56,8 +58,12 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
   const features = useFeatures();
   const intl = useIntl();
 
+  const { openModal } = useModalsStore();
   const { isLoggedIn, me } = useLoggedIn();
   const { follow, unfollow } = useFollow();
+
+  const { mutate: authorizeFollowRequest } = useAcceptFollowRequestMutation(account.id);
+  const { mutate: rejectFollowRequest } = useRejectFollowRequestMutation(account.id);
 
   const handleFollow = () => {
     if (account.relationship?.following || account.relationship?.requested) {
@@ -84,11 +90,11 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
   };
 
   const handleAuthorize = () => {
-    dispatch(authorizeFollowRequest(account.id));
+    authorizeFollowRequest();
   };
 
   const handleReject = () => {
-    dispatch(rejectFollowRequest(account.id));
+    rejectFollowRequest();
   };
 
   const handleBite = () => {
@@ -98,11 +104,11 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
   };
 
   const handleRemoteFollow = () => {
-    dispatch(openModal('UNAUTHORIZED', {
+    openModal('UNAUTHORIZED', {
       action: 'FOLLOW',
       account: account.id,
       ap_id: account.url,
-    }));
+    });
   };
 
   /** Handles actionType='muting' */

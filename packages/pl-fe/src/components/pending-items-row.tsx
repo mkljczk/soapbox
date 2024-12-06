@@ -3,7 +3,9 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { HStack, Icon, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Text from 'pl-fe/components/ui/text';
 
 interface IPendingItemsRow {
   /** Path to navigate the user when clicked. */
@@ -43,7 +45,7 @@ const PendingItemsRow: React.FC<IPendingItemsRow> = ({ to, count, size = 'md' })
 
       <Icon
         src={require('@tabler/icons/outline/chevron-right.svg')}
-        className='h-5 w-5 text-gray-600 transition-colors group-hover:text-gray-700 dark:text-gray-600 dark:group-hover:text-gray-500'
+        className='size-5 text-gray-600 transition-colors group-hover:text-gray-700 dark:text-gray-600 dark:group-hover:text-gray-500'
       />
     </HStack>
   </Link>

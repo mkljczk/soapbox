@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Stack } from 'pl-fe/components/ui';
-import { usePlFeConfig } from 'pl-fe/hooks';
+import Stack from 'pl-fe/components/ui/stack';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
 import CryptoAddress from './crypto-address';
 
@@ -11,7 +11,7 @@ interface ISiteWallet {
 
 const SiteWallet: React.FC<ISiteWallet> = ({ limit }): JSX.Element => {
   const { cryptoAddresses } = usePlFeConfig();
-  const addresses = typeof limit === 'number' ? cryptoAddresses.take(limit) : cryptoAddresses;
+  const addresses = typeof limit === 'number' ? cryptoAddresses.slice(0, limit) : cryptoAddresses;
 
   return (
     <Stack space={4}>

@@ -2,18 +2,26 @@ import React, { useRef } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
-import HoverRefWrapper from 'pl-fe/components/hover-ref-wrapper';
+import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
+import Avatar from 'pl-fe/components/ui/avatar';
+import Emoji from 'pl-fe/components/ui/emoji';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import IconButton from 'pl-fe/components/ui/icon-button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
+import Emojify from 'pl-fe/features/emoji/emojify';
 import ActionButton from 'pl-fe/features/ui/components/action-button';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { getAcct } from 'pl-fe/utils/accounts';
 import { displayFqn } from 'pl-fe/utils/state';
 
 import Badge from './badge';
+import { ParsedContent } from './parsed-content';
 import RelativeTimestamp from './relative-timestamp';
-import { Avatar, Emoji, HStack, Icon, IconButton, Stack, Text } from './ui';
 
-import type { Account as AccountSchema } from 'pl-fe/normalizers';
+import type { Account as AccountSchema } from 'pl-fe/normalizers/account';
 import type { StatusApprovalStatus } from 'pl-fe/normalizers/status';
 
 interface IInstanceFavicon {
@@ -47,7 +55,7 @@ const InstanceFavicon: React.FC<IInstanceFavicon> = ({ account, disabled }) => {
 
   return (
     <button
-      className='h-4 w-4 flex-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2'
+      className='size-4 flex-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2'
       onClick={handleClick}
       disabled={disabled}
     >
@@ -77,11 +85,10 @@ interface IAccount {
   /** Override other actions for specificity like mute/unmute. */
   actionType?: 'muting' | 'blocking' | 'follow_request' | 'biting';
   avatarSize?: number;
-  hidden?: boolean;
   hideActions?: boolean;
   id?: string;
-  onActionClick?: (account: any) => void;
-  showProfileHoverCard?: boolean;
+  onActionClick?: (account: AccountSchema) => void;
+  showAccountHoverCard?: boolean;
   timestamp?: string;
   timestampUrl?: string;
   futureTimestamp?: boolean;
@@ -107,10 +114,9 @@ const Account = ({
   actionTitle,
   actionAlignment = 'center',
   avatarSize = 42,
-  hidden = false,
   hideActions = false,
   onActionClick,
-  showProfileHoverCard = true,
+  showAccountHoverCard = true,
   timestamp,
   timestampUrl,
   futureTimestamp = false,
@@ -160,7 +166,7 @@ const Account = ({
 
     if (!withRelationship) return null;
 
-    if (account.id !== me) {
+    if (me && account.id !== me) {
       return <ActionButton account={account} actionType={actionType} />;
     }
 
@@ -171,15 +177,6 @@ const Account = ({
 
   if (!account) {
     return null;
-  }
-
-  if (hidden) {
-    return (
-      <>
-        {account.display_name}
-        {account.username}
-      </>
-    );
   }
 
   if (withDate) timestamp = account.created_at;
@@ -195,11 +192,11 @@ const Account = ({
     <div data-testid='account' className='group block w-full shrink-0' ref={overflowRef}>
       <HStack alignItems={actionAlignment} space={3} justifyContent='between'>
         <HStack alignItems='center' space={3} className='overflow-hidden'>
-          <div className='rounded-full'>
+          <div className='rounded-lg'>
             <Avatar src={account.avatar} size={avatarSize} alt={account.avatar_description} />
             {emoji && (
               <Emoji
-                className='absolute -right-1.5 bottom-0 h-5 w-5'
+                className='!absolute -right-1.5 bottom-0 size-5'
                 emoji={emoji}
                 src={emojiUrl}
               />
@@ -212,8 +209,9 @@ const Account = ({
                 size='sm'
                 weight='semibold'
                 truncate
-                dangerouslySetInnerHTML={{ __html: account.display_name_html }}
-              />
+              >
+                <Emojify text={account.display_name} emojis={account.emojis} />
+              </Text>
 
               {account.verified && <VerificationBadge />}
 
@@ -225,7 +223,7 @@ const Account = ({
                 <Text theme='muted' size='sm' direction='ltr' truncate>@{username}</Text>
 
                 {account.favicon && (
-                  <InstanceFavicon account={account} disabled={!withLinkToProfile} />
+                  <InstanceFavicon account={account} disabled />
                 )}
 
                 {items}
@@ -247,14 +245,14 @@ const Account = ({
         <HStack alignItems={withAccountNote || note ? 'top' : 'center'} space={3} className='overflow-hidden'>
           {withAvatar && (
             <ProfilePopper
-              condition={showProfileHoverCard}
-              wrapper={(children) => <HoverRefWrapper className='relative' accountId={account.id} inline>{children}</HoverRefWrapper>}
+              condition={showAccountHoverCard}
+              wrapper={(children) => <HoverAccountWrapper className='relative' accountId={account.id} element='span'>{children}</HoverAccountWrapper>}
             >
-              <LinkEl className='rounded-full' {...linkProps}>
+              <LinkEl className='rounded-lg' {...linkProps}>
                 <Avatar src={account.avatar} size={avatarSize} alt={account.avatar_description} />
                 {emoji && (
                   <Emoji
-                    className='absolute -right-1.5 bottom-0 h-5 w-5'
+                    className='!absolute -right-1.5 bottom-0 size-5'
                     emoji={emoji}
                     src={emojiUrl}
                   />
@@ -265,8 +263,8 @@ const Account = ({
 
           <div className='grow overflow-hidden'>
             <ProfilePopper
-              condition={showProfileHoverCard}
-              wrapper={(children) => <HoverRefWrapper accountId={account.id} inline>{children}</HoverRefWrapper>}
+              condition={showAccountHoverCard}
+              wrapper={(children) => <HoverAccountWrapper accountId={account.id} element='span'>{children}</HoverAccountWrapper>}
             >
               <LinkEl {...linkProps}>
                 <HStack space={1} alignItems='center' grow>
@@ -274,8 +272,9 @@ const Account = ({
                     size='sm'
                     weight='semibold'
                     truncate
-                    dangerouslySetInnerHTML={{ __html: account.display_name_html }}
-                  />
+                  >
+                    <Emojify text={account.display_name} emojis={account.emojis} />
+                  </Text>
 
                   {account.verified && <VerificationBadge />}
 
@@ -322,7 +321,7 @@ const Account = ({
                   <>
                     <Text tag='span' theme='muted' size='sm'>&middot;</Text>
 
-                    <Icon className='h-5 w-5 text-gray-700 dark:text-gray-600' src={require('@tabler/icons/outline/pencil.svg')} />
+                    <Icon className='size-4 text-gray-700 dark:text-gray-600' src={require('@tabler/icons/outline/pencil.svg')} />
                   </>
                 ) : null}
 
@@ -348,9 +347,10 @@ const Account = ({
                 <Text
                   truncate
                   size='sm'
-                  dangerouslySetInnerHTML={{ __html: account.note_emojified }}
-                  className='mr-2 rtl:ml-2 rtl:mr-0 [&_br]:hidden [&_p:first-child]:inline [&_p:first-child]:truncate [&_p]:hidden'
-                />
+                  className='line-clamp-2 inline text-ellipsis [&_br]:hidden [&_p:first-child]:inline [&_p:first-child]:truncate [&_p]:hidden'
+                >
+                  <ParsedContent html={account.note} emojis={account.emojis} />
+                </Text>
               )}
             </Stack>
           </div>

@@ -23,7 +23,8 @@ import { createPortal } from 'react-dom';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { uploadFile } from 'pl-fe/actions/compose';
-import { useAppDispatch, useInstance } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import { $createImageNode } from '../nodes/image-node';
 import { setFloatingElemPosition } from '../utils/set-floating-elem-position';
@@ -36,7 +37,7 @@ const messages = defineMessages({
 });
 
 interface IUploadButton {
-  onSelectFile: (src: string) =>  void;
+  onSelectFile: (src: string) => void;
 }
 
 const UploadButton: React.FC<IUploadButton> = ({ onSelectFile }) => {
@@ -197,7 +198,7 @@ const BlockTypeFloatingToolbar = ({
   return (
     <div
       ref={popupCharStylesEditorRef}
-      className='absolute left-0 top-0 z-10 flex h-[38px] gap-0.5 rounded-lg bg-white p-1 opacity-0 shadow-lg transition-[opacity] dark:bg-gray-900'
+      className='absolute left-0 top-0 z-10 flex h-[38px] gap-0.5 rounded-lg bg-white p-1 opacity-0 shadow-lg transition-opacity dark:bg-gray-900'
     >
       {editor.isEditable() && (
         <>

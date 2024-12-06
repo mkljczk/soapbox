@@ -3,8 +3,9 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchDraftStatuses } from 'pl-fe/actions/draft-statuses';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column } from 'pl-fe/components/ui';
-import { useAppSelector, useAppDispatch } from 'pl-fe/hooks';
+import Column from 'pl-fe/components/ui/column';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import DraftStatus from './components/draft-status';
 
@@ -27,11 +28,10 @@ const DraftStatuses = () => {
   return (
     <Column label={intl.formatMessage(messages.heading)}>
       <ScrollableList
-        scrollKey='draft_statuses'
         emptyMessage={emptyMessage}
         listClassName='divide-y divide-solid divide-gray-200 dark:divide-gray-800'
       >
-        {drafts.toOrderedSet().reverse().map((draft) => <DraftStatus key={draft.draft_id} draftStatus={draft} />)}
+        {Object.values(drafts).toReversed().map((draft) => <DraftStatus key={draft.draft_id} draftStatus={draft} />)}
       </ScrollableList>
     </Column>
   );

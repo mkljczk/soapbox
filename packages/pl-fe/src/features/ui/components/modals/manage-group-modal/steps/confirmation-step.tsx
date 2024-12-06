@@ -1,11 +1,17 @@
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { Avatar, Divider, HStack, Stack, Text, Button } from 'pl-fe/components/ui';
+import { ParsedContent } from 'pl-fe/components/parsed-content';
+import Avatar from 'pl-fe/components/ui/avatar';
+import Button from 'pl-fe/components/ui/button';
+import Divider from 'pl-fe/components/ui/divider';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import toast from 'pl-fe/toast';
 import copy from 'pl-fe/utils/copy';
 
-import type { Group } from 'pl-fe/normalizers';
+import type { Group } from 'pl-fe/normalizers/group';
 
 interface IConfirmationStep {
   group: Group | null;
@@ -42,12 +48,12 @@ const ConfirmationStep: React.FC<IConfirmationStep> = ({ group }) => {
       <Stack space={3}>
         <Stack>
           <label
-            className='dark:sm:shadow-inset relative h-24 w-full cursor-pointer overflow-hidden rounded-lg bg-primary-100 text-primary-500 sm:h-36 sm:shadow dark:bg-gray-800 dark:text-accent-blue'
+            className='dark:sm:shadow-inset relative h-24 w-full cursor-pointer overflow-hidden rounded-lg bg-primary-100 text-primary-500 dark:bg-gray-800 dark:text-accent-blue sm:h-36 sm:shadow'
           >
-            {group.header && <img className='h-full w-full object-cover' src={group.header} alt={group.header_description} />}
+            {group.header && <img className='size-full object-cover' src={group.header} alt={group.header_description} />}
           </label>
 
-          <label className='mx-auto -mt-10 cursor-pointer rounded-full bg-primary-500 ring-2 ring-white dark:ring-primary-900'>
+          <label className='z-[1] mx-auto -mt-10 cursor-pointer rounded-lg bg-primary-500 ring-2 ring-white dark:ring-primary-900'>
             {group.avatar && <Avatar src={group.avatar} alt={group.avatar_description} size={80} />}
           </label>
         </Stack>
@@ -57,8 +63,9 @@ const ConfirmationStep: React.FC<IConfirmationStep> = ({ group }) => {
           <Text
             size='md'
             className='mx-auto max-w-sm [&_a]:text-primary-600 [&_a]:hover:underline [&_a]:dark:text-accent-blue'
-            dangerouslySetInnerHTML={{ __html: group.note_emojified }}
-          />
+          >
+            <ParsedContent html={group.note} emojis={group.emojis} />
+          </Text>
         </Stack>
       </Stack>
 
@@ -119,7 +126,7 @@ interface IInfoListNumber {
 }
 
 const InfoListNumber: React.FC<IInfoListNumber> = ({ number }) => (
-  <div className='flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-gray-200 dark:border-gray-800'>
+  <div className='flex size-7 shrink-0 items-center justify-center rounded-full border border-gray-200 dark:border-gray-800'>
     <Text theme='primary' size='sm' weight='bold'>{number}</Text>
   </div>
 );

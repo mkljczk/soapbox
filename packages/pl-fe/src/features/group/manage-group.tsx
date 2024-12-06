@@ -3,13 +3,17 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { openModal } from 'pl-fe/actions/modals';
-import { useDeleteGroup, useGroup } from 'pl-fe/api/hooks';
+import { useDeleteGroup } from 'pl-fe/api/hooks/groups/use-delete-group';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import List, { ListItem } from 'pl-fe/components/list';
-import { CardBody, CardHeader, CardTitle, Column, Spinner, Text } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import { CardBody, CardHeader, CardTitle } from 'pl-fe/components/ui/card';
+import Column from 'pl-fe/components/ui/column';
+import Spinner from 'pl-fe/components/ui/spinner';
+import Text from 'pl-fe/components/ui/text';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
+import Emojify from '../emoji/emojify';
 import ColumnForbidden from '../ui/components/column-forbidden';
 
 type RouteParams = { groupId: string };
@@ -35,7 +39,7 @@ interface IManageGroup {
 const ManageGroup: React.FC<IManageGroup> = ({ params }) => {
   const { groupId: id } = params;
 
-  const dispatch = useAppDispatch();
+  const { openModal } = useModalsStore();
   const history = useHistory();
   const intl = useIntl();
 
@@ -58,7 +62,7 @@ const ManageGroup: React.FC<IManageGroup> = ({ params }) => {
   }
 
   const onDeleteGroup = () =>
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.deleteHeading),
       message: intl.formatMessage(messages.deleteMessage),
       confirm: intl.formatMessage(messages.deleteConfirm),
@@ -70,7 +74,7 @@ const ManageGroup: React.FC<IManageGroup> = ({ params }) => {
           },
         });
       },
-    }));
+    });
 
   return (
     <Column label={intl.formatMessage(messages.heading)} backHref={`/groups/${group.id}`}>
@@ -83,7 +87,7 @@ const ManageGroup: React.FC<IManageGroup> = ({ params }) => {
 
             <List>
               <ListItem label={intl.formatMessage(messages.editGroup)} to={`/groups/${group.id}/manage/edit`}>
-                <span dangerouslySetInnerHTML={{ __html: group.display_name_html }} />
+                <span><Emojify text={group.display_name} emojis={group.emojis} /></span>
               </ListItem>
             </List>
           </>

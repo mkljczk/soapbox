@@ -2,8 +2,10 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import Icon from 'pl-fe/components/icon';
-import { HStack, Stack, Text } from 'pl-fe/components/ui';
-import { useInstance } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import type { RemoteInstance } from 'pl-fe/selectors';
 
@@ -19,7 +21,7 @@ interface IRestriction {
 
 const Restriction: React.FC<IRestriction> = ({ icon, children }) => (
   <HStack space={3}>
-    <Icon className='h-5 w-5 flex-none' src={icon} />
+    <Icon className='size-5 flex-none' src={icon} />
 
     <Text theme='muted'>
       {children}

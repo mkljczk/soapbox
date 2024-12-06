@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { closeModal } from 'pl-fe/actions/modals';
-import { useDomains } from 'pl-fe/api/hooks/admin';
-import { Form, FormGroup, HStack, Input, Modal, Stack, Text, Toggle } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Form from 'pl-fe/components/ui/form';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import HStack from 'pl-fe/components/ui/hstack';
+import Input from 'pl-fe/components/ui/input';
+import Modal from 'pl-fe/components/ui/modal';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Toggle from 'pl-fe/components/ui/toggle';
+import { useDomains } from 'pl-fe/queries/admin/use-domains';
 import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';
-import type { Domain } from 'pl-fe/schemas';
+import type { AdminDomain } from 'pl-api';
 
 const messages = defineMessages({
   save: { id: 'admin.edit_domain.save', defaultMessage: 'Save' },
@@ -22,12 +27,11 @@ interface EditDomainModalProps {
 }
 
 const EditDomainModal: React.FC<BaseModalProps & EditDomainModalProps> = ({ onClose, domainId }) => {
-  const dispatch = useAppDispatch();
   const intl = useIntl();
 
   const { data: domains, createDomain, isCreating, updateDomain, isUpdating } = useDomains();
 
-  const [domain] = useState<Domain | null>(domainId ? domains!.find(({ id }) => domainId === id)! : null);
+  const [domain] = useState<AdminDomain | null>(domainId ? domains!.find(({ id }) => domainId === id)! : null);
   const [domainName, setDomainName] = useState(domain?.domain || '');
   const [isPublic, setPublic] = useState(domain?.public || false);
 
@@ -43,7 +47,7 @@ const EditDomainModal: React.FC<BaseModalProps & EditDomainModalProps> = ({ onCl
       }, {
         onSuccess: () => {
           toast.success(messages.domainUpdateSuccess);
-          dispatch(closeModal('EDIT_DOMAIN'));
+          onClose('EDIT_DOMAIN');
         },
       });
     } else {
@@ -53,7 +57,7 @@ const EditDomainModal: React.FC<BaseModalProps & EditDomainModalProps> = ({ onCl
       }, {
         onSuccess: () => {
           toast.success(messages.domainCreateSuccess);
-          dispatch(closeModal('EDIT_DOMAIN'));
+          onClose('EDIT_DOMAIN');
         },
       });
     }

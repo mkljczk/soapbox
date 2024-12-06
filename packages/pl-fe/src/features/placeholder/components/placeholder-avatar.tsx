@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React from 'react';
 
-import { Stack } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
 
 interface IPlaceholderAvatar {
   size: number;
@@ -28,7 +28,7 @@ const PlaceholderAvatar: React.FC<IPlaceholderAvatar> = ({ size, withText = fals
       className={clsx('animate-pulse text-center', className)}
     >
       <div
-        className='mx-auto block rounded-full bg-primary-50 dark:bg-primary-800'
+        className='mx-auto block rounded-lg bg-primary-50 dark:bg-primary-800'
         style={style}
       />
 

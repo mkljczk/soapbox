@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import { HStack, Stack, Slider } from 'pl-fe/components/ui';
-import { usePrevious } from 'pl-fe/hooks';
+import HStack from 'pl-fe/components/ui/hstack';
+import Slider from 'pl-fe/components/ui/slider';
+import Stack from 'pl-fe/components/ui/stack';
+import { usePrevious } from 'pl-fe/hooks/use-previous';
 import { compareId } from 'pl-fe/utils/comparators';
 import { hueShift } from 'pl-fe/utils/theme';
 
@@ -15,10 +17,11 @@ interface IPalette {
   palette: ColorGroup;
   onChange: (palette: ColorGroup) => void;
   resetKey?: string;
+  allowTintChange?: boolean;
 }
 
 /** Editable color palette. */
-const Palette: React.FC<IPalette> = ({ palette, onChange, resetKey }) => {
+const Palette: React.FC<IPalette> = ({ palette, onChange, resetKey, allowTintChange = true }) => {
   const tints = Object.keys(palette).sort(compareId);
 
   const [hue, setHue] = useState(0);
@@ -50,7 +53,7 @@ const Palette: React.FC<IPalette> = ({ palette, onChange, resetKey }) => {
     <Stack className='w-full'>
       <HStack className='h-8 overflow-hidden rounded-md'>
         {tints.map(tint => (
-          <Color color={palette[tint]} onChange={handleChange(tint)} />
+          <Color color={palette[tint]} onChange={allowTintChange ? handleChange(tint) : undefined} />
         ))}
       </HStack>
 

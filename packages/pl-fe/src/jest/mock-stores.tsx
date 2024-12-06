@@ -1,25 +1,9 @@
 import { instanceSchema } from 'pl-api';
-
-import alexJson from 'pl-fe/__fixtures__/pleroma-account.json';
-
-import { buildAccount } from './factory';
+import * as v from 'valibot';
 
 /** Store with registrations open. */
-const storeOpen = { instance: instanceSchema.parse({ registrations: true }) };
-
-/** Store with registrations closed. */
-const storeClosed = { instance: instanceSchema.parse({ registrations: false }) };
-
-/** Store with a logged-in user. */
-const storeLoggedIn = {
-  me: alexJson.id,
-  accounts: {
-    [alexJson.id]: buildAccount(alexJson as any),
-  },
-};
+const storeOpen = { instance: v.parse(instanceSchema, { registrations: true }) };
 
 export {
   storeOpen,
-  storeClosed,
-  storeLoggedIn,
 };

@@ -8,7 +8,7 @@ const copy = (text: string, onSuccess?: () => void) => {
   } else {
     const textarea = document.createElement('textarea');
 
-    textarea.textContent  = text;
+    textarea.textContent = text;
     textarea.style.position = 'fixed';
 
     document.body.appendChild(textarea);

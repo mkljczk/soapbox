@@ -1,14 +1,15 @@
+import { instanceSchema } from 'pl-api';
 import React from 'react';
+import * as v from 'valibot';
 
 import { render, screen } from 'pl-fe/jest/test-helpers';
-import { instanceSchema } from 'pl-fe/schemas';
 
 import LoginPage from './login-page';
 
 describe('<LoginPage />', () => {
   it('renders correctly on load', () => {
     const store = {
-      instance: instanceSchema.parse({
+      instance: v.parse(instanceSchema, {
         version: '2.7.2 (compatible; Pleroma 2.3.0)',
       }),
     };

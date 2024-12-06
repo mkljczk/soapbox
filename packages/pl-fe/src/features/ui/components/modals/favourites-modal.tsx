@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { fetchFavourites, expandFavourites } from 'pl-fe/actions/interactions';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Modal, Spinner } from 'pl-fe/components/ui';
+import Modal from 'pl-fe/components/ui/modal';
+import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import { useStatusFavourites } from 'pl-fe/queries/statuses/use-status-interactions';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -14,27 +14,12 @@ interface FavouritesModalProps {
 }
 
 const FavouritesModal: React.FC<BaseModalProps & FavouritesModalProps> = ({ onClose, statusId }) => {
-  const dispatch = useAppDispatch();
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  const accountIds = useAppSelector((state) => state.user_lists.favourited_by.get(statusId)?.items);
-  const next = useAppSelector((state) => state.user_lists.favourited_by.get(statusId)?.next);
-
-  const fetchData = () => {
-    dispatch(fetchFavourites(statusId));
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { data: accountIds, isLoading, hasNextPage, fetchNextPage } = useStatusFavourites(statusId);
 
   const onClickClose = () => {
     onClose('FAVOURITES');
-  };
-
-  const handleLoadMore = () => {
-    if (next) {
-      dispatch(expandFavourites(statusId, next!));
-    }
   };
 
   let body;
@@ -46,14 +31,15 @@ const FavouritesModal: React.FC<BaseModalProps & FavouritesModalProps> = ({ onCl
 
     body = (
       <ScrollableList
-        scrollKey='favourites'
         emptyMessage={emptyMessage}
         listClassName='max-w-full'
         itemClassName='pb-3'
-        style={{ height: '80vh' }}
-        useWindowScroll={false}
-        onLoadMore={handleLoadMore}
-        hasMore={!!next}
+        style={{ height: 'calc(80vh - 88px)' }}
+        hasMore={hasNextPage}
+        isLoading={typeof isLoading === 'boolean' ? isLoading : true}
+        onLoadMore={() => fetchNextPage({ cancelRefetch: false })}
+        estimatedSize={42}
+        parentRef={modalRef}
       >
         {accountIds.map(id =>
           <AccountContainer key={id} id={id} />,
@@ -66,6 +52,7 @@ const FavouritesModal: React.FC<BaseModalProps & FavouritesModalProps> = ({ onCl
     <Modal
       title={<FormattedMessage id='column.favourites' defaultMessage='Likes' />}
       onClose={onClickClose}
+      ref={modalRef}
     >
       {body}
     </Modal>

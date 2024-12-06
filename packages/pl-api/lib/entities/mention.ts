@@ -1,19 +1,28 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Status/#Mention} */
-const mentionSchema = z.object({
-  id: z.string(),
-  username: z.string().catch(''),
-  url: z.string().url().catch(''),
-  acct: z.string(),
-}).transform((mention) => {
-  if (!mention.username) {
-    mention.username = mention.acct.split('@')[0];
-  }
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Status/#Mention}
+ */
+const mentionSchema = v.pipe(
+  v.object({
+    id: v.string(),
+    username: v.fallback(v.string(), ''),
+    url: v.fallback(v.pipe(v.string(), v.url()), ''),
+    acct: v.string(),
+  }),
+  v.transform((mention) => {
+    if (!mention.username) {
+      mention.username = mention.acct.split('@')[0];
+    }
 
-  return mention;
-});
+    return mention;
+  }),
+);
 
-type Mention = z.infer<typeof mentionSchema>;
+/**
+ * @category Entity types
+ */
+type Mention = v.InferOutput<typeof mentionSchema>;
 
 export { mentionSchema, type Mention };

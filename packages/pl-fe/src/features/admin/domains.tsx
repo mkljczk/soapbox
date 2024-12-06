@@ -1,17 +1,20 @@
 import React, { useEffect } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { openModal } from 'pl-fe/actions/modals';
-import { useDomains } from 'pl-fe/api/hooks/admin';
 import { dateFormatOptions } from 'pl-fe/components/relative-timestamp';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Button, Column, HStack, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useDomains } from 'pl-fe/queries/admin/use-domains';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
 import Indicator from '../developers/components/indicator';
 
-import type { Domain as DomainEntity } from 'pl-fe/schemas';
+import type { AdminDomain as DomainEntity } from 'pl-api';
 
 const messages = defineMessages({
   heading: { id: 'column.admin.domains', defaultMessage: 'Domains' },
@@ -28,16 +31,16 @@ interface IDomain {
 
 const Domain: React.FC<IDomain> = ({ domain }) => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
 
+  const { openModal } = useModalsStore();
   const { deleteDomain } = useDomains();
 
   const handleEditDomain = (domain: DomainEntity) => () => {
-    dispatch(openModal('EDIT_DOMAIN', { domainId: domain.id }));
+    openModal('EDIT_DOMAIN', { domainId: domain.id });
   };
 
   const handleDeleteDomain = () => () => {
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.deleteHeading),
       message: intl.formatMessage(messages.deleteMessage),
       confirm: intl.formatMessage(messages.deleteConfirm),
@@ -48,7 +51,7 @@ const Domain: React.FC<IDomain> = ({ domain }) => {
           },
         });
       },
-    }));
+    });
   };
 
   const domainState = domain.last_checked_at ? (domain.resolves ? 'active' : 'error') : 'pending';
@@ -101,12 +104,12 @@ const Domain: React.FC<IDomain> = ({ domain }) => {
 
 const Domains: React.FC = () => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
 
+  const { openModal } = useModalsStore();
   const { data: domains, isFetching, refetch } = useDomains();
 
   const handleCreateDomain = () => {
-    dispatch(openModal('EDIT_DOMAIN'));
+    openModal('EDIT_DOMAIN');
   };
 
   useEffect(() => {
@@ -129,7 +132,6 @@ const Domains: React.FC = () => {
         </Button>
         {domains && (
           <ScrollableList
-            scrollKey='domains'
             emptyMessage={emptyMessage}
             itemClassName='py-3 first:pt-0 last:pb-0'
             isLoading={isFetching}

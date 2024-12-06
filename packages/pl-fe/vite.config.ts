@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
 import react from '@vitejs/plugin-react';
-import { visualizer } from 'rollup-plugin-visualizer';
+import { bundleStats } from 'rollup-plugin-bundle-stats';
 import { defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
 import compileTime from 'vite-plugin-compile-time';
@@ -46,13 +46,7 @@ const config = defineConfig(({ command }) => ({
         },
       },
     }),
-    react({
-      // Use React plugin in all *.jsx and *.tsx files
-      include: '**/*.{jsx,tsx}',
-      babel: {
-        configFile: './babel.config.cjs',
-      },
-    }),
+    react(),
     VitePWA({
       injectRegister: null,
       strategies: 'injectManifest',
@@ -68,14 +62,77 @@ const config = defineConfig(({ command }) => ({
         name: 'pl-fe',
         short_name: 'pl-fe',
         description: 'Web-based federated social media client, a fork of Soapbox',
+        icons: [
+          {
+            src: '/instance/images/logo.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
+          },
+        ],
+        display: 'standalone',
+        display_override: [
+          'window-controls-overlay',
+        ],
+        theme_color: '#d80482',
+        categories: ['social'],
+        share_target: {
+          params: {
+            title: 'title',
+            text: 'text',
+            url: 'url',
+          },
+          action: 'share',
+          method: 'GET',
+        },
+        shortcuts: [
+          {
+            name: 'Search',
+            url: '/search',
+            icons: [
+              {
+                src: '/instance/images/shortcuts/search.png',
+                sizes: '192x192',
+                type: 'image/png',
+              },
+            ],
+          },
+          {
+            name: 'Notifications',
+            url: '/notifications',
+            icons: [
+              {
+                src: '/instance/images/shortcuts/notifications.png',
+                sizes: '192x192',
+                type: 'image/png',
+              },
+            ],
+          },
+          {
+            name: 'Chats',
+            url: '/chats',
+            icons: [
+              {
+                src: '/instance/images/shortcuts/chats.png',
+                sizes: '192x192',
+                type: 'image/png',
+              },
+            ],
+          },
+        ],
+        start_url: '/',
+        id: '/',
       },
       srcDir: 'src/service-worker',
       filename: 'sw.ts',
     }),
     viteStaticCopy({
       targets: [{
-        src: './node_modules/twemoji/assets/svg/*',
+        src: './node_modules/@twemoji/svg/*',
         dest: 'packs/emoji/',
+      }, {
+        src: './favicon.ico',
+        dest: '.',
       }, {
         src: './src/instance',
         dest: '.',
@@ -90,11 +147,7 @@ const config = defineConfig(({ command }) => ({
         dest: 'fastText/',
       }],
     }),
-    visualizer({
-      emitFile: true,
-      filename: 'report.html',
-      title: 'pl-fe Bundle',
-    }),
+    bundleStats(),
     {
       name: 'mock-api',
       configureServer(server) {
@@ -113,6 +166,7 @@ const config = defineConfig(({ command }) => ({
     alias: [
       { find: 'pl-fe', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
     ],
+    dedupe: ['@floating-ui/react', 'tabbable', 'query-string', 'valibot'],
   },
   test: {
     globals: true,

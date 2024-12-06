@@ -170,8 +170,6 @@ const $isImageNode = (
 ): node is ImageNode => node instanceof ImageNode;
 
 export {
-  type ImagePayload,
-  type SerializedImageNode,
   ImageNode,
   $createImageNode,
   $isImageNode,

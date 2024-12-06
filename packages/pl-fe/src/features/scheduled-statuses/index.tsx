@@ -4,8 +4,9 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchScheduledStatuses, expandScheduledStatuses } from 'pl-fe/actions/scheduled-statuses';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column } from 'pl-fe/components/ui';
-import { useAppSelector, useAppDispatch } from 'pl-fe/hooks';
+import Column from 'pl-fe/components/ui/column';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 import ScheduledStatus from './components/scheduled-status';
 
@@ -21,9 +22,9 @@ const ScheduledStatuses = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
-  const statusIds = useAppSelector((state) => state.status_lists.get('scheduled_statuses')!.items);
-  const isLoading = useAppSelector((state) => state.status_lists.get('scheduled_statuses')!.isLoading);
-  const hasMore = useAppSelector((state) => !!state.status_lists.get('scheduled_statuses')!.next);
+  const statusIds = useAppSelector((state) => state.status_lists.scheduled_statuses!.items);
+  const isLoading = useAppSelector((state) => state.status_lists.scheduled_statuses!.isLoading);
+  const hasMore = useAppSelector((state) => !!state.status_lists.scheduled_statuses!.next);
 
   useEffect(() => {
     dispatch(fetchScheduledStatuses());
@@ -34,7 +35,6 @@ const ScheduledStatuses = () => {
   return (
     <Column label={intl.formatMessage(messages.heading)}>
       <ScrollableList
-        scrollKey='scheduled_statuses'
         hasMore={hasMore}
         isLoading={typeof isLoading === 'boolean' ? isLoading : true}
         onLoadMore={() => handleLoadMore(dispatch)}

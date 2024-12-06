@@ -7,13 +7,13 @@
  */
 
 import { instanceSchema, PlApiClient, type Instance } from 'pl-api';
+import * as v from 'valibot';
 
 import { createApp } from 'pl-fe/actions/apps';
 import { authLoggedIn, verifyCredentials, switchAccount } from 'pl-fe/actions/auth';
 import { obtainOAuthToken } from 'pl-fe/actions/oauth';
 import { parseBaseURL } from 'pl-fe/utils/auth';
 import sourceCode from 'pl-fe/utils/code';
-import { getQuirks } from 'pl-fe/utils/quirks';
 import { getInstanceScopes } from 'pl-fe/utils/scopes';
 
 import type { AppDispatch } from 'pl-fe/store';
@@ -25,37 +25,33 @@ const fetchExternalInstance = (baseURL: string) =>
       if (error.response?.status === 401) {
         // Authenticated fetch is enabled.
         // Continue with a limited featureset.
-        return instanceSchema.parse({});
+        return v.parse(instanceSchema, {});
       } else {
         throw error;
       }
     });
 
-const createExternalApp = (instance: Instance, baseURL?: string) =>
-  (dispatch: AppDispatch) => {
-    // Mitra: skip creating the auth app
-    if (getQuirks(instance).noApps) return new Promise(f => f({}));
-
-    const params = {
-      client_name: sourceCode.displayName,
-      redirect_uris: `${window.location.origin}/login/external`,
-      website: sourceCode.homepage,
-      scopes: getInstanceScopes(instance),
-    };
-
-    return dispatch(createApp(params, baseURL));
+const createExternalApp = (instance: Instance, baseURL?: string) => {
+  const params = {
+    client_name: `${sourceCode.displayName} (${new URL(window.origin).host})`,
+    redirect_uris: `${window.location.origin}/login/external`,
+    website: sourceCode.homepage,
+    scopes: getInstanceScopes(instance),
   };
+
+  return createApp(params, baseURL);
+};
 
 const externalAuthorize = (instance: Instance, baseURL: string) =>
   (dispatch: AppDispatch) => {
     const scopes = getInstanceScopes(instance);
 
-    return dispatch(createExternalApp(instance, baseURL)).then((app) => {
-      const { client_id, redirect_uri } = app as Record<string, string>;
+    return createExternalApp(instance, baseURL).then((app) => {
+      const { client_id, redirect_uri } = app;
 
       const query = new URLSearchParams({
         client_id,
-        redirect_uri,
+        redirect_uri: redirect_uri || app.redirect_uris[0]!,
         response_type: 'code',
         scope: scopes,
       });
@@ -92,9 +88,9 @@ const loginWithCode = (code: string) =>
       code,
     };
 
-    return dispatch(obtainOAuthToken(params, baseURL))
+    return obtainOAuthToken(params, baseURL)
       .then((token) => dispatch(authLoggedIn(token)))
-      .then(({ access_token }) => dispatch(verifyCredentials(access_token as string, baseURL)))
+      .then(({ access_token }) => dispatch(verifyCredentials(access_token, baseURL)))
       .then((account) => dispatch(switchAccount(account.id)))
       .then(() => window.location.href = '/');
   };

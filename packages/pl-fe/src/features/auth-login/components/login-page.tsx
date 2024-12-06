@@ -4,10 +4,13 @@ import { Redirect } from 'react-router-dom';
 
 import { logIn, verifyCredentials, switchAccount } from 'pl-fe/actions/auth';
 import { fetchInstance } from 'pl-fe/actions/instance';
-import { closeModal } from 'pl-fe/actions/modals';
 import { BigCard } from 'pl-fe/components/big-card';
-import { Button, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useModalsStore } from 'pl-fe/stores/modals';
 import { getRedirectUrl } from 'pl-fe/utils/redirect';
 import { isStandalone } from 'pl-fe/utils/state';
 
@@ -19,6 +22,7 @@ import type { PlfeResponse } from 'pl-fe/api';
 
 const LoginPage = () => {
   const dispatch = useAppDispatch();
+  const { closeModal } = useModalsStore();
 
   const me = useAppSelector((state) => state.me);
   const standalone = useAppSelector((state) => isStandalone(state));
@@ -45,7 +49,7 @@ const LoginPage = () => {
         return account;
       })
       .then((account: { id: string }) => {
-        dispatch(closeModal());
+        closeModal();
         if (typeof me === 'string') {
           dispatch(switchAccount(account.id));
         } else {
@@ -87,7 +91,6 @@ const LoginPage = () => {
         <Button className='w-full' theme='secondary' to='/login/external'>
           <FormattedMessage id='login_form.external' defaultMessage='Sign in from remote instance' />
         </Button>
-
       </Stack>
     </BigCard>
   );

@@ -1,19 +1,18 @@
 import clsx from 'clsx';
 import React, { useState } from 'react';
 
-import { useAnnouncements } from 'pl-fe/api/hooks/announcements';
 import AnimatedNumber from 'pl-fe/components/animated-number';
 import unicodeMapping from 'pl-fe/features/emoji/mapping';
+import { useAnnouncements } from 'pl-fe/queries/announcements/use-announcements';
 
 import Emoji from './emoji';
 
-import type { Map as ImmutableMap } from 'immutable';
 import type { AnnouncementReaction, CustomEmoji } from 'pl-api';
 
 interface IReaction {
   announcementId: string;
   reaction: AnnouncementReaction;
-  emojiMap: ImmutableMap<string, CustomEmoji>;
+  emojiMap: Record<string, CustomEmoji>;
   style: React.CSSProperties;
 }
 
@@ -39,7 +38,7 @@ const Reaction: React.FC<IReaction> = ({ announcementId, reaction, emojiMap, sty
   // @ts-ignore
   if (unicodeMapping[shortCode]) {
     // @ts-ignore
-    shortCode = unicodeMapping[shortCode].shortCode;
+    shortCode = unicodeMapping[shortCode].shortcode;
   }
 
   return (
@@ -54,7 +53,7 @@ const Reaction: React.FC<IReaction> = ({ announcementId, reaction, emojiMap, sty
       title={`:${shortCode}:`}
       style={style}
     >
-      <span className='block h-4 w-4'>
+      <span className='block size-4'>
         <Emoji hovered={hovered} emoji={reaction.name} emojiMap={emojiMap} />
       </span>
       <span className='block min-w-[9px] text-center text-xs font-medium text-primary-600 dark:text-white'>

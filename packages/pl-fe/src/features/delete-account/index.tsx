@@ -2,8 +2,16 @@ import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import { deleteAccount } from 'pl-fe/actions/security';
-import { Button, Card, CardBody, CardHeader, CardTitle, Form, FormActions, FormGroup, Input, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useFeatures } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Card, { CardBody, CardHeader, CardTitle } from 'pl-fe/components/ui/card';
+import Form from 'pl-fe/components/ui/form';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import Input from 'pl-fe/components/ui/input';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({
@@ -70,7 +78,6 @@ const DeleteAccount = () => {
               <Button type='submit' theme='danger' disabled={isLoading}>
                 {intl.formatMessage(messages.deleteSubmit)}
               </Button>
-
             </FormActions>
           </Form>
         </Stack>

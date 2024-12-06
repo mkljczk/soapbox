@@ -1,11 +1,11 @@
 import clsx from 'clsx';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 
-import { SelectDropdown } from '../features/forms';
-
-import { Icon, HStack, Select } from './ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Select from 'pl-fe/components/ui/select';
+import { SelectDropdown } from 'pl-fe/features/forms';
 
 interface IList {
   children: React.ReactNode;
@@ -29,7 +29,7 @@ interface IListItem {
 }
 
 const ListItem: React.FC<IListItem> = ({ className, label, hint, children, to, href, onClick, onSelect, isSelected, size = 'md' }) => {
-  const id = uuidv4();
+  const id = crypto.randomUUID();
   const domId = `list-group-${id}`;
 
   const onKeyDown = (e: React.KeyboardEvent) => {

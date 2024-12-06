@@ -24,6 +24,5 @@ KVStore.getItemOrError = (key: string) => KVStore.getItem(key).then(value => {
 });
 
 export {
-  KVStore,
   KVStore as default,
 };

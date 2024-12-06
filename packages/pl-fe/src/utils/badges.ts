@@ -1,6 +1,4 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
-
-import type { Account } from 'pl-fe/normalizers';
+import type { Account } from 'pl-fe/normalizers/account';
 
 /** Convert a plain tag into a badge. */
 const tagToBadge = (tag: string) => `badge:${tag}`;
@@ -17,15 +15,10 @@ interface TagDiff {
 }
 
 /** Returns the differences between two sets of tags. */
-const getTagDiff = (oldTags: string[], newTags: string[]): TagDiff => {
-  const o = ImmutableOrderedSet(oldTags);
-  const n = ImmutableOrderedSet(newTags);
-
-  return {
-    added: n.subtract(o).toArray(),
-    removed: o.subtract(n).toArray(),
-  };
-};
+const getTagDiff = (oldTags: string[], newTags: string[]): TagDiff => ({
+  added: newTags.filter(tag => !oldTags.includes(tag)),
+  removed: oldTags.filter(tag => !newTags.includes(tag)),
+});
 
 /** Returns only tags which are badges. */
 const filterBadges = (tags: string[]): string[] => tags.filter(tag => tag.startsWith('badge:'));

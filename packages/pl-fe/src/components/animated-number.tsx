@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useIntl, type IntlShape } from 'react-intl';
 import { TransitionMotion, spring } from 'react-motion';
 
-import { useSettings } from 'pl-fe/hooks';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { isNumber, roundDown } from 'pl-fe/utils/numbers';
 
 const obfuscatedCount = (count: number): string => {

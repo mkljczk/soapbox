@@ -1,7 +1,7 @@
 import React from 'react';
 import { useIntl, defineMessages } from 'react-intl';
 
-import { TagInput } from 'pl-fe/components/ui';
+import TagInput from 'pl-fe/components/ui/tag-input';
 import { badgeToTag, tagToBadge } from 'pl-fe/utils/badges';
 
 const messages = defineMessages({

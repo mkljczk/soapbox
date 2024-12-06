@@ -1,15 +1,16 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { fetchAccount, fetchAccountByUsername } from 'pl-fe/actions/accounts';
 import { fetchFavouritedStatuses, expandFavouritedStatuses, fetchAccountFavouritedStatuses, expandAccountFavouritedStatuses } from 'pl-fe/actions/favourites';
-import { useAccountLookup } from 'pl-fe/api/hooks';
+import { useAccountLookup } from 'pl-fe/api/hooks/accounts/use-account-lookup';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import StatusList from 'pl-fe/components/status-list';
-import { Column } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector, useOwnAccount } from 'pl-fe/hooks';
+import Column from 'pl-fe/components/ui/column';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 
 const messages = defineMessages({
   heading: { id: 'column.favourited_statuses', defaultMessage: 'Liked posts' },
@@ -32,9 +33,9 @@ const Favourites: React.FC<IFavourites> = ({ params }) => {
   const isOwnAccount = username.toLowerCase() === ownAccount?.acct?.toLowerCase();
 
   const timelineKey = isOwnAccount ? 'favourites' : `favourites:${account?.id}`;
-  const statusIds = useAppSelector(state => state.status_lists.get(timelineKey)?.items || ImmutableOrderedSet<string>());
-  const isLoading = useAppSelector(state => state.status_lists.get(timelineKey)?.isLoading === true);
-  const hasMore = useAppSelector(state => !!state.status_lists.get(timelineKey)?.next);
+  const statusIds = useAppSelector(state => state.status_lists[timelineKey]?.items || []);
+  const isLoading = useAppSelector(state => state.status_lists[timelineKey]?.isLoading === true);
+  const hasMore = useAppSelector(state => !!state.status_lists[timelineKey]?.next);
 
   const handleLoadMore = useCallback(debounce(() => {
     if (isOwnAccount) {

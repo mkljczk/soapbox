@@ -42,7 +42,7 @@ interface RequestBody<Params = Record<string, any>> {
 
 type RequestMeta = Pick<RequestBody, 'idempotencyKey' | 'onUploadProgress' | 'signal'>;
 
-function request<T = any>(this: PlApiClient, input: URL | RequestInfo, {
+function request<T = any>(this: Pick<PlApiClient, 'accessToken' | 'baseURL'>, input: URL | RequestInfo, {
   body,
   method = body ? 'POST' : 'GET',
   params,

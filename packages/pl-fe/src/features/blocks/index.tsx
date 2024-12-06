@@ -1,10 +1,11 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useBlocks } from 'pl-fe/api/hooks';
+import { useBlocks } from 'pl-fe/api/hooks/accounts/use-account-list';
 import Account from 'pl-fe/components/account';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { Column, Spinner } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import Spinner from 'pl-fe/components/ui/spinner';
 
 const messages = defineMessages({
   heading: { id: 'column.blocks', defaultMessage: 'Blocks' },
@@ -33,7 +34,6 @@ const Blocks: React.FC = () => {
   return (
     <Column label={intl.formatMessage(messages.heading)}>
       <ScrollableList
-        scrollKey='blocks'
         onLoadMore={fetchNextPage}
         hasMore={hasNextPage}
         emptyMessage={emptyMessage}

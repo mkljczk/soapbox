@@ -2,8 +2,9 @@ import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { getPlFeConfig } from 'pl-fe/actions/pl-fe';
-import { Stack, Text } from 'pl-fe/components/ui';
-import { useAppSelector } from 'pl-fe/hooks';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 const messages = defineMessages({
   accountEntity: { id: 'report.confirmation.entity.account', defaultMessage: 'account' },
@@ -28,7 +29,7 @@ const renderTermsOfServiceLink = (href: string) => (
 
 const ConfirmationStep: React.FC = () => {
   const intl = useIntl();
-  const links = useAppSelector((state) => getPlFeConfig(state).get('links') as any);
+  const links = useAppSelector((state) => getPlFeConfig(state).links);
 
   const entity = intl.formatMessage(messages.accountEntity);
 
@@ -41,8 +42,8 @@ const ConfirmationStep: React.FC = () => {
       <Text>
         {intl.formatMessage(messages.content, {
           entity,
-          link: links.get('termsOfService') ?
-            renderTermsOfServiceLink(links.get('termsOfService')) :
+          link: links.termsOfService ?
+            renderTermsOfServiceLink(links.termsOfService) :
             termsOfServiceText,
         })}
       </Text>

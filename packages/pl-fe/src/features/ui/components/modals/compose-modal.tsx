@@ -4,12 +4,14 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { cancelReplyCompose, uploadCompose } from 'pl-fe/actions/compose';
 import { saveDraftStatus } from 'pl-fe/actions/draft-statuses';
-import { openModal, closeModal } from 'pl-fe/actions/modals';
 import { checkComposeContent } from 'pl-fe/components/modal-root';
-import { Modal } from 'pl-fe/components/ui';
-import { useAppDispatch, useCompose, useDraggedFiles } from 'pl-fe/hooks';
+import Modal from 'pl-fe/components/ui/modal';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
-import ComposeForm from '../../../compose/components/compose-form';
+import { ComposeForm } from '../../util/async-components';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -28,6 +30,7 @@ const ComposeModal: React.FC<BaseModalProps & ComposeModalProps> = ({ onClose, c
   const dispatch = useAppDispatch();
   const node = useRef<HTMLDivElement>(null);
   const compose = useCompose(composeId);
+  const { openModal } = useModalsStore();
 
   const { id: statusId, privacy, in_reply_to: inReplyTo, quote, group_id: groupId } = compose!;
 
@@ -37,7 +40,7 @@ const ComposeModal: React.FC<BaseModalProps & ComposeModalProps> = ({ onClose, c
 
   const onClickClose = () => {
     if (checkComposeContent(compose)) {
-      dispatch(openModal('CONFIRM', {
+      openModal('CONFIRM', {
         heading: statusId
           ? <FormattedMessage id='confirmations.cancel_editing.heading' defaultMessage='Cancel post editing' />
           : <FormattedMessage id='confirmations.cancel.heading' defaultMessage='Discard post' />,
@@ -46,16 +49,16 @@ const ComposeModal: React.FC<BaseModalProps & ComposeModalProps> = ({ onClose, c
           : <FormattedMessage id='confirmations.cancel.message' defaultMessage='Are you sure you want to cancel creating this post?' />,
         confirm: intl.formatMessage(statusId ? messages.cancelEditing : messages.confirm),
         onConfirm: () => {
-          dispatch(closeModal('COMPOSE'));
+          onClose('COMPOSE');
           dispatch(cancelReplyCompose());
         },
         secondary: intl.formatMessage(messages.saveDraft),
         onSecondary: statusId ? undefined : () => {
           dispatch(saveDraftStatus(composeId));
-          dispatch(closeModal('COMPOSE'));
+          onClose('COMPOSE');
           dispatch(cancelReplyCompose());
         },
-      }));
+      });
     } else {
       onClose('COMPOSE');
     }

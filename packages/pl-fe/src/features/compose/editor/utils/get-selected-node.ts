@@ -9,7 +9,7 @@ import { ElementNode, RangeSelection, TextNode } from 'lexical';
 
 export const getSelectedNode = (
   selection: RangeSelection,
-): TextNode | ElementNode =>  {
+): TextNode | ElementNode => {
   const anchor = selection.anchor;
   const focus = selection.focus;
   const anchorNode = selection.anchor.getNode();

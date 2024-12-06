@@ -1,3 +1,6 @@
+/**
+ * @category Request params
+ */
 interface CreatePushNotificationsSubscriptionParams {
   subscription: {
     /** String. The endpoint URL that is called when a notification event occurs. */
@@ -16,6 +19,9 @@ interface CreatePushNotificationsSubscriptionParams {
   };
 }
 
+/**
+ * @category Request params
+ */
 interface UpdatePushNotificationsSubscriptionParams {
   data?: {
     alerts?: Record<string, boolean>;

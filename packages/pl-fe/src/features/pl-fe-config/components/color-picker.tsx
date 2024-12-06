@@ -1,49 +1,37 @@
-import { supportsPassiveEvents } from 'detect-passive-events';
-import React, { useEffect, useRef } from 'react';
-import { SketchPicker, ColorChangeHandler } from 'react-color';
+import React from 'react';
+import { SketchPicker, type ColorChangeHandler } from 'react-color';
 
-import { isMobile } from 'pl-fe/is-mobile';
-
-const listenerOptions = supportsPassiveEvents ? { passive: true } : false;
+import Popover from 'pl-fe/components/ui/popover';
 
 interface IColorPicker {
-  style?: React.CSSProperties;
   value: string;
-  onChange: ColorChangeHandler;
-  onClose: () => void;
+  onChange?: ColorChangeHandler;
+  className?: string;
 }
 
-const ColorPicker: React.FC<IColorPicker> = ({ style, value, onClose, onChange }) => {
-  const node = useRef<HTMLDivElement>(null);
-
-  const handleDocumentClick = (e: MouseEvent | TouchEvent) => {
-    if (node.current && !node.current.contains(e.target as HTMLElement)) {
-      onClose();
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('click', handleDocumentClick, false);
-    document.addEventListener('touchend', handleDocumentClick, listenerOptions);
-
-    return () => {
-      document.removeEventListener('click', handleDocumentClick, false);
-      document.removeEventListener('touchend', handleDocumentClick);
-    };
-  }, []);
-
-  const pickerStyle: React.CSSProperties = {
-    ...style,
-    marginLeft: isMobile(window.innerWidth) ? '20px' : '12px',
-    position: 'absolute',
-    zIndex: 1000,
-  };
-
+const ColorPicker: React.FC<IColorPicker> = ({ value, onChange, className }) => {
+  const colorPreview = (
+    <div
+      className='size-full'
+      role='presentation'
+      style={{ background: value }}
+      title={value}
+    />
+  );
   return (
-    <div id='SketchPickerContainer' ref={node} style={pickerStyle}>
-      <SketchPicker color={value} disableAlpha onChange={onChange} />
+    <div className={className}>
+      {onChange ? (
+        <Popover
+          interaction='click'
+          content={
+            <SketchPicker color={value} disableAlpha onChange={onChange} />
+          }
+          isFlush
+        >
+          {colorPreview}
+        </Popover>
+      ) : colorPreview}
     </div>
   );
 };
-
 export { ColorPicker as default };

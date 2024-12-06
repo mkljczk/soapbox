@@ -1,237 +1,109 @@
-import {
-  Map as ImmutableMap,
-  List as ImmutableList,
-  Record as ImmutableRecord,
-  fromJS,
-} from 'immutable';
 import trimStart from 'lodash/trimStart';
+import * as v from 'valibot';
 
-import { normalizeUsername } from 'pl-fe/utils/input';
-import { toTailwind } from 'pl-fe/utils/tailwind';
-import { generateAccent } from 'pl-fe/utils/theme';
+import { coerceObject, filteredArray } from 'pl-fe/schemas/utils';
 
-import type {
-  PromoPanelItem,
-  FooterItem,
-  CryptoAddress,
-} from 'pl-fe/types/pl-fe';
+const promoPanelItemSchema = coerceObject({
+  icon: v.fallback(v.string(), ''),
+  text: v.fallback(v.string(), ''),
+  url: v.fallback(v.string(), ''),
+  textLocales: v.fallback(v.record(v.string(), v.string()), {}),
+});
 
-const DEFAULT_COLORS = ImmutableMap<string, any>({
-  success: ImmutableMap({
-    50: '#f0fdf4',
-    100: '#dcfce7',
-    200: '#bbf7d0',
-    300: '#86efac',
-    400: '#4ade80',
-    500: '#22c55e',
-    600: '#16a34a',
-    700: '#15803d',
-    800: '#166534',
-    900: '#14532d',
+type PromoPanelItem = v.InferOutput<typeof promoPanelItemSchema>;
+
+const promoPanelSchema = coerceObject({
+  items: filteredArray(promoPanelItemSchema),
+});
+
+type PromoPanel = v.InferOutput<typeof promoPanelSchema>;
+
+const footerItemSchema = coerceObject({
+  title: v.fallback(v.string(), ''),
+  url: v.fallback(v.string(), ''),
+  titleLocales: v.fallback(v.record(v.string(), v.string()), {}),
+});
+
+type FooterItem = v.InferOutput<typeof footerItemSchema>;
+
+const cryptoAddressSchema = v.pipe(coerceObject({
+  address: v.fallback(v.string(), ''),
+  note: v.fallback(v.string(), ''),
+  ticker: v.fallback(v.string(), ''),
+}), v.transform((address) => {
+  address.ticker = trimStart(address.ticker, '$').toLowerCase();
+  return address;
+}));
+
+type CryptoAddress = v.InferOutput<typeof cryptoAddressSchema>;
+
+const plFeConfigSchema = coerceObject({
+  appleAppId: v.fallback(v.nullable(v.string()), null),
+  logo: v.fallback(v.string(), ''),
+  logoDarkMode: v.fallback(v.nullable(v.string()), null),
+  brandColor: v.fallback(v.string(), ''),
+  accentColor: v.fallback(v.string(), ''),
+  colors: v.any(),
+  copyright: v.fallback(v.string(), `♥${new Date().getFullYear()}. Copying is an act of love. Please copy and share.`),
+  defaultSettings: v.fallback(v.record(v.string(), v.any()), {}),
+  gdpr: v.fallback(v.boolean(), false),
+  gdprUrl: v.fallback(v.string(), ''),
+  greentext: v.fallback(v.boolean(), false),
+  promoPanel: promoPanelSchema,
+  navlinks: v.fallback(v.record(v.string(), filteredArray(footerItemSchema)), {}),
+  verifiedIcon: v.fallback(v.string(), ''),
+  displayFqn: v.fallback(v.boolean(), true),
+  cryptoAddresses: filteredArray(cryptoAddressSchema),
+  cryptoDonatePanel: coerceObject({
+    limit: v.fallback(v.number(), 1),
   }),
-  danger: ImmutableMap({
-    50: '#fef2f2',
-    100: '#fee2e2',
-    200: '#fecaca',
-    300: '#fca5a5',
-    400: '#f87171',
-    500: '#ef4444',
-    600: '#dc2626',
-    700: '#b91c1c',
-    800: '#991b1b',
-    900: '#7f1d1d',
-  }),
-  'greentext': '#789922',
-});
+  aboutPages: v.fallback(v.record(v.string(), coerceObject({
+    defaultLocale: v.fallback(v.string(), ''), // v.fallback(v.optional(v.string()), undefined),
+    locales: filteredArray(v.string()),
+  })), {}),
+  authenticatedProfile: v.fallback(v.boolean(), false),
+  linkFooterMessage: v.fallback(v.string(), ''),
+  links: v.fallback(v.record(v.string(), v.string()), {}),
+  displayCta: v.fallback(v.boolean(), false),
+  tileServer: v.fallback(v.string(), ''),
+  tileServerAttribution: v.fallback(v.string(), ''),
+  redirectRootNoLogin: v.fallback(v.pipe(v.string(), v.transform((url: string) => {
+    if (!url) return '';
 
-const PromoPanelItemRecord = ImmutableRecord({
-  icon: '',
-  text: '',
-  url: '',
-  textLocales: ImmutableMap<string, string>(),
-});
+    try {
+      // Basically just get the pathname with a leading slash.
+      const normalized = new URL(url, 'http://a').pathname;
 
-const PromoPanelRecord = ImmutableRecord({
-  items: ImmutableList<PromoPanelItem>(),
-});
-
-const FooterItemRecord = ImmutableRecord({
-  title: '',
-  url: '',
-});
-
-const CryptoAddressRecord = ImmutableRecord({
-  address: '',
-  note: '',
-  ticker: '',
-});
-
-const PlFeConfigRecord = ImmutableRecord({
-  appleAppId: null,
-  authProvider: '',
-  logo: '',
-  logoDarkMode: null,
-  banner: '',
-  brandColor: '', // Empty
-  accentColor: '',
-  colors: ImmutableMap(),
-  copyright: `♥${new Date().getFullYear()}. Copying is an act of love. Please copy and share.`,
-  customCss: ImmutableList<string>(),
-  defaultSettings: ImmutableMap<string, any>(),
-  extensions: ImmutableMap(),
-  gdpr: false,
-  gdprUrl: '',
-  greentext: false,
-  promoPanel: PromoPanelRecord(),
-  navlinks: ImmutableMap({
-    homeFooter: ImmutableList<FooterItem>(),
-  }),
-  allowedEmoji: ImmutableList<string>([
-    '👍',
-    '❤️',
-    '😆',
-    '😮',
-    '😢',
-    '😩',
-  ]),
-  verifiedIcon: '',
-  displayFqn: true,
-  cryptoAddresses: ImmutableList<CryptoAddress>(),
-  cryptoDonatePanel: ImmutableMap({
-    limit: 1,
-  }),
-  aboutPages: ImmutableMap<string, ImmutableMap<string, unknown>>(),
-  authenticatedProfile: false,
-  linkFooterMessage: '',
-  links: ImmutableMap<string, string>(),
-  displayCta: false,
-  /** Whether to inject suggested profiles into the Home feed. */
-  feedInjection: true,
-  tileServer: '',
-  tileServerAttribution: '',
-  redirectRootNoLogin: '',
+      if (normalized !== '/') {
+        return normalized;
+      } else {
+        // Prevent infinite redirect(?)
+        return '';
+      }
+    } catch (e) {
+      console.error('You have configured an invalid redirect in pl-fe Config.');
+      console.error(e);
+      return '';
+    }
+  })), ''),
   /**
    * Whether to use the preview URL for media thumbnails.
    * On some platforms this can be too blurry without additional configuration.
    */
-  mediaPreview: false,
-  sentryDsn: undefined as string | undefined,
-}, 'PlFeConfig');
+  mediaPreview: v.fallback(v.boolean(), false),
+  sentryDsn: v.fallback(v.optional(v.string()), undefined),
+});
 
-type PlFeConfigMap = ImmutableMap<string, any>;
-
-const normalizeCryptoAddress = (address: unknown): CryptoAddress =>
-  CryptoAddressRecord(ImmutableMap(fromJS(address))).update('ticker', ticker =>
-    trimStart(ticker, '$').toLowerCase(),
-  );
-
-const normalizeCryptoAddresses = (plFeConfig: PlFeConfigMap): PlFeConfigMap => {
-  const addresses = ImmutableList(plFeConfig.get('cryptoAddresses'));
-  return plFeConfig.set('cryptoAddresses', addresses.map(normalizeCryptoAddress));
-};
-
-const normalizeBrandColor = (plFeConfig: PlFeConfigMap): PlFeConfigMap => {
-  const brandColor = plFeConfig.get('brandColor') || plFeConfig.getIn(['colors', 'primary', '500']) || '';
-  return plFeConfig.set('brandColor', brandColor);
-};
-
-const normalizeAccentColor = (plFeConfig: PlFeConfigMap): PlFeConfigMap => {
-  const brandColor = plFeConfig.get('brandColor');
-
-  const accentColor = plFeConfig.get('accentColor')
-    || plFeConfig.getIn(['colors', 'accent', '500'])
-    || (brandColor ? generateAccent(brandColor) : '');
-
-  return plFeConfig.set('accentColor', accentColor);
-};
-
-const normalizeColors = (plFeConfig: PlFeConfigMap): PlFeConfigMap => {
-  const colors = DEFAULT_COLORS.mergeDeep(plFeConfig.get('colors'));
-  return toTailwind(plFeConfig.set('colors', colors));
-};
-
-const maybeAddMissingColors = (plFeConfig: PlFeConfigMap): PlFeConfigMap => {
-  const colors = plFeConfig.get('colors');
-
-  const missing = ImmutableMap({
-    'gradient-start': colors.getIn(['primary', '500']),
-    'gradient-end': colors.getIn(['accent', '500']),
-    'accent-blue': colors.getIn(['primary', '600']),
-  });
-
-  return plFeConfig.set('colors', missing.mergeDeep(colors));
-};
-
-const normalizePromoPanel = (plFeConfig: PlFeConfigMap): PlFeConfigMap => {
-  const promoPanel = PromoPanelRecord(plFeConfig.get('promoPanel'));
-  const items = promoPanel.items.map(PromoPanelItemRecord);
-  return plFeConfig.set('promoPanel', promoPanel.set('items', items));
-};
-
-const normalizeFooterLinks = (plFeConfig: PlFeConfigMap): PlFeConfigMap => {
-  const path = ['navlinks', 'homeFooter'];
-  const items = (plFeConfig.getIn(path, ImmutableList()) as ImmutableList<any>).map(FooterItemRecord);
-  return plFeConfig.setIn(path, items);
-};
-
-/** Single user mode is now managed by `redirectRootNoLogin`. */
-const upgradeSingleUserMode = (plFeConfig: PlFeConfigMap): PlFeConfigMap => {
-  const singleUserMode = plFeConfig.get('singleUserMode') as boolean | undefined;
-  const singleUserModeProfile = plFeConfig.get('singleUserModeProfile') as string | undefined;
-  const redirectRootNoLogin = plFeConfig.get('redirectRootNoLogin') as string | undefined;
-
-  if (!redirectRootNoLogin && singleUserMode && singleUserModeProfile) {
-    return plFeConfig
-      .set('redirectRootNoLogin', `/@${normalizeUsername(singleUserModeProfile)}`)
-      .deleteAll(['singleUserMode', 'singleUserModeProfile']);
-  } else {
-    return plFeConfig
-      .deleteAll(['singleUserMode', 'singleUserModeProfile']);
-  }
-};
-
-/** Ensure a valid path is used. */
-const normalizeRedirectRootNoLogin = (plFeConfig: PlFeConfigMap): PlFeConfigMap => {
-  const redirectRootNoLogin = plFeConfig.get('redirectRootNoLogin');
-
-  if (!redirectRootNoLogin) return plFeConfig;
-
-  try {
-    // Basically just get the pathname with a leading slash.
-    const normalized = new URL(redirectRootNoLogin, 'http://a').pathname;
-
-    if (normalized !== '/') {
-      return plFeConfig.set('redirectRootNoLogin', normalized);
-    } else {
-      // Prevent infinite redirect(?)
-      return plFeConfig.delete('redirectRootNoLogin');
-    }
-  } catch (e) {
-    console.error('You have configured an invalid redirect in pl-fe Config.');
-    console.error(e);
-    return plFeConfig.delete('redirectRootNoLogin');
-  }
-};
-
-const normalizePlFeConfig = (plFeConfig: Record<string, any>) => PlFeConfigRecord(
-  ImmutableMap(fromJS(plFeConfig)).withMutations(plFeConfig => {
-    normalizeBrandColor(plFeConfig);
-    normalizeAccentColor(plFeConfig);
-    normalizeColors(plFeConfig);
-    normalizePromoPanel(plFeConfig);
-    normalizeFooterLinks(plFeConfig);
-    maybeAddMissingColors(plFeConfig);
-    normalizeCryptoAddresses(plFeConfig);
-    upgradeSingleUserMode(plFeConfig);
-    normalizeRedirectRootNoLogin(plFeConfig);
-  }),
-);
+type PlFeConfig = v.InferOutput<typeof plFeConfigSchema>;
 
 export {
-  PromoPanelItemRecord,
-  PromoPanelRecord,
-  FooterItemRecord,
-  CryptoAddressRecord,
-  PlFeConfigRecord,
-  normalizePlFeConfig,
+  promoPanelItemSchema,
+  footerItemSchema,
+  cryptoAddressSchema,
+  plFeConfigSchema,
+  type PromoPanelItem,
+  type PromoPanel,
+  type FooterItem,
+  type CryptoAddress,
+  type PlFeConfig,
 };

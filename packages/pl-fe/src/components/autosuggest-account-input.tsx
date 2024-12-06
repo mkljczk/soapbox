@@ -1,17 +1,17 @@
-import { OrderedSet as ImmutableOrderedSet } from 'immutable';
 import throttle from 'lodash/throttle';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 
 import { accountSearch } from 'pl-fe/actions/accounts';
 import AutosuggestInput, { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
-import { useAppDispatch } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 
 import type { Menu } from 'pl-fe/components/dropdown-menu';
-import type { InputThemes } from 'pl-fe/components/ui/input/input';
+import type { InputThemes } from 'pl-fe/components/ui/input';
 
 const noOp = () => { };
 
 interface IAutosuggestAccountInput {
+  id?: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   onSelected: (accountId: string) => void;
   autoFocus?: boolean;
@@ -21,6 +21,7 @@ interface IAutosuggestAccountInput {
   menu?: Menu;
   onKeyDown?: React.KeyboardEventHandler;
   theme?: InputThemes;
+  placeholder?: string;
 }
 
 const AutosuggestAccountInput: React.FC<IAutosuggestAccountInput> = ({
@@ -30,7 +31,7 @@ const AutosuggestAccountInput: React.FC<IAutosuggestAccountInput> = ({
   ...rest
 }) => {
   const dispatch = useAppDispatch();
-  const [accountIds, setAccountIds] = useState(ImmutableOrderedSet<string>());
+  const [accountIds, setAccountIds] = useState<Array<string>>([]);
   const controller = useRef(new AbortController());
 
   const refreshCancelToken = () => {
@@ -39,14 +40,14 @@ const AutosuggestAccountInput: React.FC<IAutosuggestAccountInput> = ({
   };
 
   const clearResults = () => {
-    setAccountIds(ImmutableOrderedSet());
+    setAccountIds([]);
   };
 
   const handleAccountSearch = useCallback(throttle((q) => {
     dispatch(accountSearch(q, controller.current.signal))
       .then((accounts: { id: string }[]) => {
         const accountIds = accounts.map(account => account.id);
-        setAccountIds(ImmutableOrderedSet(accountIds));
+        setAccountIds(accountIds);
       })
       .catch(noOp);
   }, 900, { leading: true, trailing: true }), []);
@@ -79,7 +80,7 @@ const AutosuggestAccountInput: React.FC<IAutosuggestAccountInput> = ({
     <AutosuggestInput
       value={value}
       onChange={handleChange}
-      suggestions={accountIds.toList()}
+      suggestions={accountIds}
       onSuggestionsFetchRequested={noOp}
       onSuggestionsClearRequested={noOp}
       onSuggestionSelected={handleSelected}

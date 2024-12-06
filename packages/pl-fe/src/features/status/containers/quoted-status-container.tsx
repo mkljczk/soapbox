@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 
 import QuotedStatus from 'pl-fe/components/quoted-status';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 interface IQuotedStatusContainer {

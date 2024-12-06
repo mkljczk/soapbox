@@ -2,13 +2,9 @@ import { isLoggedIn } from 'pl-fe/utils/auth';
 
 import { getClient } from '../api';
 
-import {
-  importFetchedAccounts,
-  importFetchedStatuses,
-  importFetchedStatus,
-} from './importer';
+import { importEntities } from './importer';
 
-import type { Account, Conversation, PaginatedResponse, Status } from 'pl-api';
+import type { Account, Conversation, PaginatedResponse } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const CONVERSATIONS_MOUNT = 'CONVERSATIONS_MOUNT' as const;
@@ -25,10 +21,15 @@ const mountConversations = () => ({ type: CONVERSATIONS_MOUNT });
 
 const unmountConversations = () => ({ type: CONVERSATIONS_UNMOUNT });
 
+interface ConversationsReadAction {
+  type: typeof CONVERSATIONS_READ;
+  conversationId: string;
+}
+
 const markConversationRead = (conversationId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
   if (!isLoggedIn(getState)) return;
 
-  dispatch({
+  dispatch<ConversationsReadAction>({
     type: CONVERSATIONS_READ,
     conversationId,
   });
@@ -48,8 +49,10 @@ const expandConversations = (expand = true) => (dispatch: AppDispatch, getState:
 
   return (state.conversations.next?.() || getClient(state).timelines.getConversations())
     .then(response => {
-      dispatch(importFetchedAccounts(response.items.reduce((aggr: Array<Account>, item) => aggr.concat(item.accounts), [])));
-      dispatch(importFetchedStatuses(response.items.map((item) => item.last_status).filter((x): x is Status => x !== null)));
+      dispatch(importEntities({
+        accounts: response.items.reduce((aggr: Array<Account>, item) => aggr.concat(item.accounts), []),
+        statuses: response.items.map((item) => item.last_status),
+      }));
       dispatch(expandConversationsSuccess(response.items, response.next, isLoadingRecent));
     })
     .catch(err => dispatch(expandConversationsFail(err)));
@@ -73,18 +76,31 @@ const expandConversationsFail = (error: unknown) => ({
   error,
 });
 
+interface ConversataionsUpdateAction {
+  type: typeof CONVERSATIONS_UPDATE;
+  conversation: Conversation;
+}
+
 const updateConversations = (conversation: Conversation) => (dispatch: AppDispatch) => {
-  dispatch(importFetchedAccounts(conversation.accounts));
+  dispatch(importEntities({
+    accounts: conversation.accounts,
+    statuses: [conversation.last_status],
+  }));
 
-  if (conversation.last_status) {
-    dispatch(importFetchedStatus(conversation.last_status));
-  }
-
-  return dispatch({
+  return dispatch<ConversataionsUpdateAction>({
     type: CONVERSATIONS_UPDATE,
     conversation,
   });
 };
+
+type ConversationsAction =
+  | ReturnType<typeof mountConversations>
+  | ReturnType<typeof unmountConversations>
+  | ConversationsReadAction
+  | ReturnType<typeof expandConversationsRequest>
+  | ReturnType<typeof expandConversationsSuccess>
+  | ReturnType<typeof expandConversationsFail>
+  | ConversataionsUpdateAction
 
 export {
   CONVERSATIONS_MOUNT,
@@ -98,8 +114,6 @@ export {
   unmountConversations,
   markConversationRead,
   expandConversations,
-  expandConversationsRequest,
-  expandConversationsSuccess,
-  expandConversationsFail,
   updateConversations,
+  type ConversationsAction,
 };

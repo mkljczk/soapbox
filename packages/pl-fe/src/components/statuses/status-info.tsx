@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { HStack, Text } from '../ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Text from 'pl-fe/components/ui/text';
 
 interface IStatusInfo {
   avatarSize: number;
@@ -25,7 +26,7 @@ const StatusInfo = (props: IStatusInfo) => {
       <HStack
         space={3}
         alignItems='center'
-        className='cursor-default text-xs font-medium text-gray-700 rtl:space-x-reverse dark:text-gray-600'
+        className='cursor-default text-xs font-medium text-gray-700 dark:text-gray-600 rtl:space-x-reverse'
       >
         <div
           className='flex justify-end'

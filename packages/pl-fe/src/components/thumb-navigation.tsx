@@ -1,31 +1,43 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
 import { groupComposeModal } from 'pl-fe/actions/compose';
-import { openModal } from 'pl-fe/actions/modals';
-import { openSidebar } from 'pl-fe/actions/sidebar';
 import ThumbNavigationLink from 'pl-fe/components/thumb-navigation-link';
+import Icon from 'pl-fe/components/ui/icon';
 import { useStatContext } from 'pl-fe/contexts/stat-context';
 import { Entities } from 'pl-fe/entity-store/entities';
-import { useAppDispatch, useAppSelector, useFeatures, useOwnAccount } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { useModalsStore } from 'pl-fe/stores/modals';
+import { useUiStore } from 'pl-fe/stores/ui';
 import { isStandalone } from 'pl-fe/utils/state';
 
-import { Icon } from './ui';
+const messages = defineMessages({
+  home: { id: 'navigation.home', defaultMessage: 'Home' },
+  search: { id: 'navigation.search', defaultMessage: 'Search' },
+  notifications: { id: 'navigation.notifications', defaultMessage: 'Notifications' },
+  chats: { id: 'navigation.chats', defaultMessage: 'Chats' },
+  compose: { id: 'navigation.compose', defaultMessage: 'Compose' },
+  sidebar: { id: 'navigation.sidebar', defaultMessage: 'Open sidebar' },
+});
 
 const ThumbNavigation: React.FC = (): JSX.Element => {
+  const intl = useIntl();
   const dispatch = useAppDispatch();
   const { account } = useOwnAccount();
   const features = useFeatures();
 
   const match = useRouteMatch<{ groupId: string }>('/groups/:groupId');
 
+  const { openSidebar } = useUiStore();
+  const { openModal } = useModalsStore();
   const { unreadChatsCount } = useStatContext();
 
   const standalone = useAppSelector(isStandalone);
   const notificationCount = useAppSelector((state) => state.notifications.unread);
-
-  const handleOpenSidebar = () => dispatch(openSidebar());
 
   const handleOpenComposeModal = () => {
     if (match?.params.groupId) {
@@ -34,61 +46,40 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
         if (group) dispatch(groupComposeModal(group));
       });
     } else {
-      dispatch(openModal('COMPOSE'));
+      openModal('COMPOSE');
     }
-  };
-
-  /** Conditionally render the supported messages link */
-  const renderMessagesLink = (): React.ReactNode => {
-    if (features.chats) {
-      return (
-        <ThumbNavigationLink
-          src={require('@tabler/icons/outline/messages.svg')}
-          text={<FormattedMessage id='navigation.chats' defaultMessage='Chats' />}
-          to='/chats'
-          exact
-          count={unreadChatsCount}
-          countMax={9}
-        />
-      );
-    }
-
-    if (features.conversations) {
-      return (
-        <ThumbNavigationLink
-          src={require('@tabler/icons/outline/mail.svg')}
-          activeSrc={require('@tabler/icons/filled/mail.svg')}
-          text={<FormattedMessage id='navigation.direct_messages' defaultMessage='Messages' />}
-          to='/conversations'
-        />
-      );
-    }
-
-    return null;
   };
 
   const composeButton = (
-    <button className='flex flex-1 flex-col items-center px-1.5 py-3.5 text-lg text-gray-600' onClick={handleOpenComposeModal}>
+    <button
+      className='flex flex-1 flex-col items-center px-1.5 py-3.5 text-lg text-gray-600'
+      onClick={handleOpenComposeModal}
+      title={intl.formatMessage(messages.compose)}
+    >
       <Icon
         src={require('@tabler/icons/outline/square-rounded-plus.svg')}
-        className='h-6 w-6 text-gray-600 black:text-white'
+        className='size-6 text-gray-600 black:text-white'
       />
     </button>
   );
 
   return (
-    <div className='fixed inset-x-0 bottom-0 z-50 flex w-full overflow-x-auto border-t border-solid border-gray-200 bg-white/90 shadow-2xl backdrop-blur-md black:bg-black/80 lg:hidden dark:border-gray-800 dark:bg-primary-900/90'>
-      <button className='flex flex-1 flex-col items-center px-2 py-4 text-lg text-gray-600' onClick={handleOpenSidebar}>
+    <div className='fixed inset-x-0 bottom-0 z-50 flex w-full overflow-x-auto border-t border-solid border-gray-200 bg-white/90 shadow-2xl backdrop-blur-md black:bg-black/80 dark:border-gray-800 dark:bg-primary-900/90 lg:hidden'>
+      <button
+        className='flex flex-1 flex-col items-center px-2 py-4 text-lg text-gray-600'
+        onClick={openSidebar}
+        title={intl.formatMessage(messages.sidebar)}
+      >
         <Icon
           src={require('@tabler/icons/outline/menu-2.svg')}
-          className='h-5 w-5 text-gray-600 black:text-white'
+          className='size-5 text-gray-600 black:text-white'
         />
       </button>
 
       <ThumbNavigationLink
         src={require('@tabler/icons/outline/home.svg')}
         activeSrc={require('@tabler/icons/filled/home.svg')}
-        text={<FormattedMessage id='navigation.home' defaultMessage='Home' />}
+        text={intl.formatMessage(messages.home)}
         to='/'
         exact
       />
@@ -103,12 +94,12 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
         />
       )} */}
 
-      {account && !(features.chats || features.conversations) && composeButton}
+      {account && !features.chats && composeButton}
 
       {(!standalone || account) && (
         <ThumbNavigationLink
           src={require('@tabler/icons/outline/search.svg')}
-          text={<FormattedMessage id='navigation.search' defaultMessage='Search' />}
+          text={intl.formatMessage(messages.search)}
           to='/search'
           exact
         />
@@ -118,16 +109,27 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
         <ThumbNavigationLink
           src={require('@tabler/icons/outline/bell.svg')}
           activeSrc={require('@tabler/icons/filled/bell.svg')}
-          text={<FormattedMessage id='navigation.notifications' defaultMessage='Notifications' />}
+          text={intl.formatMessage(messages.notifications)}
           to='/notifications'
           exact
           count={notificationCount}
         />
       )}
 
-      {account && renderMessagesLink()}
+      {account && features.chats && (
+        <>
+          <ThumbNavigationLink
+            src={require('@tabler/icons/outline/messages.svg')}
+            text={intl.formatMessage(messages.chats)}
+            to='/chats'
+            exact
+            count={unreadChatsCount}
+            countMax={9}
+          />
 
-      {account && (features.chats || features.conversations) && composeButton}
+          {composeButton}
+        </>
+      )}
     </div>
   );
 };

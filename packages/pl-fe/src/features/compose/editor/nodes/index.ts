@@ -11,7 +11,7 @@ import { ListItemNode, ListNode } from '@lexical/list';
 import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 
-import { useInstance } from 'pl-fe/hooks';
+import { useInstance } from 'pl-fe/hooks/use-instance';
 
 import { EmojiNode } from './emoji-node';
 import { ImageNode } from './image-node';

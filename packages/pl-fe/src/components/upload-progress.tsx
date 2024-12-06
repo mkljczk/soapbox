@@ -1,7 +1,11 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HStack, Icon, ProgressBar, Stack, Text } from 'pl-fe/components/ui';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import ProgressBar from 'pl-fe/components/ui/progress-bar';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
 interface IUploadProgress {
   /** Number between 0 and 100 to represent the percentage complete. */
@@ -13,7 +17,7 @@ const UploadProgress: React.FC<IUploadProgress> = ({ progress }) => (
   <HStack alignItems='center' space={2}>
     <Icon
       src={require('@tabler/icons/outline/cloud-upload.svg')}
-      className='h-7 w-7 text-gray-500'
+      className='size-7 text-gray-500'
     />
 
     <Stack space={1}>

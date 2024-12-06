@@ -1,10 +1,17 @@
 import React, { useEffect } from 'react';
 import { defineMessages, FormattedDate, useIntl } from 'react-intl';
 
-import { openModal } from 'pl-fe/actions/modals';
 import { fetchOAuthTokens, revokeOAuthTokenById } from 'pl-fe/actions/security';
-import { Button, Card, CardBody, CardHeader, CardTitle, Column, HStack, Spinner, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Card, { CardBody, CardHeader, CardTitle } from 'pl-fe/components/ui/card';
+import Column from 'pl-fe/components/ui/column';
+import HStack from 'pl-fe/components/ui/hstack';
+import Spinner from 'pl-fe/components/ui/spinner';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import type { OauthToken } from 'pl-api';
 
@@ -25,16 +32,18 @@ const AuthToken: React.FC<IAuthToken> = ({ token, isCurrent }) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
+  const { openModal } = useModalsStore();
+
   const handleRevoke = () => {
     if (isCurrent)
-      dispatch(openModal('CONFIRM', {
+      openModal('CONFIRM', {
         heading: intl.formatMessage(messages.revokeSessionHeading),
         message: intl.formatMessage(messages.revokeSessionMessage),
         confirm: intl.formatMessage(messages.revokeSessionConfirm),
         onConfirm: () => {
           dispatch(revokeOAuthTokenById(token.id));
         },
-      }));
+      });
     else {
       dispatch(revokeOAuthTokenById(token.id));
     }
@@ -72,9 +81,9 @@ const AuthToken: React.FC<IAuthToken> = ({ token, isCurrent }) => {
 const AuthTokenList: React.FC = () => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
-  const tokens = useAppSelector(state => state.security.get('tokens').toReversed());
+  const tokens = useAppSelector(state => state.security.tokens.toReversed());
   const currentTokenId = useAppSelector(state => {
-    const currentToken = state.auth.tokens.valueSeq().find((token) => token.me === state.auth.me);
+    const currentToken = Object.values(state.auth.tokens).find((token) => token.me === state.auth.me);
 
     return currentToken?.id;
   });
@@ -86,7 +95,7 @@ const AuthTokenList: React.FC = () => {
   const body = tokens ? (
     <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
       {tokens.map((token) => (
-        <AuthToken key={token.id} token={token} isCurrent={token.id === currentTokenId} />
+        <AuthToken key={token.id} token={token} isCurrent={String(token.id) === currentTokenId} />
       ))}
     </div>
   ) : <Spinner />;

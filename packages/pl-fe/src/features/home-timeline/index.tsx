@@ -4,10 +4,16 @@ import { Link } from 'react-router-dom';
 
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
-import { Column, Stack, Text } from 'pl-fe/components/ui';
+import Column from 'pl-fe/components/ui/column';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import Timeline from 'pl-fe/features/ui/components/timeline';
-import { useAppSelector, useAppDispatch, useFeatures, useInstance, useTheme } from 'pl-fe/hooks';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useTheme } from 'pl-fe/hooks/use-theme';
 
 const messages = defineMessages({
   title: { id: 'column.home', defaultMessage: 'Home' },
@@ -23,7 +29,7 @@ const HomeTimeline: React.FC = () => {
   const polling = useRef<NodeJS.Timeout | null>(null);
   const isMobile = useIsMobile();
 
-  const isPartial = useAppSelector(state => state.timelines.get('home')?.isPartial === true);
+  const isPartial = useAppSelector(state => state.timelines.home?.isPartial === true);
 
   const handleLoadMore = (maxId: string) => {
     dispatch(fetchHomeTimeline(true));
@@ -62,13 +68,12 @@ const HomeTimeline: React.FC = () => {
     <Column className='py-0' label={intl.formatMessage(messages.title)} transparent={!isMobile} withHeader={false}>
       <PullToRefresh onRefresh={handleRefresh}>
         <Timeline
-          className='black:p-0 black:sm:p-4'
+          className='black:p-0 black:sm:p-4 black:sm:pt-0'
           loadMoreClassName='black:sm:mx-4'
           scrollKey='home_timeline'
           onLoadMore={handleLoadMore}
           timelineId='home'
           divideType={(theme === 'black' || isMobile) ? 'border' : 'space'}
-          showAds
           emptyMessage={
             <Stack space={1}>
               <Text size='xl' weight='medium' align='center'>

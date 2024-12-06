@@ -1,5 +1,5 @@
 import { buildAccount } from 'pl-fe/jest/factory';
-import { normalizeChatMessage } from 'pl-fe/normalizers';
+import { normalizeChatMessage } from 'pl-fe/normalizers/chat-message';
 import { ChatKeys, IChat } from 'pl-fe/queries/chats';
 import { queryClient } from 'pl-fe/queries/client';
 

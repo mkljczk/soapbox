@@ -1,14 +1,16 @@
 import { useMutation } from '@tanstack/react-query';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { Icon, Input, Stack } from 'pl-fe/components/ui';
+import Icon from 'pl-fe/components/ui/icon';
+import Input from 'pl-fe/components/ui/input';
+import Stack from 'pl-fe/components/ui/stack';
 import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
-import { useDebounce } from 'pl-fe/hooks';
+import { useDebounce } from 'pl-fe/hooks/use-debounce';
 import { useChats } from 'pl-fe/queries/chats';
 import { queryClient } from 'pl-fe/queries/client';
-import useAccountSearch from 'pl-fe/queries/search';
+import { useAccountSearch } from 'pl-fe/queries/search/use-search-accounts';
 import toast from 'pl-fe/toast';
 
 import Blankslate from './blankslate';
@@ -25,9 +27,9 @@ interface IChatSearch {
   isMainPage?: boolean;
 }
 
-const ChatSearch = (props: IChatSearch) => {
+const ChatSearch: React.FC<IChatSearch> = ({ isMainPage = false }) => {
+  const parentRef = useRef<HTMLDivElement>(null);
   const intl = useIntl();
-  const { isMainPage = false } = props;
 
   const debounce = useDebounce;
   const history = useHistory();
@@ -70,6 +72,7 @@ const ChatSearch = (props: IChatSearch) => {
             handleClickOnSearchResult.mutate(id);
             clearValue();
           }}
+          parentRef={parentRef}
         />
       );
     } else if (hasSearchValue && !hasSearchResults && !isFetching) {
@@ -86,8 +89,8 @@ const ChatSearch = (props: IChatSearch) => {
   };
 
   return (
-    <Stack space={4} className='h-full grow'>
-      <div className='px-4'>
+    <Stack space={4} className='relative -mt-1 h-full overflow-auto'>
+      <div className='px-4 pt-1'>
         <Input
           data-testid='search'
           type='text'
@@ -101,7 +104,7 @@ const ChatSearch = (props: IChatSearch) => {
             <button onClick={clearValue}>
               <Icon
                 src={hasSearchValue ? require('@tabler/icons/outline/x.svg') : require('@tabler/icons/outline/search.svg')}
-                className='h-4 w-4 text-gray-700 dark:text-gray-600'
+                className='size-4 text-gray-700 dark:text-gray-600'
                 aria-hidden='true'
               />
             </button>
@@ -109,7 +112,7 @@ const ChatSearch = (props: IChatSearch) => {
         />
       </div>
 
-      <Stack className='grow'>
+      <Stack className='h-full grow overflow-auto' ref={parentRef}>
         {renderBody()}
       </Stack>
     </Stack>

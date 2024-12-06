@@ -2,7 +2,10 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import CopyableInput from 'pl-fe/components/copyable-input';
-import { Text, Stack, HStack, Emoji } from 'pl-fe/components/ui';
+import Emoji from 'pl-fe/components/ui/emoji';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 
 interface ILightningAddress {
   address: string;
@@ -29,7 +32,4 @@ const LightningAddress: React.FC<ILightningAddress> = (props): JSX.Element => {
   );
 };
 
-export {
-  type ILightningAddress,
-  LightningAddress as default,
-};
+export { LightningAddress as default };

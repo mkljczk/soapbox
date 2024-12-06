@@ -20,7 +20,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 
-import { Icon } from 'pl-fe/components/ui';
+import Icon from 'pl-fe/components/ui/icon';
 
 import { getSelectedNode } from '../utils/get-selected-node';
 import { setFloatingElemPosition } from '../utils/set-floating-elem-position';
@@ -193,7 +193,7 @@ const FloatingLinkEditor = ({
                 editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
               }}
             >
-              <Icon className='h-5 w-5' src={require('@tabler/icons/outline/x.svg')} />
+              <Icon className='size-5' src={require('@tabler/icons/outline/x.svg')} />
             </div>
           </>
         ) : (
@@ -210,7 +210,7 @@ const FloatingLinkEditor = ({
                 setEditMode(true);
               }}
             >
-              <Icon className='h-5 w-5' src={require('@tabler/icons/outline/pencil.svg')} />
+              <Icon className='size-5' src={require('@tabler/icons/outline/pencil.svg')} />
             </div>
           </>
         )}

@@ -4,7 +4,6 @@ import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 
-import { MODAL_CLOSE, MODAL_OPEN } from 'pl-fe/actions/modals';
 import { mockStore, rootState } from 'pl-fe/jest/test-helpers';
 
 import ComposeButton from './compose-button';
@@ -34,7 +33,7 @@ describe('<ComposeButton />', () => {
 
     expect(store.getActions().length).toEqual(0);
     fireEvent.click(screen.getByRole('button'));
-    expect(store.getActions()[0].type).toEqual(MODAL_CLOSE);
-    expect(store.getActions()[1].type).toEqual(MODAL_OPEN);
+    expect(store.getActions()[0].type).toEqual('MODAL_CLOSE');
+    expect(store.getActions()[1].type).toEqual('MODAL_OPEN');
   });
 });

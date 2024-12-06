@@ -5,25 +5,31 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { mentionCompose, replyCompose } from 'pl-fe/actions/compose';
 import { toggleFavourite, toggleReblog } from 'pl-fe/actions/interactions';
-import { openModal } from 'pl-fe/actions/modals';
-import { toggleStatusMediaHidden, unfilterStatus } from 'pl-fe/actions/statuses';
-import TranslateButton from 'pl-fe/components/translate-button';
+import { unfilterStatus } from 'pl-fe/actions/statuses';
+import Card from 'pl-fe/components/ui/card';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
-import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
+import Emojify from 'pl-fe/features/emoji/emojify';
+import StatusTypeIcon from 'pl-fe/features/status/components/status-type-icon';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
-import { useAppDispatch, useAppSelector, useSettings } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 import { makeGetStatus, type SelectedStatus } from 'pl-fe/selectors';
+import { useModalsStore } from 'pl-fe/stores/modals';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { textForScreenReader } from 'pl-fe/utils/status';
 
 import EventPreview from './event-preview';
 import StatusActionBar from './status-action-bar';
 import StatusContent from './status-content';
 import StatusLanguagePicker from './status-language-picker';
-import StatusMedia from './status-media';
+import StatusReactionsBar from './status-reactions-bar';
 import StatusReplyMentions from './status-reply-mentions';
-import SensitiveContentOverlay from './statuses/sensitive-content-overlay';
 import StatusInfo from './statuses/status-info';
-import { Card, Icon, Stack, Text } from './ui';
+import Tombstone from './tombstone';
 
 const messages = defineMessages({
   reblogged_by: { id: 'status.reblogged_by', defaultMessage: '{name} reposted' },
@@ -35,7 +41,6 @@ interface IStatus {
   status: SelectedStatus;
   onClick?: () => void;
   muted?: boolean;
-  hidden?: boolean;
   unread?: boolean;
   onMoveUp?: (statusId: string, featured?: boolean) => void;
   onMoveDown?: (statusId: string, featured?: boolean) => void;
@@ -60,7 +65,6 @@ const Status: React.FC<IStatus> = (props) => {
     onMoveUp,
     onMoveDown,
     muted,
-    hidden,
     featured,
     unread,
     hideActionBar,
@@ -73,6 +77,8 @@ const Status: React.FC<IStatus> = (props) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
 
+  const { toggleStatusMediaHidden } = useStatusMetaStore();
+  const { openModal } = useModalsStore();
   const { boostModal } = useSettings();
   const didShowCard = useRef(false);
   const node = useRef<HTMLDivElement>(null);
@@ -88,10 +94,10 @@ const Status: React.FC<IStatus> = (props) => {
 
   // Track height changes we know about to compensate scrolling.
   useEffect(() => {
-    didShowCard.current = Boolean(!muted && !hidden && status?.card);
+    didShowCard.current = Boolean(!muted && status?.card);
   }, []);
 
-  const handleClick = (e?: React.MouseEvent): void => {
+  const handleClick = (e?: React.MouseEvent) => {
     e?.stopPropagation();
 
     // If the user is selecting text, don't focus the status.
@@ -110,7 +116,7 @@ const Status: React.FC<IStatus> = (props) => {
     }
   };
 
-  const handleHotkeyOpenMedia = (e?: KeyboardEvent): void => {
+  const handleHotkeyOpenMedia = (e?: KeyboardEvent) => {
     const status = actualStatus;
     const firstAttachment = status.media_attachments[0];
 
@@ -118,77 +124,73 @@ const Status: React.FC<IStatus> = (props) => {
 
     if (firstAttachment) {
       if (firstAttachment.type === 'video') {
-        dispatch(openModal('VIDEO', { statusId: status.id, media: firstAttachment, time: 0 }));
+        openModal('VIDEO', { statusId: status.id, media: firstAttachment, time: 0 });
       } else {
-        dispatch(openModal('MEDIA', { statusId: status.id, media: status.media_attachments, index: 0 }));
+        openModal('MEDIA', { statusId: status.id, media: status.media_attachments, index: 0 });
       }
     }
   };
 
-  const handleHotkeyReply = (e?: KeyboardEvent): void => {
+  const handleHotkeyReply = (e?: KeyboardEvent) => {
     e?.preventDefault();
     dispatch(replyCompose(actualStatus, status.reblog_id ? status.account : undefined));
   };
 
-  const handleHotkeyFavourite = (): void => {
-    toggleFavourite(actualStatus);
+  const handleHotkeyFavourite = (e?: KeyboardEvent) => {
+    e?.preventDefault();
+    dispatch(toggleFavourite(actualStatus));
   };
 
-  const handleHotkeyBoost = (e?: KeyboardEvent): void => {
+  const handleHotkeyBoost = (e?: KeyboardEvent) => {
     const modalReblog = () => dispatch(toggleReblog(actualStatus));
     if ((e && e.shiftKey) || !boostModal) {
       modalReblog();
     } else {
-      dispatch(openModal('BOOST', { statusId: actualStatus.id, onReblog: modalReblog }));
+      openModal('BOOST', { statusId: actualStatus.id, onReblog: modalReblog });
     }
   };
 
-  const handleHotkeyMention = (e?: KeyboardEvent): void => {
+  const handleHotkeyMention = (e?: KeyboardEvent) => {
     e?.preventDefault();
     dispatch(mentionCompose(actualStatus.account));
   };
 
-  const handleHotkeyOpen = (): void => {
+  const handleHotkeyOpen = () => {
     history.push(statusUrl);
   };
 
-  const handleHotkeyOpenProfile = (): void => {
+  const handleHotkeyOpenProfile = () => {
     history.push(`/@${actualStatus.account.acct}`);
   };
 
-  const handleHotkeyMoveUp = (e?: KeyboardEvent): void => {
+  const handleHotkeyMoveUp = (e?: KeyboardEvent) => {
     if (onMoveUp) {
       onMoveUp(status.id, featured);
     }
   };
 
-  const handleHotkeyMoveDown = (e?: KeyboardEvent): void => {
+  const handleHotkeyMoveDown = (e?: KeyboardEvent) => {
     if (onMoveDown) {
       onMoveDown(status.id, featured);
     }
   };
 
-  const handleHotkeyToggleSensitive = (): void => {
-    dispatch(toggleStatusMediaHidden(actualStatus));
+  const handleHotkeyToggleSensitive = () => {
+    toggleStatusMediaHidden(actualStatus.id);
   };
 
-  const handleHotkeyReact = (): void => {
-    _expandEmojiSelector();
+  const handleHotkeyReact = () => {
+    (node.current?.querySelector('.emoji-picker-dropdown') as HTMLButtonElement)?.click();
   };
 
   const handleUnfilter = () => dispatch(unfilterStatus(status.filtered.length ? status.id : actualStatus.id));
-
-  const _expandEmojiSelector = (): void => {
-    const firstEmoji: HTMLDivElement | null | undefined = node.current?.querySelector('.emoji-react-selector .emoji-react-selector__emoji');
-    firstEmoji?.focus();
-  };
 
   const renderStatusInfo = () => {
     if (isReblog && showGroup && group) {
       return (
         <StatusInfo
           avatarSize={avatarSize}
-          icon={<Icon src={require('@tabler/icons/outline/repeat.svg')} className='h-4 w-4 text-green-600' />}
+          icon={<Icon src={require('@tabler/icons/outline/repeat.svg')} className='size-4 text-green-600' />}
           text={
             <FormattedMessage
               id='status.reblogged_by_with_group'
@@ -200,23 +202,17 @@ const Status: React.FC<IStatus> = (props) => {
                     className='hover:underline'
                   >
                     <bdi className='truncate'>
-                      <strong
-                        className='text-gray-800 dark:text-gray-200'
-                        dangerouslySetInnerHTML={{
-                          __html: status.account.display_name_html,
-                        }}
-                      />
+                      <strong className='text-gray-800 dark:text-gray-200'>
+                        <Emojify text={status.account.display_name} emojis={status.account.emojis} />
+                      </strong>
                     </bdi>
                   </Link>
                 ),
                 group: (
                   <Link to={`/groups/${group.id}`} className='hover:underline'>
-                    <strong
-                      className='text-gray-800 dark:text-gray-200'
-                      dangerouslySetInnerHTML={{
-                        __html: group.display_name_html,
-                      }}
-                    />
+                    <strong className='text-gray-800 dark:text-gray-200'>
+                      <Emojify text={group.display_name} emojis={group.emojis} />
+                    </strong>
                   </Link>
                 ),
               }}
@@ -230,12 +226,9 @@ const Status: React.FC<IStatus> = (props) => {
       const renderedAccounts = accounts.slice(0, 2).map(account => !!account && (
         <Link key={account.acct} to={`/@${account.acct}`} className='hover:underline'>
           <bdi className='truncate'>
-            <strong
-              className='text-gray-800 dark:text-gray-200'
-              dangerouslySetInnerHTML={{
-                __html: account.display_name_html,
-              }}
-            />
+            <strong className='text-gray-800 dark:text-gray-200'>
+              <Emojify text={account.display_name} emojis={account.emojis} />
+            </strong>
           </bdi>
         </Link>
       ));
@@ -253,7 +246,7 @@ const Status: React.FC<IStatus> = (props) => {
       return (
         <StatusInfo
           avatarSize={avatarSize}
-          icon={<Icon src={require('@tabler/icons/outline/repeat.svg')} className='h-4 w-4 text-green-600' />}
+          icon={<Icon src={require('@tabler/icons/outline/repeat.svg')} className='size-4 text-green-600' />}
           text={
             <FormattedMessage
               id='status.reblogged_by'
@@ -270,7 +263,7 @@ const Status: React.FC<IStatus> = (props) => {
       return (
         <StatusInfo
           avatarSize={avatarSize}
-          icon={<Icon src={require('@tabler/icons/outline/pinned.svg')} className='h-4 w-4 text-gray-600 dark:text-gray-400' />}
+          icon={<Icon src={require('@tabler/icons/outline/pinned.svg')} className='size-4 text-gray-600 dark:text-gray-400' />}
           text={
             <FormattedMessage id='status.pinned' defaultMessage='Pinned post' />
           }
@@ -280,7 +273,7 @@ const Status: React.FC<IStatus> = (props) => {
       return (
         <StatusInfo
           avatarSize={avatarSize}
-          icon={<Icon src={require('@tabler/icons/outline/circles.svg')} className='h-4 w-4 text-primary-600 dark:text-accent-blue' />}
+          icon={<Icon src={require('@tabler/icons/outline/circles.svg')} className='size-4 text-primary-600 dark:text-accent-blue' />}
           text={
             <FormattedMessage
               id='status.group'
@@ -290,7 +283,7 @@ const Status: React.FC<IStatus> = (props) => {
                   <Link to={`/groups/${group.id}`} className='hover:underline'>
                     <bdi className='truncate'>
                       <strong className='text-gray-800 dark:text-gray-200'>
-                        <span dangerouslySetInnerHTML={{ __html: group.display_name_html }} />
+                        <Emojify text={group.display_name} emojis={group.emojis} />
                       </strong>
                     </bdi>
                   </Link>
@@ -305,16 +298,9 @@ const Status: React.FC<IStatus> = (props) => {
 
   if (!status) return null;
 
-  if (hidden) {
-    return (
-      <div ref={node}>
-        <>
-          {actualStatus.account.display_name || actualStatus.account.username}
-          {actualStatus.content}
-        </>
-      </div>
-    );
-  }
+  if (status.deleted) return (
+    <Tombstone id={status.id} onMoveUp={onMoveUp} onMoveDown={onMoveDown} deleted />
+  );
 
   if (filtered && status.showFiltered !== false) {
     const minHandlers = muted ? undefined : {
@@ -343,20 +329,6 @@ const Status: React.FC<IStatus> = (props) => {
       messages.reblogged_by,
       { name: status.account.acct },
     );
-  }
-
-  let quote;
-
-  if (actualStatus.quote_id) {
-    if ((actualStatus.quote_visible ?? true) === false) {
-      quote = (
-        <div className='quoted-status-tombstone'>
-          <p><FormattedMessage id='statuses.quote_tombstone' defaultMessage='Post is unavailable.' /></p>
-        </div>
-      );
-    } else {
-      quote = <QuotedStatus statusId={actualStatus.quote_id} />;
-    }
   }
 
   const handlers = muted ? undefined : {
@@ -397,18 +369,23 @@ const Status: React.FC<IStatus> = (props) => {
           {renderStatusInfo()}
 
           <AccountContainer
-            key={actualStatus.account.id}
-            id={actualStatus.account.id}
+            key={actualStatus.account_id}
+            id={actualStatus.account_id}
             timestamp={actualStatus.created_at}
             timestampUrl={statusUrl}
             action={accountAction}
             hideActions={!accountAction}
             showEdit={!!actualStatus.edited_at}
-            showProfileHoverCard={hoverable}
+            showAccountHoverCard={hoverable}
             withLinkToProfile={hoverable}
             approvalStatus={actualStatus.approval_status}
             avatarSize={avatarSize}
-            items={<StatusLanguagePicker status={status} />}
+            items={(
+              <>
+                <StatusTypeIcon status={actualStatus} />
+                <StatusLanguagePicker status={actualStatus} />
+              </>
+            )}
           />
 
           <div className='status__content-wrapper'>
@@ -416,39 +393,31 @@ const Status: React.FC<IStatus> = (props) => {
 
             <Stack className='relative z-0'>
               {actualStatus.event ? <EventPreview className='shadow-xl' status={actualStatus} /> : (
-                <Stack space={4}>
-                  <StatusContent
-                    status={actualStatus}
-                    onClick={handleClick}
-                    collapsable
-                    translatable
-                  />
-
-                  <TranslateButton status={actualStatus} />
-
-                  {(quote || actualStatus.card || actualStatus.media_attachments.length > 0) && (
-                    <Stack space={4}>
-                      {actualStatus.media_attachments.length > 0 && (
-                        <div className='relative'>
-                          <SensitiveContentOverlay status={actualStatus} />
-                          <StatusMedia
-                            status={actualStatus}
-                            muted={muted}
-                            onClick={handleClick}
-                          />
-                        </div>
-                      )}
-
-                      {quote}
-                    </Stack>
-                  )}
-                </Stack>
+                <StatusContent
+                  status={actualStatus}
+                  onClick={handleClick}
+                  collapsable
+                  translatable
+                  withMedia
+                />
               )}
             </Stack>
 
+            <StatusReactionsBar status={actualStatus} collapsed />
+
             {!hideActionBar && (
-              <div className='pt-4'>
-                <StatusActionBar status={actualStatus} rebloggedBy={isReblog ? status.account : undefined} fromBookmarks={fromBookmarks} />
+              <div
+                className={clsx({
+                  'pt-2': actualStatus.emoji_reactions.length,
+                  'pt-4': !actualStatus.emoji_reactions.length,
+                })}
+              >
+                <StatusActionBar
+                  status={actualStatus}
+                  rebloggedBy={isReblog ? status.account : undefined}
+                  fromBookmarks={fromBookmarks}
+                  expandable
+                />
               </div>
             )}
           </div>

@@ -1,23 +1,29 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-const locationSchema = z.object({
-  url: z.string().url().catch(''),
-  description: z.string().catch(''),
-  country: z.string().catch(''),
-  locality: z.string().catch(''),
-  region: z.string().catch(''),
-  postal_code: z.string().catch(''),
-  street: z.string().catch(''),
-  origin_id: z.string().catch(''),
-  origin_provider: z.string().catch(''),
-  type: z.string().catch(''),
-  timezone: z.string().catch(''),
-  geom: z.object({
-    coordinates: z.tuple([z.number(), z.number()]).nullable().catch(null),
-    srid: z.string().catch(''),
-  }).nullable().catch(null),
+/**
+ * @category Schemas
+ */
+const locationSchema = v.object({
+  url: v.fallback(v.pipe(v.string(), v.url()), ''),
+  description: v.fallback(v.string(), ''),
+  country: v.fallback(v.string(), ''),
+  locality: v.fallback(v.string(), ''),
+  region: v.fallback(v.string(), ''),
+  postal_code: v.fallback(v.string(), ''),
+  street: v.fallback(v.string(), ''),
+  origin_id: v.fallback(v.string(), ''),
+  origin_provider: v.fallback(v.string(), ''),
+  type: v.fallback(v.string(), ''),
+  timezone: v.fallback(v.string(), ''),
+  geom: v.fallback(v.nullable(v.object({
+    coordinates: v.fallback(v.nullable(v.tuple([v.number(), v.number()])), null),
+    srid: v.fallback(v.string(), ''),
+  })), null),
 });
 
-type Location = z.infer<typeof locationSchema>;
+/**
+ * @category Entity types
+ */
+type Location = v.InferOutput<typeof locationSchema>;
 
 export { locationSchema, type Location };

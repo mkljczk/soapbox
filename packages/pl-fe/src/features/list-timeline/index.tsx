@@ -3,14 +3,18 @@ import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { deleteList, fetchList } from 'pl-fe/actions/lists';
-import { openModal } from 'pl-fe/actions/modals';
 import { fetchListTimeline } from 'pl-fe/actions/timelines';
-import { useListStream } from 'pl-fe/api/hooks';
+import { useListStream } from 'pl-fe/api/hooks/streaming/use-list-stream';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
-import { Column, Button, Spinner } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector, useTheme } from 'pl-fe/hooks';
-import { useIsMobile } from 'pl-fe/hooks/useIsMobile';
+import Button from 'pl-fe/components/ui/button';
+import Column from 'pl-fe/components/ui/column';
+import Spinner from 'pl-fe/components/ui/spinner';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
+import { useTheme } from 'pl-fe/hooks/use-theme';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import Timeline from '../ui/components/timeline';
 
@@ -28,8 +32,9 @@ const ListTimeline: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const theme = useTheme();
   const isMobile = useIsMobile();
+  const { openModal } = useModalsStore();
 
-  const list = useAppSelector((state) => state.lists.get(id));
+  const list = useAppSelector((state) => state.lists[id]);
 
   useListStream(id);
 
@@ -43,20 +48,20 @@ const ListTimeline: React.FC = () => {
   };
 
   const handleEditClick = () => {
-    dispatch(openModal('LIST_EDITOR', { listId: id }));
+    openModal('LIST_EDITOR', { listId: id });
   };
 
   const handleDeleteClick = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.preventDefault();
 
-    dispatch(openModal('CONFIRM', {
+    openModal('CONFIRM', {
       heading: intl.formatMessage(messages.deleteHeading),
       message: intl.formatMessage(messages.deleteMessage),
       confirm: intl.formatMessage(messages.deleteConfirm),
       onConfirm: () => {
         dispatch(deleteList(id));
       },
-    }));
+    });
   };
 
   const title = list ? list.title : id;
@@ -103,7 +108,7 @@ const ListTimeline: React.FC = () => {
       transparent={!isMobile}
     >
       <Timeline
-        className='black:p-0 black:sm:p-4'
+        className='black:p-0 black:sm:p-4 black:sm:pt-0'
         loadMoreClassName='black:sm:mx-4'
         scrollKey='list_timeline'
         timelineId={`list:${id}`}

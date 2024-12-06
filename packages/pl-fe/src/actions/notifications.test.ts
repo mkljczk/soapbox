@@ -2,7 +2,7 @@ import { OrderedMap as ImmutableOrderedMap } from 'immutable';
 
 import { __stub } from 'pl-fe/api';
 import { mockStore, rootState } from 'pl-fe/jest/test-helpers';
-import { normalizeNotification } from 'pl-fe/normalizers';
+import { normalizeNotification } from 'pl-fe/normalizers/notification';
 
 import { markReadNotifications } from './notifications';
 
@@ -14,10 +14,14 @@ describe('markReadNotifications()', () => {
       '10': normalizeNotification({ id: '10' }),
     });
 
-    const state = rootState
-      .set('me', '123')
-      .setIn(['notifications', 'lastRead'], '9')
-      .setIn(['notifications', 'items'], items);
+    const state = {
+      ...rootState,
+      me: '123',
+      notifications: rootState.notifications.merge({
+        lastRead: '9',
+        items,
+      }),
+    };
 
     const store = mockStore(state);
 

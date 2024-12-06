@@ -3,36 +3,20 @@
  * Converts API statuses into our internal format.
  * @see {@link https://docs.joinmastodon.org/entities/status/}
  */
-import escapeTextContentForBrowser from 'escape-html';
-import DOMPurify from 'isomorphic-dompurify';
-import { type Account as BaseAccount, type Status as BaseStatus, type MediaAttachment, mentionSchema, type Translation } from 'pl-api';
+import { type Account as BaseAccount, type Status as BaseStatus, type MediaAttachment, mentionSchema } from 'pl-api';
+import * as v from 'valibot';
 
-import emojify from 'pl-fe/features/emoji';
-import { stripCompatibilityFeatures, unescapeHTML } from 'pl-fe/utils/html';
-import { makeEmojiMap } from 'pl-fe/utils/normalizers';
+import { unescapeHTML } from 'pl-fe/utils/html';
 
 import { normalizeAccount } from './account';
 import { normalizeGroup } from './group';
-import { normalizePoll } from './poll';
 
 const domParser = new DOMParser();
 
 type StatusApprovalStatus = Exclude<BaseStatus['approval_status'], null>;
 type StatusVisibility = 'public' | 'unlisted' | 'private' | 'direct' | 'group' | 'mutuals_only' | 'local';
 
-type CalculatedValues = {
-  search_index: string;
-  contentHtml: string;
-  spoilerHtml: string;
-  contentMapHtml?: Record<string, string>;
-  spoilerMapHtml?: Record<string, string>;
-  expanded?: boolean | null;
-  hidden?: boolean | null;
-  translation?: Translation | null | false;
-  currentLanguage?: string;
-};
-
-type OldStatus = Pick<BaseStatus, 'content' | 'spoiler_text'> & CalculatedValues;
+type OldStatus = Pick<BaseStatus, 'content' | 'spoiler_text'> & { search_index: string };
 
 // Gets titles of poll options from status
 const getPollOptionTitles = ({ poll }: Pick<BaseStatus, 'poll'>): readonly string[] => {
@@ -62,40 +46,20 @@ const buildSearchContent = (status: Pick<BaseStatus, 'poll' | 'mentions' | 'spoi
   return unescapeHTML(fields.join('\n\n')) || '';
 };
 
-const calculateContent = (text: string, emojiMap: any) => DOMPurify.sanitize(stripCompatibilityFeatures(emojify(text, emojiMap)), { USE_PROFILES: { html: true } });
-const calculateSpoiler = (text: string, emojiMap: any) => DOMPurify.sanitize(emojify(escapeTextContentForBrowser(text), emojiMap), { USE_PROFILES: { html: true } });
-
-const calculateStatus = (status: BaseStatus, oldStatus?: OldStatus): CalculatedValues => {
+const getSearchIndex = (status: BaseStatus, oldStatus?: OldStatus) => {
   if (oldStatus && oldStatus.content === status.content && oldStatus.spoiler_text === status.spoiler_text) {
-    const {
-      search_index, contentHtml, spoilerHtml, contentMapHtml, spoilerMapHtml, hidden, expanded, translation, currentLanguage,
-    } = oldStatus;
-
-    return {
-      search_index, contentHtml, spoilerHtml, contentMapHtml, spoilerMapHtml, hidden, expanded, translation, currentLanguage,
-    };
+    return oldStatus.search_index;
   } else {
     const searchContent = buildSearchContent(status);
-    const emojiMap = makeEmojiMap(status.emojis);
 
-    return {
-      search_index: domParser.parseFromString(searchContent, 'text/html').documentElement.textContent || '',
-      contentHtml: calculateContent(status.content, emojiMap),
-      spoilerHtml: calculateSpoiler(status.spoiler_text, emojiMap),
-      contentMapHtml: status.content_map
-        ? Object.fromEntries(Object.entries(status.content_map)?.map(([key, value]) => [key, calculateContent(value, emojiMap)]))
-        : undefined,
-      spoilerMapHtml: status.spoiler_text_map
-        ? Object.fromEntries(Object.entries(status.spoiler_text_map).map(([key, value]) => [key, calculateSpoiler(value, emojiMap)]))
-        : undefined,
-    };
+    return domParser.parseFromString(searchContent, 'text/html').documentElement.textContent || '';
   }
 };
 
 const normalizeStatus = (status: BaseStatus & {
   accounts?: Array<BaseAccount>;
 }, oldStatus?: OldStatus) => {
-  const calculated = calculateStatus(status, oldStatus);
+  const searchIndex = getSearchIndex(status, oldStatus);
 
   // Sort the replied-to mention to the top
   let mentions = status.mentions.toSorted((a, _b) => {
@@ -111,7 +75,7 @@ const normalizeStatus = (status: BaseStatus & {
   const hasSelfMention = status.mentions.some(mention => status.account.id === mention.id);
 
   if (isSelfReply && !hasSelfMention) {
-    const selfMention = mentionSchema.parse(status.account);
+    const selfMention = v.parse(mentionSchema, status.account);
     mentions = [selfMention, ...mentions];
   }
 
@@ -121,9 +85,6 @@ const normalizeStatus = (status: BaseStatus & {
     links: Array<MediaAttachment>;
   } | null) = null;
   let media_attachments = status.media_attachments;
-
-  // Normalize poll
-  const poll = status.poll ? normalizePoll(status.poll) : null;
 
   if (status.event) {
     const firstAttachment = status.media_attachments[0];
@@ -151,27 +112,20 @@ const normalizeStatus = (status: BaseStatus & {
     account_id: status.account.id,
     reblog_id: status.reblog?.id || null,
     poll_id: status.poll?.id || null,
-    quote_id: status.quote?.id || null,
     group_id: status.group?.id || null,
-    translating: false,
     expectsCard: false,
     showFiltered: null as null | boolean,
+    deleted: false,
     ...status,
+    quote_id: status.quote?.id || status.quote_id || null,
     account: normalizeAccount(status.account),
     accounts: status.accounts?.map(normalizeAccount),
     mentions,
-    expanded: null,
-    hidden: null,
-    /** Rewrite `<p></p>` to empty string. */
-    content: status.content === '<p></p>' ? '' : status.content,
     filtered: status.filtered?.map(result => result.filter.title),
     event,
-    poll,
     group,
     media_attachments,
-    ...calculated,
-    translation: (status.translation || calculated.translation || null) as Translation | null | false,
-    // quote: status.quote ? normalizeStatus(status.quote as any) : null,
+    search_index: searchIndex,
   };
 };
 

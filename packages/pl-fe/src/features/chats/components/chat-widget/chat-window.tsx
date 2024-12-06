@@ -1,7 +1,11 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Avatar, HStack, Icon, Stack, Text } from 'pl-fe/components/ui';
+import Avatar from 'pl-fe/components/ui/avatar';
+import HStack from 'pl-fe/components/ui/hstack';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
 
@@ -58,7 +62,7 @@ const ChatWindow = () => {
               <button onClick={closeChat}>
                 <Icon
                   src={require('@tabler/icons/outline/arrow-left.svg')}
-                  className='h-6 w-6 text-gray-600 rtl:rotate-180 dark:text-gray-400'
+                  className='size-6 text-gray-600 dark:text-gray-400 rtl:rotate-180'
                 />
               </button>
             )}

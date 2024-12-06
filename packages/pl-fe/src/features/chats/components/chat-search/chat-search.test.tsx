@@ -1,6 +1,5 @@
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { VirtuosoMockContext } from 'react-virtuoso';
 
 import { __stub } from 'pl-fe/api';
 import { ChatProvider } from 'pl-fe/contexts/chat-context';
@@ -9,11 +8,9 @@ import { render, screen, waitFor } from 'pl-fe/jest/test-helpers';
 import ChatSearch from './chat-search';
 
 const renderComponent = () => render(
-  <VirtuosoMockContext.Provider value={{ viewportHeight: 300, itemHeight: 100 }}>
-    <ChatProvider>
-      <ChatSearch />
-    </ChatProvider>,
-  </VirtuosoMockContext.Provider>,
+  <ChatProvider>
+    <ChatSearch />
+  </ChatProvider>,
 );
 
 describe('<ChatSearch />', () => {

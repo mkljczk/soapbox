@@ -1,31 +1,25 @@
 import clsx from 'clsx';
 import debounce from 'lodash/debounce';
-import React, { useRef, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import LoadGap from 'pl-fe/components/load-gap';
-import ScrollableList from 'pl-fe/components/scrollable-list';
+import ScrollableList, { type IScrollableListWithContainer } from 'pl-fe/components/scrollable-list';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
 import StatusContainer from 'pl-fe/containers/status-container';
-import FeedSuggestions from 'pl-fe/features/feed-suggestions/feed-suggestions';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import PendingStatus from 'pl-fe/features/ui/components/pending-status';
-import { usePlFeConfig } from 'pl-fe/hooks';
 
-import { Stack, Text } from './ui';
-
-import type { OrderedSet as ImmutableOrderedSet } from 'immutable';
-import type { VirtuosoHandle } from 'react-virtuoso';
-import type { IScrollableList } from 'pl-fe/components/scrollable-list';
-
-interface IStatusList extends Omit<IScrollableList, 'onLoadMore' | 'children'> {
+interface IStatusList extends Omit<IScrollableListWithContainer, 'onLoadMore' | 'children'> {
   /** Unique key to preserve the scroll position when navigating back. */
   scrollKey: string;
   /** List of status IDs to display. */
-  statusIds: ImmutableOrderedSet<string>;
+  statusIds: Array<string>;
   /** Last _unfiltered_ status ID (maxId) for pagination. */
   lastStatusId?: string;
   /** Pinned statuses to show at the top of the feed. */
-  featuredStatusIds?: ImmutableOrderedSet<string>;
+  featuredStatusIds?: Array<string>;
   /** Pagination callback when the end of the list is reached. */
   onLoadMore?: (lastStatusId: string) => void;
   /** Whether the data is currently being fetched. */
@@ -40,8 +34,6 @@ interface IStatusList extends Omit<IScrollableList, 'onLoadMore' | 'children'> {
   timelineId?: string;
   /** Whether to display a gap or border between statuses in the list. */
   divideType?: 'space' | 'border';
-  /** Whether to display ads. */
-  showAds?: boolean;
   /** Whether to show group information. */
   showGroup?: boolean;
 }
@@ -56,21 +48,17 @@ const StatusList: React.FC<IStatusList> = ({
   timelineId,
   isLoading,
   isPartial,
-  showAds = false,
   showGroup = true,
   className,
   ...other
 }) => {
-  const plFeConfig = usePlFeConfig();
-  const node = useRef<VirtuosoHandle>(null);
-
-  const getFeaturedStatusCount = () => featuredStatusIds?.size || 0;
+  const getFeaturedStatusCount = () => featuredStatusIds?.length || 0;
 
   const getCurrentStatusIndex = (id: string, featured: boolean): number => {
     if (featured) {
-      return featuredStatusIds?.keySeq().findIndex(key => key === id) || 0;
+      return featuredStatusIds?.findIndex(key => key === id) || 0;
     } else {
-      return statusIds.keySeq().findIndex(key => key === id) + getFeaturedStatusCount();
+      return statusIds.findIndex(key => key === id) + getFeaturedStatusCount();
     }
   };
 
@@ -85,27 +73,23 @@ const StatusList: React.FC<IStatusList> = ({
   };
 
   const handleLoadOlder = useCallback(debounce(() => {
-    const maxId = lastStatusId || statusIds.last();
+    const maxId = lastStatusId || statusIds.at(-1);
     if (onLoadMore && maxId) {
-      onLoadMore(maxId.replace('末suggestions-', ''));
+      onLoadMore(maxId);
     }
-  }, 300, { leading: true }), [onLoadMore, lastStatusId, statusIds.last()]);
+  }, 300, { leading: true }), [onLoadMore, lastStatusId, statusIds.at(-1)]);
 
   const selectChild = (index: number) => {
-    node.current?.scrollIntoView({
-      index,
-      behavior: 'smooth',
-      done: () => {
-        const element = document.querySelector<HTMLDivElement>(`#status-list [data-index="${index}"] .focusable`);
-        element?.focus();
-      },
-    });
+    const selector = `#status-list [data-index="${index}"] .focusable`;
+    const element = document.querySelector<HTMLDivElement>(selector);
+
+    if (element) element.focus();
   };
 
   const renderLoadGap = (index: number) => {
-    const ids = statusIds.toList();
-    const nextId = ids.get(index + 1);
-    const prevId = ids.get(index - 1);
+    const ids = statusIds;
+    const nextId = ids[index + 1];
+    const prevId = ids[index - 1];
 
     if (index < 1 || !nextId || !prevId || !onLoadMore) return null;
 
@@ -147,7 +131,7 @@ const StatusList: React.FC<IStatusList> = ({
   const renderFeaturedStatuses = (): React.ReactNode[] => {
     if (!featuredStatusIds) return [];
 
-    return featuredStatusIds.toArray().map(statusId => (
+    return featuredStatusIds.map(statusId => (
       <StatusContainer
         key={`f-${statusId}`}
         id={statusId}
@@ -161,27 +145,13 @@ const StatusList: React.FC<IStatusList> = ({
     ));
   };
 
-  const renderFeedSuggestions = (statusId: string): React.ReactNode => (
-    <FeedSuggestions
-      key='suggestions'
-      statusId={statusId}
-      onMoveUp={handleMoveUp}
-      onMoveDown={handleMoveDown}
-    />
-  );
-
   const renderStatuses = (): React.ReactNode[] => {
-    if (isLoading || statusIds.size > 0) {
-      return statusIds.toList().reduce((acc, statusId, index) => {
+    if (isLoading || statusIds.length > 0) {
+      return statusIds.reduce((acc, statusId, index) => {
         if (statusId === null) {
           const gap = renderLoadGap(index);
-          // one does not simply push a null item to Virtuoso: https://github.com/petyosi/react-virtuoso/issues/206#issuecomment-747363793
           if (gap) {
             acc.push(gap);
-          }
-        } else if (statusId.startsWith('末suggestions-')) {
-          if (plFeConfig.feedInjection) {
-            acc.push(renderFeedSuggestions(statusId));
           }
         } else if (statusId.startsWith('末pending-')) {
           acc.push(renderPendingStatus(statusId));
@@ -226,14 +196,14 @@ const StatusList: React.FC<IStatusList> = ({
       id='status-list'
       key='scrollable-list'
       isLoading={isLoading}
-      showLoading={isLoading && statusIds.size === 0}
+      showLoading={isLoading && statusIds.length === 0}
       onLoadMore={handleLoadOlder}
       placeholderComponent={() => <PlaceholderStatus variant={divideType === 'border' ? 'slim' : 'rounded'} />}
       placeholderCount={20}
-      ref={node}
+      className={className}
       listClassName={clsx('divide-y divide-solid divide-gray-200 dark:divide-gray-800', {
         'divide-none': divideType !== 'border',
-      }, className)}
+      })}
       itemClassName={clsx({
         'pb-3': divideType !== 'border',
       })}

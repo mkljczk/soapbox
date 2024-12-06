@@ -1,42 +1,45 @@
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { openModal } from 'pl-fe/actions/modals';
 import { vote } from 'pl-fe/actions/polls';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
-
-import { Stack, Text } from '../ui';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useModalsStore } from 'pl-fe/stores/modals';
 
 import PollFooter from './poll-footer';
 import PollOption from './poll-option';
 
-import type { Status } from 'pl-fe/normalizers';
+import type { Status } from 'pl-fe/normalizers/status';
 
 type Selected = Record<number, boolean>;
 
 interface IPoll {
   id: string;
-  status?: Pick<Status, 'url' | 'currentLanguage'>;
+  status?: Pick<Status, 'url'>;
+  language?: string;
 }
 
 const messages = defineMessages({
   multiple: { id: 'poll.choose_multiple', defaultMessage: 'Choose as many as you\'d like.' },
 });
 
-const Poll: React.FC<IPoll> = ({ id, status }): JSX.Element | null => {
+const Poll: React.FC<IPoll> = ({ id, status, language }): JSX.Element | null => {
+  const { openModal } = useModalsStore();
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
   const isLoggedIn = useAppSelector((state) => state.me);
-  const poll = useAppSelector((state) => state.polls.get(id));
+  const poll = useAppSelector((state) => state.polls[id]);
 
   const [selected, setSelected] = useState({} as Selected);
 
   const openUnauthorizedModal = () =>
-    dispatch(openModal('UNAUTHORIZED', {
+    openModal('UNAUTHORIZED', {
       action: 'POLL_VOTE',
       ap_id: status?.url,
-    }));
+    });
 
   const handleVote = (selectedId: number) => dispatch(vote(id, [selectedId]));
 
@@ -69,12 +72,12 @@ const Poll: React.FC<IPoll> = ({ id, status }): JSX.Element | null => {
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div onClick={e => e.stopPropagation()}>
       {!showResults && poll.multiple && (
-        <Text theme='muted' size='sm'>
+        <Text className='mb-4' theme='muted' size='sm'>
           {intl.formatMessage(messages.multiple)}
         </Text>
       )}
 
-      <Stack space={4} className='mt-4'>
+      <Stack space={4}>
         <Stack space={2}>
           {poll.options.map((option, i) => (
             <PollOption
@@ -85,7 +88,7 @@ const Poll: React.FC<IPoll> = ({ id, status }): JSX.Element | null => {
               showResults={showResults}
               active={!!selected[i]}
               onToggle={toggleOption}
-              language={status?.currentLanguage}
+              language={language}
             />
           ))}
         </Stack>

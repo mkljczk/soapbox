@@ -2,8 +2,10 @@ import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { Text, Widget } from 'pl-fe/components/ui';
-import { useInstance, usePlFeConfig } from 'pl-fe/hooks';
+import Text from 'pl-fe/components/ui/text';
+import Widget from 'pl-fe/components/ui/widget';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 
 import SiteWallet from './site-wallet';
 
@@ -20,9 +22,9 @@ const CryptoDonatePanel: React.FC<ICryptoDonatePanel> = ({ limit = 3 }): JSX.Ele
   const history = useHistory();
   const instance = useInstance();
 
-  const addresses = usePlFeConfig().get('cryptoAddresses');
+  const addresses = usePlFeConfig().cryptoAddresses;
 
-  if (limit === 0 || addresses.size === 0) {
+  if (limit === 0 || addresses.length === 0) {
     return null;
   }
 
@@ -32,9 +34,9 @@ const CryptoDonatePanel: React.FC<ICryptoDonatePanel> = ({ limit = 3 }): JSX.Ele
 
   return (
     <Widget
-      title={<FormattedMessage id='crypto_donate_panel.heading' defaultMessage='Donate Cryptocurrency' />}
+      title={<FormattedMessage id='crypto_donate_panel.heading' defaultMessage='Donate cryptocurrency' />}
       onActionClick={handleAction}
-      actionTitle={intl.formatMessage(messages.actionTitle, { count: addresses.size })}
+      actionTitle={intl.formatMessage(messages.actionTitle, { count: addresses.length })}
     >
       <Text>
         <FormattedMessage

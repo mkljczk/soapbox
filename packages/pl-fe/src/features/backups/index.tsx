@@ -1,9 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FormattedDate, defineMessages, useIntl } from 'react-intl';
 
-import { fetchBackups, createBackup } from 'pl-fe/actions/backups';
-import { Button, Card, Column, FormActions, HStack, Spinner, Stack, Text } from 'pl-fe/components/ui';
-import { useAppDispatch, useAppSelector } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Card from 'pl-fe/components/ui/card';
+import Column from 'pl-fe/components/ui/column';
+import FormActions from 'pl-fe/components/ui/form-actions';
+import HStack from 'pl-fe/components/ui/hstack';
+import Spinner from 'pl-fe/components/ui/spinner';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { useBackups, useCreateBackupMutation } from 'pl-fe/queries/settings/use-backups';
 
 import type { Backup as BackupEntity } from 'pl-api';
 
@@ -55,24 +61,16 @@ const Backup: React.FC<IBackup> = ({ backup }) => {
 
 const Backups = () => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
 
-  const backups = useAppSelector((state) => state.backups.toList().sortBy((backup) => backup.inserted_at));
-
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: backups = [], isLoading } = useBackups();
+  const { mutate: createBackup } = useCreateBackupMutation();
 
   const handleCreateBackup: React.MouseEventHandler = e => {
-    dispatch(createBackup());
+    createBackup();
     e.preventDefault();
   };
 
-  useEffect(() => {
-    dispatch(fetchBackups()).then(() => {
-      setIsLoading(false);
-    }).catch(() => {});
-  }, []);
-
-  const showLoading = isLoading && backups.count() === 0;
+  const showLoading = isLoading && backups.length === 0;
 
   const emptyMessage = (
     <Card variant='rounded' size='lg'>
@@ -88,11 +86,11 @@ const Backups = () => {
     </Card>
   );
 
-  const body = showLoading ? <Spinner /> : backups.isEmpty() ? emptyMessage : (
+  const body = showLoading ? <Spinner /> : backups.length ? (
     <div className='mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2'>
       {backups.map((backup) => <Backup key={backup.id} backup={backup} />)}
     </div>
-  );
+  ) : emptyMessage;
 
   return (
     <Column label={intl.formatMessage(messages.heading)}>

@@ -1,44 +1,62 @@
-import { List as ImmutableList, Map as ImmutableMap, Record as ImmutableRecord, fromJS } from 'immutable';
+import { create } from 'mutative';
+import { CreateStatusParams } from 'pl-api';
 
 import {
   STATUS_CREATE_FAIL,
   STATUS_CREATE_REQUEST,
   STATUS_CREATE_SUCCESS,
+  type StatusesAction,
 } from 'pl-fe/actions/statuses';
 
-import type { AnyAction } from 'redux';
 import type { StatusVisibility } from 'pl-fe/normalizers/status';
 
-const PendingStatusRecord = ImmutableRecord({
+interface PendingStatus {
+  content_type: string;
+  in_reply_to_id: string | null;
+  media_ids: Array<string> | null;
+  quote_id: string | null;
+  poll: Exclude<CreateStatusParams['poll'], undefined> | null;
+  sensitive: boolean;
+  spoiler_text: string;
+  status: string;
+  to: Array<string> | null;
+  visibility: StatusVisibility;
+}
+
+const newPendingStatus = (props: Partial<PendingStatus> = {}): PendingStatus => ({
   content_type: '',
-  in_reply_to_id: null as string | null,
-  media_ids: null as ImmutableList<string> | null,
-  quote_id: null as string | null,
-  poll: null as ImmutableMap<string, any> | null,
+  in_reply_to_id: null,
+  media_ids: null,
+  quote_id: null,
+  poll: null,
   sensitive: false,
   spoiler_text: '',
   status: '',
-  to: null as ImmutableList<string> | null,
-  visibility: 'public' as StatusVisibility,
+  to: null,
+  visibility: 'public',
+  ...props,
 });
 
-type PendingStatus = ReturnType<typeof PendingStatusRecord>;
-type State = ImmutableMap<string, PendingStatus>;
+type State = Record<string, PendingStatus>;
 
-const initialState: State = ImmutableMap();
+const initialState: State = {};
 
-const importStatus = (state: State, params: ImmutableMap<string, any>, idempotencyKey: string) =>
-  state.set(idempotencyKey, PendingStatusRecord(params));
+const importStatus = (state: State, params: Record<string, any>, idempotencyKey: string) => {
+  state[idempotencyKey] = newPendingStatus(params);
+};
 
-const deleteStatus = (state: State, idempotencyKey: string) => state.delete(idempotencyKey);
+const deleteStatus = (state: State, idempotencyKey: string) => {
+  delete state[idempotencyKey];
+};
 
-const pending_statuses = (state = initialState, action: AnyAction) => {
+const pending_statuses = (state = initialState, action: StatusesAction): State => {
   switch (action.type) {
     case STATUS_CREATE_REQUEST:
-      return action.editing ? state : importStatus(state, ImmutableMap(fromJS(action.params)), action.idempotencyKey);
+      if (action.editing) return state;
+      return create(state, (draft) => importStatus(draft, action.params, action.idempotencyKey));
     case STATUS_CREATE_FAIL:
     case STATUS_CREATE_SUCCESS:
-      return deleteStatus(state, action.idempotencyKey);
+      return create(state, (draft) => deleteStatus(draft, action.idempotencyKey));
     default:
       return state;
   }

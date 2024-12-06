@@ -2,8 +2,9 @@ import throttle from 'lodash/throttle';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useIntl, MessageDescriptor } from 'react-intl';
 
-import { Icon, Text } from 'pl-fe/components/ui';
-import { useSettings } from 'pl-fe/hooks';
+import Icon from 'pl-fe/components/ui/icon';
+import Text from 'pl-fe/components/ui/text';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
 interface IScrollTopButton {
   /** Callback when clicked, and also when scrolled to the top. */
@@ -23,7 +24,7 @@ const ScrollTopButton: React.FC<IScrollTopButton> = ({
   onClick,
   count,
   message,
-  threshold = 400,
+  threshold = 240,
   autoloadThreshold = 50,
 }) => {
   const intl = useIntl();
@@ -88,7 +89,7 @@ const ScrollTopButton: React.FC<IScrollTopButton> = ({
         onClick={handleClick}
       >
         <Icon
-          className='h-4 w-4'
+          className='size-4'
           src={require('@tabler/icons/outline/arrow-bar-to-up.svg')}
         />
 

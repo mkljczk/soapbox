@@ -1,16 +1,21 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useIntl, defineMessages } from 'react-intl';
-import { Components, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
-import { Avatar, Button, Divider, Spinner, Stack, Text } from 'pl-fe/components/ui';
+import ScrollableList from 'pl-fe/components/scrollable-list';
+import Avatar from 'pl-fe/components/ui/avatar';
+import Button from 'pl-fe/components/ui/button';
+import Divider from 'pl-fe/components/ui/divider';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import { Entities } from 'pl-fe/entity-store/entities';
 import PlaceholderChatMessage from 'pl-fe/features/placeholder/components/placeholder-chat-message';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useChatActions, useChatMessages } from 'pl-fe/queries/chats';
 
 import ChatMessage from './chat-message';
 
-import type { Chat } from 'pl-api';
-import type { ChatMessage as ChatMessageEntity } from 'pl-fe/normalizers';
+import type { Chat, Relationship } from 'pl-api';
+import type { ChatMessage as ChatMessageEntity } from 'pl-fe/normalizers/chat-message';
 
 const messages = defineMessages({
   today: { id: 'chats.dividers.today', defaultMessage: 'Today' },
@@ -34,28 +39,6 @@ const timeChange = (prev: Pick<ChatMessageEntity, 'created_at'>, curr: Pick<Chat
   return null;
 };
 
-const START_INDEX = 10000;
-
-const List: Components['List'] = React.forwardRef((props, ref) => {
-  const { context, ...rest } = props;
-  return <div ref={ref} {...rest} className='mb-2' />;
-});
-
-const Scroller: Components['Scroller'] = React.forwardRef((props, ref) => {
-  const { style, context, ...rest } = props;
-
-  return (
-    <div
-      {...rest}
-      ref={ref}
-      style={{
-        ...style,
-        scrollbarGutter: 'stable',
-      }}
-    />
-  );
-});
-
 interface IChatMessageList {
   /** Chat the messages are being rendered from. */
   chat: Chat;
@@ -65,8 +48,7 @@ interface IChatMessageList {
 const ChatMessageList: React.FC<IChatMessageList> = ({ chat }) => {
   const intl = useIntl();
 
-  const node = useRef<VirtuosoHandle>(null);
-  const [firstItemIndex, setFirstItemIndex] = useState(START_INDEX - 20);
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const { markChatAsRead } = useChatActions(chat.id);
   const {
@@ -82,18 +64,7 @@ const ChatMessageList: React.FC<IChatMessageList> = ({ chat }) => {
 
   const formattedChatMessages = chatMessages || [];
 
-  const isBlocked = useAppSelector((state) => state.getIn(['relationships', chat.account.id, 'blocked_by']));
-
-  const lastChatMessage = chatMessages ? chatMessages[chatMessages.length - 1] : null;
-
-  useEffect(() => {
-    if (!chatMessages) {
-      return;
-    }
-
-    const nextFirstItemIndex = START_INDEX - chatMessages.length;
-    setFirstItemIndex(nextFirstItemIndex);
-  }, [lastChatMessage]);
+  const isBlocked = !!useAppSelector((state) => (state.entities[Entities.RELATIONSHIPS]?.store[chat.account.id] as Relationship)?.blocked_by);
 
   const buildCachedMessages = (): Array<ChatMessageEntity | { type: 'divider'; text: string }> => {
     if (!chatMessages) {
@@ -137,23 +108,11 @@ const ChatMessageList: React.FC<IChatMessageList> = ({ chat }) => {
   };
   const cachedChatMessages = buildCachedMessages();
 
-  const initialScrollPositionProps = useMemo(() => {
-    if (process.env.NODE_ENV === 'test') {
-      return {};
-    }
-
-    return {
-      initialTopMostItemIndex: cachedChatMessages.length - 1,
-      firstItemIndex: Math.max(0, firstItemIndex),
-    };
-  }, [cachedChatMessages.length, firstItemIndex]);
-
-  const handleStartReached = useCallback(() => {
-    if (hasNextPage && !isFetching) {
+  const handleStartReached = () => {
+    if (hasNextPage && !isLoading && !isFetching && !isFetchingNextPage) {
       fetchNextPage();
     }
-    return false;
-  }, [firstItemIndex, hasNextPage, isFetching]);
+  };
 
   const renderDivider = (key: React.Key, text: string) => <Divider key={key} text={text} textSize='xs' />;
 
@@ -231,34 +190,27 @@ const ChatMessageList: React.FC<IChatMessageList> = ({ chat }) => {
   }
 
   return (
-    <div className='flex h-full grow flex-col space-y-6'>
-      <div className='flex grow flex-col justify-end'>
-        <Virtuoso
-          ref={node}
+    <div className='flex h-full grow flex-col-reverse space-y-6 overflow-auto' style={{ scrollbarGutter: 'auto' }}>
+      <div className='flex grow flex-col justify-end' ref={parentRef}>
+        <ScrollableList
+          listClassName='mb-2'
+          loadMoreClassName='w-fit mx-auto mb-2'
           alignToBottom
-          {...initialScrollPositionProps}
-          data={cachedChatMessages}
-          startReached={handleStartReached}
-          followOutput='auto'
-          itemContent={(index, chatMessage) => {
+          initialIndex={cachedChatMessages.length - 1}
+          hasMore={hasNextPage}
+          isLoading={isFetching}
+          showLoading={isFetching && !isFetchingNextPage}
+          onLoadMore={handleStartReached}
+          parentRef={parentRef}
+        >
+          {cachedChatMessages.map((chatMessage, index) => {
             if (chatMessage.type === 'divider') {
-              return renderDivider(index, (chatMessage as any).text);
+              return renderDivider(index, chatMessage.text);
             } else {
               return <ChatMessage chat={chat} chatMessage={chatMessage} />;
             }
-          }}
-          components={{
-            List,
-            Scroller,
-            Header: () => {
-              if (hasNextPage || isFetchingNextPage) {
-                return <Spinner withText={false} />;
-              }
-
-              return null;
-            },
-          }}
-        />
+          })}
+        </ScrollableList>
       </div>
     </div>
   );

@@ -1,24 +1,36 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-/** @see {@link https://docs.joinmastodon.org/entities/PreviewCard/} */
-const previewCardSchema = z.object({
-  author_name: z.string().catch(''),
-  author_url: z.string().url().catch(''),
-  blurhash: z.string().nullable().catch(null),
-  description: z.string().catch(''),
-  embed_url: z.string().url().catch(''),
-  height: z.number().catch(0),
-  html: z.string().catch(''),
-  image: z.string().nullable().catch(null),
-  image_description: z.string().catch(''),
-  provider_name: z.string().catch(''),
-  provider_url: z.string().url().catch(''),
-  title: z.string().catch(''),
-  type: z.enum(['link', 'photo', 'video', 'rich']).catch('link'),
-  url: z.string().url(),
-  width: z.number().catch(0),
+import { previewCardAuthorSchema } from './preview-card-author';
+import { filteredArray } from './utils';
+
+/**
+ * @category Schemas
+ * @see {@link https://docs.joinmastodon.org/entities/PreviewCard/}
+ */
+const previewCardSchema = v.object({
+  /** @deprecated */
+  author_name: v.fallback(v.string(), ''),
+  /** @deprecated */
+  author_url: v.fallback(v.pipe(v.string(), v.url()), ''),
+  authors: filteredArray(previewCardAuthorSchema),
+  blurhash: v.fallback(v.nullable(v.string()), null),
+  description: v.fallback(v.string(), ''),
+  embed_url: v.fallback(v.pipe(v.string(), v.url()), ''),
+  height: v.fallback(v.number(), 0),
+  html: v.fallback(v.string(), ''),
+  image: v.fallback(v.nullable(v.string()), null),
+  image_description: v.fallback(v.string(), ''),
+  provider_name: v.fallback(v.string(), ''),
+  provider_url: v.fallback(v.pipe(v.string(), v.url()), ''),
+  title: v.fallback(v.string(), ''),
+  type: v.fallback(v.picklist(['link', 'photo', 'video', 'rich']), 'link'),
+  url: v.pipe(v.string(), v.url()),
+  width: v.fallback(v.number(), 0),
 });
 
-type PreviewCard = z.infer<typeof previewCardSchema>;
+/**
+ * @category Entity types
+ */
+type PreviewCard = v.InferOutput<typeof previewCardSchema>;
 
 export { previewCardSchema, type PreviewCard };

@@ -1,16 +1,26 @@
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { Icon, Stack } from 'pl-fe/components/ui';
+import Icon from 'pl-fe/components/ui/icon';
+import Stack from 'pl-fe/components/ui/stack';
 import { useStatContext } from 'pl-fe/contexts/stat-context';
-import Search from 'pl-fe/features/compose/components/search';
 import ComposeButton from 'pl-fe/features/ui/components/compose-button';
 import ProfileDropdown from 'pl-fe/features/ui/components/profile-dropdown';
-import { useAppSelector, useFeatures, useOwnAccount, useSettings, useInstance } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useLogo } from 'pl-fe/hooks/use-logo';
+import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
+import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useFollowRequestsCount } from 'pl-fe/queries/accounts/use-follow-requests';
+import { useInteractionRequestsCount } from 'pl-fe/queries/statuses/use-interaction-requests';
 
 import Account from './account';
 import DropdownMenu, { Menu } from './dropdown-menu';
+import SearchInput from './search-input';
 import SidebarNavigationLink from './sidebar-navigation-link';
+import SiteLogo from './site-logo';
 
 const messages = defineMessages({
   followRequests: { id: 'navigation_bar.follow_requests', defaultMessage: 'Follow requests' },
@@ -22,6 +32,8 @@ const messages = defineMessages({
   developers: { id: 'navigation.developers', defaultMessage: 'Developers' },
   scheduledStatuses: { id: 'column.scheduled_statuses', defaultMessage: 'Scheduled posts' },
   drafts: { id: 'navigation.drafts', defaultMessage: 'Drafts' },
+  conversations: { id: 'navigation.direct_messages', defaultMessage: 'Direct messages' },
+  interactionRequests: { id: 'navigation.interaction_requests', defaultMessage: 'Interaction requests' },
 });
 
 /** Desktop sidebar with links to different views in the app. */
@@ -33,12 +45,15 @@ const SidebarNavigation = () => {
   const features = useFeatures();
   const { isDeveloper } = useSettings();
   const { account } = useOwnAccount();
+  const { isOpen } = useRegistrationStatus();
+  const logoSrc = useLogo();
 
   const notificationCount = useAppSelector((state) => state.notifications.unread);
-  const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.count());
-  const dashboardCount = useAppSelector((state) => state.admin.openReports.count() + state.admin.awaitingApproval.count());
-  const scheduledStatusCount = useAppSelector((state) => state.scheduled_statuses.size);
-  const draftCount = useAppSelector((state) => state.draft_statuses.size);
+  const followRequestsCount = useFollowRequestsCount().data || 0;
+  const interactionRequestsCount = useInteractionRequestsCount().data || 0;
+  const dashboardCount = useAppSelector((state) => state.admin.openReports.length + state.admin.awaitingApproval.length);
+  const scheduledStatusCount = useAppSelector((state) => Object.keys(state.scheduled_statuses).length);
+  const draftCount = useAppSelector((state) => Object.keys(state.draft_statuses).length);
 
   const restrictUnauth = instance.pleroma.metadata.restrict_unauthenticated;
 
@@ -46,12 +61,29 @@ const SidebarNavigation = () => {
     const menu: Menu = [];
 
     if (account) {
+      if (features.chats && features.conversations) {
+        menu.push({
+          to: '/conversations',
+          text: intl.formatMessage(messages.conversations),
+          icon: require('@tabler/icons/outline/mail.svg'),
+        });
+      }
+
       if (account.locked || followRequestsCount > 0) {
         menu.push({
           to: '/follow_requests',
           text: intl.formatMessage(messages.followRequests),
           icon: require('@tabler/icons/outline/user-plus.svg'),
           count: followRequestsCount,
+        });
+      }
+
+      if (interactionRequestsCount > 0) {
+        menu.push({
+          to: '/interaction_requests',
+          text: intl.formatMessage(messages.interactionRequests),
+          icon: require('@tabler/icons/outline/flag-question.svg'),
+          count: interactionRequestsCount,
         });
       }
 
@@ -127,35 +159,11 @@ const SidebarNavigation = () => {
 
   const menu = makeMenu();
 
-  /** Conditionally render the supported messages link */
-  const renderMessagesLink = (): React.ReactNode => {
-    if (features.chats) {
-      return (
-        <SidebarNavigationLink
-          to='/chats'
-          icon={require('@tabler/icons/outline/messages.svg')}
-          count={unreadChatsCount}
-          countMax={9}
-          text={<FormattedMessage id='navigation.chats' defaultMessage='Chats' />}
-        />
-      );
-    }
-
-    if (features.conversations) {
-      return (
-        <SidebarNavigationLink
-          to='/conversations'
-          icon={require('@tabler/icons/outline/mail.svg')}
-          text={<FormattedMessage id='navigation.direct_messages' defaultMessage='Messages' />}
-        />
-      );
-    }
-
-    return null;
-  };
-
   return (
     <Stack space={4}>
+      {logoSrc && (
+        <SiteLogo className='h-12 w-auto cursor-pointer' />
+      )}
 
       {account && (
         <Stack space={4}>
@@ -165,11 +173,12 @@ const SidebarNavigation = () => {
                 account={account}
                 action={<Icon src={require('@tabler/icons/outline/chevron-down.svg')} className='text-gray-600 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-500' />}
                 disabled
+                withLinkToProfile={false}
               />
             </ProfileDropdown>
           </div>
           <div className='block w-full max-w-xs'>
-            <Search openInRoute autosuggest />
+            <SearchInput />
           </div>
         </Stack>
       )}
@@ -198,7 +207,24 @@ const SidebarNavigation = () => {
               text={<FormattedMessage id='tabs_bar.notifications' defaultMessage='Notifications' />}
             />
 
-            {renderMessagesLink()}
+            {features.chats && (
+              <SidebarNavigationLink
+                to='/chats'
+                icon={require('@tabler/icons/outline/messages.svg')}
+                count={unreadChatsCount}
+                countMax={9}
+                text={<FormattedMessage id='navigation.chats' defaultMessage='Chats' />}
+              />
+            )}
+
+            {!features.chats && features.conversations && (
+              <SidebarNavigationLink
+                to='/conversations'
+                icon={require('@tabler/icons/outline/mail.svg')}
+                activeIcon={require('@tabler/icons/filled/mail.svg')}
+                text={<FormattedMessage id='navigation.direct_messages' defaultMessage='Direct messages' />}
+              />
+            )}
 
             {features.groups && (
               <SidebarNavigationLink
@@ -245,19 +271,20 @@ const SidebarNavigation = () => {
               />
             )}
 
+            {(features.bubbleTimeline && (account || !restrictUnauth.timelines.bubble)) && (
+              <SidebarNavigationLink
+                to='/timeline/bubble'
+                icon={require('@tabler/icons/outline/chart-bubble.svg')}
+                activeIcon={require('@tabler/icons/filled/chart-bubble.svg')}
+                text={<FormattedMessage id='tabs_bar.bubble' defaultMessage='Bubble' />}
+              />
+            )}
+
             {(features.federating && (account || !restrictUnauth.timelines.federated)) && (
               <SidebarNavigationLink
                 to='/timeline/fediverse'
                 icon={require('@tabler/icons/outline/topology-star-ring-3.svg')}
                 text={<FormattedMessage id='tabs_bar.fediverse' defaultMessage='Fediverse' />}
-              />
-            )}
-
-            {(features.bubbleTimeline && (account || !restrictUnauth.timelines.bubble)) && (
-              <SidebarNavigationLink
-                to='/timeline/bubble'
-                icon={require('@tabler/icons/outline/chart-bubble.svg')}
-                text={<FormattedMessage id='tabs_bar.bubble' defaultMessage='Bubble' />}
               />
             )}
           </>
@@ -280,11 +307,11 @@ const SidebarNavigation = () => {
               text={<FormattedMessage id='account.login' defaultMessage='Log in' />}
             />
 
-            <SidebarNavigationLink
+            {isOpen && <SidebarNavigationLink
               to='/signup'
               icon={require('@tabler/icons/outline/user-plus.svg')}
               text={<FormattedMessage id='account.register' defaultMessage='Sign up' />}
-            />
+            />}
           </Stack>
         )}
       </Stack>

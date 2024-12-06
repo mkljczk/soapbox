@@ -33,17 +33,21 @@ import React, {
 import ReactDOM from 'react-dom';
 
 import { clearComposeSuggestions, fetchComposeSuggestions } from 'pl-fe/actions/compose';
-import { chooseEmoji } from 'pl-fe/actions/emojis';
+import { saveSettings } from 'pl-fe/actions/settings';
 import AutosuggestEmoji from 'pl-fe/components/autosuggest-emoji';
-import { useAppDispatch, useCompose } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
 import { selectAccount } from 'pl-fe/selectors';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 import { textAtCursorMatchesToken } from 'pl-fe/utils/suggestions';
 
 import AutosuggestAccount from '../../components/autosuggest-account';
 import { $createEmojiNode } from '../nodes/emoji-node';
 import { $createMentionNode } from '../nodes/mention-node';
 
-import type { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
+import type { Emoji } from 'pl-fe/features/emoji';
+
+type AutoSuggestion = string | Emoji;
 
 type QueryMatch = {
   leadOffset: number;
@@ -282,6 +286,7 @@ const AutosuggestPlugin = ({
   suggestionsHidden,
   setSuggestionsHidden,
 }: AutosuggestPluginProps): JSX.Element | null => {
+  const { rememberEmojiUse } = useSettingsStore();
   const { suggestions } = useCompose(composeId);
   const dispatch = useAppDispatch();
 
@@ -300,7 +305,7 @@ const AutosuggestPlugin = ({
   };
 
   const onSelectSuggestion = (index: number) => {
-    const suggestion = suggestions.get(index) as AutoSuggestion;
+    const suggestion = suggestions[index];
 
     editor.update(() => {
       dispatch((dispatch, getState) => {
@@ -321,7 +326,10 @@ const AutosuggestPlugin = ({
 
         if (typeof suggestion === 'object') {
           if (!suggestion.id) return;
-          dispatch(chooseEmoji(suggestion));
+
+          rememberEmojiUse(suggestion);
+          dispatch(saveSettings());
+
           replaceMatch($createEmojiNode(suggestion));
         } else if (suggestion[0] === '#') {
           (node as TextNode).setTextContent(`${suggestion} `);
@@ -378,8 +386,9 @@ const AutosuggestPlugin = ({
         key={key}
         data-index={i}
         className={clsx({
-          'snap-start snap-always px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-primary-800 group black:hover:bg-gray-900 black:focus:bg-gray-900': true,
-          'snap-start snap-always bg-gray-100 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 black:bg-gray-900 black:hover:bg-gray-900': i === selectedSuggestion,
+          'snap-start snap-always px-4 py-2.5 text-sm text-gray-700 dark:text-gray-500 focus:bg-gray-100 dark:focus:bg-primary-800 group': true,
+          'hover:bg-gray-100 dark:hover:bg-gray-800': i !== selectedSuggestion,
+          'bg-gray-100 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800': i === selectedSuggestion,
         })}
         onMouseDown={handleSelectSuggestion}
       >
@@ -442,11 +451,11 @@ const AutosuggestPlugin = ({
   ]);
 
   useEffect(() => {
-    if (suggestions && suggestions.size > 0) setSuggestionsHidden(false);
+    if (suggestions && suggestions.length > 0) setSuggestionsHidden(false);
   }, [suggestions]);
 
   useEffect(() => {
-    if (resolution !== null && !suggestionsHidden && !suggestions.isEmpty()) {
+    if (resolution !== null && !suggestionsHidden && suggestions.length) {
       const handleClick = (event: MouseEvent) => {
         const target = event.target as HTMLElement;
 
@@ -458,7 +467,7 @@ const AutosuggestPlugin = ({
 
       return () => document.removeEventListener('click', handleClick);
     }
-  }, [resolution, suggestionsHidden, suggestions.isEmpty()]);
+  }, [resolution, suggestionsHidden, !suggestions.length]);
 
   useEffect(() => {
     if (resolution === null) return;
@@ -468,8 +477,8 @@ const AutosuggestPlugin = ({
         KEY_ARROW_UP_COMMAND,
         (payload) => {
           const event = payload;
-          if (suggestions !== null && suggestions.size && selectedSuggestion !== null) {
-            const newSelectedSuggestion = selectedSuggestion !== 0 ? selectedSuggestion - 1 : suggestions.size - 1;
+          if (suggestions !== null && suggestions.length && selectedSuggestion !== null) {
+            const newSelectedSuggestion = selectedSuggestion !== 0 ? selectedSuggestion - 1 : suggestions.length - 1;
             setSelectedSuggestion(newSelectedSuggestion);
             event.preventDefault();
             event.stopImmediatePropagation();
@@ -482,8 +491,8 @@ const AutosuggestPlugin = ({
         KEY_ARROW_DOWN_COMMAND,
         (payload) => {
           const event = payload;
-          if (suggestions !== null && suggestions.size && selectedSuggestion !== null) {
-            const newSelectedSuggestion = selectedSuggestion !== suggestions.size - 1 ? selectedSuggestion + 1 : 0;
+          if (suggestions !== null && suggestions.length && selectedSuggestion !== null) {
+            const newSelectedSuggestion = selectedSuggestion !== suggestions.length - 1 ? selectedSuggestion + 1 : 0;
             setSelectedSuggestion(newSelectedSuggestion);
             event.preventDefault();
             event.stopImmediatePropagation();
@@ -539,8 +548,8 @@ const AutosuggestPlugin = ({
             <div
               className={clsx({
                 'scroll-smooth snap-y snap-always will-change-scroll mt-6 overflow-y-auto max-h-56 relative w-max z-[1000] shadow bg-white dark:bg-gray-900 rounded-lg py-1 space-y-0 dark:ring-2 dark:ring-primary-700 focus:outline-none': true,
-                hidden: suggestionsHidden || suggestions.isEmpty(),
-                block: !suggestionsHidden && !suggestions.isEmpty(),
+                hidden: suggestionsHidden || !suggestions.length,
+                block: !suggestionsHidden && suggestions.length,
               })}
             >
               {suggestions.map(renderSuggestion)}

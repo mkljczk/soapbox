@@ -4,8 +4,12 @@ import { defineMessages, useIntl } from 'react-intl';
 
 import { fetchListSuggestions, clearListSuggestions, changeListSuggestions } from 'pl-fe/actions/lists';
 import Icon from 'pl-fe/components/icon';
-import { Button, Form, HStack, Input } from 'pl-fe/components/ui';
-import { useAppSelector, useAppDispatch } from 'pl-fe/hooks';
+import Button from 'pl-fe/components/ui/button';
+import Form from 'pl-fe/components/ui/form';
+import HStack from 'pl-fe/components/ui/hstack';
+import Input from 'pl-fe/components/ui/input';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
 const messages = defineMessages({
   search: { id: 'lists.search', defaultMessage: 'Search among people you follow' },
@@ -45,7 +49,7 @@ const Search = () => {
             placeholder={intl.formatMessage(messages.search)}
           />
           <div role='button' tabIndex={0} className='absolute inset-y-0 right-0 flex cursor-pointer items-center px-3 rtl:left-0 rtl:right-auto' onClick={handleClear}>
-            <Icon src={require('@tabler/icons/outline/backspace.svg')} aria-label={intl.formatMessage(messages.search)} className={clsx('h-5 w-5 text-gray-600', { hidden: !hasValue })} />
+            <Icon src={require('@tabler/icons/outline/backspace.svg')} aria-label={intl.formatMessage(messages.search)} className={clsx('size-5 text-gray-600', { hidden: !hasValue })} />
           </div>
         </label>
 

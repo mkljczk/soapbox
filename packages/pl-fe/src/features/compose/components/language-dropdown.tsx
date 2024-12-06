@@ -1,24 +1,24 @@
 import clsx from 'clsx';
 import fuzzysort from 'fuzzysort';
-import { Map as ImmutableMap } from 'immutable';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { createSelector } from 'reselect';
 
 import { addComposeLanguage, changeComposeLanguage, changeComposeModifiedLanguage, deleteComposeLanguage } from 'pl-fe/actions/compose';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
-import { Button, Icon, Input } from 'pl-fe/components/ui';
+import Button from 'pl-fe/components/ui/button';
+import Icon from 'pl-fe/components/ui/icon';
+import Input from 'pl-fe/components/ui/input';
 import { type Language, languages as languagesObject } from 'pl-fe/features/preferences';
-import { useAppDispatch, useAppSelector, useCompose, useFeatures } from 'pl-fe/hooks';
+import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useSettings } from 'pl-fe/hooks/use-settings';
 
-const getFrequentlyUsedLanguages = createSelector([
-  state => state.settings.get('frequentlyUsedLanguages', ImmutableMap()),
-], (languageCounters: ImmutableMap<Language, number>) => (
-  languageCounters.keySeq()
-    .sort((a, b) => languageCounters.get(a, 0) - languageCounters.get(b, 0))
-    .reverse()
-    .toArray()
-));
+const getFrequentlyUsedLanguages = (languageCounters: Record<string, number>) => (
+  Object.keys(languageCounters)
+    .toSorted((a, b) => languageCounters[a] - languageCounters[b])
+    .toReversed()
+);
 
 const languages = Object.entries(languagesObject) as Array<[Language, string]>;
 
@@ -39,7 +39,8 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
   const intl = useIntl();
   const features = useFeatures();
   const dispatch = useAppDispatch();
-  const frequentlyUsedLanguages = useAppSelector(getFrequentlyUsedLanguages);
+  const settings = useSettings();
+  const frequentlyUsedLanguages = useMemo(() => getFrequentlyUsedLanguages(settings.frequentlyUsedLanguages), [settings.frequentlyUsedLanguages]);
 
   const node = useRef<HTMLDivElement>(null);
   const focusedItem = useRef<HTMLButtonElement>(null);
@@ -52,11 +53,13 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
     textMap,
   } = useCompose(composeId);
 
+  const hasMultipleLanguages = !!Object.keys(textMap).length;
+
   const handleOptionClick: React.EventHandler<any> = (e: MouseEvent | KeyboardEvent) => {
     const value = (e.currentTarget as HTMLElement)?.getAttribute('data-index') as Language;
 
-    if (textMap.size) {
-      if (!(textMap.has(value) || language === value)) return;
+    if (Object.keys(textMap).length) {
+      if (!(value in textMap || language === value)) return;
 
       dispatch(changeComposeModifiedLanguage(composeId, value));
     } else {
@@ -98,11 +101,11 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
       return [...languages].sort((a, b) => {
         // Push current selection to the top of the list
 
-        if (textMap.has(a[0])) {
+        if (a[0] in textMap) {
           if (b[0] === language) return 1;
           return -1;
         }
-        if (textMap.has(b[0])) {
+        if (b[0] in textMap) {
           if (a[0] === language) return -1;
           return 1;
         }
@@ -157,7 +160,7 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
         />
         <div role='button' tabIndex={0} className='absolute inset-y-0 right-0 flex cursor-pointer items-center px-5 rtl:left-0 rtl:right-auto' onClick={handleClear}>
           <Icon
-            className='h-5 w-5 text-gray-600'
+            className='size-5 text-gray-600'
             src={isSearching ? require('@tabler/icons/outline/backspace.svg') : require('@tabler/icons/outline/search.svg')}
             aria-label={intl.formatMessage(messages.search)}
           />
@@ -179,9 +182,9 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
                 'flex w-full gap-2 p-2.5 text-left text-sm text-gray-700 dark:text-gray-400',
                 {
                   'bg-gray-100 dark:bg-gray-800 black:bg-gray-900 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700': modified,
-                  'cursor-pointer hover:bg-gray-100 black:hover:bg-gray-900 dark:hover:bg-gray-800': !textMap.size || textMap.has(code),
+                  'cursor-pointer hover:bg-gray-100 black:hover:bg-gray-900 dark:hover:bg-gray-800': !hasMultipleLanguages || code in textMap,
                   'cursor-pointer': active,
-                  'cursor-default': !active && !(!textMap.size || textMap.has(code)),
+                  'cursor-default': !active && !(!hasMultipleLanguages || code in textMap),
                 },
               )}
               aria-selected={active}
@@ -195,13 +198,13 @@ const getLanguageDropdown = (composeId: string): React.FC<ILanguageDropdown> => 
                 {name}
               </div>
               {features.multiLanguage && !!language && !active && (
-                textMap.has(code) ? (
+                code in textMap ? (
                   <button title={intl.formatMessage(messages.deleteLanguage)} onClick={handleDeleteLanguageClick}>
-                    <Icon className='h-4 w-4' src={require('@tabler/icons/outline/minus.svg')} />
+                    <Icon className='size-4' src={require('@tabler/icons/outline/minus.svg')} />
                   </button>
                 ) : (
                   <button title={intl.formatMessage(messages.addLanguage)} onClick={handleAddLanguageClick}>
-                    <Icon className='h-4 w-4' src={require('@tabler/icons/outline/plus.svg')} />
+                    <Icon className='size-4' src={require('@tabler/icons/outline/plus.svg')} />
                   </button>
                 )
               )}
@@ -227,11 +230,13 @@ const LanguageDropdownButton: React.FC<ILanguageDropdownButton> = ({ composeId }
     textMap,
   } = useCompose(composeId);
 
+  const languagesCount = Object.keys(textMap).length;
+
   let buttonLabel = intl.formatMessage(messages.languagePrompt);
   if (language) {
     const list: string[] = [languagesObject[modifiedLanguage || language]];
-    if (textMap.size) list.push(intl.formatMessage(messages.multipleLanguages, {
-      count: textMap.size,
+    if (languagesCount) list.push(intl.formatMessage(messages.multipleLanguages, {
+      count: languagesCount,
     }));
     buttonLabel = intl.formatList(list);
   } else if (suggestedLanguage) buttonLabel = intl.formatMessage(messages.languageSuggestion, {

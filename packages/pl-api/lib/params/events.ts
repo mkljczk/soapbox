@@ -1,5 +1,8 @@
 import { PaginationParams } from './common';
 
+/**
+ * @category Request params
+ */
 interface CreateEventParams {
   /** name of the event */
   name: string;
@@ -19,9 +22,24 @@ interface CreateEventParams {
   content_type?: string;
 }
 
+/**
+ * @category Request params
+ */
 type EditEventParams = Partial<Omit<CreateEventParams, 'join_mode'>>;
+
+/**
+ * @category Request params
+ */
 type GetJoinedEventsParams = PaginationParams;
+
+/**
+ * @category Request params
+ */
 type GetEventParticipationsParams = PaginationParams;
+
+/**
+ * @category Request params
+ */
 type GetEventParticipationRequestsParams = PaginationParams;
 
 export type {

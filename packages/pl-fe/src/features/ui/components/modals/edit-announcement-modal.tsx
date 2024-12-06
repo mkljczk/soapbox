@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { closeModal } from 'pl-fe/actions/modals';
-import { useAnnouncements } from 'pl-fe/api/hooks/admin/useAnnouncements';
-import { Form, FormGroup, HStack, Modal, Stack, Text, Textarea, Toggle } from 'pl-fe/components/ui';
+import Form from 'pl-fe/components/ui/form';
+import FormGroup from 'pl-fe/components/ui/form-group';
+import HStack from 'pl-fe/components/ui/hstack';
+import Modal from 'pl-fe/components/ui/modal';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import Textarea from 'pl-fe/components/ui/textarea';
+import Toggle from 'pl-fe/components/ui/toggle';
 import { DatePicker } from 'pl-fe/features/ui/util/async-components';
-import { useAppDispatch } from 'pl-fe/hooks';
+import { useCreateAnnouncementMutation, useUpdateAnnouncementMutation } from 'pl-fe/queries/admin/use-announcements';
 import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';
-import type { AdminAnnouncement } from 'pl-fe/schemas';
+import type { AdminAnnouncement } from 'pl-api';
 
 const messages = defineMessages({
   save: { id: 'admin.edit_announcement.save', defaultMessage: 'Save' },
@@ -25,11 +30,11 @@ interface EditAnnouncementModalProps {
 }
 
 const EditAnnouncementModal: React.FC<BaseModalProps & EditAnnouncementModalProps> = ({ onClose, announcement }) => {
-  const dispatch = useAppDispatch();
-  const { createAnnouncement, updateAnnouncement } = useAnnouncements();
+  const { mutate: createAnnouncement } = useCreateAnnouncementMutation();
+  const { mutate: updateAnnouncement } = useUpdateAnnouncementMutation();
   const intl = useIntl();
 
-  const [content, setContent] = useState(announcement?.content || '');
+  const [content, setContent] = useState(announcement?.raw_content || '');
   const [startTime, setStartTime] = useState(announcement?.starts_at ? new Date(announcement.starts_at) : null);
   const [endTime, setEndTime] = useState(announcement?.ends_at ? new Date(announcement.ends_at) : null);
   const [allDay, setAllDay] = useState(announcement?.all_day || false);
@@ -49,22 +54,22 @@ const EditAnnouncementModal: React.FC<BaseModalProps & EditAnnouncementModalProp
   const handleSubmit = () => {
     const form = {
       content,
-      starts_at: startTime?.toISOString() || null,
-      ends_at: endTime?.toISOString() || null,
+      starts_at: startTime?.toISOString() || undefined,
+      ends_at: endTime?.toISOString() || undefined,
       all_day: allDay,
     };
 
     if (announcement) {
       updateAnnouncement({ ...form, id: announcement.id }, {
         onSuccess: () => {
-          dispatch(closeModal('EDIT_ANNOUNCEMENT'));
+          onClose('EDIT_ANNOUNCEMENT');
           toast.success(messages.announcementUpdateSuccess);
         },
       });
     } else {
       createAnnouncement(form, {
         onSuccess: () => {
-          dispatch(closeModal('EDIT_ANNOUNCEMENT'));
+          onClose('EDIT_ANNOUNCEMENT');
           toast.success(messages.announcementCreateSuccess);
         },
       });

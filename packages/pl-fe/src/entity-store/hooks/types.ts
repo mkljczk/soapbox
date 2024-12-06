@@ -1,7 +1,7 @@
 import type { Entity } from '../types';
-import type z from 'zod';
+import type { BaseSchema, BaseIssue } from 'valibot';
 
-type EntitySchema<TEntity extends Entity = Entity> = z.ZodType<TEntity, z.ZodTypeDef, any>;
+type EntitySchema<TEntity extends Entity = Entity> = BaseSchema<any, TEntity, BaseIssue<unknown>>;
 
 /**
  * Tells us where to find/store the entity in the cache.

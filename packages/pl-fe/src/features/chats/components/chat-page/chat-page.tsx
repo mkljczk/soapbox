@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { matchPath, Route, Switch, useHistory } from 'react-router-dom';
 
-import { Stack } from 'pl-fe/components/ui';
+import Stack from 'pl-fe/components/ui/stack';
 
 import ChatPageMain from './components/chat-page-main';
 import ChatPageNew from './components/chat-page-new';
@@ -55,14 +55,14 @@ const ChatPage: React.FC<IChatPage> = ({ chatId }) => {
     <div
       ref={containerRef}
       style={{ height }}
-      className='h-screen overflow-hidden bg-white text-gray-900 shadow-lg black:bg-transparent sm:rounded-t-xl dark:bg-primary-900 dark:text-gray-100 dark:shadow-none'
+      className='h-screen overflow-hidden bg-white text-gray-900 shadow-lg black:bg-transparent dark:bg-primary-900 dark:text-gray-100 dark:shadow-none sm:rounded-t-xl'
     >
       <div
-        className='grid h-full grid-cols-9 overflow-hidden sm:black:divide-x dark:divide-solid dark:divide-gray-800 sm:dark:divide-x-2'
+        className='grid h-full grid-cols-9 overflow-hidden dark:divide-solid dark:divide-gray-800 sm:black:divide-x sm:dark:divide-x-2'
         data-testid='chat-page'
       >
         <Stack
-          className={clsx('dark:inset col-span-9 overflow-hidden bg-gradient-to-r from-white to-gray-100 black:bg-black sm:col-span-3 dark:bg-gray-900 dark:bg-none', {
+          className={clsx('dark:inset col-span-9 overflow-hidden bg-gradient-to-r from-white to-gray-100 black:bg-black dark:bg-gray-900 dark:bg-none sm:col-span-3', {
             'hidden sm:block': isSidebarHidden,
           })}
         >

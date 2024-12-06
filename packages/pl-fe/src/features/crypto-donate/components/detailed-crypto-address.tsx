@@ -3,11 +3,10 @@ import React from 'react';
 
 import CopyableInput from 'pl-fe/components/copyable-input';
 import Icon from 'pl-fe/components/icon';
+import { CryptoIcon } from 'pl-fe/features/ui/util/async-components';
 
 import { getExplorerUrl } from '../utils/block-explorer';
 import { getTitle } from '../utils/coin-db';
-
-import CryptoIcon from './crypto-icon';
 
 interface IDetailedCryptoAddress {
   address: string;
@@ -31,7 +30,7 @@ const DetailedCryptoAddress: React.FC<IDetailedCryptoAddress> = ({ address, tick
         <div className='font-bold'>{title || ticker.toUpperCase()}</div>
         <div className='ml-auto flex'>
           {explorerUrl && <a className='ml-2 text-gray-400' href={explorerUrl} target='_blank'>
-            <Icon className='h-4.5 w-4.5' src={require('@tabler/icons/outline/external-link.svg')} />
+            <Icon className='size-4.5' src={require('@tabler/icons/outline/external-link.svg')} />
           </a>}
         </div>
       </div>

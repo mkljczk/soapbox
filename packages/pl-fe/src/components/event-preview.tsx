@@ -2,15 +2,18 @@ import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
+import Icon from 'pl-fe/components/icon';
+import Button from 'pl-fe/components/ui/button';
+import HStack from 'pl-fe/components/ui/hstack';
+import Stack from 'pl-fe/components/ui/stack';
+import Text from 'pl-fe/components/ui/text';
+import VerificationBadge from 'pl-fe/components/verification-badge';
+import Emojify from 'pl-fe/features/emoji/emojify';
 import EventActionButton from 'pl-fe/features/event/components/event-action-button';
 import EventDate from 'pl-fe/features/event/components/event-date';
-import { useAppSelector } from 'pl-fe/hooks';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 
-import Icon from './icon';
-import { Button, HStack, Stack, Text } from './ui';
-import VerificationBadge from './verification-badge';
-
-import type { Status as StatusEntity } from 'pl-fe/normalizers';
+import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
 
 const messages = defineMessages({
   eventBanner: { id: 'event.banner', defaultMessage: 'Event banner' },
@@ -39,7 +42,7 @@ const EventPreview: React.FC<IEventPreview> = ({ status, className, hideAction, 
     <Button
       size='sm'
       theme={floatingAction ? 'secondary' : 'primary'}
-      to={`/@${account.acct}/events/${status.id}`}
+      to={`/@${account.acct}/events/${status.id}/edit`}
     >
       <FormattedMessage id='event.manage' defaultMessage='Manage' />
     </Button>
@@ -56,7 +59,7 @@ const EventPreview: React.FC<IEventPreview> = ({ status, className, hideAction, 
         {floatingAction && action}
       </div>
       <div className='h-40 bg-primary-200 dark:bg-gray-600'>
-        {banner && <img className='h-full w-full object-cover' src={banner.url} alt={intl.formatMessage(messages.eventBanner)} />}
+        {banner && <img className='size-full object-cover' src={banner.url} alt={intl.formatMessage(messages.eventBanner)} />}
       </div>
       <Stack className='p-2.5' space={2}>
         <HStack space={2} alignItems='center' justifyContent='between'>
@@ -69,7 +72,9 @@ const EventPreview: React.FC<IEventPreview> = ({ status, className, hideAction, 
           <HStack alignItems='center' space={2}>
             <Icon src={require('@tabler/icons/outline/user.svg')} />
             <HStack space={1} alignItems='center' grow>
-              <span dangerouslySetInnerHTML={{ __html: account.display_name_html }} />
+              <span>
+                <Emojify text={account.display_name} emojis={account.emojis} />
+              </span>
               {account.verified && <VerificationBadge />}
             </HStack>
           </HStack>
