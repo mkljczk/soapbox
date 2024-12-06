@@ -173,6 +173,7 @@ const SidebarNavigation = () => {
                 account={account}
                 action={<Icon src={require('@tabler/icons/outline/chevron-down.svg')} className='text-gray-600 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-500' />}
                 disabled
+                withLinkToProfile={false}
               />
             </ProfileDropdown>
           </div>

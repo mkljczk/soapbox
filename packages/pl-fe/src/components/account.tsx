@@ -223,7 +223,7 @@ const Account = ({
                 <Text theme='muted' size='sm' direction='ltr' truncate>@{username}</Text>
 
                 {account.favicon && (
-                  <InstanceFavicon account={account} disabled={!withLinkToProfile} />
+                  <InstanceFavicon account={account} disabled />
                 )}
 
                 {items}
