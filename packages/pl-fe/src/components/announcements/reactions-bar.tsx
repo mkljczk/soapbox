@@ -1,9 +1,9 @@
 import React from 'react';
 import { TransitionMotion, spring } from 'react-motion';
 
-import { useAnnouncements } from 'pl-fe/api/hooks/announcements/use-announcements';
 import EmojiPickerDropdown from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useAnnouncements } from 'pl-fe/queries/announcements/use-announcements';
 
 import Reaction from './reaction';
 

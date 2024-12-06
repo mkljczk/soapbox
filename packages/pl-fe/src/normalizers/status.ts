@@ -115,6 +115,7 @@ const normalizeStatus = (status: BaseStatus & {
     group_id: status.group?.id || null,
     expectsCard: false,
     showFiltered: null as null | boolean,
+    deleted: false,
     ...status,
     quote_id: status.quote?.id || status.quote_id || null,
     account: normalizeAccount(status.account),

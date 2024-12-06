@@ -14,7 +14,7 @@ type PlfeResponse<T = any> = Response & { data: string; json: T };
   * No authorization is needed.
   */
 const staticFetch = (input: URL | RequestInfo, init?: RequestInit | undefined) => {
-  const fullPath = buildFullPath(input.toString(), BuildConfig.FE_SUBDIRECTORY);
+  const fullPath = buildFullPath(input.toString(), BuildConfig.BACKEND_URL);
 
   return fetch(fullPath, init).then(async (response) => {
     if (!response.ok) throw { response };

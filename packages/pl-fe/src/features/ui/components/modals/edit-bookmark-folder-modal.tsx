@@ -3,8 +3,6 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useBookmarkFolder } from 'pl-fe/api/hooks/statuses/use-bookmark-folder';
-import { useUpdateBookmarkFolder } from 'pl-fe/api/hooks/statuses/use-update-bookmark-folder';
 import Emoji from 'pl-fe/components/ui/emoji';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
@@ -14,6 +12,7 @@ import EmojiPickerDropdown from 'pl-fe/features/emoji/components/emoji-picker-dr
 import { messages as emojiMessages } from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
 import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
 import { useClickOutside } from 'pl-fe/hooks/use-click-outside';
+import { useBookmarkFolder, useUpdateBookmarkFolder } from 'pl-fe/queries/statuses/use-bookmark-folders';
 import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';

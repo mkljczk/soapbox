@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import React from 'react';
 
+import Tombstone from 'pl-fe/components/tombstone';
 import StatusContainer from 'pl-fe/containers/status-container';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
@@ -20,6 +21,15 @@ const ThreadStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
   const replyToId = useAppSelector(state => state.contexts.inReplyTos[id]);
   const replyCount = useAppSelector(state => (state.contexts.replies[id] || []).length);
   const isLoaded = useAppSelector(state => Boolean(state.statuses[id]));
+  const isDeleted = useAppSelector(state => Boolean(state.statuses[id]?.deleted));
+
+  if (isDeleted) {
+    return (
+      <div className='py-4 pb-8'>
+        <Tombstone id={id} onMoveUp={props.onMoveUp} onMoveDown={props.onMoveDown} deleted />
+      </div>
+    );
+  }
 
   const renderConnector = (): JSX.Element | null => {
     const isConnectedTop = replyToId && replyToId !== focusedStatusId;

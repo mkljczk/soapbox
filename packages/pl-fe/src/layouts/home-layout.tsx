@@ -8,7 +8,6 @@ import Avatar from 'pl-fe/components/ui/avatar';
 import Card, { CardBody } from 'pl-fe/components/ui/card';
 import HStack from 'pl-fe/components/ui/hstack';
 import Layout from 'pl-fe/components/ui/layout';
-import ComposeForm from 'pl-fe/features/compose/components/compose-form';
 import LinkFooter from 'pl-fe/features/ui/components/link-footer';
 import {
   WhoToFollowPanel,
@@ -18,6 +17,7 @@ import {
   CryptoDonatePanel,
   BirthdayPanel,
   AnnouncementsPanel,
+  ComposeForm,
 } from 'pl-fe/features/ui/util/async-components';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';

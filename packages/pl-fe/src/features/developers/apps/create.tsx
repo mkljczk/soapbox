@@ -12,7 +12,6 @@ import Input from 'pl-fe/components/ui/input';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Textarea from 'pl-fe/components/ui/textarea';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { getBaseURL } from 'pl-fe/utils/accounts';
 
@@ -35,7 +34,6 @@ type Params = typeof BLANK_PARAMS;
 
 const CreateApp: React.FC = () => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
   const { account } = useOwnAccount();
 
   const [app, setApp] = useState<Record<string, any> | null>(null);
@@ -46,7 +44,7 @@ const CreateApp: React.FC = () => {
   const handleCreateApp = () => {
     const baseURL = getBaseURL(account!);
 
-    return dispatch(createApp(params, baseURL))
+    return createApp(params, baseURL)
       .then(app => {
         setApp(app);
         return app;
@@ -64,7 +62,7 @@ const CreateApp: React.FC = () => {
       scope: params.scopes,
     };
 
-    return dispatch(obtainOAuthToken(tokenParams, baseURL))
+    return obtainOAuthToken(tokenParams, baseURL)
       .then(setToken);
   };
 

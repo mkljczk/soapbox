@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { useDomains } from 'pl-fe/api/hooks/admin/use-domains';
 import Form from 'pl-fe/components/ui/form';
 import FormGroup from 'pl-fe/components/ui/form-group';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -10,6 +9,7 @@ import Modal from 'pl-fe/components/ui/modal';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Toggle from 'pl-fe/components/ui/toggle';
+import { useDomains } from 'pl-fe/queries/admin/use-domains';
 import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';

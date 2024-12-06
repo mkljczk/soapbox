@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { bookmark } from 'pl-fe/actions/interactions';
-import { useBookmarkFolders } from 'pl-fe/api/hooks/statuses/use-bookmark-folders';
 import { RadioGroup, RadioItem } from 'pl-fe/components/radio';
 import Emoji from 'pl-fe/components/ui/emoji';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -13,6 +12,7 @@ import Stack from 'pl-fe/components/ui/stack';
 import NewFolderForm from 'pl-fe/features/bookmark-folders/components/new-folder-form';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useBookmarkFolders } from 'pl-fe/queries/statuses/use-bookmark-folders';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 import type { BaseModalProps } from '../modal-root';

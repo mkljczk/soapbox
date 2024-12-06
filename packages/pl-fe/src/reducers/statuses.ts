@@ -40,6 +40,7 @@ import {
   STATUS_UNFILTER,
   STATUS_UNMUTE_SUCCESS,
   type StatusesAction,
+  STATUS_DELETE_SUCCESS,
 } from '../actions/statuses';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
@@ -279,6 +280,13 @@ const statuses = (state = initialState, action: EmojiReactsAction | EventsAction
         const status = draft[action.statusId];
         if (status?.event) {
           status.event.join_state = action.previousState;
+        }
+      });
+    case STATUS_DELETE_SUCCESS:
+      return create(state, (draft) => {
+        const status = draft[action.statusId];
+        if (status) {
+          status.deleted = true;
         }
       });
     default:
