@@ -30,8 +30,8 @@ import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
 import { blockGroupUserMutationOptions } from 'pl-fe/queries/groups/group-blocks';
-import { customEmojisQueryOptions } from 'pl-fe/queries/instance/use-custom-emojis';
-import { useTranslationLanguages } from 'pl-fe/queries/instance/use-translation-languages';
+import { customEmojisQueryOptions } from 'pl-fe/queries/instance/custom-emojis';
+import { translationLanguagesQueryOptions } from 'pl-fe/queries/instance/translation-languages';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import toast from 'pl-fe/toast';
@@ -598,7 +598,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   const instance = useInstance();
   const { autoTranslate, deleteModal, knownLanguages } = useSettings();
 
-  const { translationLanguages } = useTranslationLanguages();
+  const { data: translationLanguages = {} } = useQuery(translationLanguagesQueryOptions);
 
   const autoTranslating = useMemo(() => {
     const {

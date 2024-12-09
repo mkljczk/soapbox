@@ -16,7 +16,6 @@ const customEmojisQueryOptions = queryOptions({
   }),
 });
 
-
 const prefetchCustomEmojis = (client: PlApiClient) => queryClient.prefetchQuery(customEmojisQueryOptions);
 
 export { customEmojisQueryOptions, prefetchCustomEmojis };

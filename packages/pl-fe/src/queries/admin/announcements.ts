@@ -17,7 +17,7 @@ import { mutationOptions } from '../utils/mutation-options';
 import type { InfiniteData } from '@tanstack/react-query';
 
 const announcementsQueryOptions = makePaginatedResponseQueryOptions(
-  () => ['admin', 'announcements'],
+  ['admin', 'announcements'],
   (client) => client.admin.announcements.getAnnouncements(),
 )();
 

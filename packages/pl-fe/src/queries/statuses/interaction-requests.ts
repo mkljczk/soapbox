@@ -33,7 +33,7 @@ const minifyInteractionRequestsList = (dispatch: AppDispatch, { previous, next, 
 };
 
 const interactionRequestsQueryOptions = makePaginatedResponseQueryOptions(
-  () => ['interactionRequests'],
+  ['interactionRequests'],
   (client) => client.interactionRequests.getInteractionRequests().then(response => minifyInteractionRequestsList(store.dispatch, response)),
 )();
 

@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -8,8 +9,7 @@ import { useClient } from 'pl-fe/hooks/use-client';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { type Account, normalizeAccount } from 'pl-fe/normalizers/account';
-
-import { useAccountScrobble } from '../../../queries/accounts/use-account-scrobble';
+import { accountScrobbleQueryOptions } from 'pl-fe/queries/accounts/account-scrobble';
 
 import { useRelationship } from './use-relationship';
 
@@ -41,9 +41,9 @@ const useAccount = (accountId?: string, opts: UseAccountOpts = {}) => {
   } = useRelationship(accountId, { enabled: withRelationship });
 
   const {
-    scrobble,
+    data: scrobble,
     isLoading: isScrobbleLoading,
-  } = useAccountScrobble(accountId, { enabled: withScrobble });
+  } = useQuery({ ...accountScrobbleQueryOptions(accountId), enabled: withScrobble });
 
   const isBlocked = entity?.relationship?.blocked_by === true;
   const isUnavailable = (me === entity?.id) ? false : (isBlocked && !features.blockersVisible);

@@ -24,7 +24,7 @@ const removeFollowRequest = (accountId: string) =>
   } : undefined);
 
 const followRequestsQueryOptions = makePaginatedResponseQueryOptions(
-  () => ['accountsLists', 'followRequests'],
+  ['accountsLists', 'followRequests'],
   (client) => client.myAccount.getFollowRequests().then(minifyAccountList),
 )();
 

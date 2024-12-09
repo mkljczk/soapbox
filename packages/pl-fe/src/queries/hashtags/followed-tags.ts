@@ -5,7 +5,7 @@ import { makePaginatedResponseQueryOptions } from '../utils/make-paginated-respo
 import { mutationOptions } from '../utils/mutation-options';
 
 const followedTagsQueryOptions = makePaginatedResponseQueryOptions(
-  () => ['followedTags'],
+  ['followedTags'],
   (client) => client.myAccount.getFollowedTags(),
 )();
 

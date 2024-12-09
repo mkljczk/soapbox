@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
@@ -19,10 +19,10 @@ import PlaceholderHashtag from 'pl-fe/features/placeholder/components/placeholde
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { searchAccountsQueryOptions, searchStatusesQueryOptions, searchHashtagsQueryOptions } from 'pl-fe/queries/search/search';
-import useTrends from 'pl-fe/queries/trends';
-import { useSuggestedAccounts } from 'pl-fe/queries/trends/use-suggested-accounts';
-import { useTrendingLinks } from 'pl-fe/queries/trends/use-trending-links';
-import { useTrendingStatuses } from 'pl-fe/queries/trends/use-trending-statuses';
+import { trendsQueryOptions } from 'pl-fe/queries/trends';
+import { suggestedAccountsQueryOptions } from 'pl-fe/queries/trends/suggested-accounts';
+import { trendingLinksQueryOptions } from 'pl-fe/queries/trends/trending-links';
+import { trendingStatusesQueryOptions } from 'pl-fe/queries/trends/trending-statuses';
 
 type SearchFilter = 'accounts' | 'hashtags' | 'statuses' | 'links';
 
@@ -66,10 +66,10 @@ const SearchResults = () => {
     else setParams(params => ({ ...Object.fromEntries(params.entries()), type: newActiveFilter }));
   };
 
-  const { data: suggestions } = useSuggestedAccounts();
-  const { data: trendingTags } = useTrends();
-  const { data: trendingStatuses } = useTrendingStatuses();
-  const { data: trendingLinks } = useTrendingLinks();
+  const { data: suggestions } = useQuery(suggestedAccountsQueryOptions);
+  const { data: trendingTags } = useQuery(trendsQueryOptions);
+  const { data: trendingStatuses } = useQuery(trendingStatusesQueryOptions);
+  const { data: trendingLinks } = useQuery(trendingLinksQueryOptions);
   const { account } = useAccount(accountId);
 
   const handleUnsetAccount = () => {

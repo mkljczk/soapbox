@@ -7,10 +7,11 @@ import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useFamiliarFollowers } from 'pl-fe/queries/accounts/use-familiar-followers';
+import { familiarFollowersQueryOptions } from 'pl-fe/queries/accounts/familiar-followers';
 import { makeGetAccount } from 'pl-fe/selectors';
 
 import type { BaseModalProps } from '../modal-root';
+import { useQuery } from '@tanstack/react-query';
 
 const getAccount = makeGetAccount();
 
@@ -21,7 +22,7 @@ interface FamiliarFollowersModalProps {
 const FamiliarFollowersModal: React.FC<BaseModalProps & FamiliarFollowersModalProps> = ({ accountId, onClose }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const account = useAppSelector(state => getAccount(state, accountId));
-  const { data: familiarFollowerIds } = useFamiliarFollowers(accountId);
+  const { data: familiarFollowerIds } = useQuery(familiarFollowersQueryOptions(accountId));
 
   const onClickClose = () => {
     onClose('FAMILIAR_FOLLOWERS');

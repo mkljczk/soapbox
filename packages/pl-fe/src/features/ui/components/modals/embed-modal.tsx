@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -7,7 +8,7 @@ import Divider from 'pl-fe/components/ui/divider';
 import Modal from 'pl-fe/components/ui/modal';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import useEmbed from 'pl-fe/queries/embed';
+import { embedQueryOptions } from 'pl-fe/queries/embed';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -17,7 +18,7 @@ interface EmbedModalProps {
 }
 
 const EmbedModal: React.FC<BaseModalProps & EmbedModalProps> = ({ onClose, onError, url }) => {
-  const { data: embed, error, isError } = useEmbed(url);
+  const { data: embed, error, isError } = useQuery(embedQueryOptions(url));
 
   useEffect(() => {
     if (error && isError) {

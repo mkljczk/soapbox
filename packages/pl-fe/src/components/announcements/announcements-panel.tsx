@@ -8,7 +8,7 @@ import Card from 'pl-fe/components/ui/card';
 import HStack from 'pl-fe/components/ui/hstack';
 import Widget from 'pl-fe/components/ui/widget';
 import { useAnnouncements } from 'pl-fe/queries/announcements/use-announcements';
-import { customEmojisQueryOptions } from 'pl-fe/queries/instance/use-custom-emojis';
+import { customEmojisQueryOptions } from 'pl-fe/queries/instance/custom-emojis';
 
 import Announcement from './announcement';
 

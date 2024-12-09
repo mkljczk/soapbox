@@ -1,3 +1,4 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
@@ -10,7 +11,7 @@ import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
-import { useDirectory } from 'pl-fe/queries/accounts/use-directory';
+import { directoryQueryOptions } from 'pl-fe/queries/accounts/directory';
 
 import AccountCard from './components/account-card';
 
@@ -31,7 +32,7 @@ const Directory = () => {
   const order = (params.get('order') || 'active') as 'active' | 'new';
   const local = !!params.get('local');
 
-  const { data: accountIds = [], isLoading, hasNextPage, fetchNextPage } = useDirectory(order, local);
+  const { data: accountIds = [], isLoading, hasNextPage, fetchNextPage } = useInfiniteQuery(directoryQueryOptions(order, local));
 
   const handleChangeOrder: React.ChangeEventHandler<HTMLInputElement> = e => {
     setParams({ local: local ? 'true' : '', order: e.target.value });

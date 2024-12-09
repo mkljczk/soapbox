@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -6,7 +7,7 @@ import Hashtag from 'pl-fe/components/hashtag';
 import Text from 'pl-fe/components/ui/text';
 import Widget from 'pl-fe/components/ui/widget';
 import PlaceholderSidebarTrends from 'pl-fe/features/placeholder/components/placeholder-sidebar-trends';
-import useTrends from 'pl-fe/queries/trends';
+import { trendsQueryOptions } from 'pl-fe/queries/trends';
 
 interface ITrendsPanel {
   limit: number;
@@ -22,7 +23,7 @@ const messages = defineMessages({
 const TrendsPanel = ({ limit }: ITrendsPanel) => {
   const intl = useIntl();
 
-  const { data: trends, isFetching } = useTrends();
+  const { data: trends, isFetching } = useQuery(trendsQueryOptions);
 
   if (!isFetching && !trends?.length) {
     return null;
