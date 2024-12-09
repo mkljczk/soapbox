@@ -5,7 +5,7 @@ import StatusContent from 'pl-fe/components/status-content';
 import Stack from 'pl-fe/components/ui/stack';
 import Toggle from 'pl-fe/components/ui/toggle';
 import { MediaGallery, Video, Audio } from 'pl-fe/features/ui/util/async-components';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useStatus } from 'pl-fe/queries/statuses/status';
 
 interface IStatusCheckBox {
   id: string;
@@ -15,7 +15,7 @@ interface IStatusCheckBox {
 }
 
 const StatusCheckBox: React.FC<IStatusCheckBox> = ({ id, disabled, checked, toggleStatusReport }) => {
-  const status = useAppSelector((state) => state.statuses[id]);
+  const { data: status } = useStatus(id);
 
   const onToggle: React.ChangeEventHandler<HTMLInputElement> = (e) => toggleStatusReport(e.target.checked);
 

@@ -10,7 +10,7 @@ import Text from 'pl-fe/components/ui/text';
 import Textarea from 'pl-fe/components/ui/textarea';
 import Toggle from 'pl-fe/components/ui/toggle';
 import { DatePicker } from 'pl-fe/features/ui/util/async-components';
-import { useCreateAnnouncementMutation, useUpdateAnnouncementMutation } from 'pl-fe/queries/admin/use-announcements';
+import { useCreateAnnouncementMutation, useUpdateAnnouncementMutation } from 'pl-fe/queries/admin/announcements';
 import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';

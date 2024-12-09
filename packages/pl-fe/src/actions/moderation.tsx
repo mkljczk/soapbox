@@ -7,6 +7,7 @@ import OutlineBox from 'pl-fe/components/outline-box';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
+import { queryClient } from 'pl-fe/queries/client';
 import { selectAccount } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
@@ -113,8 +114,7 @@ const deleteUserModal = (intl: IntlShape, accountId: string, afterConfirm = () =
 
 const toggleStatusSensitivityModal = (intl: IntlShape, statusId: string, sensitive: boolean, afterConfirm = () => {}) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const state = getState();
-    const acct = state.statuses[statusId]!.account.acct;
+    const acct = queryClient.getQueryData(['statuses', 'entities', statusId])!.account.acct;
 
     useModalsStore.getState().openModal('CONFIRM', {
       heading: intl.formatMessage(sensitive === false ? messages.markStatusSensitiveHeading : messages.markStatusNotSensitiveHeading),

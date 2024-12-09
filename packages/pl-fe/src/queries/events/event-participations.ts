@@ -1,9 +1,9 @@
-import { makePaginatedResponseQuery } from 'pl-fe/queries/utils/make-paginated-response-query';
+import { makePaginatedResponseQueryOptions } from 'pl-fe/queries/utils/make-paginated-response-query-options';
 import { minifyAccountList } from 'pl-fe/queries/utils/minify-list';
 
-const useEventParticipations = makePaginatedResponseQuery(
+const eventParticipationsQueryOptions = makePaginatedResponseQueryOptions(
   (statusId: string) => ['accountsLists', 'eventParticipations', statusId],
   (client, params) => client.events.getEventParticipations(...params).then(minifyAccountList),
 );
 
-export { useEventParticipations };
+export { eventParticipationsQueryOptions };

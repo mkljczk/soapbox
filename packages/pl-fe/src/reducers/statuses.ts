@@ -2,6 +2,7 @@ import omit from 'lodash/omit';
 import { create } from 'mutative';
 
 import { normalizeStatus, Status as StatusRecord } from 'pl-fe/normalizers/status';
+import { queryClient } from 'pl-fe/queries/client';
 import { simulateEmojiReact, simulateUnEmojiReact } from 'pl-fe/utils/emoji-reacts';
 
 import {
@@ -52,26 +53,11 @@ type MinifiedStatus = ReturnType<typeof minifyStatus>;
 
 const minifyStatus = (status: StatusRecord) => omit(status, ['reblog', 'poll', 'quote', 'group']);
 
-// Check whether a status is a quote by secondary characteristics
-const isQuote = (status: StatusRecord) => Boolean(status.quote_url);
-
-// Preserve quote if an existing status already has it
-const fixQuote = (status: StatusRecord, oldStatus?: StatusRecord): StatusRecord => {
-  if (oldStatus && !status.quote && isQuote(status)) {
-    return {
-      ...status,
-      quote: oldStatus.quote,
-      quote_visible: status.quote_visible || oldStatus.quote_visible,
-    };
-  } else {
-    return status;
-  }
-};
-
 const fixStatus = (state: State, status: BaseStatus): MinifiedStatus => {
   const oldStatus = state[status.id];
-
-  return minifyStatus(fixQuote(normalizeStatus(status, oldStatus)));
+  const normalizedStatus = normalizeStatus(status, oldStatus);
+  queryClient.setQueryData(['statuses', 'entities', status.id], normalizedStatus);
+  return minifyStatus(normalizedStatus);
 };
 
 const importStatus = (state: State, status: BaseStatus) =>{

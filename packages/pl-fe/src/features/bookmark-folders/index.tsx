@@ -10,7 +10,7 @@ import Icon from 'pl-fe/components/ui/icon';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useBookmarkFolders } from 'pl-fe/queries/statuses/use-bookmark-folders';
+import { useBookmarkFolders } from 'pl-fe/queries/statuses/bookmark-folders';
 
 import NewFolderForm from './components/new-folder-form';
 

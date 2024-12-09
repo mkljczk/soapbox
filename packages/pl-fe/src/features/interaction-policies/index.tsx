@@ -9,7 +9,7 @@ import Form from 'pl-fe/components/ui/form';
 import FormActions from 'pl-fe/components/ui/form-actions';
 import { InlineMultiselect } from 'pl-fe/components/ui/inline-multiselect';
 import Tabs from 'pl-fe/components/ui/tabs';
-import { useInteractionPolicies } from 'pl-fe/queries/settings/use-interaction-policies';
+import { useInteractionPolicies } from 'pl-fe/queries/settings/interaction-policies';
 import toast from 'pl-fe/toast';
 
 import Warning from '../compose/components/warning';

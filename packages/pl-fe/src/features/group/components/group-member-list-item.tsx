@@ -13,8 +13,8 @@ import { deleteEntities } from 'pl-fe/entity-store/actions';
 import { Entities } from 'pl-fe/entity-store/entities';
 import PlaceholderAccount from 'pl-fe/features/placeholder/components/placeholder-account';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/use-group-blocks';
-import { useKickGroupMemberMutation, type MinifiedGroupMember } from 'pl-fe/queries/groups/use-group-members';
+import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/group-blocks';
+import { useKickGroupMemberMutation, type MinifiedGroupMember } from 'pl-fe/queries/groups/group-members';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 

@@ -1,17 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
+import React, { useCallback } from 'react';
+import { FormattedDate, FormattedMessage } from 'react-intl';
 
-import { fetchStatus } from 'pl-fe/actions/statuses';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import StatusContent from 'pl-fe/components/status-content';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { useStatus } from 'pl-fe/queries/statuses/status';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 type RouteParams = { statusId: string };
@@ -21,30 +18,16 @@ interface IEventInformation {
 }
 
 const EventInformation: React.FC<IEventInformation> = ({ params }) => {
-  const dispatch = useAppDispatch();
-  const getStatus = useCallback(makeGetStatus(), []);
-  const intl = useIntl();
-
-  const status = useAppSelector(state => getStatus(state, { id: params.statusId }))!;
+  const { data: status, isFetched } = useStatus(params.statusId);
 
   const { openModal } = useModalsStore();
   const { tileServer } = usePlFeConfig();
-
-  const [isLoaded, setIsLoaded] = useState<boolean>(!!status);
-
-  useEffect(() => {
-    dispatch(fetchStatus(params.statusId, intl)).then(() => {
-      setIsLoaded(true);
-    }).catch(() => {
-      setIsLoaded(true);
-    });
-  }, [params.statusId]);
 
   const handleShowMap: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
     e.preventDefault();
 
     openModal('EVENT_MAP', {
-      statusId: status.id,
+      statusId: params.statusId,
     });
   };
 
@@ -148,7 +131,7 @@ const EventInformation: React.FC<IEventInformation> = ({ params }) => {
   }, [status]);
 
   const renderLinks = useCallback(() => {
-    if (!status.event?.links?.length) return null;
+    if (!status!.event?.links?.length) return null;
 
     return (
       <Stack space={1}>
@@ -156,7 +139,7 @@ const EventInformation: React.FC<IEventInformation> = ({ params }) => {
           <FormattedMessage id='event.website' defaultMessage='External links' />
         </Text>
 
-        {status.event.links.map(link => (
+        {status!.event.links.map(link => (
           <HStack space={2} alignItems='center'>
             <Icon src={require('@tabler/icons/outline/link.svg')} />
             <a href={link.remote_url || link.url} className='text-primary-600 hover:underline dark:text-accent-blue' target='_blank'>
@@ -168,7 +151,7 @@ const EventInformation: React.FC<IEventInformation> = ({ params }) => {
     );
   }, [status]);
 
-  if (!status && isLoaded) {
+  if (!status && isFetched) {
     return (
       <MissingIndicator />
     );

@@ -1,3 +1,4 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
@@ -17,7 +18,7 @@ import PlaceholderAccount from 'pl-fe/features/placeholder/components/placeholde
 import PlaceholderHashtag from 'pl-fe/features/placeholder/components/placeholder-hashtag';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useSearchAccounts, useSearchHashtags, useSearchStatuses } from 'pl-fe/queries/search/use-search';
+import { searchAccountsQueryOptions, searchStatusesQueryOptions, searchHashtagsQueryOptions } from 'pl-fe/queries/search/search';
 import useTrends from 'pl-fe/queries/trends';
 import { useSuggestedAccounts } from 'pl-fe/queries/trends/use-suggested-accounts';
 import { useTrendingLinks } from 'pl-fe/queries/trends/use-trending-links';
@@ -45,11 +46,11 @@ const SearchResults = () => {
   const selectedFilter = (params.get('type') || 'accounts') as SearchFilter;
   const accountId = params.get('accountId') || undefined;
 
-  const searchAccountsQuery = useSearchAccounts(selectedFilter === 'accounts' && value || '');
-  const searchStatusesQuery = useSearchStatuses(selectedFilter === 'statuses' && value || '', {
+  const searchAccountsQuery = useInfiniteQuery(searchAccountsQueryOptions(selectedFilter === 'accounts' && value || ''));
+  const searchStatusesQuery = useInfiniteQuery(searchStatusesQueryOptions(selectedFilter === 'statuses' && value || '', {
     account_id: accountId,
-  });
-  const searchHashtagsQuery = useSearchHashtags(selectedFilter === 'hashtags' && value || '');
+  }));
+  const searchHashtagsQuery = useInfiniteQuery(searchHashtagsQueryOptions(selectedFilter === 'hashtags' && value || ''));
 
   const activeQuery = ({
     accounts: searchAccountsQuery,

@@ -12,7 +12,7 @@ import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { useTheme } from 'pl-fe/hooks/use-theme';
-import { useFollowHashtagMutation, useUnfollowHashtagMutation } from 'pl-fe/queries/hashtags/use-followed-tags';
+import { useFollowHashtagMutation, useUnfollowHashtagMutation } from 'pl-fe/queries/hashtags/followed-tags';
 import { useHashtag } from 'pl-fe/queries/hashtags/use-hashtag';
 
 interface IHashtagTimeline {

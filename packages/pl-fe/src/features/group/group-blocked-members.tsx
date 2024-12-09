@@ -9,7 +9,7 @@ import Button from 'pl-fe/components/ui/button';
 import Column from 'pl-fe/components/ui/column';
 import HStack from 'pl-fe/components/ui/hstack';
 import Spinner from 'pl-fe/components/ui/spinner';
-import { useGroupBlocks, useUnblockGroupUserMutation } from 'pl-fe/queries/groups/use-group-blocks';
+import { useGroupBlocks, useUnblockGroupUserMutation } from 'pl-fe/queries/groups/group-blocks';
 import toast from 'pl-fe/toast';
 
 import ColumnForbidden from '../ui/components/column-forbidden';

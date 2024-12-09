@@ -5,7 +5,7 @@ import { defineMessages } from 'react-intl';
 import { getClient } from 'pl-fe/api';
 import { getNotificationStatus } from 'pl-fe/features/notifications/components/notification';
 import { normalizeNotification } from 'pl-fe/normalizers/notification';
-import { appendFollowRequest } from 'pl-fe/queries/accounts/use-follow-requests';
+import { appendFollowRequest } from 'pl-fe/queries/accounts/follow-requests';
 import { getFilters, regexFromFilters } from 'pl-fe/selectors';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { isLoggedIn } from 'pl-fe/utils/auth';
@@ -72,7 +72,6 @@ const updateNotifications = (notification: BaseNotification) =>
       accounts: [notification.account, notification.type === 'move' ? notification.target : undefined],
       statuses: [getNotificationStatus(notification) as any],
     }));
-
 
     if (showInColumn) {
       const normalizedNotification = normalizeNotification(notification);

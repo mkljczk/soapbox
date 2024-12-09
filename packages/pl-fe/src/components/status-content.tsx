@@ -9,7 +9,7 @@ import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
 import { useSettings } from 'pl-fe/hooks/use-settings';
-import { useStatusTranslation } from 'pl-fe/queries/statuses/use-status-translation';
+import { useStatusTranslation } from 'pl-fe/queries/statuses/status-translation';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { onlyEmoji as isOnlyEmoji } from 'pl-fe/utils/rich-content';
 

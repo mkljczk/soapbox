@@ -1,17 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Redirect } from 'react-router-dom';
 
-import { fetchStatusWithContext } from 'pl-fe/actions/statuses';
+import { fetchContext } from 'pl-fe/actions/statuses';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { useStatus } from 'pl-fe/queries/statuses/status';
 
 import Thread from './components/thread';
 import ThreadLoginCta from './components/thread-login-cta';
@@ -48,8 +47,7 @@ const StatusDetails: React.FC<IStatusDetails> = (props) => {
   const intl = useIntl();
   const { isLoggedIn } = useLoggedIn();
 
-  const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector((state) => getStatus(state, { id: props.params.statusId }));
+  const { data: status } = useStatus(props.params.statusId);
 
   const [isLoaded, setIsLoaded] = useState<boolean>(!!status);
 
@@ -57,7 +55,7 @@ const StatusDetails: React.FC<IStatusDetails> = (props) => {
   const fetchData = () => {
     const { params } = props;
     const { statusId } = params;
-    return dispatch(fetchStatusWithContext(statusId, intl));
+    return dispatch(fetchContext(statusId, intl));
   };
 
   // Load data.

@@ -10,7 +10,7 @@ import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useStatusHistory } from 'pl-fe/queries/statuses/use-status-history';
+import { useStatusHistory } from 'pl-fe/queries/statuses/status-history';
 
 import type { BaseModalProps } from '../modal-root';
 

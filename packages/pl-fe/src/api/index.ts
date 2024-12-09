@@ -3,7 +3,7 @@
  * @module pl-fe/api
  */
 import * as BuildConfig from 'pl-fe/build-config';
-import { RootState } from 'pl-fe/store';
+import { RootState, store } from 'pl-fe/store';
 import { buildFullPath } from 'pl-fe/utils/url';
 
 type PlfeResponse<T = any> = Response & { data: string; json: T };
@@ -32,7 +32,7 @@ const staticFetch = (input: URL | RequestInfo, init?: RequestInit | undefined) =
   });
 };
 
-const getClient = (state: RootState | (() => RootState)) => {
+const getClient = (state: RootState | (() => RootState) = store.getState()) => {
   if (typeof state === 'function') state = state();
 
   return state.auth.client;

@@ -12,7 +12,7 @@ import Stack from 'pl-fe/components/ui/stack';
 import NewFolderForm from 'pl-fe/features/bookmark-folders/components/new-folder-form';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useBookmarkFolders } from 'pl-fe/queries/statuses/use-bookmark-folders';
+import { useBookmarkFolders } from 'pl-fe/queries/statuses/bookmark-folders';
 import { makeGetStatus } from 'pl-fe/selectors';
 
 import type { BaseModalProps } from '../modal-root';

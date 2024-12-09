@@ -1,13 +1,13 @@
-
-import { type InfiniteData, useMutation } from '@tanstack/react-query';
-
 import { importEntities } from 'pl-fe/actions/importer';
-import { useClient } from 'pl-fe/hooks/use-client';
+import { getClient } from 'pl-fe/api';
 import { queryClient } from 'pl-fe/queries/client';
-import { makePaginatedResponseQuery } from 'pl-fe/queries/utils/make-paginated-response-query';
+import { makePaginatedResponseQueryOptions } from 'pl-fe/queries/utils/make-paginated-response-query-options';
 import { minifyList } from 'pl-fe/queries/utils/minify-list';
 import { store } from 'pl-fe/store';
 
+import { mutationOptions } from '../utils/mutation-options';
+
+import type { InfiniteData } from '@tanstack/react-query';
 import type { PlApiClient } from 'pl-api';
 
 const minifyRequestList = (response: Awaited<ReturnType<(InstanceType<typeof PlApiClient>)['events']['getEventParticipationRequests']>>) =>
@@ -25,32 +25,25 @@ const removeRequest = (statusId: string, accountId: string) =>
     pages: data.pages.map(({ items, ...page }) => ({ ...page, items: items.filter(({ account_id }) => account_id !== accountId) })),
   } : undefined);
 
-const useEventParticipationRequests = makePaginatedResponseQuery(
+const eventParticipationRequestsQueryOptions = makePaginatedResponseQueryOptions(
   (statusId: string) => ['accountsLists', 'eventParticipationRequests', statusId],
   (client, params) => client.events.getEventParticipationRequests(...params).then(minifyRequestList),
 );
 
-const useAcceptEventParticipationRequestMutation = (statusId: string, accountId: string) => {
-  const client = useClient();
+const acceptEventParticipationRequestMutationOptions = (statusId: string, accountId: string) => mutationOptions({
+  mutationKey: ['accountsLists', 'eventParticipationRequests', statusId, accountId],
+  mutationFn: () => getClient().events.acceptEventParticipationRequest(statusId, accountId),
+  onSettled: () => removeRequest(statusId, accountId),
+});
 
-  return useMutation({
-    mutationKey: ['accountsLists', 'eventParticipationRequests', statusId, accountId],
-    mutationFn: () => client.events.acceptEventParticipationRequest(statusId, accountId),
-    onSettled: () => removeRequest(statusId, accountId),
-  });
-};
+const rejectEventParticipationRequestMutationOptions = (statusId: string, accountId: string) => mutationOptions({
+  mutationKey: ['accountsLists', 'eventParticipationRequests', statusId, accountId],
+  mutationFn: () => getClient().events.rejectEventParticipationRequest(statusId, accountId),
+  onSettled: () => removeRequest(statusId, accountId),
+});
 
-const useRejectEventParticipationRequestMutation = (statusId: string, accountId: string) => {
-  const client = useClient();
-
-  return useMutation({
-    mutationKey: ['accountsLists', 'eventParticipationRequests', statusId, accountId],
-    mutationFn: () => client.events.rejectEventParticipationRequest(statusId, accountId),
-    onSettled: () => removeRequest(statusId, accountId),
-  });
-};
 export {
-  useEventParticipationRequests,
-  useAcceptEventParticipationRequestMutation,
-  useRejectEventParticipationRequestMutation,
+  eventParticipationRequestsQueryOptions,
+  acceptEventParticipationRequestMutationOptions,
+  rejectEventParticipationRequestMutationOptions,
 };

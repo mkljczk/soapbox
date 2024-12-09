@@ -1,3 +1,4 @@
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import React from 'react';
 import { FormattedDate, FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
@@ -8,7 +9,7 @@ import Column from 'pl-fe/components/ui/column';
 import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useAnnouncements, useDeleteAnnouncementMutation } from 'pl-fe/queries/admin/use-announcements';
+import { announcementsQueryOptions, deleteAnnouncementMutationOptions } from 'pl-fe/queries/admin/announcements';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
@@ -28,7 +29,7 @@ interface IAnnouncement {
 
 const Announcement: React.FC<IAnnouncement> = ({ announcement }) => {
   const intl = useIntl();
-  const { mutate: deleteAnnouncement } = useDeleteAnnouncementMutation();
+  const { mutate: deleteAnnouncement } = useMutation(deleteAnnouncementMutationOptions);
   const { openModal } = useModalsStore();
 
   const handleEditAnnouncement = () => {
@@ -96,7 +97,7 @@ const Announcements: React.FC = () => {
   const intl = useIntl();
   const { openModal } = useModalsStore();
 
-  const { data: announcements, isLoading, isPending } = useAnnouncements();
+  const { data: announcements, isLoading, isPending } = useInfiniteQuery(announcementsQueryOptions());
 
   const handleCreateAnnouncement = () => {
     openModal('EDIT_ANNOUNCEMENT');

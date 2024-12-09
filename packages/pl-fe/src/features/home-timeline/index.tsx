@@ -15,6 +15,8 @@ import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
 import { useTheme } from 'pl-fe/hooks/use-theme';
 
+import { NewTimeline } from '../ui/components/new-timeline';
+
 const messages = defineMessages({
   title: { id: 'column.home', defaultMessage: 'Home' },
 });
@@ -67,7 +69,8 @@ const HomeTimeline: React.FC = () => {
   return (
     <Column className='py-0' label={intl.formatMessage(messages.title)} transparent={!isMobile} withHeader={false}>
       <PullToRefresh onRefresh={handleRefresh}>
-        <Timeline
+        <NewTimeline />
+        {/* <Timeline
           className='black:p-0 black:sm:p-4 black:sm:pt-0'
           loadMoreClassName='black:sm:mx-4'
           scrollKey='home_timeline'
@@ -108,7 +111,7 @@ const HomeTimeline: React.FC = () => {
               )}
             </Stack>
           }
-        />
+        /> */}
       </PullToRefresh>
     </Column>
   );

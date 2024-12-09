@@ -1,8 +1,7 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 
 import Status, { IStatus } from 'pl-fe/components/status';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { useStatus } from 'pl-fe/queries/statuses/status';
 
 interface IStatusContainer extends Omit<IStatus, 'status'> {
   id: string;
@@ -18,8 +17,7 @@ interface IStatusContainer extends Omit<IStatus, 'status'> {
 const StatusContainer: React.FC<IStatusContainer> = (props) => {
   const { id, contextType, ...rest } = props;
 
-  const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector(state => getStatus(state, { id, contextType }));
+  const { data: status } = useStatus(id);
 
   if (status) {
     return <Status status={status} {...rest} />;

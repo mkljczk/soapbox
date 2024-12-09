@@ -6,7 +6,7 @@ import Form from 'pl-fe/components/ui/form';
 import HStack from 'pl-fe/components/ui/hstack';
 import Input from 'pl-fe/components/ui/input';
 import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
-import { useCreateBookmarkFolder } from 'pl-fe/queries/statuses/use-bookmark-folders';
+import { useCreateBookmarkFolder } from 'pl-fe/queries/statuses/bookmark-folders';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({

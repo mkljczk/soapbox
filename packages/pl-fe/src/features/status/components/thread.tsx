@@ -28,7 +28,6 @@ import ThreadStatus from './thread-status';
 import type { Virtualizer } from '@tanstack/react-virtual';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';
-import type { SelectedStatus } from 'pl-fe/selectors';
 
 const makeGetAncestorsIds = () => createSelector([
   (_: RootState, statusId: string | undefined) => statusId,
@@ -97,7 +96,7 @@ const makeGetThread = () => {
 };
 
 interface IThread {
-  status: SelectedStatus;
+  status: Status;
   withMedia?: boolean;
   isModal?: boolean;
   itemClassName?: string;
@@ -134,15 +133,15 @@ const Thread: React.FC<IThread> = ({
     }
   };
 
-  const handleFavouriteClick = (status: SelectedStatus) => {
+  const handleFavouriteClick = (status: Status) => {
     dispatch(toggleFavourite(status));
   };
 
   const handleReplyClick = (status: ComposeReplyAction['status']) => dispatch(replyCompose(status));
 
-  const handleModalReblog = (status: Pick<SelectedStatus, 'id'>) => dispatch(reblog(status));
+  const handleModalReblog = (status: Pick<Status, 'id'>) => dispatch(reblog(status));
 
-  const handleReblogClick = (status: SelectedStatus, e?: React.MouseEvent) => {
+  const handleReblogClick = (status: Status, e?: React.MouseEvent) => {
     const boostModal = settings.boostModal;
     if (status.reblogged) {
       dispatch(unreblog(status));

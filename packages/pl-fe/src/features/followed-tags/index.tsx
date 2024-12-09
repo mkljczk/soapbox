@@ -5,7 +5,7 @@ import Hashtag from 'pl-fe/components/hashtag';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Column from 'pl-fe/components/ui/column';
 import PlaceholderHashtag from 'pl-fe/features/placeholder/components/placeholder-hashtag';
-import { useFollowedTags } from 'pl-fe/queries/hashtags/use-followed-tags';
+import { useFollowedTags } from 'pl-fe/queries/hashtags/followed-tags';
 
 const messages = defineMessages({
   heading: { id: 'column.followed_tags', defaultMessage: 'Followed hashtags' },

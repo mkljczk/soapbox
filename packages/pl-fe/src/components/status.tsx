@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { defineMessages, useIntl, FormattedList, FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
@@ -15,9 +15,7 @@ import Emojify from 'pl-fe/features/emoji/emojify';
 import StatusTypeIcon from 'pl-fe/features/status/components/status-type-icon';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useSettings } from 'pl-fe/hooks/use-settings';
-import { makeGetStatus, type SelectedStatus } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { textForScreenReader } from 'pl-fe/utils/status';
@@ -31,6 +29,8 @@ import StatusReplyMentions from './status-reply-mentions';
 import StatusInfo from './statuses/status-info';
 import Tombstone from './tombstone';
 
+import type { Status as NormalizedStatus } from 'pl-fe/normalizers/status';
+
 const messages = defineMessages({
   reblogged_by: { id: 'status.reblogged_by', defaultMessage: '{name} reposted' },
 });
@@ -38,7 +38,7 @@ const messages = defineMessages({
 interface IStatus {
   id?: string;
   avatarSize?: number;
-  status: SelectedStatus;
+  status: NormalizedStatus;
   onClick?: () => void;
   muted?: boolean;
   unread?: boolean;
@@ -83,14 +83,11 @@ const Status: React.FC<IStatus> = (props) => {
   const didShowCard = useRef(false);
   const node = useRef<HTMLDivElement>(null);
 
-  const getStatus = useCallback(makeGetStatus(), []);
-  const actualStatus = useAppSelector(state => status.reblog_id && getStatus(state, { id: status.reblog_id }) || status)!;
-
   const isReblog = status.reblog_id;
-  const statusUrl = `/@${actualStatus.account.acct}/posts/${actualStatus.id}`;
-  const group = actualStatus.group;
+  const statusUrl = `/@${status.account.acct}/posts/${status.id}`;
+  const group = status.group;
 
-  const filtered = (status.filtered?.length || actualStatus.filtered?.length) > 0;
+  const filtered = (status.filtered?.length || status.filtered?.length) > 0;
 
   // Track height changes we know about to compensate scrolling.
   useEffect(() => {
@@ -117,7 +114,6 @@ const Status: React.FC<IStatus> = (props) => {
   };
 
   const handleHotkeyOpenMedia = (e?: KeyboardEvent) => {
-    const status = actualStatus;
     const firstAttachment = status.media_attachments[0];
 
     e?.preventDefault();
@@ -133,26 +129,26 @@ const Status: React.FC<IStatus> = (props) => {
 
   const handleHotkeyReply = (e?: KeyboardEvent) => {
     e?.preventDefault();
-    dispatch(replyCompose(actualStatus, status.reblog_id ? status.account : undefined));
+    dispatch(replyCompose(status, status.reblog_id ? status.account : undefined));
   };
 
   const handleHotkeyFavourite = (e?: KeyboardEvent) => {
     e?.preventDefault();
-    dispatch(toggleFavourite(actualStatus));
+    dispatch(toggleFavourite(status));
   };
 
   const handleHotkeyBoost = (e?: KeyboardEvent) => {
-    const modalReblog = () => dispatch(toggleReblog(actualStatus));
+    const modalReblog = () => dispatch(toggleReblog(status));
     if ((e && e.shiftKey) || !boostModal) {
       modalReblog();
     } else {
-      openModal('BOOST', { statusId: actualStatus.id, onReblog: modalReblog });
+      openModal('BOOST', { statusId: status.id, onReblog: modalReblog });
     }
   };
 
   const handleHotkeyMention = (e?: KeyboardEvent) => {
     e?.preventDefault();
-    dispatch(mentionCompose(actualStatus.account));
+    dispatch(mentionCompose(status.account));
   };
 
   const handleHotkeyOpen = () => {
@@ -160,7 +156,7 @@ const Status: React.FC<IStatus> = (props) => {
   };
 
   const handleHotkeyOpenProfile = () => {
-    history.push(`/@${actualStatus.account.acct}`);
+    history.push(`/@${status.account.acct}`);
   };
 
   const handleHotkeyMoveUp = (e?: KeyboardEvent) => {
@@ -176,14 +172,14 @@ const Status: React.FC<IStatus> = (props) => {
   };
 
   const handleHotkeyToggleSensitive = () => {
-    toggleStatusMediaHidden(actualStatus.id);
+    toggleStatusMediaHidden(status.id);
   };
 
   const handleHotkeyReact = () => {
     (node.current?.querySelector('.emoji-picker-dropdown') as HTMLButtonElement)?.click();
   };
 
-  const handleUnfilter = () => dispatch(unfilterStatus(status.filtered.length ? status.id : actualStatus.id));
+  const handleUnfilter = () => dispatch(unfilterStatus(status.filtered.length ? status.id : status.id));
 
   const renderStatusInfo = () => {
     if (isReblog && showGroup && group) {
@@ -351,14 +347,14 @@ const Status: React.FC<IStatus> = (props) => {
         className={clsx('status cursor-pointer', { focusable })}
         tabIndex={focusable && !muted ? 0 : undefined}
         data-featured={featured ? 'true' : null}
-        aria-label={textForScreenReader(intl, actualStatus, rebloggedByText)}
+        aria-label={textForScreenReader(intl, status, rebloggedByText)}
         ref={node}
         onClick={handleClick}
         role='link'
       >
         <Card
           variant={variant}
-          className={clsx('status__wrapper space-y-4', `status-${actualStatus.visibility}`, {
+          className={clsx('status__wrapper space-y-4', `status-${status.visibility}`, {
             'py-6 sm:p-5': variant === 'rounded',
             'status-reply': !!status.in_reply_to_id,
             muted,
@@ -369,32 +365,32 @@ const Status: React.FC<IStatus> = (props) => {
           {renderStatusInfo()}
 
           <AccountContainer
-            key={actualStatus.account_id}
-            id={actualStatus.account_id}
-            timestamp={actualStatus.created_at}
+            key={status.account_id}
+            id={status.account_id}
+            timestamp={status.created_at}
             timestampUrl={statusUrl}
             action={accountAction}
             hideActions={!accountAction}
-            showEdit={!!actualStatus.edited_at}
+            showEdit={!!status.edited_at}
             showAccountHoverCard={hoverable}
             withLinkToProfile={hoverable}
-            approvalStatus={actualStatus.approval_status}
+            approvalStatus={status.approval_status}
             avatarSize={avatarSize}
             items={(
               <>
-                <StatusTypeIcon status={actualStatus} />
-                <StatusLanguagePicker status={actualStatus} />
+                <StatusTypeIcon status={status} />
+                <StatusLanguagePicker status={status} />
               </>
             )}
           />
 
           <div className='status__content-wrapper'>
-            <StatusReplyMentions status={actualStatus} hoverable={hoverable} />
+            <StatusReplyMentions status={status} hoverable={hoverable} />
 
             <Stack className='relative z-0'>
-              {actualStatus.event ? <EventPreview className='shadow-xl' status={actualStatus} /> : (
+              {status.event ? <EventPreview className='shadow-xl' status={status} /> : (
                 <StatusContent
-                  status={actualStatus}
+                  status={status}
                   onClick={handleClick}
                   collapsable
                   translatable
@@ -403,17 +399,17 @@ const Status: React.FC<IStatus> = (props) => {
               )}
             </Stack>
 
-            <StatusReactionsBar status={actualStatus} collapsed />
+            <StatusReactionsBar status={status} collapsed />
 
             {!hideActionBar && (
               <div
                 className={clsx({
-                  'pt-2': actualStatus.emoji_reactions.length,
-                  'pt-4': !actualStatus.emoji_reactions.length,
+                  'pt-2': status.emoji_reactions.length,
+                  'pt-4': !status.emoji_reactions.length,
                 })}
               >
                 <StatusActionBar
-                  status={actualStatus}
+                  status={status}
                   rebloggedBy={isReblog ? status.account : undefined}
                   fromBookmarks={fromBookmarks}
                   expandable

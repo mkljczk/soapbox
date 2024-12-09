@@ -20,7 +20,7 @@ import { buildLink } from 'pl-fe/features/notifications/components/notification'
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
-import { type MinifiedInteractionRequest, useAuthorizeInteractionRequestMutation, useFlatInteractionRequests, useRejectInteractionRequestMutation } from 'pl-fe/queries/statuses/use-interaction-requests';
+import { type MinifiedInteractionRequest, useAuthorizeInteractionRequestMutation, useFlatInteractionRequests, useRejectInteractionRequestMutation } from 'pl-fe/queries/statuses/interaction-requests';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({

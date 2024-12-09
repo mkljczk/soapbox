@@ -1,3 +1,4 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { FormattedDate, defineMessages, useIntl } from 'react-intl';
 
@@ -9,7 +10,7 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useBackups, useCreateBackupMutation } from 'pl-fe/queries/settings/use-backups';
+import { backupsQueryOptions, createBackupMutationOptions } from 'pl-fe/queries/settings/backups';
 
 import type { Backup as BackupEntity } from 'pl-api';
 
@@ -62,8 +63,8 @@ const Backup: React.FC<IBackup> = ({ backup }) => {
 const Backups = () => {
   const intl = useIntl();
 
-  const { data: backups = [], isLoading } = useBackups();
-  const { mutate: createBackup } = useCreateBackupMutation();
+  const { data: backups = [], isLoading } = useQuery(backupsQueryOptions);
+  const { mutate: createBackup } = useMutation(createBackupMutationOptions);
 
   const handleCreateBackup: React.MouseEventHandler = e => {
     createBackup();

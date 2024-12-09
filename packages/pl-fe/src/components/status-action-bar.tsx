@@ -28,7 +28,7 @@ import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
-import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/use-group-blocks';
+import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/group-blocks';
 import { useCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
 import { useTranslationLanguages } from 'pl-fe/queries/instance/use-translation-languages';
 import { useModalsStore } from 'pl-fe/stores/modals';
@@ -46,7 +46,7 @@ import type { Emoji as EmojiType } from 'pl-fe/features/emoji';
 import type { UnauthorizedModalAction } from 'pl-fe/features/ui/components/modals/unauthorized-modal';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Group } from 'pl-fe/normalizers/group';
-import type { SelectedStatus } from 'pl-fe/selectors';
+import type { Status as NormalizedStatus } from 'pl-fe/normalizers/status';
 import type { Me } from 'pl-fe/types/pl-fe';
 
 const messages = defineMessages({
@@ -1043,7 +1043,7 @@ const MenuButton: React.FC<IMenuButton> = ({
 };
 
 interface IStatusActionBar {
-  status: SelectedStatus;
+  status: NormalizedStatus;
   rebloggedBy?: Account;
   withLabels?: boolean;
   expandable?: boolean;

@@ -6,7 +6,7 @@ import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import { useGroupMembershipRequests } from 'pl-fe/api/hooks/groups/use-group-membership-requests';
 import { PendingItemsRow } from 'pl-fe/components/pending-items-row';
 import ScrollableList from 'pl-fe/components/scrollable-list';
-import { useGroupMembers } from 'pl-fe/queries/groups/use-group-members';
+import { useGroupMembers } from 'pl-fe/queries/groups/group-members';
 
 import PlaceholderAccount from '../placeholder/components/placeholder-account';
 

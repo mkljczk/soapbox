@@ -13,8 +13,8 @@ import { useLogo } from 'pl-fe/hooks/use-logo';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
 import { useSettings } from 'pl-fe/hooks/use-settings';
-import { useFollowRequestsCount } from 'pl-fe/queries/accounts/use-follow-requests';
-import { useInteractionRequestsCount } from 'pl-fe/queries/statuses/use-interaction-requests';
+import { useFollowRequestsCount } from 'pl-fe/queries/accounts/follow-requests';
+import { useInteractionRequestsCount } from 'pl-fe/queries/statuses/interaction-requests';
 
 import Account from './account';
 import DropdownMenu, { Menu } from './dropdown-menu';

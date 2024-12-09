@@ -12,7 +12,7 @@ import EmojiPickerDropdown from 'pl-fe/features/emoji/components/emoji-picker-dr
 import { messages as emojiMessages } from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
 import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
 import { useClickOutside } from 'pl-fe/hooks/use-click-outside';
-import { useBookmarkFolder, useUpdateBookmarkFolder } from 'pl-fe/queries/statuses/use-bookmark-folders';
+import { useBookmarkFolder, useUpdateBookmarkFolder } from 'pl-fe/queries/statuses/bookmark-folders';
 import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';

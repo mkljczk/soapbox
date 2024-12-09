@@ -146,12 +146,6 @@ const fetchContext = (statusId: string, intl?: IntlShape) =>
     });
   };
 
-const fetchStatusWithContext = (statusId: string, intl?: IntlShape) =>
-  async (dispatch: AppDispatch) => Promise.all([
-    dispatch(fetchContext(statusId, intl)),
-    dispatch(fetchStatus(statusId, intl)),
-  ]);
-
 const muteStatus = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return;
@@ -262,7 +256,6 @@ export {
   deleteStatus,
   updateStatus,
   fetchContext,
-  fetchStatusWithContext,
   muteStatus,
   unmuteStatus,
   toggleMuteStatus,
