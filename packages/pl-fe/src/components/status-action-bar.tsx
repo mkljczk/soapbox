@@ -1,3 +1,4 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { type CustomEmoji, GroupRoles } from 'pl-api';
 import React, { useMemo } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -28,8 +29,8 @@ import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
-import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/group-blocks';
-import { useCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
+import { blockGroupUserMutationOptions } from 'pl-fe/queries/groups/group-blocks';
+import { customEmojisQueryOptions } from 'pl-fe/queries/instance/use-custom-emojis';
 import { useTranslationLanguages } from 'pl-fe/queries/instance/use-translation-languages';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
@@ -477,7 +478,10 @@ const WrenchButton: React.FC<IActionButton> = ({
   const { openModal } = useModalsStore();
   const { showWrenchButton } = useSettings();
 
-  const { data: hasLongerWrench } = useCustomEmojis(getLongerWrench);
+  const { data: hasLongerWrench } = useQuery({
+    ...customEmojisQueryOptions,
+    select: getLongerWrench,
+  });
 
   if (!me || withLabels || !features.emojiReacts || !showWrenchButton) return;
 
@@ -586,7 +590,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   const { openModal } = useModalsStore();
   const { group } = useGroup((status.group as Group)?.id as string);
   const deleteGroupStatus = useDeleteGroupStatus(group as Group, status.id);
-  const { mutate: blockGroupMember } = useBlockGroupUserMutation(status.group?.id as string, status.account.id);
+  const { mutate: blockGroupMember } = useMutation(blockGroupUserMutationOptions(status.group?.id as string, status.account.id));
   const { getOrCreateChatByAccountId } = useChats();
 
   const { groupRelationship } = useGroupRelationship(status.group_id || undefined);

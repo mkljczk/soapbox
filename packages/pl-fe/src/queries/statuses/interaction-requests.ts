@@ -1,10 +1,11 @@
-import { type InfiniteData, infiniteQueryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions } from '@tanstack/react-query';
 
 import { importEntities } from 'pl-fe/actions/importer';
 import { getClient } from 'pl-fe/api';
 import { store, type AppDispatch } from 'pl-fe/store';
 
 import { queryClient } from '../client';
+import { makePaginatedResponseQueryOptions } from '../utils/make-paginated-response-query-options';
 import { mutationOptions } from '../utils/mutation-options';
 
 import type { InteractionRequest, PaginatedResponse } from 'pl-api';
@@ -31,18 +32,15 @@ const minifyInteractionRequestsList = (dispatch: AppDispatch, { previous, next, 
   };
 };
 
-const interactionRequestsQueryOptions = <T = Array<MinifiedInteractionRequest>>(
-  select?: (data: InfiniteData<PaginatedResponse<MinifiedInteractionRequest>>) => T,
-) => infiniteQueryOptions({
-    queryKey: ['interactionRequests'],
-    queryFn: ({ pageParam }) => pageParam.next?.() || getClient().interactionRequests.getInteractionRequests().then(response => minifyInteractionRequestsList(store.dispatch, response)),
-    initialPageParam: { previous: null, next: null, items: [], partial: false } as PaginatedResponse<MinifiedInteractionRequest>,
-    getNextPageParam: (page) => page.next ? page : undefined,
-    // enabled: features.interactionRequests,
-    select: select ?? ((data) => data.pages.map(page => page.items).flat() as T),
-  });
+const interactionRequestsQueryOptions = makePaginatedResponseQueryOptions(
+  () => ['interactionRequests'],
+  (client) => client.interactionRequests.getInteractionRequests().then(response => minifyInteractionRequestsList(store.dispatch, response)),
+)();
 
-const interactionRequestsCountQueryOptions = interactionRequestsQueryOptions(data => data.pages.map(({ items }) => items).flat().length);
+const interactionRequestsCountQueryOptions = infiniteQueryOptions({
+  ...interactionRequestsQueryOptions,
+  select: (data => data.pages.map(({ items }) => items).flat().length),
+});
 
 const authorizeInteractionRequestMutationOptions = (requestId: string) => mutationOptions({
   mutationKey: ['interactionRequests', requestId],
@@ -56,9 +54,10 @@ const rejectInteractionRequestMutationOptions = (requestId: string) => mutationO
   onSettled: () => queryClient.refetchQueries(interactionRequestsCountQueryOptions),
 });
 
-export default {
+export {
   interactionRequestsQueryOptions,
   interactionRequestsCountQueryOptions,
   authorizeInteractionRequestMutationOptions,
   rejectInteractionRequestMutationOptions,
+  type MinifiedInteractionRequest,
 };

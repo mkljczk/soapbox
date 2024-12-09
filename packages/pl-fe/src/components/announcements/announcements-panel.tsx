@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -7,7 +8,7 @@ import Card from 'pl-fe/components/ui/card';
 import HStack from 'pl-fe/components/ui/hstack';
 import Widget from 'pl-fe/components/ui/widget';
 import { useAnnouncements } from 'pl-fe/queries/announcements/use-announcements';
-import { useCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
+import { customEmojisQueryOptions } from 'pl-fe/queries/instance/use-custom-emojis';
 
 import Announcement from './announcement';
 
@@ -16,7 +17,10 @@ import type { CustomEmoji } from 'pl-api';
 const makeCustomEmojiMap = (items: Array<CustomEmoji>) => items.reduce<Record<string, CustomEmoji>>((map, emoji) => (map[emoji.shortcode] = emoji, map), {});
 
 const AnnouncementsPanel = () => {
-  const { data: emojiMap = {} } = useCustomEmojis(makeCustomEmojiMap);
+  const { data: emojiMap = {} } = useQuery({
+    ...customEmojisQueryOptions,
+    select: makeCustomEmojiMap,
+  });
   const [index, setIndex] = useState(0);
 
   const { data: announcements } = useAnnouncements();

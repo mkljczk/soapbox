@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -10,7 +11,7 @@ import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useTranslationLanguages } from 'pl-fe/queries/instance/use-translation-languages';
-import { useStatusTranslation } from 'pl-fe/queries/statuses/status-translation';
+import { statusTranslationQueryOptions } from 'pl-fe/queries/statuses/status-translation';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
 import type { Status } from 'pl-fe/normalizers/status';
@@ -32,7 +33,7 @@ const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
   const { statuses: statusesMeta, fetchTranslation, hideTranslation } = useStatusMetaStore();
 
   const targetLanguage = statusesMeta[status.id]?.targetLanguage;
-  const translationQuery = useStatusTranslation(status.id, targetLanguage);
+  const translationQuery = useQuery(statusTranslationQueryOptions(status.id, targetLanguage));
 
   const {
     allow_remote: allowRemote,

@@ -1,3 +1,4 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import debounce from 'lodash/debounce';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -12,7 +13,7 @@ import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
 import { useTheme } from 'pl-fe/hooks/use-theme';
-import { useBookmarkFolder, useDeleteBookmarkFolder } from 'pl-fe/queries/statuses/bookmark-folders';
+import { bookmarkFolderQueryOptions, deleteBookmarkFolderMutationOptions } from 'pl-fe/queries/statuses/bookmark-folders';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
@@ -47,8 +48,8 @@ const Bookmarks: React.FC<IBookmarks> = ({ params }) => {
   const folderId = params?.id;
 
   const { openModal } = useModalsStore();
-  const { data: folder } = useBookmarkFolder(folderId);
-  const { mutate: deleteBookmarkFolder } = useDeleteBookmarkFolder();
+  const { data: folder } = useQuery(bookmarkFolderQueryOptions(folderId));
+  const { mutate: deleteBookmarkFolder } = useMutation(deleteBookmarkFolderMutationOptions);
 
   const bookmarksKey = folderId ? `bookmarks:${folderId}` : 'bookmarks';
 

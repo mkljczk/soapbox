@@ -32,11 +32,9 @@ const useSuggestions = () => {
     placeholderData: keepPreviousData,
   });
 
-  const data = result.data;
-
   return {
     ...result,
-    data: data || [],
+    data: result.data || [],
   };
 };
 

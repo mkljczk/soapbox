@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -7,7 +8,7 @@ import Status from 'pl-fe/components/status';
 import Spinner from 'pl-fe/components/ui/spinner';
 import { useLogo } from 'pl-fe/hooks/use-logo';
 import { iframeId } from 'pl-fe/iframe';
-import { useStatus } from 'pl-fe/queries/statuses/status';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 interface IEmbeddedStatus {
   params: {
@@ -20,7 +21,7 @@ const EmbeddedStatus: React.FC<IEmbeddedStatus> = ({ params }) => {
   const history = useHistory();
   const logoSrc = useLogo();
 
-  const { data: status, isLoading } = useStatus(params.statusId);
+  const { data: status, isLoading } = useQuery(statusQueryOptions(params.statusId));
 
   useEffect(() => {
     // Prevent navigation for UX and security.

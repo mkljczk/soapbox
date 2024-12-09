@@ -1,10 +1,11 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
 import React from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Column from 'pl-fe/components/ui/column';
 import Spinner from 'pl-fe/components/ui/spinner';
-import { useFollowRequests } from 'pl-fe/queries/accounts/follow-requests';
+import { followRequestsQueryOptions } from 'pl-fe/queries/accounts/follow-requests';
 
 import AccountAuthorize from './components/account-authorize';
 
@@ -15,7 +16,7 @@ const messages = defineMessages({
 const FollowRequests: React.FC = () => {
   const intl = useIntl();
 
-  const { data: accountIds, isLoading, hasNextPage, fetchNextPage } = useFollowRequests();
+  const { data: accountIds, isLoading, hasNextPage, fetchNextPage } = useInfiniteQuery(followRequestsQueryOptions);
 
   if (!accountIds) {
     return (

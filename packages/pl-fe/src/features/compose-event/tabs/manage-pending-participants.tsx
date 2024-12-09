@@ -1,3 +1,4 @@
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
@@ -7,7 +8,11 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useAcceptEventParticipationRequestMutation, useEventParticipationRequests, useRejectEventParticipationRequestMutation } from 'pl-fe/queries/events/event-participation-requests';
+import {
+  eventParticipationRequestsQueryOptions,
+  acceptEventParticipationRequestMutationOptions,
+  rejectEventParticipationRequestMutationOptions,
+} from 'pl-fe/queries/events/event-participation-requests';
 
 const messages = defineMessages({
   authorize: { id: 'compose_event.participation_requests.authorize', defaultMessage: 'Authorize' },
@@ -23,8 +28,8 @@ interface IAccount {
 const Account: React.FC<IAccount> = ({ eventId, id, participationMessage }) => {
   const intl = useIntl();
 
-  const { mutate: acceptEventParticipationRequest } = useAcceptEventParticipationRequestMutation(eventId, id);
-  const { mutate: rejectEventParticipationRequest } = useRejectEventParticipationRequestMutation(eventId, id);
+  const { mutate: acceptEventParticipationRequest } = useMutation(acceptEventParticipationRequestMutationOptions(eventId, id));
+  const { mutate: rejectEventParticipationRequest } = useMutation(rejectEventParticipationRequestMutationOptions(eventId, id));
 
   return (
     <AccountContainer
@@ -55,7 +60,7 @@ interface IManagePendingParticipants {
 }
 
 const ManagePendingParticipants: React.FC<IManagePendingParticipants> = ({ statusId }) => {
-  const { data: accounts, isLoading, hasNextPage, fetchNextPage } = useEventParticipationRequests(statusId);
+  const { data: accounts, isLoading, hasNextPage, fetchNextPage } = useInfiniteQuery(eventParticipationRequestsQueryOptions(statusId));
 
   return accounts ? (
     <Stack space={3}>

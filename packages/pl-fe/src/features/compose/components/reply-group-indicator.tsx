@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -5,7 +6,7 @@ import Link from 'pl-fe/components/link';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { useCompose } from 'pl-fe/hooks/use-compose';
-import { useStatus } from 'pl-fe/queries/statuses/status';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 interface IReplyGroupIndicator {
   composeId: string;
@@ -16,7 +17,7 @@ const ReplyGroupIndicator = (props: IReplyGroupIndicator) => {
 
   const { in_reply_to: inReplyTo } = useCompose(composeId);
 
-  const { data: status } = useStatus(inReplyTo!);
+  const { data: status } = useQuery(statusQueryOptions(inReplyTo!));
   const group = status?.group;
 
   if (!group) {

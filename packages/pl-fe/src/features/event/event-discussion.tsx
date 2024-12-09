@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -11,7 +12,7 @@ import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder
 import PendingStatus from 'pl-fe/features/ui/components/pending-status';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useStatus } from 'pl-fe/queries/statuses/status';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 import { makeGetDescendantsIds } from '../status/components/thread';
 import ThreadStatus from '../status/components/thread-status';
@@ -32,7 +33,7 @@ const EventDiscussion: React.FC<IEventDiscussion> = ({ params: { statusId: statu
   const dispatch = useAppDispatch();
 
   const getDescendantsIds = useCallback(makeGetDescendantsIds(), []);
-  const { data: status } = useStatus(statusId);
+  const { data: status } = useQuery(statusQueryOptions(statusId));
 
   const me = useAppSelector((state) => state.me);
 

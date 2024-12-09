@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
@@ -10,7 +11,7 @@ import Text from 'pl-fe/components/ui/text';
 import Textarea from 'pl-fe/components/ui/textarea';
 import Toggle from 'pl-fe/components/ui/toggle';
 import { DatePicker } from 'pl-fe/features/ui/util/async-components';
-import { useCreateAnnouncementMutation, useUpdateAnnouncementMutation } from 'pl-fe/queries/admin/announcements';
+import { createAnnouncementMutationOptions, updateAnnouncementMutationOptions } from 'pl-fe/queries/admin/announcements';
 import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';
@@ -30,8 +31,8 @@ interface EditAnnouncementModalProps {
 }
 
 const EditAnnouncementModal: React.FC<BaseModalProps & EditAnnouncementModalProps> = ({ onClose, announcement }) => {
-  const { mutate: createAnnouncement } = useCreateAnnouncementMutation();
-  const { mutate: updateAnnouncement } = useUpdateAnnouncementMutation();
+  const { mutate: createAnnouncement } = useMutation(createAnnouncementMutationOptions);
+  const { mutate: updateAnnouncement } = useMutation(updateAnnouncementMutationOptions);
   const intl = useIntl();
 
   const [content, setContent] = useState(announcement?.raw_content || '');

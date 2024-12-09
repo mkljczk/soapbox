@@ -1,4 +1,5 @@
 import { useFloating, shift, autoUpdate } from '@floating-ui/react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
@@ -12,7 +13,7 @@ import EmojiPickerDropdown from 'pl-fe/features/emoji/components/emoji-picker-dr
 import { messages as emojiMessages } from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
 import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
 import { useClickOutside } from 'pl-fe/hooks/use-click-outside';
-import { useBookmarkFolder, useUpdateBookmarkFolder } from 'pl-fe/queries/statuses/bookmark-folders';
+import { bookmarkFolderQueryOptions, updateBookmarkFolderMutationOptions } from 'pl-fe/queries/statuses/bookmark-folders';
 import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';
@@ -97,8 +98,8 @@ interface EditBookmarkFolderModalProps {
 const EditBookmarkFolderModal: React.FC<BaseModalProps & EditBookmarkFolderModalProps> = ({ folderId, onClose }) => {
   const intl = useIntl();
 
-  const { data: bookmarkFolder } = useBookmarkFolder(folderId);
-  const { mutate: updateBookmarkFolder, isPending } = useUpdateBookmarkFolder(folderId);
+  const { data: bookmarkFolder } = useQuery(bookmarkFolderQueryOptions(folderId));
+  const { mutate: updateBookmarkFolder, isPending } = useMutation(updateBookmarkFolderMutationOptions(folderId));
 
   const [emoji, setEmoji] = useState(bookmarkFolder?.emoji || undefined);
   const [emojiUrl, setEmojiUrl] = useState(bookmarkFolder?.emoji_url || undefined);

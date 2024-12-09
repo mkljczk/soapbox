@@ -1,11 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useStatus } from 'pl-fe/queries/statuses/status';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -16,16 +17,12 @@ interface MentionsModalProps {
 const MentionsModal: React.FC<BaseModalProps & MentionsModalProps> = ({ onClose, statusId }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const { data: status } = useStatus(statusId);
+  const { data: status } = useQuery(statusQueryOptions(statusId));
   const accountIds = status ? status.mentions.map(m => m.id) : null;
 
   const onClickClose = () => {
     onClose('MENTIONS');
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   let body;
 

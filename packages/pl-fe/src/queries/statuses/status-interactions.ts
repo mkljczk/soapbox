@@ -16,19 +16,25 @@ const makeStatusInteractionsQueryOptions = (method: 'getDislikedBy' | 'getFavour
   (client, params) => client.statuses[method](...params).then(minifyAccountList),
 );
 
-const statusInteractionsQueryOptions = {
-  statusDislikesQueryOptions: makeStatusInteractionsQueryOptions('getDislikedBy'),
-  statusFavouritesQueryOptions: makeStatusInteractionsQueryOptions('getFavouritedBy'),
-  statusReblogsQueryOptions: makeStatusInteractionsQueryOptions('getRebloggedBy'),
-  statusReactionsQueryOptions: (statusId: string, emoji?: string) => queryOptions({
-    queryKey: ['accountsLists', 'statusReactions', statusId, emoji],
-    queryFn: () => store.getState().auth.client.statuses.getStatusReactions(statusId, emoji).then((reactions) => {
-      store.dispatch(importEntities({ accounts: reactions.map(({ accounts }) => accounts).flat() }));
+const statusDislikesQueryOptions = makeStatusInteractionsQueryOptions('getDislikedBy');
 
-      return reactions.map(({ accounts, ...reactions }) => reactions);
-    }),
-    placeholderData: (previousData) => previousData?.filter(({ name }) => name === emoji),
+const statusFavouritesQueryOptions = makeStatusInteractionsQueryOptions('getFavouritedBy');
+
+const statusReblogsQueryOptions = makeStatusInteractionsQueryOptions('getRebloggedBy');
+
+const statusReactionsQueryOptions = (statusId: string, emoji?: string) => queryOptions({
+  queryKey: ['accountsLists', 'statusReactions', statusId, emoji],
+  queryFn: () => store.getState().auth.client.statuses.getStatusReactions(statusId, emoji).then((reactions) => {
+    store.dispatch(importEntities({ accounts: reactions.map(({ accounts }) => accounts).flat() }));
+
+    return reactions.map(({ accounts, ...reactions }) => reactions);
   }),
-};
+  placeholderData: (previousData) => previousData?.filter(({ name }) => name === emoji),
+});
 
-export default statusInteractionsQueryOptions;
+export {
+  statusDislikesQueryOptions,
+  statusFavouritesQueryOptions,
+  statusReblogsQueryOptions,
+  statusReactionsQueryOptions,
+};

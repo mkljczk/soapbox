@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
+import { useInfiniteQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
@@ -18,8 +19,8 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
-import { useFollowRequestsCount } from 'pl-fe/queries/accounts/follow-requests';
-import { useInteractionRequestsCount } from 'pl-fe/queries/statuses/interaction-requests';
+import { followRequestsCountQueryOptions } from 'pl-fe/queries/accounts/follow-requests';
+import { interactionRequestsCountQueryOptions } from 'pl-fe/queries/statuses/interaction-requests';
 import { makeGetOtherAccounts } from 'pl-fe/selectors';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { useUiStore } from 'pl-fe/stores/ui';
@@ -97,8 +98,8 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const { account } = useAccount(me || undefined);
   const otherAccounts = useAppSelector((state) => getOtherAccounts(state));
   const { settings } = useSettingsStore();
-  const followRequestsCount = useFollowRequestsCount().data || 0;
-  const interactionRequestsCount = useInteractionRequestsCount().data || 0;
+  const followRequestsCount = useInfiniteQuery(followRequestsCountQueryOptions).data || 0;
+  const interactionRequestsCount = useInfiniteQuery(interactionRequestsCountQueryOptions).data || 0;
   const scheduledStatusCount = useAppSelector((state) => Object.keys(state.scheduled_statuses).length);
   const draftCount = useAppSelector((state) => Object.keys(state.draft_statuses).length);
   // const dashboardCount = useAppSelector((state) => state.admin.openReports.count() + state.admin.awaitingApproval.count());

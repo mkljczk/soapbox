@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -12,7 +13,7 @@ import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { useTheme } from 'pl-fe/hooks/use-theme';
-import { useFollowHashtagMutation, useUnfollowHashtagMutation } from 'pl-fe/queries/hashtags/followed-tags';
+import { followHashtagMutationOptions, unfollowHashtagMutationOptions } from 'pl-fe/queries/hashtags/followed-tags';
 import { useHashtag } from 'pl-fe/queries/hashtags/use-hashtag';
 
 interface IHashtagTimeline {
@@ -31,8 +32,8 @@ const HashtagTimeline: React.FC<IHashtagTimeline> = ({ params }) => {
   const theme = useTheme();
   const isMobile = useIsMobile();
 
-  const { mutate: followHashtag } = useFollowHashtagMutation(tagId);
-  const { mutate: unfollowHashtag } = useUnfollowHashtagMutation(tagId);
+  const { mutate: followHashtag } = useMutation(followHashtagMutationOptions(tagId));
+  const { mutate: unfollowHashtag } = useMutation(unfollowHashtagMutationOptions(tagId));
 
   const handleLoadMore = () => {
     dispatch(fetchHashtagTimeline(tagId, { }, true));

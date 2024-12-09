@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React, { useState, useRef, useLayoutEffect, useMemo, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -9,7 +10,7 @@ import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
 import { useSettings } from 'pl-fe/hooks/use-settings';
-import { useStatusTranslation } from 'pl-fe/queries/statuses/status-translation';
+import { statusTranslationQueryOptions } from 'pl-fe/queries/statuses/status-translation';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { onlyEmoji as isOnlyEmoji } from 'pl-fe/utils/rich-content';
 
@@ -92,7 +93,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
 
   const { statuses: statusesMeta, collapseStatus, expandStatus } = useStatusMetaStore();
   const statusMeta = statusesMeta[status.id] || {};
-  const { data: translation } = useStatusTranslation(status.id, statusMeta.targetLanguage);
+  const { data: translation } = useQuery(statusTranslationQueryOptions(status.id, statusMeta.targetLanguage));
 
   const maybeSetCollapsed = (): void => {
     if (!node.current) return;

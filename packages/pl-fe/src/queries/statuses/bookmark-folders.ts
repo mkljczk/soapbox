@@ -17,18 +17,18 @@ interface UpdateBookmarkFolderParams {
   emoji?: string;
 }
 
-const bookmarkFoldersQueryOptions = <T>(
-  select?: ((data: Array<BookmarkFolder>) => T),
-) => queryOptions({
-    queryKey: ['bookmarkFolders'],
-    queryFn: () => getClient().myAccount.getBookmarkFolders(),
-    // enabled: features.bookmarkFolders,
-    select,
-  });
+const bookmarkFoldersQueryOptions = queryOptions({
+  queryKey: ['bookmarkFolders'],
+  queryFn: () => getClient().myAccount.getBookmarkFolders(),
+  // enabled: features.bookmarkFolders,
+});
 
-const bookmarkFolderQueryOptions = (folderId?: string) => bookmarkFoldersQueryOptions((data) => folderId ? data.find(folder => folder.id === folderId) : undefined);
+const bookmarkFolderQueryOptions = (folderId?: string) => queryOptions({
+  ...bookmarkFoldersQueryOptions,
+  select: (data) => folderId ? data.find(folder => folder.id === folderId) : undefined,
+});
 
-const createBookmarkFolderMutationOptions = () => mutationOptions({
+const createBookmarkFolderMutationOptions = mutationOptions({
   mutationKey: ['bookmarkFolders', 'create'],
   mutationFn: (params: CreateBookmarkFolderParams) => getClient().myAccount.createBookmarkFolder(params),
   onSettled: () => queryClient.invalidateQueries({ queryKey: ['bookmarkFolders'] }),

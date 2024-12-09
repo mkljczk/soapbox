@@ -6,7 +6,8 @@ import { useHistory } from 'react-router-dom';
 import { showStatusHoverCard } from 'pl-fe/components/hover-status-wrapper';
 import Card, { CardBody } from 'pl-fe/components/ui/card';
 import StatusContainer from 'pl-fe/containers/status-container';
-import { useStatus } from 'pl-fe/queries/statuses/status';
+import { queryClient } from 'pl-fe/queries/client';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import { useStatusHoverCardStore } from 'pl-fe/stores/status-hover-card';
 
 interface IStatusHoverCard {
@@ -19,7 +20,9 @@ const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
 
   const { statusId, ref, closeStatusHoverCard, updateStatusHoverCard } = useStatusHoverCardStore();
 
-  useStatus(statusId || undefined);
+  useEffect(() => {
+    queryClient.prefetchQuery(statusQueryOptions(statusId || undefined));
+  }, [statusId]);
 
   useEffect(() => {
     const unlisten = history.listen(() => {

@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import noop from 'lodash/noop';
 import React, { Suspense } from 'react';
 
@@ -5,7 +6,7 @@ import StatusContent from 'pl-fe/components/status-content';
 import Stack from 'pl-fe/components/ui/stack';
 import Toggle from 'pl-fe/components/ui/toggle';
 import { MediaGallery, Video, Audio } from 'pl-fe/features/ui/util/async-components';
-import { useStatus } from 'pl-fe/queries/statuses/status';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 interface IStatusCheckBox {
   id: string;
@@ -15,7 +16,7 @@ interface IStatusCheckBox {
 }
 
 const StatusCheckBox: React.FC<IStatusCheckBox> = ({ id, disabled, checked, toggleStatusReport }) => {
-  const { data: status } = useStatus(id);
+  const { data: status } = useQuery(statusQueryOptions(id));
 
   const onToggle: React.ChangeEventHandler<HTMLInputElement> = (e) => toggleStatusReport(e.target.checked);
 

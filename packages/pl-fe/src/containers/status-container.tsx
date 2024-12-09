@@ -1,7 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 import Status, { IStatus } from 'pl-fe/components/status';
-import { useStatus } from 'pl-fe/queries/statuses/status';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 interface IStatusContainer extends Omit<IStatus, 'status'> {
   id: string;
@@ -17,7 +18,7 @@ interface IStatusContainer extends Omit<IStatus, 'status'> {
 const StatusContainer: React.FC<IStatusContainer> = (props) => {
   const { id, contextType, ...rest } = props;
 
-  const { data: status } = useStatus(id);
+  const { data: status } = useQuery(statusQueryOptions(id));
 
   if (status) {
     return <Status status={status} {...rest} />;

@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useCallback } from 'react';
 import { FormattedDate, FormattedMessage } from 'react-intl';
 
@@ -8,7 +9,7 @@ import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
-import { useStatus } from 'pl-fe/queries/statuses/status';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 type RouteParams = { statusId: string };
@@ -18,7 +19,7 @@ interface IEventInformation {
 }
 
 const EventInformation: React.FC<IEventInformation> = ({ params }) => {
-  const { data: status, isFetched } = useStatus(params.statusId);
+  const { data: status, isFetched } = useQuery(statusQueryOptions(params.statusId));
 
   const { openModal } = useModalsStore();
   const { tileServer } = usePlFeConfig();

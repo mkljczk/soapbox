@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { GroupRoles } from 'pl-api';
 import React, { useMemo } from 'react';
@@ -13,8 +14,8 @@ import { deleteEntities } from 'pl-fe/entity-store/actions';
 import { Entities } from 'pl-fe/entity-store/entities';
 import PlaceholderAccount from 'pl-fe/features/placeholder/components/placeholder-account';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/group-blocks';
-import { useKickGroupMemberMutation, type MinifiedGroupMember } from 'pl-fe/queries/groups/group-members';
+import { blockGroupUserMutationOptions } from 'pl-fe/queries/groups/group-blocks';
+import { kickGroupMemberMutationOptions, type MinifiedGroupMember } from 'pl-fe/queries/groups/group-members';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
@@ -52,8 +53,8 @@ const GroupMemberListItem = ({ member, group }: IGroupMemberListItem) => {
   const intl = useIntl();
   const { openModal } = useModalsStore();
 
-  const { mutate: blockGroupMember } = useBlockGroupUserMutation(group.id, member.account_id);
-  const { mutate: kickGroupMember } = useKickGroupMemberMutation(group.id, member.account_id);
+  const { mutate: blockGroupMember } = useMutation(blockGroupUserMutationOptions(group.id, member.account_id));
+  const { mutate: kickGroupMember } = useMutation(kickGroupMemberMutationOptions(group.id, member.account_id));
   const promoteGroupMember = usePromoteGroupMember(group, member);
   const demoteGroupMember = useDemoteGroupMember(group, member);
 

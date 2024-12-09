@@ -413,7 +413,7 @@ const UI: React.FC<IUI> = ({ children }) => {
     setTimeout(() => dispatch(fetchFilters()), 500);
 
     if (account.locked) {
-      setTimeout(() => prefetchFollowRequests(client), 700);
+      setTimeout(() => prefetchFollowRequests(), 700);
     }
 
     setTimeout(() => dispatch(fetchScheduledStatuses()), 900);

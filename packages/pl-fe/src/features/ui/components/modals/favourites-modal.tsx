@@ -1,3 +1,4 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
 import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -5,7 +6,7 @@ import ScrollableList from 'pl-fe/components/scrollable-list';
 import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useStatusFavourites } from 'pl-fe/queries/statuses/status-interactions';
+import { statusFavouritesQueryOptions } from 'pl-fe/queries/statuses/status-interactions';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -16,7 +17,7 @@ interface FavouritesModalProps {
 const FavouritesModal: React.FC<BaseModalProps & FavouritesModalProps> = ({ onClose, statusId }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const { data: accountIds, isLoading, hasNextPage, fetchNextPage } = useStatusFavourites(statusId);
+  const { data: accountIds, isLoading, hasNextPage, fetchNextPage } = useInfiniteQuery(statusFavouritesQueryOptions(statusId));
 
   const onClickClose = () => {
     onClose('FAVOURITES');

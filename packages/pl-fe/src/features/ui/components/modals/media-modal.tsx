@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
@@ -18,7 +19,7 @@ import Thread from 'pl-fe/features/status/components/thread';
 import Video from 'pl-fe/features/video';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { userTouching } from 'pl-fe/is-mobile';
-import { useStatus } from 'pl-fe/queries/statuses/status';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 import ImageLoader from '../image-loader';
 
@@ -64,7 +65,7 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
-  const { data: status } = useStatus(statusId);
+  const { data: status } = useQuery(statusQueryOptions(statusId));
 
   const [isLoaded, setIsLoaded] = useState<boolean>(!!status);
   const [index, setIndex] = useState<number | null>(null);

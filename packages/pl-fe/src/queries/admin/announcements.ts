@@ -19,7 +19,7 @@ import type { InfiniteData } from '@tanstack/react-query';
 const announcementsQueryOptions = makePaginatedResponseQueryOptions(
   () => ['admin', 'announcements'],
   (client) => client.admin.announcements.getAnnouncements(),
-);
+)();
 
 const createAnnouncementMutationOptions = mutationOptions({
   mutationFn: (params: AdminCreateAnnouncementParams) => getClient().admin.announcements.createAnnouncement(params),

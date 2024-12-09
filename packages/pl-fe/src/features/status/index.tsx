@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Redirect } from 'react-router-dom';
@@ -10,7 +11,7 @@ import Stack from 'pl-fe/components/ui/stack';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
-import { useStatus } from 'pl-fe/queries/statuses/status';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 import Thread from './components/thread';
 import ThreadLoginCta from './components/thread-login-cta';
@@ -47,7 +48,7 @@ const StatusDetails: React.FC<IStatusDetails> = (props) => {
   const intl = useIntl();
   const { isLoggedIn } = useLoggedIn();
 
-  const { data: status } = useStatus(props.params.statusId);
+  const { data: status } = useQuery(statusQueryOptions(props.params.statusId));
 
   const [isLoaded, setIsLoaded] = useState<boolean>(!!status);
 

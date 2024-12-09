@@ -7,7 +7,7 @@ import { mutationOptions } from '../utils/mutation-options';
 const followedTagsQueryOptions = makePaginatedResponseQueryOptions(
   () => ['followedTags'],
   (client) => client.myAccount.getFollowedTags(),
-);
+)();
 
 const followHashtagMutationOptions = (tag: string) => mutationOptions({
   mutationKey: ['followedTags', tag.toLocaleLowerCase()],

@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React, { useMemo, useRef, useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
@@ -8,7 +9,7 @@ import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Tabs from 'pl-fe/components/ui/tabs';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useStatusReactions } from 'pl-fe/queries/statuses/status-interactions';
+import { statusReactionsQueryOptions } from 'pl-fe/queries/statuses/status-interactions';
 
 import type { BaseModalProps } from '../modal-root';
 import type { Item } from 'pl-fe/components/ui/tabs';
@@ -33,7 +34,7 @@ const ReactionsModal: React.FC<BaseModalProps & ReactionsModalProps> = ({ onClos
   const intl = useIntl();
   const [reaction, setReaction] = useState(initialReaction);
 
-  const { data: reactions, isLoading } = useStatusReactions(statusId);
+  const { data: reactions, isLoading } = useQuery(statusReactionsQueryOptions(statusId));
 
   const onClickClose = () => {
     onClose('REACTIONS');
