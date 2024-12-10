@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
@@ -6,7 +7,7 @@ import FormGroup from 'pl-fe/components/ui/form-group';
 import Input from 'pl-fe/components/ui/input';
 import Modal from 'pl-fe/components/ui/modal';
 import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
-import { useRules } from 'pl-fe/queries/admin/use-rules';
+import { createRuleMutationOptions, updateRuleMutationOptions } from 'pl-fe/queries/admin/rules';
 import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';
@@ -27,7 +28,8 @@ interface EditRuleModalProps {
 const EditRuleModal: React.FC<BaseModalProps & EditRuleModalProps> = ({ onClose, rule }) => {
   const intl = useIntl();
 
-  const { createRule, updateRule } = useRules();
+  const { mutate: createRule } = useMutation(createRuleMutationOptions);
+  const { mutate: updateRule } = useMutation(updateRuleMutationOptions);
 
   const text = useTextField(rule?.text);
   const priority = useTextField(rule?.priority?.toString());

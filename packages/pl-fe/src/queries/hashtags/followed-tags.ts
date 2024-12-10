@@ -3,6 +3,7 @@ import { getClient } from 'pl-fe/api';
 import { queryClient } from '../client';
 import { makePaginatedResponseQueryOptions } from '../utils/make-paginated-response-query-options';
 import { mutationOptions } from '../utils/mutation-options';
+import { hashtagQueryOptions } from './hashtag';
 
 const followedTagsQueryOptions = makePaginatedResponseQueryOptions(
   ['followedTags'],
@@ -16,7 +17,7 @@ const followHashtagMutationOptions = (tag: string) => mutationOptions({
     queryClient.invalidateQueries({
       queryKey: ['followedTags'],
     });
-    queryClient.setQueryData(['hashtags', tag.toLocaleLowerCase()], data);
+    queryClient.setQueryData(hashtagQueryOptions(tag.toLocaleLowerCase()).queryKey, data);
   },
 });
 
@@ -27,7 +28,7 @@ const unfollowHashtagMutationOptions = (tag: string) => mutationOptions({
     queryClient.invalidateQueries({
       queryKey: ['followedTags'],
     });
-    queryClient.setQueryData(['hashtags', tag.toLocaleLowerCase()], data);
+    queryClient.setQueryData(hashtagQueryOptions(tag.toLocaleLowerCase()).queryKey, data);
   },
 });
 

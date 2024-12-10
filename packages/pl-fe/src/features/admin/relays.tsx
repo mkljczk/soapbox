@@ -1,3 +1,4 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
@@ -10,7 +11,7 @@ import Input from 'pl-fe/components/ui/input';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
-import { useRelays } from 'pl-fe/queries/admin/use-relays';
+import { relaysQueryOptions, followRelayMutationOptions, unfollowRelayMutationOptions } from 'pl-fe/queries/admin/use-relays';
 import toast from 'pl-fe/toast';
 
 import type { AdminRelay as RelayEntity } from 'pl-api';
@@ -28,7 +29,7 @@ interface IRelay {
 }
 
 const Relay: React.FC<IRelay> = ({ relay }) => {
-  const { unfollowRelay } = useRelays();
+  const { mutate: unfollowRelay } = useMutation(unfollowRelayMutationOptions);
 
   const handleDeleteRelay = () => () => {
     unfollowRelay(relay.actor, {
@@ -70,7 +71,7 @@ const NewRelayForm: React.FC = () => {
 
   const name = useTextField();
 
-  const { followRelay, isPendingFollow } = useRelays();
+  const { mutate: followRelay, isPending } = useMutation(followRelayMutationOptions);
 
   const handleSubmit = (e: React.FormEvent<Element>) => {
     e.preventDefault();
@@ -95,13 +96,13 @@ const NewRelayForm: React.FC = () => {
           <Input
             type='text'
             placeholder={label}
-            disabled={isPendingFollow}
+            disabled={isPending}
             {...name}
           />
         </label>
 
         <Button
-          disabled={isPendingFollow}
+          disabled={isPending}
           onClick={handleSubmit}
           theme='primary'
         >
@@ -115,7 +116,7 @@ const NewRelayForm: React.FC = () => {
 const Relays: React.FC = () => {
   const intl = useIntl();
 
-  const { data: relays, isFetching } = useRelays();
+  const { data: relays, isFetching } = useQuery(relaysQueryOptions);
 
   const emptyMessage = <FormattedMessage id='empty_column.admin.relays' defaultMessage='There are no relays followed yet.' />;
 

@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
@@ -6,7 +7,7 @@ import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useSuggestions } from 'pl-fe/queries/suggestions';
+import { suggestionsQueryOptions } from 'pl-fe/queries/suggestions';
 
 const messages = defineMessages({
   heading: { id: 'follow_recommendations.heading', defaultMessage: 'Suggested profiles' },
@@ -15,7 +16,7 @@ const messages = defineMessages({
 const FollowRecommendations: React.FC = () => {
   const intl = useIntl();
 
-  const { data: suggestions, isFetching } = useSuggestions();
+  const { data: suggestions = [], isFetching } = useQuery(suggestionsQueryOptions);
 
   if (suggestions.length === 0 && !isFetching) {
     return (

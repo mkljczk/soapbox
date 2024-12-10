@@ -1,81 +1,38 @@
-import { useMutation, keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, queryOptions } from '@tanstack/react-query';
 
 import { fetchRelationships } from 'pl-fe/actions/accounts';
 import { importEntities } from 'pl-fe/actions/importer';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useClient } from 'pl-fe/hooks/use-client';
+import { getClient } from 'pl-fe/api';
+import { store } from 'pl-fe/store';
 
 import { removePageItem } from '../utils/queries';
+
+import { mutationOptions } from './utils/mutation-options';
 
 const SuggestionKeys = {
   suggestions: ['suggestions'] as const,
 };
 
-const useSuggestions = () => {
-  const client = useClient();
-  const dispatch = useAppDispatch();
-
-  const getSuggestions = async () => {
-    const response = await client.myAccount.getSuggestions();
+const suggestionsQueryOptions = queryOptions({
+  queryKey: ['suggestions'],
+  queryFn: async () => {
+    const response = await getClient().myAccount.getSuggestions();
 
     const accounts = response.map(({ account }) => account);
     const accountIds = accounts.map((account) => account.id);
-    dispatch(importEntities({ accounts }));
-    dispatch(fetchRelationships(accountIds));
+    store.dispatch(importEntities({ accounts }));
+    store.dispatch(fetchRelationships(accountIds));
 
     return response.map(({ account, ...x }) => ({ ...x, account_id: account.id }));
-  };
+  },
+  placeholderData: keepPreviousData,
+});
 
-  const result = useQuery({
-    queryKey: SuggestionKeys.suggestions,
-    queryFn: () => getSuggestions(),
-    placeholderData: keepPreviousData,
-  });
+const dismissSuggestionMutationOptions = mutationOptions({
+  mutationFn: (accountId: string) => getClient().myAccount.dismissSuggestions(accountId),
+  onMutate(accountId: string) {
+    removePageItem(SuggestionKeys.suggestions, accountId, (o: any, n: any) => o.account === n);
+  },
+});
 
-  return {
-    ...result,
-    data: result.data || [],
-  };
-};
-
-const useDismissSuggestion = () => {
-  const client = useClient();
-
-  return useMutation({
-    mutationFn: (accountId: string) => client.myAccount.dismissSuggestions(accountId),
-    onMutate(accountId: string) {
-      removePageItem(SuggestionKeys.suggestions, accountId, (o: any, n: any) => o.account === n);
-    },
-  });
-};
-
-const useOnboardingSuggestions = () => {
-  const client = useClient();
-  const dispatch = useAppDispatch();
-
-  const getSuggestions = async () => {
-    const response = await client.myAccount.getSuggestions();
-
-    const accounts = response.map(({ account }) => account);
-    const accountIds = accounts.map((account) => account.id);
-    dispatch(importEntities({ accounts }));
-    dispatch(fetchRelationships(accountIds));
-
-    return response;
-  };
-
-  const result = useQuery({
-    queryKey: ['suggestions', 'v2'],
-    queryFn: () => getSuggestions(),
-    placeholderData: keepPreviousData,
-  });
-
-  const data = result.data;
-
-  return {
-    ...result,
-    data,
-  };
-};
-
-export { useOnboardingSuggestions, useSuggestions, useDismissSuggestion };
+export { suggestionsQueryOptions, dismissSuggestionMutationOptions };
