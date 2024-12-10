@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
@@ -13,13 +14,13 @@ import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
+import { accountScrobbleQueryOptions } from 'pl-fe/queries/accounts/account-scrobble';
 import { capitalize } from 'pl-fe/utils/strings';
 
 import ProfileFamiliarFollowers from '../profile-familiar-followers';
 import ProfileField from '../profile-field';
 import ProfileStats from '../profile-stats';
 
-import type { Scrobble as ScrobbleEntity } from 'pl-api';
 import type { Account } from 'pl-fe/normalizers/account';
 
 const messages = defineMessages({
@@ -30,7 +31,7 @@ const messages = defineMessages({
 });
 
 interface IProfileInfoPanel {
-  account?: Account & { scrobble?: ScrobbleEntity };
+  account?: Account;
   /** Username from URL params, in case the account isn't found. */
   username: string;
 }
@@ -41,6 +42,7 @@ const ProfileInfoPanel: React.FC<IProfileInfoPanel> = ({ account, username }) =>
   const { displayFqn } = usePlFeConfig();
   const me = useAppSelector(state => state.me);
   const ownAccount = account?.id === me;
+  const { data: scrobble } = useQuery(accountScrobbleQueryOptions(account?.id));
 
   const getStaffBadge = (): React.ReactNode => {
     if (account?.is_admin) {
@@ -203,7 +205,7 @@ const ProfileInfoPanel: React.FC<IProfileInfoPanel> = ({ account, username }) =>
           {renderBirthday()}
         </div>
 
-        {account.scrobble && <Scrobble scrobble={account.scrobble} />}
+        {scrobble && <Scrobble scrobble={scrobble} />}
 
         {ownAccount ? null : <ProfileFamiliarFollowers account={account} />}
       </Stack>
