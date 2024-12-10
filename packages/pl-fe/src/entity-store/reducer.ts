@@ -9,7 +9,6 @@ import {
   ENTITIES_FETCH_FAIL,
   EntityAction,
   ENTITIES_INVALIDATE_LIST,
-  ENTITIES_INCREMENT,
   ENTITIES_TRANSACTION,
 } from './actions';
 import { createCache, createList, updateStore, updateList } from './utils';
@@ -105,21 +104,6 @@ const dismissEntities = (
   }
 });
 
-const incrementEntities = (
-  state: State,
-  entityType: string,
-  listKey: string,
-  diff: number,
-) => create(state, draft => {
-  const cache = draft[entityType] ?? createCache();
-  const list = cache.lists[listKey];
-
-  if (typeof list?.state?.totalCount === 'number') {
-    list.state.totalCount += diff;
-    draft[entityType] = cache;
-  }
-});
-
 const setFetching = (
   state: State,
   entityType: string,
@@ -166,8 +150,6 @@ const reducer = (state: Readonly<State> = {}, action: EntityAction): State => {
       return deleteEntities(state, action.entityType, action.ids, action.opts);
     case ENTITIES_DISMISS:
       return dismissEntities(state, action.entityType, action.ids, action.listKey);
-    case ENTITIES_INCREMENT:
-      return incrementEntities(state, action.entityType, action.listKey, action.diff);
     case ENTITIES_FETCH_SUCCESS:
       return importEntities(state, action.entityType, action.entities, action.listKey, action.pos, action.newState, action.overwrite);
     case ENTITIES_FETCH_REQUEST:

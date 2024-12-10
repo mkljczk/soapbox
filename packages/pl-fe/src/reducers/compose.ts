@@ -686,6 +686,5 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
 export {
   type Compose,
   statusToMentionsAccountIdsArray,
-  initialState,
   compose as default,
 };

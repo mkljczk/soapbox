@@ -3,7 +3,6 @@ import type { EntitiesTransaction, Entity, EntityListState, ImportPosition } fro
 const ENTITIES_IMPORT = 'ENTITIES_IMPORT' as const;
 const ENTITIES_DELETE = 'ENTITIES_DELETE' as const;
 const ENTITIES_DISMISS = 'ENTITIES_DISMISS' as const;
-const ENTITIES_INCREMENT = 'ENTITIES_INCREMENT' as const;
 const ENTITIES_FETCH_REQUEST = 'ENTITIES_FETCH_REQUEST' as const;
 const ENTITIES_FETCH_SUCCESS = 'ENTITIES_FETCH_SUCCESS' as const;
 const ENTITIES_FETCH_FAIL = 'ENTITIES_FETCH_FAIL' as const;
@@ -40,13 +39,6 @@ const dismissEntities = (ids: Iterable<string>, entityType: string, listKey: str
   ids,
   entityType,
   listKey,
-});
-
-const incrementEntities = (entityType: string, listKey: string, diff: number) => ({
-  type: ENTITIES_INCREMENT,
-  entityType,
-  listKey,
-  diff,
 });
 
 const entitiesFetchRequest = (entityType: string, listKey?: string) => ({
@@ -95,7 +87,6 @@ type EntityAction =
   ReturnType<typeof importEntities>
   | ReturnType<typeof deleteEntities>
   | ReturnType<typeof dismissEntities>
-  | ReturnType<typeof incrementEntities>
   | ReturnType<typeof entitiesFetchRequest>
   | ReturnType<typeof entitiesFetchSuccess>
   | ReturnType<typeof entitiesFetchFail>
@@ -108,7 +99,6 @@ export {
   ENTITIES_IMPORT,
   ENTITIES_DELETE,
   ENTITIES_DISMISS,
-  ENTITIES_INCREMENT,
   ENTITIES_FETCH_REQUEST,
   ENTITIES_FETCH_SUCCESS,
   ENTITIES_FETCH_FAIL,
@@ -117,7 +107,6 @@ export {
   importEntities,
   deleteEntities,
   dismissEntities,
-  incrementEntities,
   entitiesFetchRequest,
   entitiesFetchSuccess,
   entitiesFetchFail,

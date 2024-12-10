@@ -291,7 +291,6 @@ export {
   NOTIFICATIONS_FILTER_SET,
   NOTIFICATIONS_SCROLL_TOP,
   type FilterType,
-  updateNotifications,
   updateNotificationsQueue,
   expandNotifications,
   scrollTopNotifications,
