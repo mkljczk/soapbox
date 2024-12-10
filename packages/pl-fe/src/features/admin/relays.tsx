@@ -11,7 +11,7 @@ import Input from 'pl-fe/components/ui/input';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
-import { relaysQueryOptions, followRelayMutationOptions, unfollowRelayMutationOptions } from 'pl-fe/queries/admin/use-relays';
+import { relaysQueryOptions, followRelayMutationOptions, unfollowRelayMutationOptions } from 'pl-fe/queries/admin/relays';
 import toast from 'pl-fe/toast';
 
 import type { AdminRelay as RelayEntity } from 'pl-api';
