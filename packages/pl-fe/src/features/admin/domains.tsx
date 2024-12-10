@@ -34,7 +34,7 @@ const Domain: React.FC<IDomain> = ({ domain }) => {
   const intl = useIntl();
 
   const { openModal } = useModalsStore();
-  const { deleteDomain } = useMutation(deleteDomainMutationOptions);
+  const { mutate: deleteDomain } = useMutation(deleteDomainMutationOptions);
 
   const handleEditDomain = (domain: DomainEntity) => () => {
     openModal('EDIT_DOMAIN', { domainId: domain.id });
