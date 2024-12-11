@@ -5,8 +5,6 @@ import { queryClient } from 'pl-fe/queries/client';
 
 import { mutationOptions } from '../utils/mutation-options';
 
-import type { AdminRule } from 'pl-api';
-
 const rulesQueryOptions = queryOptions({
   queryKey: ['admin', 'rules'],
   queryFn: () => getClient().admin.rules.getRules(),
@@ -21,10 +19,11 @@ interface CreateRuleParams {
 const createRuleMutationOptions = mutationOptions({
   mutationFn: (params: CreateRuleParams) => getClient().admin.rules.createRule(params),
   retry: false,
-  onSuccess: (data) =>
-    queryClient.setQueryData(['admin', 'rules'], (prevResult: ReadonlyArray<AdminRule>) =>
+  onSuccess: (data) => {
+    queryClient.setQueryData(rulesQueryOptions.queryKey, (prevResult = []) =>
       [...prevResult, data],
-    ),
+    );
+  },
 });
 
 interface UpdateRuleParams {
@@ -37,19 +36,21 @@ interface UpdateRuleParams {
 const updateRuleMutationOptions = mutationOptions({
   mutationFn: ({ id, ...params }: UpdateRuleParams) => getClient().admin.rules.updateRule(id, params),
   retry: false,
-  onSuccess: (data) =>
-    queryClient.setQueryData(['admin', 'rules'], (prevResult: ReadonlyArray<AdminRule>) =>
+  onSuccess: (data) => {
+    queryClient.setQueryData(rulesQueryOptions.queryKey, (prevResult = []) =>
       prevResult.map((rule) => rule.id === data.id ? data : rule),
-    ),
+    );
+  },
 });
 
 const deleteRuleMutationOptions = mutationOptions({
   mutationFn: (id: string) => getClient().admin.rules.deleteRule(id),
   retry: false,
-  onSuccess: (_, id) =>
-    queryClient.setQueryData(['admin', 'rules'], (prevResult: ReadonlyArray<AdminRule>) =>
+  onSuccess: (_, id) => {
+    queryClient.setQueryData(rulesQueryOptions.queryKey, (prevResult = []) =>
       prevResult.filter(({ id: ruleId }) => ruleId !== id),
-    ),
+    );
+  },
 });
 
 export { rulesQueryOptions, createRuleMutationOptions, updateRuleMutationOptions, deleteRuleMutationOptions };
