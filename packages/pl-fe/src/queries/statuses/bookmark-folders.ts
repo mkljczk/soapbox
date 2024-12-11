@@ -5,8 +5,6 @@ import { getClient } from 'pl-fe/api';
 import { queryClient } from '../client';
 import { mutationOptions } from '../utils/mutation-options';
 
-import type { BookmarkFolder } from 'pl-api';
-
 interface CreateBookmarkFolderParams {
   name: string;
   emoji?: string;

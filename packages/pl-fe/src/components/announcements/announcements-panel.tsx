@@ -7,7 +7,7 @@ import ReactSwipeableViews from 'react-swipeable-views';
 import Card from 'pl-fe/components/ui/card';
 import HStack from 'pl-fe/components/ui/hstack';
 import Widget from 'pl-fe/components/ui/widget';
-import { useAnnouncements } from 'pl-fe/queries/announcements/use-announcements';
+import { announcementsQueryOptions } from 'pl-fe/queries/announcements/announcements';
 import { customEmojisQueryOptions } from 'pl-fe/queries/instance/custom-emojis';
 
 import Announcement from './announcement';
@@ -23,7 +23,7 @@ const AnnouncementsPanel = () => {
   });
   const [index, setIndex] = useState(0);
 
-  const { data: announcements } = useAnnouncements();
+  const { data: announcements } = useQuery(announcementsQueryOptions);
 
   if (!announcements || announcements.length === 0) return null;
 

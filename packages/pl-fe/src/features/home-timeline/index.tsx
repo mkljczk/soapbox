@@ -1,19 +1,19 @@
 import React, { useEffect, useRef } from 'react';
-import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { defineMessages, useIntl } from 'react-intl';
+// import { Link } from 'react-router-dom';
 
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
 import Column from 'pl-fe/components/ui/column';
-import Stack from 'pl-fe/components/ui/stack';
-import Text from 'pl-fe/components/ui/text';
-import Timeline from 'pl-fe/features/ui/components/timeline';
+// import Stack from 'pl-fe/components/ui/stack';
+// import Text from 'pl-fe/components/ui/text';
+// import Timeline from 'pl-fe/features/ui/components/timeline';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useInstance } from 'pl-fe/hooks/use-instance';
+// import { useFeatures } from 'pl-fe/hooks/use-features';
+// import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
-import { useTheme } from 'pl-fe/hooks/use-theme';
+// import { useTheme } from 'pl-fe/hooks/use-theme';
 
 import { NewTimeline } from '../ui/components/new-timeline';
 
@@ -24,18 +24,18 @@ const messages = defineMessages({
 const HomeTimeline: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const features = useFeatures();
-  const instance = useInstance();
-  const theme = useTheme();
+  // const features = useFeatures();
+  // const instance = useInstance();
+  // const theme = useTheme();
 
   const polling = useRef<NodeJS.Timeout | null>(null);
   const isMobile = useIsMobile();
 
   const isPartial = useAppSelector(state => state.timelines.home?.isPartial === true);
 
-  const handleLoadMore = (maxId: string) => {
-    dispatch(fetchHomeTimeline(true));
-  };
+  // const handleLoadMore = (maxId: string) => {
+  //   dispatch(fetchHomeTimeline(true));
+  // };
 
   // Mastodon generates the feed in Redis, and can return a partial timeline
   // (HTTP 206) for new users. Poll until we get a full page of results.

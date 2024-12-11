@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -11,7 +12,6 @@ import { familiarFollowersQueryOptions } from 'pl-fe/queries/accounts/familiar-f
 import { makeGetAccount } from 'pl-fe/selectors';
 
 import type { BaseModalProps } from '../modal-root';
-import { useQuery } from '@tanstack/react-query';
 
 const getAccount = makeGetAccount();
 

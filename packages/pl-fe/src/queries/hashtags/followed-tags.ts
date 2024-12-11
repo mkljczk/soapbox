@@ -3,6 +3,7 @@ import { getClient } from 'pl-fe/api';
 import { queryClient } from '../client';
 import { makePaginatedResponseQueryOptions } from '../utils/make-paginated-response-query-options';
 import { mutationOptions } from '../utils/mutation-options';
+
 import { hashtagQueryOptions } from './hashtag';
 
 const followedTagsQueryOptions = makePaginatedResponseQueryOptions(
