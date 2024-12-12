@@ -14,6 +14,32 @@ const NewTimeline = () => {
     isLoading,
   } = useHomeTimeline();
 
+  const getCurrentStatusIndex = (id: string) =>
+    (data || []).findIndex(entry => entry.type === 'status' && entry.id === id);
+
+  const handleMoveUp = (id: string) => {
+    const elementIndex = getCurrentStatusIndex(id) - 1;
+    if (!selectChild(elementIndex)) selectChild(elementIndex - 1);
+  };
+
+  const handleMoveDown = (id: string) => {
+    const elementIndex = getCurrentStatusIndex(id) + 1;
+    if (!selectChild(elementIndex)) selectChild(elementIndex + 1);
+  };
+
+  const selectChild = (index?: number) => {
+    if (index === undefined) return;
+
+    const selector = `#status-list [data-index="${index}"] .focusable`;
+    const element = document.querySelector<HTMLDivElement>(selector);
+
+    if (element) {
+      element.focus();
+      return true;
+    }
+    return false;
+  };
+
   const renderEntry = (entry: TimelineEntry) => {
     if (entry.type === 'status') {
       return (
@@ -22,8 +48,9 @@ const NewTimeline = () => {
           id={entry.id}
           isConnectedTop={entry.isConnectedTop}
           isConnectedBottom={entry.isConnectedBottom}
-          // onMoveUp={handleMoveUp}
-          // onMoveDown={handleMoveDown}
+          rebloggedBy={entry.rebloggedBy}
+          onMoveUp={handleMoveUp}
+          onMoveDown={handleMoveDown}
           // contextType={timelineId}
           // showGroup={showGroup}
           // variant={divideType === 'border' ? 'slim' : 'rounded'}

@@ -48,8 +48,12 @@ const processPage = ({ items: statuses, next }: PaginatedResponse<Status>) => {
 
       if (foundStatus) {
         if (processStatus(foundStatus)) {
-          timelinePage.at(-1).isConnectedBottom = true;
-          isConnectedTop = true;
+          const previousEntry = timelinePage.at(-1);
+
+          if (previousEntry?.type === 'status') {
+            previousEntry.isConnectedBottom = true;
+            isConnectedTop = true;
+          }
         }
       }
     }

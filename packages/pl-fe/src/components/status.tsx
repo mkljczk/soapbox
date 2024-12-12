@@ -15,7 +15,9 @@ import Emojify from 'pl-fe/features/emoji/emojify';
 import StatusTypeIcon from 'pl-fe/features/status/components/status-type-icon';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { selectAccounts } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { textForScreenReader } from 'pl-fe/utils/status';
@@ -35,10 +37,51 @@ const messages = defineMessages({
   reblogged_by: { id: 'status.reblogged_by', defaultMessage: '{name} reposted' },
 });
 
+interface IRebloggedBy {
+  rebloggedBy: Array<string>;
+}
+
+const RebloggedBy: React.FC<IRebloggedBy> = ({ rebloggedBy }) => {
+  console.log(rebloggedBy);
+  const accounts = useAppSelector((state) => selectAccounts(state, rebloggedBy));
+
+  const renderedAccounts = accounts.slice(0, 2).map((account) =>(
+    <Link key={account.acct} to={`/@${account.acct}`} className='hover:underline'>
+      <bdi className='truncate'>
+        <strong className='text-gray-800 dark:text-gray-200'>
+          <Emojify text={account.display_name} emojis={account.emojis} />
+        </strong>
+      </bdi>
+    </Link>
+  ));
+
+  if (accounts.length > 2) {
+    renderedAccounts.push(
+      <FormattedMessage
+        id='notification.more'
+        defaultMessage='{count, plural, one {# other} other {# others}}'
+        values={{ count: accounts.length - renderedAccounts.length }}
+      />,
+    );
+  }
+
+  return (
+    <FormattedMessage
+      id='status.reblogged_by'
+      defaultMessage='{name} reposted'
+      values={{
+        name: <FormattedList type='conjunction' value={renderedAccounts} />,
+        count: accounts.length,
+      }}
+    />
+  );
+};
+
 interface IStatus {
   id?: string;
   avatarSize?: number;
   status: NormalizedStatus;
+  rebloggedBy?: Array<string>;
   onClick?: () => void;
   muted?: boolean;
   unread?: boolean;
@@ -57,6 +100,7 @@ interface IStatus {
 const Status: React.FC<IStatus> = (props) => {
   const {
     status,
+    rebloggedBy,
     accountAction,
     avatarSize = 42,
     focusable = true,
@@ -216,7 +260,7 @@ const Status: React.FC<IStatus> = (props) => {
           }
         />
       );
-    } else if (isReblog) {
+    } else if (rebloggedBy?.length) {
       const accounts = status.accounts || [status.account];
 
       const renderedAccounts = accounts.slice(0, 2).map(account => !!account && (
@@ -244,14 +288,7 @@ const Status: React.FC<IStatus> = (props) => {
           avatarSize={avatarSize}
           icon={<Icon src={require('@tabler/icons/outline/repeat.svg')} className='size-4 text-green-600' />}
           text={
-            <FormattedMessage
-              id='status.reblogged_by'
-              defaultMessage='{name} reposted'
-              values={{
-                name: <FormattedList type='conjunction' value={renderedAccounts} />,
-                count: accounts.length,
-              }}
-            />
+            <RebloggedBy rebloggedBy={rebloggedBy} />
           }
         />
       );

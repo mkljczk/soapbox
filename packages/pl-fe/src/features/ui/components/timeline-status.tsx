@@ -13,6 +13,7 @@ interface IThreadStatus {
   isConnectedBottom?: boolean;
   onMoveUp: (id: string) => void;
   onMoveDown: (id: string) => void;
+  rebloggedBy?: Array<string>;
 }
 
 /** Status with reply-connector in threads. */
