@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { bookmark } from 'pl-fe/actions/interactions';
@@ -12,9 +12,8 @@ import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
 import NewFolderForm from 'pl-fe/features/bookmark-folders/components/new-folder-form';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { bookmarkFoldersQueryOptions } from 'pl-fe/queries/statuses/bookmark-folders';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -23,11 +22,10 @@ interface SelectBookmarkFolderModalProps {
 }
 
 const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseModalProps> = ({ statusId, onClose }) => {
-  const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector(state => getStatus(state, { id: statusId }))!;
+  const { data: status } = useQuery(statusQueryOptions(statusId));
   const dispatch = useAppDispatch();
 
-  const [selectedFolder, setSelectedFolder] = useState(status.bookmark_folder);
+  const [selectedFolder, setSelectedFolder] = useState(status!.bookmark_folder);
 
   const { isFetching, data: bookmarkFolders } = useQuery(bookmarkFoldersQueryOptions);
 
@@ -35,7 +33,7 @@ const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseM
     const folderId = e.target.value;
     setSelectedFolder(folderId);
 
-    dispatch(bookmark(status, folderId)).then(() => {
+    dispatch(bookmark(status!, folderId)).then(() => {
       onClose('SELECT_BOOKMARK_FOLDER');
     }).catch(() => {});
   };
