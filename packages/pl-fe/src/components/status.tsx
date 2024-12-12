@@ -42,7 +42,6 @@ interface IRebloggedBy {
 }
 
 const RebloggedBy: React.FC<IRebloggedBy> = ({ rebloggedBy }) => {
-  console.log(rebloggedBy);
   const accounts = useAppSelector((state) => selectAccounts(state, rebloggedBy));
 
   const renderedAccounts = accounts.slice(0, 2).map((account) =>(
