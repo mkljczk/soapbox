@@ -32,8 +32,6 @@ const STATUS_MUTE_SUCCESS = 'STATUS_MUTE_SUCCESS' as const;
 
 const STATUS_UNMUTE_SUCCESS = 'STATUS_UNMUTE_SUCCESS' as const;
 
-const STATUS_UNFILTER = 'STATUS_UNFILTER' as const;
-
 const createStatus = (params: CreateStatusParams, idempotencyKey: string, statusId: string | null) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch<StatusesAction>({ type: STATUS_CREATE_REQUEST, params, idempotencyKey, editing: !!statusId });
@@ -216,11 +214,6 @@ const toggleMuteStatus = (status: Pick<Status, 'id' | 'muted'>) =>
 //     }
 //   };
 
-const unfilterStatus = (statusId: string) => ({
-  type: STATUS_UNFILTER,
-  statusId,
-});
-
 type StatusesAction =
   | { type: typeof STATUS_CREATE_REQUEST; params: CreateStatusParams; idempotencyKey: string; editing: boolean }
   | { type: typeof STATUS_CREATE_SUCCESS; status: BaseStatus | ScheduledStatus; params: CreateStatusParams; idempotencyKey: string; editing: boolean }
@@ -233,8 +226,7 @@ type StatusesAction =
   | { type: typeof STATUS_DELETE_FAIL; params: Pick<Status, 'in_reply_to_id' | 'quote_id'>; error: unknown }
   | { type: typeof CONTEXT_FETCH_SUCCESS; statusId: string; ancestors: Array<BaseStatus>; descendants: Array<BaseStatus> }
   | { type: typeof STATUS_MUTE_SUCCESS; statusId: string }
-  | { type: typeof STATUS_UNMUTE_SUCCESS; statusId: string }
-  | ReturnType<typeof unfilterStatus>
+  | { type: typeof STATUS_UNMUTE_SUCCESS; statusId: string };
 
 export {
   STATUS_CREATE_REQUEST,
@@ -249,7 +241,6 @@ export {
   CONTEXT_FETCH_SUCCESS,
   STATUS_MUTE_SUCCESS,
   STATUS_UNMUTE_SUCCESS,
-  STATUS_UNFILTER,
   createStatus,
   editStatus,
   fetchStatus,
@@ -259,6 +250,5 @@ export {
   muteStatus,
   unmuteStatus,
   toggleMuteStatus,
-  unfilterStatus,
   type StatusesAction,
 };

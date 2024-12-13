@@ -26,7 +26,6 @@ import {
   STATUS_DELETE_REQUEST,
   STATUS_DELETE_FAIL,
   STATUS_MUTE_SUCCESS,
-  STATUS_UNFILTER,
   STATUS_UNMUTE_SUCCESS,
   type StatusesAction,
   STATUS_DELETE_SUCCESS,
@@ -137,13 +136,6 @@ const statuses = (state = initialState, action: EmojiReactsAction | EventsAction
       return create(state, (draft) => decrementReplyCount(draft, action.params));
     case STATUS_DELETE_FAIL:
       return create(state, (draft) => incrementReplyCount(draft, action.params));
-    case STATUS_UNFILTER:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.showFiltered = false;
-        }
-      });
     case TIMELINE_DELETE:
       return create(state, (draft) => deleteStatus(draft, action.statusId, action.references));
     case EVENT_JOIN_REQUEST:

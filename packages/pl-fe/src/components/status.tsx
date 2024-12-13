@@ -5,7 +5,6 @@ import { defineMessages, useIntl, FormattedList, FormattedMessage } from 'react-
 import { Link, useHistory } from 'react-router-dom';
 
 import { mentionCompose, replyCompose } from 'pl-fe/actions/compose';
-import { unfilterStatus } from 'pl-fe/actions/statuses';
 import Card from 'pl-fe/components/ui/card';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
@@ -126,7 +125,8 @@ const Status: React.FC<IStatus> = (props) => {
   const { mutate: reblogStatus } = useMutation(reblogStatusMutationOptions);
   const { mutate: unreblogStatus } = useMutation(unreblogStatusMutationOptions);
 
-  const { toggleStatusMediaHidden } = useStatusMetaStore();
+  const { toggleStatusMediaHidden, showFilteredStatus, statuses } = useStatusMetaStore();
+  const statusMeta = statuses[status.id];
   const { openModal } = useModalsStore();
   const { boostModal } = useSettings();
   const didShowCard = useRef(false);
@@ -229,7 +229,7 @@ const Status: React.FC<IStatus> = (props) => {
     (node.current?.querySelector('.emoji-picker-dropdown') as HTMLButtonElement)?.click();
   };
 
-  const handleUnfilter = () => dispatch(unfilterStatus(status.filtered.length ? status.id : status.id));
+  const handleUnfilter = () => showFilteredStatus(status.id);
 
   const renderStatusInfo = () => {
     if (isReblog && showGroup && group) {
@@ -341,7 +341,7 @@ const Status: React.FC<IStatus> = (props) => {
     <Tombstone id={status.id} onMoveUp={onMoveUp} onMoveDown={onMoveDown} deleted />
   );
 
-  if (filtered && status.showFiltered !== false) {
+  if (filtered && statusMeta?.showFiltered !== false) {
     const minHandlers = muted ? undefined : {
       moveUp: handleHotkeyMoveUp,
       moveDown: handleHotkeyMoveDown,

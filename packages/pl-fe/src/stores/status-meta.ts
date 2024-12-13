@@ -2,12 +2,13 @@ import { create } from 'zustand';
 import { mutative } from 'zustand-mutative';
 
 type State = {
-  statuses: Record<string, { expanded?: boolean; mediaVisible?: boolean; currentLanguage?: string; targetLanguage?: string }>;
+  statuses: Record<string, { expanded?: boolean; mediaVisible?: boolean; showFiltered?: boolean; currentLanguage?: string; targetLanguage?: string }>;
   expandStatus: (statusId: string) => void;
   collapseStatus: (statusId: string) => void;
   revealStatusMedia: (statusId: string) => void;
   hideStatusMedia: (statusId: string) => void;
   toggleStatusMediaHidden: (statusId: string) => void;
+  showFilteredStatus: (statusId: string) => void;
   fetchTranslation: (statusId: string, targetLanguage: string) => void;
   hideTranslation: (statusId: string) => void;
   setStatusLanguage: (statusId: string, language: string) => void;
@@ -35,7 +36,12 @@ const useStatusMetaStore = create<State>()(mutative((set) => ({
 
     state.statuses[statusId].mediaVisible = false;
   }),
-  toggleStatusMediaHidden: (statusId) => (state: State) => state[state.statuses[statusId].mediaVisible ? 'hideStatusMedia' : 'revealStatusMedia'](statusId),
+  toggleStatusMediaHidden: (statusId) => (state: State) => state[state.statuses[statusId]?.mediaVisible ? 'hideStatusMedia' : 'revealStatusMedia'](statusId),
+  showFilteredStatus: (statusId) => set((state: State) => {
+    if (!state.statuses[statusId]) state.statuses[statusId] = {};
+
+    state.statuses[statusId].showFiltered = true;
+  }),
   fetchTranslation: (statusId, targetLanguage) => set((state: State) => {
     if (!state.statuses[statusId]) state.statuses[statusId] = {};
 
