@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
@@ -5,7 +6,6 @@ import { Link, useHistory } from 'react-router-dom';
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose } from 'pl-fe/actions/compose';
 import { fetchEventIcs } from 'pl-fe/actions/events';
-import { toggleBookmark, togglePin, toggleReblog } from 'pl-fe/actions/interactions';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { deleteStatus } from 'pl-fe/actions/statuses';
@@ -24,6 +24,7 @@ import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
+import { bookmarkStatusMutationOptions, pinStatusMutationOptions, reblogStatusMutationOptions, unbookmarkStatusMutationOptions, unpinStatusMutationOptions, unreblogStatusMutationOptions } from 'pl-fe/queries/statuses/status-interactions';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import copy from 'pl-fe/utils/copy';
 import { download } from 'pl-fe/utils/download';
@@ -75,6 +76,13 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
   const dispatch = useAppDispatch();
   const history = useHistory();
 
+  const { mutate: reblogStatus } = useMutation(reblogStatusMutationOptions);
+  const { mutate: unreblogStatus } = useMutation(unreblogStatusMutationOptions);
+  const { mutate: bookmarkStatus } = useMutation(bookmarkStatusMutationOptions);
+  const { mutate: unbookmarkStatus } = useMutation(unbookmarkStatusMutationOptions);
+  const { mutate: pinStatus } = useMutation(pinStatusMutationOptions);
+  const { mutate: unpinStatus } = useMutation(unpinStatusMutationOptions);
+
   const { openModal } = useModalsStore();
   const { getOrCreateChatByAccountId } = useChats();
 
@@ -122,11 +130,12 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
   };
 
   const handleBookmarkClick = () => {
-    dispatch(toggleBookmark(status));
+    if (status.bookmarked) unbookmarkStatus(status.id);
+    else bookmarkStatus({ statusId: status.id });
   };
 
   const handleReblogClick = () => {
-    const modalReblog = () => dispatch(toggleReblog(status));
+    const modalReblog = () => status.reblogged ? unreblogStatus(status.id) : reblogStatus({ statusId: status.id });
     if (!boostModal) {
       modalReblog();
     } else {
@@ -139,7 +148,8 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
   };
 
   const handlePinClick = () => {
-    dispatch(togglePin(status));
+    if (status.pinned) unpinStatus(status.id);
+    else pinStatus(status.id);
   };
 
   const handleDeleteClick = () => {

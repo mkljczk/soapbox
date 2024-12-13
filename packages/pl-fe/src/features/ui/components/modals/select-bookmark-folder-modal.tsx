@@ -1,8 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { bookmark } from 'pl-fe/actions/interactions';
 import { RadioGroup, RadioItem } from 'pl-fe/components/radio';
 import Emoji from 'pl-fe/components/ui/emoji';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -11,9 +10,9 @@ import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
 import NewFolderForm from 'pl-fe/features/bookmark-folders/components/new-folder-form';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { bookmarkFoldersQueryOptions } from 'pl-fe/queries/statuses/bookmark-folders';
 import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
+import { bookmarkStatusMutationOptions } from 'pl-fe/queries/statuses/status-interactions';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -23,19 +22,21 @@ interface SelectBookmarkFolderModalProps {
 
 const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseModalProps> = ({ statusId, onClose }) => {
   const { data: status } = useQuery(statusQueryOptions(statusId));
-  const dispatch = useAppDispatch();
+  const { isFetching, data: bookmarkFolders } = useQuery(bookmarkFoldersQueryOptions);
+  const { mutate: bookmarkStatus } = useMutation(bookmarkStatusMutationOptions);
 
   const [selectedFolder, setSelectedFolder] = useState(status!.bookmark_folder);
 
-  const { isFetching, data: bookmarkFolders } = useQuery(bookmarkFoldersQueryOptions);
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = e => {
     const folderId = e.target.value;
     setSelectedFolder(folderId);
 
-    dispatch(bookmark(status!, folderId)).then(() => {
-      onClose('SELECT_BOOKMARK_FOLDER');
-    }).catch(() => {});
+    bookmarkStatus({ statusId, folderId }, {
+      onSuccess: () => {
+        onClose('SELECT_BOOKMARK_FOLDER');
+      },
+    });
   };
 
   const onClickClose = () => {

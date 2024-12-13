@@ -33,15 +33,6 @@ import {
   ACCOUNT_FAVOURITED_STATUSES_EXPAND_FAIL,
   type FavouritesAction,
 } from 'pl-fe/actions/favourites';
-import {
-  FAVOURITE_SUCCESS,
-  UNFAVOURITE_SUCCESS,
-  BOOKMARK_SUCCESS,
-  UNBOOKMARK_SUCCESS,
-  PIN_SUCCESS,
-  UNPIN_SUCCESS,
-  type InteractionsAction,
-} from 'pl-fe/actions/interactions';
 import { PINNED_STATUSES_FETCH_SUCCESS, type PinStatusesAction } from 'pl-fe/actions/pin-statuses';
 import {
   SCHEDULED_STATUSES_FETCH_REQUEST,
@@ -130,23 +121,7 @@ const maybeAppendScheduledStatus = (state: State, status: Pick<ScheduledStatus |
   return prependOneToList(state, 'scheduled_statuses', getStatusId(status));
 };
 
-const addBookmarkToLists = (state: State, status: Pick<Status, 'id' | 'bookmark_folder'>) => {
-  prependOneToList(state, 'bookmarks', status);
-  const folderId = status.bookmark_folder;
-  if (folderId) {
-    prependOneToList(state, `bookmarks:${folderId}`, status);
-  }
-};
-
-const removeBookmarkFromLists = (state: State, status: Pick<Status, 'id' | 'bookmark_folder'>) => {
-  removeOneFromList(state, 'bookmarks', status);
-  const folderId = status.bookmark_folder;
-  if (folderId) {
-    removeOneFromList(state, `bookmarks:${folderId}`, status);
-  }
-};
-
-const statusLists = (state = initialState, action: BookmarksAction | EventsAction | FavouritesAction | InteractionsAction | PinStatusesAction | ScheduledStatusesAction | StatusesAction): State => {
+const statusLists = (state = initialState, action: BookmarksAction | EventsAction | FavouritesAction | PinStatusesAction | ScheduledStatusesAction | StatusesAction): State => {
   switch (action.type) {
     case FAVOURITED_STATUSES_FETCH_REQUEST:
     case FAVOURITED_STATUSES_EXPAND_REQUEST:
@@ -178,20 +153,8 @@ const statusLists = (state = initialState, action: BookmarksAction | EventsActio
       return create(state, draft => normalizeList(draft, action.folderId ? `bookmarks:${action.folderId}` : 'bookmarks', action.statuses, action.next));
     case BOOKMARKED_STATUSES_EXPAND_SUCCESS:
       return create(state, draft => appendToList(draft, action.folderId ? `bookmarks:${action.folderId}` : 'bookmarks', action.statuses, action.next));
-    case FAVOURITE_SUCCESS:
-      return create(state, draft => prependOneToList(draft, 'favourites', action.status));
-    case UNFAVOURITE_SUCCESS:
-      return create(state, draft => removeOneFromList(draft, 'favourites', action.status));
-    case BOOKMARK_SUCCESS:
-      return create(state, draft => addBookmarkToLists(draft, action.status));
-    case UNBOOKMARK_SUCCESS:
-      return create(state, draft => removeBookmarkFromLists(draft, action.status));
     case PINNED_STATUSES_FETCH_SUCCESS:
       return create(state, draft => normalizeList(draft, 'pins', action.statuses, action.next));
-    case PIN_SUCCESS:
-      return create(state, draft => prependOneToList(draft, 'pins', action.status));
-    case UNPIN_SUCCESS:
-      return create(state, draft => removeOneFromList(draft, 'pins', action.status));
     case SCHEDULED_STATUSES_FETCH_REQUEST:
     case SCHEDULED_STATUSES_EXPAND_REQUEST:
       return create(state, draft => setLoading(draft, 'scheduled_statuses', true));

@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { remoteInteraction } from 'pl-fe/actions/interactions';
 import Button from 'pl-fe/components/ui/button';
 import Form from 'pl-fe/components/ui/form';
 import Input from 'pl-fe/components/ui/input';
 import Modal from 'pl-fe/components/ui/modal';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useClient } from 'pl-fe/hooks/use-client';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
@@ -39,9 +38,9 @@ interface UnauthorizedModalProps {
 const UnauthorizedModal: React.FC<UnauthorizedModalProps & BaseModalProps> = ({ action, onClose, account: accountId, ap_id: apId }) => {
   const intl = useIntl();
   const history = useHistory();
-  const dispatch = useAppDispatch();
   const instance = useInstance();
   const { isOpen } = useRegistrationStatus();
+  const client = useClient();
 
   const username = useAppSelector(state => selectAccount(state, accountId!)?.display_name);
   const features = useFeatures();
@@ -59,7 +58,7 @@ const UnauthorizedModal: React.FC<UnauthorizedModalProps & BaseModalProps> = ({ 
   const onSubmit: React.FormEventHandler = e => {
     e.preventDefault();
 
-    dispatch(remoteInteraction(apId!, account))
+    client.accounts.remoteInteraction(apId!, account).then((data) => data.url)
       .then(url => {
         window.open(url, '_new', 'noopener,noreferrer');
         onClose('UNAUTHORIZED');

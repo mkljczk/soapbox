@@ -1,10 +1,10 @@
+import { useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React, { useEffect, useRef } from 'react';
 import { defineMessages, useIntl, FormattedList, FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
 import { mentionCompose, replyCompose } from 'pl-fe/actions/compose';
-import { toggleFavourite, toggleReblog } from 'pl-fe/actions/interactions';
 import { unfilterStatus } from 'pl-fe/actions/statuses';
 import Card from 'pl-fe/components/ui/card';
 import Icon from 'pl-fe/components/ui/icon';
@@ -17,6 +17,7 @@ import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { favouriteStatusMutationOptions, reblogStatusMutationOptions, unfavouriteStatusMutationOptions, unreblogStatusMutationOptions } from 'pl-fe/queries/statuses/status-interactions';
 import { selectAccounts } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
@@ -120,6 +121,11 @@ const Status: React.FC<IStatus> = (props) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
 
+  const { mutate: favouriteStatus } = useMutation(favouriteStatusMutationOptions);
+  const { mutate: unfavouriteStatus } = useMutation(unfavouriteStatusMutationOptions);
+  const { mutate: reblogStatus } = useMutation(reblogStatusMutationOptions);
+  const { mutate: unreblogStatus } = useMutation(unreblogStatusMutationOptions);
+
   const { toggleStatusMediaHidden } = useStatusMetaStore();
   const { openModal } = useModalsStore();
   const { boostModal } = useSettings();
@@ -177,11 +183,12 @@ const Status: React.FC<IStatus> = (props) => {
 
   const handleHotkeyFavourite = (e?: KeyboardEvent) => {
     e?.preventDefault();
-    dispatch(toggleFavourite(status));
+    if (status.favourited) unfavouriteStatus(status.id);
+    else favouriteStatus(status.id);
   };
 
   const handleHotkeyBoost = (e?: KeyboardEvent) => {
-    const modalReblog = () => dispatch(toggleReblog(status));
+    const modalReblog = () => status.reblogged ? unreblogStatus(status.id) : reblogStatus({ statusId: status.id });
     if ((e && e.shiftKey) || !boostModal) {
       modalReblog();
     } else {

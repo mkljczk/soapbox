@@ -21,19 +21,6 @@ import {
 } from '../actions/events';
 import { STATUS_IMPORT, STATUSES_IMPORT, type ImporterAction } from '../actions/importer';
 import {
-  REBLOG_REQUEST,
-  REBLOG_FAIL,
-  UNREBLOG_REQUEST,
-  UNREBLOG_FAIL,
-  FAVOURITE_REQUEST,
-  UNFAVOURITE_REQUEST,
-  FAVOURITE_FAIL,
-  DISLIKE_REQUEST,
-  UNDISLIKE_REQUEST,
-  DISLIKE_FAIL,
-  type InteractionsAction,
-} from '../actions/interactions';
-import {
   STATUS_CREATE_REQUEST,
   STATUS_CREATE_FAIL,
   STATUS_DELETE_REQUEST,
@@ -105,45 +92,9 @@ const decrementReplyCount = (state: State, { in_reply_to_id, quote_id }: Pick<Ba
   return state;
 };
 
-/** Simulate favourite/unfavourite of status for optimistic interactions */
-const simulateFavourite = (state: State, statusId: string, favourited: boolean) => {
-  const status = state[statusId];
-  if (!status) return state;
-
-  const delta = favourited ? +1 : -1;
-
-  const updatedStatus = {
-    ...status,
-    favourited,
-    favourites_count: Math.max(0, status.favourites_count + delta),
-  };
-
-  state[statusId] = updatedStatus;
-};
-
-/** Simulate dislike/undislike of status for optimistic interactions */
-const simulateDislike = (
-  state: State,
-  statusId: string,
-  disliked: boolean,
-) => {
-  const status = state[statusId];
-  if (!status) return state;
-
-  const delta = disliked ? +1 : -1;
-
-  const updatedStatus = ({
-    ...status,
-    disliked,
-    dislikes_count: Math.max(0, status.dislikes_count + delta),
-  });
-
-  state[statusId] = updatedStatus;
-};
-
 const initialState: State = {};
 
-const statuses = (state = initialState, action: EmojiReactsAction | EventsAction | ImporterAction | InteractionsAction | StatusesAction | TimelineAction): State => {
+const statuses = (state = initialState, action: EmojiReactsAction | EventsAction | ImporterAction | StatusesAction | TimelineAction): State => {
   switch (action.type) {
     case STATUS_IMPORT:
       return create(state, (draft) => importStatus(draft, action.status));
@@ -153,14 +104,6 @@ const statuses = (state = initialState, action: EmojiReactsAction | EventsAction
       return action.editing ? state : create(state, (draft) => incrementReplyCount(draft, action.params));
     case STATUS_CREATE_FAIL:
       return action.editing ? state : create(state, (draft) => decrementReplyCount(draft, action.params));
-    case FAVOURITE_REQUEST:
-      return create(state, (draft) => simulateFavourite(draft, action.statusId, true));
-    case UNFAVOURITE_REQUEST:
-      return create(state, (draft) => simulateFavourite(draft, action.statusId, false));
-    case DISLIKE_REQUEST:
-      return create(state, (draft) => simulateDislike(draft, action.statusId, true));
-    case UNDISLIKE_REQUEST:
-      return create(state, (draft) => simulateDislike(draft, action.statusId, false));
     case EMOJI_REACT_REQUEST:
       return create(state, (draft) => {
         const status = draft[action.statusId];
@@ -174,50 +117,6 @@ const statuses = (state = initialState, action: EmojiReactsAction | EventsAction
         const status = draft[action.statusId];
         if (status) {
           status.emoji_reactions = simulateUnEmojiReact(status.emoji_reactions, action.emoji);
-        }
-      });
-    case FAVOURITE_FAIL:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.favourited = false;
-        }
-      });
-    case DISLIKE_FAIL:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.disliked = false;
-        }
-      });
-    case REBLOG_REQUEST:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.reblogs_count += 1;
-          status.reblogged = true;
-        }
-      });
-    case REBLOG_FAIL:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.reblogged = false;
-        }
-      });
-    case UNREBLOG_REQUEST:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.reblogs_count = Math.max(0, status.reblogs_count - 1);
-          status.reblogged = false;
-        }
-      });
-    case UNREBLOG_FAIL:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.reblogged = true;
         }
       });
     case STATUS_MUTE_SUCCESS:

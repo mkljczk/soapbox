@@ -7,7 +7,6 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose, replyCompose } from 'pl-fe/actions/compose';
 import { emojiReact, unEmojiReact } from 'pl-fe/actions/emoji-reacts';
-import { toggleBookmark, toggleDislike, toggleFavourite, togglePin, toggleReblog } from 'pl-fe/actions/interactions';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { changeSetting } from 'pl-fe/actions/settings';
@@ -32,6 +31,7 @@ import { useChats } from 'pl-fe/queries/chats';
 import { blockGroupUserMutationOptions } from 'pl-fe/queries/groups/group-blocks';
 import { customEmojisQueryOptions } from 'pl-fe/queries/instance/custom-emojis';
 import { translationLanguagesQueryOptions } from 'pl-fe/queries/instance/translation-languages';
+import { bookmarkStatusMutationOptions, dislikeStatusMutationOptions, favouriteStatusMutationOptions, pinStatusMutationOptions, reblogStatusMutationOptions, unbookmarkStatusMutationOptions, undislikeStatusMutationOptions, unfavouriteStatusMutationOptions, unpinStatusMutationOptions, unreblogStatusMutationOptions } from 'pl-fe/queries/statuses/status-interactions';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import toast from 'pl-fe/toast';
@@ -280,6 +280,9 @@ const ReblogButton: React.FC<IReblogButton> = ({
   const features = useFeatures();
   const intl = useIntl();
 
+  const { mutate: reblogStatus } = useMutation(reblogStatusMutationOptions);
+  const { mutate: unreblogStatus } = useMutation(unreblogStatusMutationOptions);
+
   const { boostModal } = useSettings();
   const { openModal } = useModalsStore();
   const canReblog = useCanInteract(status, 'can_reblog');
@@ -294,8 +297,10 @@ const ReblogButton: React.FC<IReblogButton> = ({
 
   const handleReblogClick: React.EventHandler<React.MouseEvent> = e => {
     if (me) {
-      const modalReblog = () => dispatch(toggleReblog(status)).then(() => {
-        if (canReblog.approvalRequired) toast.info(messages.reblogApprovalRequired);
+      const modalReblog = () => status.reblogged ? unreblogStatus(status.id) : reblogStatus({ statusId: status.id }, {
+        onSuccess: () => {
+          if (canReblog.approvalRequired) toast.info(messages.reblogApprovalRequired);
+        },
       });
       if ((e && e.shiftKey) || !boostModal) {
         modalReblog();
@@ -373,18 +378,22 @@ const FavouriteButton: React.FC<IActionButton> = ({
   withLabels,
   onOpenUnauthorizedModal,
 }) => {
-  const dispatch = useAppDispatch();
   const features = useFeatures();
   const intl = useIntl();
 
   const { openModal } = useModalsStore();
   const canFavourite = useCanInteract(status, 'can_favourite');
 
+  const { mutate: favouriteStatus } = useMutation(favouriteStatusMutationOptions);
+  const { mutate: unfavouriteStatus } = useMutation(unfavouriteStatusMutationOptions);
+
   const handleFavouriteClick: React.EventHandler<React.MouseEvent> = (e) => {
     if (me) {
-      dispatch(toggleFavourite(status)).then(() => {
-        if (canFavourite.approvalRequired) toast.info(messages.favouriteApprovalRequired);
-      }).catch(() => {});
+      (status.favourited ? unfavouriteStatus : favouriteStatus)(status.id, {
+        onSuccess: () => {
+          if (canFavourite.approvalRequired) toast.info(messages.favouriteApprovalRequired);
+        },
+      });
     } else {
       onOpenUnauthorizedModal('FAVOURITE');
     }
@@ -427,9 +436,11 @@ const DislikeButton: React.FC<IActionButton> = ({
   me,
   onOpenUnauthorizedModal,
 }) => {
-  const dispatch = useAppDispatch();
   const features = useFeatures();
   const intl = useIntl();
+
+  const { mutate: dislike } = useMutation(dislikeStatusMutationOptions);
+  const { mutate: undislike } = useMutation(undislikeStatusMutationOptions);
 
   const { openModal } = useModalsStore();
 
@@ -437,7 +448,8 @@ const DislikeButton: React.FC<IActionButton> = ({
 
   const handleDislikeClick: React.EventHandler<React.MouseEvent> = (e) => {
     if (me) {
-      dispatch(toggleDislike(status));
+      if (status.disliked) undislike(status.id);
+      else dislike(status.id);
     } else {
       onOpenUnauthorizedModal('DISLIKE');
     }
@@ -590,6 +602,12 @@ const MenuButton: React.FC<IMenuButton> = ({
   const { openModal } = useModalsStore();
   const { group } = useGroup((status.group as Group)?.id as string);
   const deleteGroupStatus = useDeleteGroupStatus(group as Group, status.id);
+  const { mutate: reblogStatus } = useMutation(reblogStatusMutationOptions);
+  const { mutate: unreblogStatus } = useMutation(unreblogStatusMutationOptions);
+  const { mutate: bookmarkStatus } = useMutation(bookmarkStatusMutationOptions);
+  const { mutate: unbookmarkStatus } = useMutation(unbookmarkStatusMutationOptions);
+  const { mutate: pinStatus } = useMutation(pinStatusMutationOptions);
+  const { mutate: unpinStatus } = useMutation(unpinStatusMutationOptions);
   const { mutate: blockGroupMember } = useMutation(blockGroupUserMutationOptions(status.group?.id as string, status.account.id));
   const { getOrCreateChatByAccountId } = useChats();
 
@@ -617,7 +635,8 @@ const MenuButton: React.FC<IMenuButton> = ({
   const isAdmin = account ? account.is_admin : false;
 
   const handleBookmarkClick: React.EventHandler<React.MouseEvent> = (e) => {
-    dispatch(toggleBookmark(status));
+    if (status.bookmarked) unbookmarkStatus(status.id);
+    else bookmarkStatus({ statusId: status.id });
   };
 
   const handleBookmarkFolderClick = () => {
@@ -653,11 +672,12 @@ const MenuButton: React.FC<IMenuButton> = ({
   };
 
   const handlePinClick: React.EventHandler<React.MouseEvent> = (e) => {
-    dispatch(togglePin(status));
+    if (status.pinned) unpinStatus(status.id);
+    else pinStatus(status.id);
   };
 
   const handleReblogClick: React.EventHandler<React.MouseEvent> = (e) => {
-    const modalReblog = () => dispatch(toggleReblog(status));
+    const modalReblog = () => status.reblogged ? unreblogStatus(status.id) : reblogStatus({ statusId: status.id });
     if ((e && e.shiftKey) || !boostModal) {
       modalReblog();
     } else {
