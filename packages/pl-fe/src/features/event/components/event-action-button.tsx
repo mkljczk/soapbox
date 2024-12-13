@@ -1,12 +1,14 @@
+import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { joinEvent, leaveEvent } from 'pl-fe/actions/events';
 import Button from 'pl-fe/components/ui/button';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { joinEventMutationOptions, leaveEventMutationOptions } from 'pl-fe/queries/events/event-participations';
 import { useModalsStore } from 'pl-fe/stores/modals';
+import toast from 'pl-fe/toast';
 
+import type { Status } from 'pl-api';
 import type { ButtonThemes } from 'pl-fe/components/ui/button/useButtonStyles';
 import type { Status as StatusEntity } from 'pl-fe/normalizers/status';
 
@@ -14,6 +16,9 @@ const messages = defineMessages({
   leaveHeading: { id: 'confirmations.leave_event.heading', defaultMessage: 'Leave event' },
   leaveMessage: { id: 'confirmations.leave_event.message', defaultMessage: 'If you want to rejoin the event, the request will be manually reviewed again. Are you sure you want to proceed?' },
   leaveConfirm: { id: 'confirmations.leave_event.confirm', defaultMessage: 'Leave event' },
+  joinSuccess: { id: 'join_event.success', defaultMessage: 'Joined the event' },
+  joinRequestSuccess: { id: 'join_event.request_success', defaultMessage: 'Requested to join the event' },
+  view: { id: 'toast.view', defaultMessage: 'View' },
 });
 
 interface IEventAction {
@@ -23,7 +28,9 @@ interface IEventAction {
 
 const EventActionButton: React.FC<IEventAction> = ({ status, theme = 'secondary' }) => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
+
+  const { mutate: joinEvent } = useMutation(joinEventMutationOptions);
+  const { mutate: leaveEvent } = useMutation(leaveEventMutationOptions);
 
   const { openModal } = useModalsStore();
   const me = useAppSelector((state) => state.me);
@@ -48,7 +55,17 @@ const EventActionButton: React.FC<IEventAction> = ({ status, theme = 'secondary'
     e.preventDefault();
 
     if (event.join_mode === 'free') {
-      dispatch(joinEvent(status.id));
+      joinEvent({ statusId: status.id }, {
+        onSuccess: (status: Status) => {
+          toast.success(
+            status.event?.join_state === 'pending' ? messages.joinRequestSuccess : messages.joinSuccess,
+            {
+              actionLabel: messages.view,
+              actionLink: `/@${status.account.acct}/events/${status.id}`,
+            },
+          );
+        },
+      });
     } else {
       openModal('JOIN_EVENT', {
         statusId: status.id,
@@ -64,10 +81,10 @@ const EventActionButton: React.FC<IEventAction> = ({ status, theme = 'secondary'
         heading: intl.formatMessage(messages.leaveHeading),
         message: intl.formatMessage(messages.leaveMessage),
         confirm: intl.formatMessage(messages.leaveConfirm),
-        onConfirm: () => dispatch(leaveEvent(status.id)),
+        onConfirm: () => leaveEvent(status.id),
       });
     } else {
-      dispatch(leaveEvent(status.id));
+      leaveEvent(status.id);
     }
   };
 

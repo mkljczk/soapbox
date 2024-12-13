@@ -5,7 +5,6 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose } from 'pl-fe/actions/compose';
-import { fetchEventIcs } from 'pl-fe/actions/events';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { deleteStatus } from 'pl-fe/actions/statuses';
@@ -20,6 +19,7 @@ import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useClient } from 'pl-fe/hooks/use-client';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
@@ -75,6 +75,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const history = useHistory();
+  const client = useClient();
 
   const { mutate: reblogStatus } = useMutation(reblogStatusMutationOptions);
   const { mutate: unreblogStatus } = useMutation(unreblogStatusMutationOptions);
@@ -118,7 +119,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
   };
 
   const handleExportClick = () => {
-    dispatch(fetchEventIcs(status.id)).then((data) => {
+    client.events.getEventIcs(status.id).then((data) => {
       download(data, 'calendar.ics');
     }).catch(() => {});
   };

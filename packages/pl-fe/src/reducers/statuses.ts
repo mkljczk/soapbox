@@ -1,17 +1,10 @@
 import omit from 'lodash/omit';
 import { create } from 'mutative';
 
-import { normalizeStatus, Status as StatusRecord } from 'pl-fe/normalizers/status';
+import { normalizeStatus, type Status as StatusRecord } from 'pl-fe/normalizers/status';
 import { queryClient } from 'pl-fe/queries/client';
 import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
-import {
-  EVENT_JOIN_REQUEST,
-  EVENT_JOIN_FAIL,
-  EVENT_LEAVE_REQUEST,
-  EVENT_LEAVE_FAIL,
-  type EventsAction,
-} from '../actions/events';
 import { STATUS_IMPORT, STATUSES_IMPORT, type ImporterAction } from '../actions/importer';
 import {
   STATUS_CREATE_REQUEST,
@@ -20,8 +13,8 @@ import {
   STATUS_DELETE_FAIL,
   STATUS_MUTE_SUCCESS,
   STATUS_UNMUTE_SUCCESS,
-  type StatusesAction,
   STATUS_DELETE_SUCCESS,
+  type StatusesAction,
 } from '../actions/statuses';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
@@ -86,7 +79,7 @@ const decrementReplyCount = (state: State, { in_reply_to_id, quote_id }: Pick<Ba
 
 const initialState: State = {};
 
-const statuses = (state = initialState, action: EventsAction | ImporterAction | StatusesAction | TimelineAction): State => {
+const statuses = (state = initialState, action: ImporterAction | StatusesAction | TimelineAction): State => {
   switch (action.type) {
     case STATUS_IMPORT:
       return create(state, (draft) => importStatus(draft, action.status));
@@ -116,28 +109,6 @@ const statuses = (state = initialState, action: EventsAction | ImporterAction | 
       return create(state, (draft) => incrementReplyCount(draft, action.params));
     case TIMELINE_DELETE:
       return create(state, (draft) => deleteStatus(draft, action.statusId, action.references));
-    case EVENT_JOIN_REQUEST:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status?.event) {
-          status.event.join_state = 'pending';
-        }
-      });
-    case EVENT_JOIN_FAIL:
-    case EVENT_LEAVE_REQUEST:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status?.event) {
-          status.event.join_state = null;
-        }
-      });
-    case EVENT_LEAVE_FAIL:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status?.event) {
-          status.event.join_state = action.previousState;
-        }
-      });
     case STATUS_DELETE_SUCCESS:
       return create(state, (draft) => {
         const status = draft[action.statusId];

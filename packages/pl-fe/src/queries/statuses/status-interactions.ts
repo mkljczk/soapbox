@@ -22,6 +22,30 @@ const queryKey = {
   getRebloggedBy: 'statusReblogs',
 };
 
+const makeOptimisticUpdateStatusMutationOptions = <T extends (string | { statusId: string })>(
+  options: MutationOptions<BaseStatus, Error, T, unknown>,
+  statusUpdater?: (status: Status, params: T) => void,
+  sideEffectsUpdater?: (params: T) => void,
+): MutationOptions<BaseStatus, Error, T, Status> => mutationOptions({
+    ...options,
+    onMutate: (params) => {
+      const statusId = typeof params === 'string' ? params : params.statusId;
+      const oldData = queryClient.getQueryData(statusQueryOptions(statusId).queryKey);
+
+      if (statusUpdater) {
+        queryClient.setQueryData(statusQueryOptions(statusId).queryKey, (prevData) => prevData && create(prevData, (draft) => statusUpdater(draft, params)) || undefined);
+      }
+
+      return oldData;
+    },
+    onError: (_, params, oldData) =>
+      queryClient.setQueryData(statusQueryOptions(typeof params === 'string' ? params : params.statusId).queryKey, oldData),
+    onSettled: (status, _, params) => {
+      store.dispatch(importEntities({ statuses: [status] }));
+      if (sideEffectsUpdater) sideEffectsUpdater(params);
+    },
+  });
+
 const makeStatusInteractionsQueryOptions = (method: 'getDislikedBy' | 'getFavouritedBy' | 'getRebloggedBy') => makePaginatedResponseQueryOptions(
   (statusId: string) => ['accountsLists', queryKey[method], statusId],
   (client, params) => client.statuses[method](...params).then(minifyAccountList),
@@ -43,120 +67,97 @@ const statusReactionsQueryOptions = (statusId: string, emoji?: string) => queryO
   placeholderData: (previousData) => previousData?.filter(({ name }) => name === emoji),
 });
 
-const optimisticUpdateStatusMutationOptions = <T extends (string | { statusId: string })>(
-  mutationOptions: MutationOptions<BaseStatus, Error, T, unknown>,
-  statusUpdater?: (status: Status, params: T) => void,
-  sideEffectsUpdater?: (params: T) => void,
-): MutationOptions<BaseStatus, Error, T, Status> => ({
-    ...mutationOptions,
-    onMutate: (params) => {
-      const statusId = typeof params === 'string' ? params : params.statusId;
-      const oldData = queryClient.getQueryData(statusQueryOptions(statusId).queryKey);
-
-      if (statusUpdater) {
-        queryClient.setQueryData(statusQueryOptions(statusId).queryKey, (prevData) => prevData && create(prevData, (draft) => statusUpdater(draft, params)) || undefined);
-      }
-
-      return oldData;
-    },
-    onError: (_, params, oldData) =>
-      queryClient.setQueryData(statusQueryOptions(typeof params === 'string' ? params : params.statusId).queryKey, oldData),
-    onSettled: (status, _, params) => {
-      store.dispatch(importEntities({ statuses: [status] }));
-      if (sideEffectsUpdater) sideEffectsUpdater(params);
-    },
-  });
-
-const favouriteStatusMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+const favouriteStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
   mutationFn: (statusId: string) => getClient().statuses.favouriteStatus(statusId),
-}), (data) => {
+}, (data) => {
   data.favourites_count += 1;
   data.favourited = true;
 });
 
-const unfavouriteStatusMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+const unfavouriteStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
   mutationFn: (statusId: string) => getClient().statuses.unfavouriteStatus(statusId),
-}), (data) => {
+}, (data) => {
   data.favourites_count = Math.min(data.favourites_count - 1, 0);
   data.favourited = false;
 });
 
-const dislikeStatusMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+const dislikeStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
   mutationFn: (statusId: string) => getClient().statuses.dislikeStatus(statusId),
-}), (data) => {
+}, (data) => {
   data.dislikes_count += 1;
   data.disliked = true;
 });
 
-const undislikeStatusMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+const undislikeStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
   mutationFn: (statusId: string) => getClient().statuses.undislikeStatus(statusId),
-}), (data) => {
+}, (data) => {
   data.dislikes_count = Math.min(data.dislikes_count - 1, 0);
   data.disliked = false;
 });
 
-const reblogStatusMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+const reblogStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
   mutationFn: ({ statusId, visibility }: { statusId: string; visibility?: string }) => getClient().statuses.reblogStatus(statusId, visibility),
-}), (data) => {
+}, (data) => {
   data.reblogs_count += 1;
   data.reblogged = true;
 });
 
-const unreblogStatusMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+const unreblogStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
   mutationFn: (statusId: string) => getClient().statuses.unreblogStatus(statusId),
-}), (data) => {
+}, (data) => {
   data.reblogs_count = Math.min(data.reblogs_count - 1, 0);
   data.reblogged = false;
 });
 
-const createStatusReactionMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+const createStatusReactionMutationOptions = makeOptimisticUpdateStatusMutationOptions({
   mutationFn: ({ statusId, emoji }: { statusId: string; emoji: string; custom?: string }) => getClient().statuses.createStatusReaction(statusId, emoji),
-}), (data, { emoji, custom: url }) => {
+}, (data, { emoji, custom: url }) => {
   data.emoji_reactions = simulateEmojiReact(data.emoji_reactions, emoji, url);
 
 }, ({ statusId }) => {
   queryClient.invalidateQueries(statusReactionsQueryOptions(statusId));
 });
 
-const deleteStatusReactionMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+const deleteStatusReactionMutationOptions = makeOptimisticUpdateStatusMutationOptions({
   mutationFn: ({ statusId, emoji }: { statusId: string; emoji: string }) => getClient().statuses.deleteStatusReaction(statusId, emoji),
-}), (data, { emoji }) => {
+}, (data, { emoji }) => {
   data.emoji_reactions = simulateUnEmojiReact(data.emoji_reactions, emoji);
 
 }, ({ statusId }) => {
   queryClient.invalidateQueries(statusReactionsQueryOptions(statusId));
 });
 
-const bookmarkStatusMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+const bookmarkStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
   mutationFn: ({ statusId, folderId }: {statusId: string; folderId?: string}) => getClient().statuses.bookmarkStatus(statusId, folderId),
-}), (data, { folderId = null }) => {
+}, (data, { folderId = null }) => {
   data.bookmarked = true;
   data.bookmark_folder = folderId;
   // TODO: Add to your bookmarks list and remove from previous folders, if applicable
 });
 
-const unbookmarkStatusMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+const unbookmarkStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
   mutationFn: (statusId: string) => getClient().statuses.unreblogStatus(statusId),
-}), (data) => {
+}, (data) => {
   data.bookmarked = false;
   // TODO: Remove from your bookmarks list
 });
 
-const pinStatusMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+const pinStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
   mutationFn: (statusId: string) => getClient().statuses.pinStatus(statusId),
-}), (data) => {
+}, (data) => {
   data.pinned = true;
   // TODO: Append to timeline
 });
 
-const unpinStatusMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+const unpinStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
   mutationFn: (statusId: string) => getClient().statuses.unpinStatus(statusId),
-}), (data) => {
+}, (data) => {
   data.pinned = false;
   // TODO: Remove from timeline
 });
 
 export {
+  makeOptimisticUpdateStatusMutationOptions,
   statusFavouritesQueryOptions,
   statusDislikesQueryOptions,
   statusReblogsQueryOptions,
