@@ -247,8 +247,6 @@ export {
   deleteStatus,
   updateStatus,
   fetchContext,
-  muteStatus,
-  unmuteStatus,
   toggleMuteStatus,
   type StatusesAction,
 };

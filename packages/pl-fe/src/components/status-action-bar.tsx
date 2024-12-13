@@ -6,7 +6,6 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose, replyCompose } from 'pl-fe/actions/compose';
-import { emojiReact, unEmojiReact } from 'pl-fe/actions/emoji-reacts';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { changeSetting } from 'pl-fe/actions/settings';
@@ -31,7 +30,20 @@ import { useChats } from 'pl-fe/queries/chats';
 import { blockGroupUserMutationOptions } from 'pl-fe/queries/groups/group-blocks';
 import { customEmojisQueryOptions } from 'pl-fe/queries/instance/custom-emojis';
 import { translationLanguagesQueryOptions } from 'pl-fe/queries/instance/translation-languages';
-import { bookmarkStatusMutationOptions, dislikeStatusMutationOptions, favouriteStatusMutationOptions, pinStatusMutationOptions, reblogStatusMutationOptions, unbookmarkStatusMutationOptions, undislikeStatusMutationOptions, unfavouriteStatusMutationOptions, unpinStatusMutationOptions, unreblogStatusMutationOptions } from 'pl-fe/queries/statuses/status-interactions';
+import {
+  bookmarkStatusMutationOptions,
+  createStatusReactionMutationOptions,
+  deleteStatusReactionMutationOptions,
+  dislikeStatusMutationOptions,
+  favouriteStatusMutationOptions,
+  pinStatusMutationOptions,
+  reblogStatusMutationOptions,
+  unbookmarkStatusMutationOptions,
+  undislikeStatusMutationOptions,
+  unfavouriteStatusMutationOptions,
+  unpinStatusMutationOptions,
+  unreblogStatusMutationOptions
+} from 'pl-fe/queries/statuses/status-interactions';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import toast from 'pl-fe/toast';
@@ -483,9 +495,11 @@ const WrenchButton: React.FC<IActionButton> = ({
   withLabels,
   me,
 }) => {
-  const dispatch = useAppDispatch();
   const intl = useIntl();
   const features = useFeatures();
+
+  const { mutate: createStatusReaction } = useMutation(createStatusReactionMutationOptions);
+  const { mutate: deleteStatusReaction } = useMutation(deleteStatusReactionMutationOptions);
 
   const { openModal } = useModalsStore();
   const { showWrenchButton } = useSettings();
@@ -501,15 +515,15 @@ const WrenchButton: React.FC<IActionButton> = ({
 
   const handleWrenchClick: React.EventHandler<React.MouseEvent> = (e) => {
     if (wrenches?.me) {
-      dispatch(unEmojiReact(status, '🔧'));
+      deleteStatusReaction({ statusId: status.id, emoji:  '🔧' });
     } else {
-      dispatch(emojiReact(status, '🔧'));
+      createStatusReaction({ statusId: status.id, emoji:  '🔧' });
     }
   };
 
   const handleWrenchLongPress = () => {
     if (features.customEmojiReacts && hasLongerWrench) {
-      dispatch(emojiReact(status, hasLongerWrench.shortcode, hasLongerWrench.url));
+      createStatusReaction({ statusId: status.id, emoji:  hasLongerWrench.shortcode, custom: hasLongerWrench.url });
     } else if (wrenches?.count) {
       openModal('REACTIONS', { statusId: status.id, reaction: wrenches.name });
     }
@@ -536,12 +550,16 @@ const EmojiPickerButton: React.FC<Omit<IActionButton, 'onOpenUnauthorizedModal'>
   withLabels,
   me,
 }) => {
-  const dispatch = useAppDispatch();
-
   const features = useFeatures();
 
+  const { mutate: createStatusReaction } = useMutation(createStatusReactionMutationOptions);
+
   const handlePickEmoji = (emoji: EmojiType) => {
-    dispatch(emojiReact(status, emoji.custom ? emoji.id : emoji.native, emoji.custom ? emoji.imageUrl : undefined));
+    createStatusReaction({
+      statusId: status.id,
+      emoji: emoji.custom ? emoji.id : emoji.native,
+      custom: emoji.custom ? emoji.imageUrl : undefined,
+    });
   };
 
   return me && !withLabels && features.emojiReacts && (

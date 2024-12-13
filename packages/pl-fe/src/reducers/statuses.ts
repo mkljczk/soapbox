@@ -4,14 +4,7 @@ import { create } from 'mutative';
 import { normalizeStatus, Status as StatusRecord } from 'pl-fe/normalizers/status';
 import { queryClient } from 'pl-fe/queries/client';
 import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
-import { simulateEmojiReact, simulateUnEmojiReact } from 'pl-fe/utils/emoji-reacts';
 
-import {
-  EMOJI_REACT_FAIL,
-  EMOJI_REACT_REQUEST,
-  UNEMOJI_REACT_REQUEST,
-  type EmojiReactsAction,
-} from '../actions/emoji-reacts';
 import {
   EVENT_JOIN_REQUEST,
   EVENT_JOIN_FAIL,
@@ -93,7 +86,7 @@ const decrementReplyCount = (state: State, { in_reply_to_id, quote_id }: Pick<Ba
 
 const initialState: State = {};
 
-const statuses = (state = initialState, action: EmojiReactsAction | EventsAction | ImporterAction | StatusesAction | TimelineAction): State => {
+const statuses = (state = initialState, action: EventsAction | ImporterAction | StatusesAction | TimelineAction): State => {
   switch (action.type) {
     case STATUS_IMPORT:
       return create(state, (draft) => importStatus(draft, action.status));
@@ -103,21 +96,6 @@ const statuses = (state = initialState, action: EmojiReactsAction | EventsAction
       return action.editing ? state : create(state, (draft) => incrementReplyCount(draft, action.params));
     case STATUS_CREATE_FAIL:
       return action.editing ? state : create(state, (draft) => decrementReplyCount(draft, action.params));
-    case EMOJI_REACT_REQUEST:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.emoji_reactions = simulateEmojiReact(status.emoji_reactions, action.emoji, action.custom);
-        }
-      });
-    case UNEMOJI_REACT_REQUEST:
-    case EMOJI_REACT_FAIL:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.emoji_reactions = simulateUnEmojiReact(status.emoji_reactions, action.emoji);
-        }
-      });
     case STATUS_MUTE_SUCCESS:
       return create(state, (draft) => {
         const status = draft[action.statusId];

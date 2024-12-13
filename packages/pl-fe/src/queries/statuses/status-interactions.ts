@@ -6,6 +6,7 @@ import { getClient } from 'pl-fe/api';
 import { makePaginatedResponseQueryOptions } from 'pl-fe/queries/utils/make-paginated-response-query-options';
 import { minifyAccountList } from 'pl-fe/queries/utils/minify-list';
 import { store } from 'pl-fe/store';
+import { simulateEmojiReact, simulateUnEmojiReact } from 'pl-fe/utils/emoji-reacts';
 
 import { queryClient } from '../client';
 import { mutationOptions } from '../utils/mutation-options';
@@ -108,6 +109,24 @@ const unreblogStatusMutationOptions = optimisticUpdateStatusMutationOptions(muta
   data.reblogged = false;
 });
 
+const createStatusReactionMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+  mutationFn: ({ statusId, emoji }: { statusId: string; emoji: string; custom?: string }) => getClient().statuses.createStatusReaction(statusId, emoji),
+}), (data, { emoji, custom: url }) => {
+  data.emoji_reactions = simulateEmojiReact(data.emoji_reactions, emoji, url);
+
+}, ({ statusId }) => {
+  queryClient.invalidateQueries(statusReactionsQueryOptions(statusId));
+});
+
+const deleteStatusReactionMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
+  mutationFn: ({ statusId, emoji }: { statusId: string; emoji: string }) => getClient().statuses.deleteStatusReaction(statusId, emoji),
+}), (data, { emoji }) => {
+  data.emoji_reactions = simulateUnEmojiReact(data.emoji_reactions, emoji);
+
+}, ({ statusId }) => {
+  queryClient.invalidateQueries(statusReactionsQueryOptions(statusId));
+});
+
 const bookmarkStatusMutationOptions = optimisticUpdateStatusMutationOptions(mutationOptions({
   mutationFn: ({ statusId, folderId }: {statusId: string; folderId?: string}) => getClient().statuses.bookmarkStatus(statusId, folderId),
 }), (data, { folderId = null }) => {
@@ -148,6 +167,8 @@ export {
   undislikeStatusMutationOptions,
   reblogStatusMutationOptions,
   unreblogStatusMutationOptions,
+  createStatusReactionMutationOptions,
+  deleteStatusReactionMutationOptions,
   bookmarkStatusMutationOptions,
   unbookmarkStatusMutationOptions,
   pinStatusMutationOptions,
