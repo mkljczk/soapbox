@@ -1,10 +1,11 @@
+import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
-import { cancelScheduledStatus } from 'pl-fe/actions/scheduled-statuses';
 import Button from 'pl-fe/components/ui/button';
 import HStack from 'pl-fe/components/ui/hstack';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { cancelScheduledStatusMutationOptions } from 'pl-fe/queries/statuses/scheduled-statuses';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 
@@ -24,6 +25,8 @@ interface IScheduledStatusActionBar {
 const ScheduledStatusActionBar: React.FC<IScheduledStatusActionBar> = ({ status }) => {
   const intl = useIntl();
 
+  const { mutate: cancelScheduledStatus } = useMutation(cancelScheduledStatusMutationOptions(status.id));
+
   const dispatch = useAppDispatch();
   const { openModal } = useModalsStore();
   const { settings } = useSettingsStore();
@@ -31,13 +34,13 @@ const ScheduledStatusActionBar: React.FC<IScheduledStatusActionBar> = ({ status 
   const handleCancelClick = () => {
     const deleteModal = settings.deleteModal;
     if (!deleteModal) {
-      dispatch(cancelScheduledStatus(status.id));
+      cancelScheduledStatus();
     } else {
       openModal('CONFIRM', {
         heading: intl.formatMessage(messages.deleteHeading),
         message: intl.formatMessage(messages.deleteMessage),
         confirm: intl.formatMessage(messages.deleteConfirm),
-        onConfirm: () => dispatch(cancelScheduledStatus(status.id)),
+        onConfirm: () => cancelScheduledStatus(),
       });
     }
   };

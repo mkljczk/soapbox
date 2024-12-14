@@ -27,7 +27,6 @@ const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseM
 
   const [selectedFolder, setSelectedFolder] = useState(status!.bookmark_folder);
 
-
   const onChange: React.ChangeEventHandler<HTMLInputElement> = e => {
     const folderId = e.target.value;
     setSelectedFolder(folderId);

@@ -34,17 +34,6 @@ import {
   type FavouritesAction,
 } from 'pl-fe/actions/favourites';
 import { PINNED_STATUSES_FETCH_SUCCESS, type PinStatusesAction } from 'pl-fe/actions/pin-statuses';
-import {
-  SCHEDULED_STATUSES_FETCH_REQUEST,
-  SCHEDULED_STATUSES_FETCH_SUCCESS,
-  SCHEDULED_STATUSES_FETCH_FAIL,
-  SCHEDULED_STATUSES_EXPAND_REQUEST,
-  SCHEDULED_STATUSES_EXPAND_SUCCESS,
-  SCHEDULED_STATUSES_EXPAND_FAIL,
-  SCHEDULED_STATUS_CANCEL_REQUEST,
-  SCHEDULED_STATUS_CANCEL_SUCCESS,
-  type ScheduledStatusesAction,
-} from 'pl-fe/actions/scheduled-statuses';
 import { STATUS_CREATE_SUCCESS, type StatusesAction } from 'pl-fe/actions/statuses';
 
 import type { PaginatedResponse, ScheduledStatus, Status } from 'pl-api';
@@ -109,19 +98,12 @@ const prependOneToList = (state: State, listType: string, status: string | Pick<
   list.items = [...new Set([statusId, ...list.items])];
 };
 
-const removeOneFromList = (state: State, listType: string, status: string | Pick<Status, 'id'>) => {
-  const statusId = getStatusId(status);
-  const list = state[listType] = state[listType] || newStatusList();
-
-  list.items = list.items.filter(id => id !== statusId);
-};
-
 const maybeAppendScheduledStatus = (state: State, status: Pick<ScheduledStatus | Status, 'id' | 'scheduled_at'>) => {
   if (!status.scheduled_at) return state;
   return prependOneToList(state, 'scheduled_statuses', getStatusId(status));
 };
 
-const statusLists = (state = initialState, action: BookmarksAction | EventsAction | FavouritesAction | PinStatusesAction | ScheduledStatusesAction | StatusesAction): State => {
+const statusLists = (state = initialState, action: BookmarksAction | EventsAction | FavouritesAction | PinStatusesAction | StatusesAction): State => {
   switch (action.type) {
     case FAVOURITED_STATUSES_FETCH_REQUEST:
     case FAVOURITED_STATUSES_EXPAND_REQUEST:
@@ -155,19 +137,6 @@ const statusLists = (state = initialState, action: BookmarksAction | EventsActio
       return create(state, draft => appendToList(draft, action.folderId ? `bookmarks:${action.folderId}` : 'bookmarks', action.statuses, action.next));
     case PINNED_STATUSES_FETCH_SUCCESS:
       return create(state, draft => normalizeList(draft, 'pins', action.statuses, action.next));
-    case SCHEDULED_STATUSES_FETCH_REQUEST:
-    case SCHEDULED_STATUSES_EXPAND_REQUEST:
-      return create(state, draft => setLoading(draft, 'scheduled_statuses', true));
-    case SCHEDULED_STATUSES_FETCH_FAIL:
-    case SCHEDULED_STATUSES_EXPAND_FAIL:
-      return create(state, draft => setLoading(draft, 'scheduled_statuses', false));
-    case SCHEDULED_STATUSES_FETCH_SUCCESS:
-      return create(state, draft => normalizeList(draft, 'scheduled_statuses', action.statuses, action.next as any));
-    case SCHEDULED_STATUSES_EXPAND_SUCCESS:
-      return create(state, draft => appendToList(draft, 'scheduled_statuses', action.statuses, action.next as any));
-    case SCHEDULED_STATUS_CANCEL_REQUEST:
-    case SCHEDULED_STATUS_CANCEL_SUCCESS:
-      return create(state, draft => removeOneFromList(draft, 'scheduled_statuses', action.statusId));
     case RECENT_EVENTS_FETCH_REQUEST:
       return create(state, draft => setLoading(draft, 'recent_events', true));
     case RECENT_EVENTS_FETCH_FAIL:

@@ -16,6 +16,7 @@ import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { followRequestsCountQueryOptions } from 'pl-fe/queries/accounts/follow-requests';
 import { interactionRequestsCountQueryOptions } from 'pl-fe/queries/statuses/interaction-requests';
+import { scheduledStatusesCountQueryOptions } from 'pl-fe/queries/statuses/scheduled-statuses';
 
 import Account from './account';
 import DropdownMenu, { Menu } from './dropdown-menu';
@@ -53,7 +54,7 @@ const SidebarNavigation = () => {
   const followRequestsCount = useInfiniteQuery(followRequestsCountQueryOptions).data || 0;
   const interactionRequestsCount = useInfiniteQuery(interactionRequestsCountQueryOptions).data || 0;
   const dashboardCount = useAppSelector((state) => state.admin.openReports.length + state.admin.awaitingApproval.length);
-  const scheduledStatusCount = useAppSelector((state) => Object.keys(state.scheduled_statuses).length);
+  const scheduledStatusCount = useInfiniteQuery(scheduledStatusesCountQueryOptions).data || 0;
   const draftCount = useAppSelector((state) => Object.keys(state.draft_statuses).length);
 
   const restrictUnauth = instance.pleroma.metadata.restrict_unauthenticated;
