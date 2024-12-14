@@ -127,7 +127,7 @@ const Preferences = () => {
   };
 
   const onBrandColorChange = (newBrandColor: string) => {
-    if (!settings.theme?.brandColor && newBrandColor === brandColor) return;
+    if (newBrandColor === brandColor) return;
 
     dispatch(changeSetting(['theme', 'brandColor'], newBrandColor, { showAlert: true, save: false }));
     debouncedSave(dispatch);
