@@ -28,10 +28,6 @@ const STATUS_DELETE_FAIL = 'STATUS_DELETE_FAIL' as const;
 
 const CONTEXT_FETCH_SUCCESS = 'CONTEXT_FETCH_SUCCESS' as const;
 
-const STATUS_MUTE_SUCCESS = 'STATUS_MUTE_SUCCESS' as const;
-
-const STATUS_UNMUTE_SUCCESS = 'STATUS_UNMUTE_SUCCESS' as const;
-
 const createStatus = (params: CreateStatusParams, idempotencyKey: string, statusId: string | null) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch<StatusesAction>({ type: STATUS_CREATE_REQUEST, params, idempotencyKey, editing: !!statusId });
@@ -144,27 +140,6 @@ const fetchContext = (statusId: string, intl?: IntlShape) =>
     });
   };
 
-const muteStatus = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
-
-    return getClient(getState()).statuses.muteStatus(statusId).then((status) => {
-      dispatch<StatusesAction>({ type: STATUS_MUTE_SUCCESS, statusId });
-    });
-  };
-
-const unmuteStatus = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
-
-    return getClient(getState()).statuses.unmuteStatus(statusId).then(() => {
-      dispatch<StatusesAction>({ type: STATUS_UNMUTE_SUCCESS, statusId });
-    });
-  };
-
-const toggleMuteStatus = (status: Pick<Status, 'id' | 'muted'>) =>
-  status.muted ? unmuteStatus(status.id) : muteStatus(status.id);
-
 // let TRANSLATIONS_QUEUE: Set<string> = new Set();
 // let TRANSLATIONS_TIMEOUT: NodeJS.Timeout | null = null;
 
@@ -224,9 +199,7 @@ type StatusesAction =
   | { type: typeof STATUS_DELETE_REQUEST; params: Pick<Status, 'in_reply_to_id' | 'quote_id'> }
   | { type: typeof STATUS_DELETE_SUCCESS; statusId: string }
   | { type: typeof STATUS_DELETE_FAIL; params: Pick<Status, 'in_reply_to_id' | 'quote_id'>; error: unknown }
-  | { type: typeof CONTEXT_FETCH_SUCCESS; statusId: string; ancestors: Array<BaseStatus>; descendants: Array<BaseStatus> }
-  | { type: typeof STATUS_MUTE_SUCCESS; statusId: string }
-  | { type: typeof STATUS_UNMUTE_SUCCESS; statusId: string };
+  | { type: typeof CONTEXT_FETCH_SUCCESS; statusId: string; ancestors: Array<BaseStatus>; descendants: Array<BaseStatus> };
 
 export {
   STATUS_CREATE_REQUEST,
@@ -239,14 +212,11 @@ export {
   STATUS_DELETE_SUCCESS,
   STATUS_DELETE_FAIL,
   CONTEXT_FETCH_SUCCESS,
-  STATUS_MUTE_SUCCESS,
-  STATUS_UNMUTE_SUCCESS,
   createStatus,
   editStatus,
   fetchStatus,
   deleteStatus,
   updateStatus,
   fetchContext,
-  toggleMuteStatus,
   type StatusesAction,
 };

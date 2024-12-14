@@ -9,7 +9,7 @@ import { directCompose, mentionCompose, quoteCompose, replyCompose } from 'pl-fe
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { changeSetting } from 'pl-fe/actions/settings';
-import { deleteStatus, editStatus, toggleMuteStatus } from 'pl-fe/actions/statuses';
+import { deleteStatus, editStatus } from 'pl-fe/actions/statuses';
 import { deleteFromTimelines } from 'pl-fe/actions/timelines';
 import { useDeleteGroupStatus } from 'pl-fe/api/hooks/groups/use-delete-group-status';
 import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
@@ -36,11 +36,13 @@ import {
   deleteStatusReactionMutationOptions,
   dislikeStatusMutationOptions,
   favouriteStatusMutationOptions,
+  muteStatusMutationOptions,
   pinStatusMutationOptions,
   reblogStatusMutationOptions,
   unbookmarkStatusMutationOptions,
   undislikeStatusMutationOptions,
   unfavouriteStatusMutationOptions,
+  unmuteStatusMutationOptions,
   unpinStatusMutationOptions,
   unreblogStatusMutationOptions,
 } from 'pl-fe/queries/statuses/status-interactions';
@@ -624,6 +626,8 @@ const MenuButton: React.FC<IMenuButton> = ({
   const { mutate: unreblogStatus } = useMutation(unreblogStatusMutationOptions);
   const { mutate: bookmarkStatus } = useMutation(bookmarkStatusMutationOptions);
   const { mutate: unbookmarkStatus } = useMutation(unbookmarkStatusMutationOptions);
+  const { mutate: muteStatus } = useMutation(muteStatusMutationOptions);
+  const { mutate: unmuteStatus } = useMutation(unmuteStatusMutationOptions);
   const { mutate: pinStatus } = useMutation(pinStatusMutationOptions);
   const { mutate: unpinStatus } = useMutation(unpinStatusMutationOptions);
   const { mutate: blockGroupMember } = useMutation(blockGroupUserMutationOptions(status.group?.id as string, status.account.id));
@@ -755,7 +759,8 @@ const MenuButton: React.FC<IMenuButton> = ({
   };
 
   const handleConversationMuteClick: React.EventHandler<React.MouseEvent> = (e) => {
-    dispatch(toggleMuteStatus(status));
+    if (status.muted) unmuteStatus(status.id);
+    else muteStatus(status.id);
   };
 
   const handleCopy: React.EventHandler<React.MouseEvent> = (e) => {

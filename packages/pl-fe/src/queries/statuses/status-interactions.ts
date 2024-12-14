@@ -128,7 +128,7 @@ const deleteStatusReactionMutationOptions = makeOptimisticUpdateStatusMutationOp
 });
 
 const bookmarkStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
-  mutationFn: ({ statusId, folderId }: {statusId: string; folderId?: string}) => getClient().statuses.bookmarkStatus(statusId, folderId),
+  mutationFn: ({ statusId, folderId }: { statusId: string; folderId?: string }) => getClient().statuses.bookmarkStatus(statusId, folderId),
 }, (data, { folderId = null }) => {
   data.bookmarked = true;
   data.bookmark_folder = folderId;
@@ -140,6 +140,18 @@ const unbookmarkStatusMutationOptions = makeOptimisticUpdateStatusMutationOption
 }, (data) => {
   data.bookmarked = false;
   // TODO: Remove from your bookmarks list
+});
+
+const muteStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
+  mutationFn: (statusId: string) => getClient().statuses.muteStatus(statusId),
+}, (data) => {
+  data.muted = false;
+});
+
+const unmuteStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
+  mutationFn: (statusId: string) => getClient().statuses.unmuteStatus(statusId),
+}, (data) => {
+  data.muted = false;
 });
 
 const pinStatusMutationOptions = makeOptimisticUpdateStatusMutationOptions({
@@ -172,6 +184,8 @@ export {
   deleteStatusReactionMutationOptions,
   bookmarkStatusMutationOptions,
   unbookmarkStatusMutationOptions,
+  muteStatusMutationOptions,
+  unmuteStatusMutationOptions,
   pinStatusMutationOptions,
   unpinStatusMutationOptions,
 };

@@ -11,8 +11,6 @@ import {
   STATUS_CREATE_FAIL,
   STATUS_DELETE_REQUEST,
   STATUS_DELETE_FAIL,
-  STATUS_MUTE_SUCCESS,
-  STATUS_UNMUTE_SUCCESS,
   STATUS_DELETE_SUCCESS,
   type StatusesAction,
 } from '../actions/statuses';
@@ -89,20 +87,6 @@ const statuses = (state = initialState, action: ImporterAction | StatusesAction 
       return action.editing ? state : create(state, (draft) => incrementReplyCount(draft, action.params));
     case STATUS_CREATE_FAIL:
       return action.editing ? state : create(state, (draft) => decrementReplyCount(draft, action.params));
-    case STATUS_MUTE_SUCCESS:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.muted = true;
-        }
-      });
-    case STATUS_UNMUTE_SUCCESS:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.muted = false;
-        }
-      });
     case STATUS_DELETE_REQUEST:
       return create(state, (draft) => decrementReplyCount(draft, action.params));
     case STATUS_DELETE_FAIL:
