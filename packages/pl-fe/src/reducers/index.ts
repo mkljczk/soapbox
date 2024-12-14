@@ -27,7 +27,6 @@ import pending_statuses from './pending-statuses';
 import plfe from './pl-fe';
 import polls from './polls';
 import push_notifications from './push-notifications';
-import scheduled_statuses from './scheduled-statuses';
 import security from './security';
 import status_lists from './status-lists';
 import statuses from './statuses';
@@ -58,7 +57,6 @@ const reducers = {
   plfe,
   polls,
   push_notifications,
-  scheduled_statuses,
   security,
   status_lists,
   statuses,

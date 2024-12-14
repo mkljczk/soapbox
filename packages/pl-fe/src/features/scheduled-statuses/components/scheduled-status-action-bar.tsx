@@ -4,7 +4,6 @@ import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
 import Button from 'pl-fe/components/ui/button';
 import HStack from 'pl-fe/components/ui/hstack';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { cancelScheduledStatusMutationOptions } from 'pl-fe/queries/statuses/scheduled-statuses';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
@@ -27,7 +26,6 @@ const ScheduledStatusActionBar: React.FC<IScheduledStatusActionBar> = ({ status 
 
   const { mutate: cancelScheduledStatus } = useMutation(cancelScheduledStatusMutationOptions(status.id));
 
-  const dispatch = useAppDispatch();
   const { openModal } = useModalsStore();
   const { settings } = useSettingsStore();
 

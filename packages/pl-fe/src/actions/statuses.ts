@@ -1,3 +1,5 @@
+import { queryClient } from 'pl-fe/queries/client';
+import { scheduledStatusesQueryOptions } from 'pl-fe/queries/statuses/scheduled-statuses';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { isLoggedIn } from 'pl-fe/utils/auth';
@@ -38,6 +40,7 @@ const createStatus = (params: CreateStatusParams, idempotencyKey: string, status
         const expectsCard = status.scheduled_at === null && !status.card && shouldHaveCard(status);
 
         if (status.scheduled_at === null) dispatch(importEntities({ statuses: [{ ...status, expectsCard }] }, { idempotencyKey, withParents: true }));
+        else queryClient.invalidateQueries(scheduledStatusesQueryOptions);
         dispatch<StatusesAction>({ type: STATUS_CREATE_SUCCESS, status, params, idempotencyKey, editing: !!statusId });
 
         // Poll the backend for the updated card

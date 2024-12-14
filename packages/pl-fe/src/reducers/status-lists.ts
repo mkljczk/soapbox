@@ -34,9 +34,8 @@ import {
   type FavouritesAction,
 } from 'pl-fe/actions/favourites';
 import { PINNED_STATUSES_FETCH_SUCCESS, type PinStatusesAction } from 'pl-fe/actions/pin-statuses';
-import { STATUS_CREATE_SUCCESS, type StatusesAction } from 'pl-fe/actions/statuses';
 
-import type { PaginatedResponse, ScheduledStatus, Status } from 'pl-api';
+import type { PaginatedResponse, Status } from 'pl-api';
 
 interface StatusList {
   next: (() => Promise<PaginatedResponse<Status>>) | null;
@@ -58,7 +57,6 @@ const initialState: State = {
   favourites: newStatusList(),
   bookmarks: newStatusList(),
   pins: newStatusList(),
-  scheduled_statuses: newStatusList(),
   recent_events: newStatusList(),
   joined_events: newStatusList(),
 };
@@ -91,19 +89,7 @@ const appendToList = (state: State, listType: string, statuses: Array<string | P
   list.items = [...new Set([...list.items, ...newIds])];
 };
 
-const prependOneToList = (state: State, listType: string, status: string | Pick<Status, 'id'>) => {
-  const statusId = getStatusId(status);
-  const list = state[listType] = state[listType] || newStatusList();
-
-  list.items = [...new Set([statusId, ...list.items])];
-};
-
-const maybeAppendScheduledStatus = (state: State, status: Pick<ScheduledStatus | Status, 'id' | 'scheduled_at'>) => {
-  if (!status.scheduled_at) return state;
-  return prependOneToList(state, 'scheduled_statuses', getStatusId(status));
-};
-
-const statusLists = (state = initialState, action: BookmarksAction | EventsAction | FavouritesAction | PinStatusesAction | StatusesAction): State => {
+const statusLists = (state = initialState, action: BookmarksAction | EventsAction | FavouritesAction | PinStatusesAction): State => {
   switch (action.type) {
     case FAVOURITED_STATUSES_FETCH_REQUEST:
     case FAVOURITED_STATUSES_EXPAND_REQUEST:
@@ -149,8 +135,6 @@ const statusLists = (state = initialState, action: BookmarksAction | EventsActio
       return create(state, draft => setLoading(draft, 'joined_events', false));
     case JOINED_EVENTS_FETCH_SUCCESS:
       return create(state, draft => normalizeList(draft, 'joined_events', action.statuses, action.next));
-    case STATUS_CREATE_SUCCESS:
-      return create(state, draft => maybeAppendScheduledStatus(draft, action.status));
     default:
       return state;
   }
