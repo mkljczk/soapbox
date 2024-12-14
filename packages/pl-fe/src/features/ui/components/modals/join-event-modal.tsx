@@ -5,7 +5,6 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import FormGroup from 'pl-fe/components/ui/form-group';
 import Modal from 'pl-fe/components/ui/modal';
 import Textarea from 'pl-fe/components/ui/textarea';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { joinEventMutationOptions } from 'pl-fe/queries/events/event-participations';
 import toast from 'pl-fe/toast';
 

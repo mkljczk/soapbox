@@ -42,7 +42,7 @@ import {
   undislikeStatusMutationOptions,
   unfavouriteStatusMutationOptions,
   unpinStatusMutationOptions,
-  unreblogStatusMutationOptions
+  unreblogStatusMutationOptions,
 } from 'pl-fe/queries/statuses/status-interactions';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
