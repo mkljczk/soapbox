@@ -22,7 +22,7 @@ const searchAccountsQueryOptions = (
     return accounts.map(({ id }) => id);
   }),
   enabled: !!query?.trim(),
-  initialPageParam: 0,
+  initialPageParam: undefined as number | undefined,
   getNextPageParam: (_, allPages) => allPages.flat().length,
   select: (data) => data.pages.flat(),
 });
