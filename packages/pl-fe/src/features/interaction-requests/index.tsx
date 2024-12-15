@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -19,7 +19,6 @@ import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
 import { buildLink } from 'pl-fe/features/notifications/components/notification';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import {
   interactionRequestsQueryOptions,
@@ -27,6 +26,7 @@ import {
   rejectInteractionRequestMutationOptions,
   type MinifiedInteractionRequest,
 } from 'pl-fe/queries/statuses/interaction-requests';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({
@@ -58,7 +58,7 @@ interface IInteractionRequestStatus {
 }
 
 const InteractionRequestStatus: React.FC<IInteractionRequestStatus> = ({ id: statusId, hasReply, isReply, actions }) => {
-  const status = useAppSelector((state) => state.statuses[statusId]);
+  const { data: status } = useQuery(statusQueryOptions(statusId));
 
   if (!status) return null;
 

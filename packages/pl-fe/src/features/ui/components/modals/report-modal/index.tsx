@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
@@ -13,8 +14,8 @@ import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useInstance } from 'pl-fe/hooks/use-instance';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 import ConfirmationStep from './steps/confirmation-step';
 import OtherActionsStep from './steps/other-actions-step';
@@ -44,7 +45,7 @@ const reportSteps = {
 };
 
 const SelectedStatus = ({ statusId }: { statusId: string }) => {
-  const status = useAppSelector((state) => state.statuses[statusId]);
+  const { data: status } = useQuery(statusQueryOptions(statusId));
 
   if (!status) {
     return null;

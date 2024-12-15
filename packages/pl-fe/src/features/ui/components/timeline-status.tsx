@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -5,6 +6,7 @@ import Tombstone from 'pl-fe/components/tombstone';
 import StatusContainer from 'pl-fe/containers/status-container';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 interface IThreadStatus {
   id: string;
@@ -20,7 +22,7 @@ interface IThreadStatus {
 const TimelineStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
   const { id, isConnectedTop, isConnectedBottom } = props;
 
-  const isLoaded = useAppSelector(state => Boolean(state.statuses[id]));
+  const { isFetched } = useQuery(statusQueryOptions(id));
   const isDeleted = useAppSelector(state => Boolean(state.statuses[id]?.deleted));
 
   if (isDeleted) {
@@ -52,7 +54,7 @@ const TimelineStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
     })}
     >
       {renderConnector()}
-      {isLoaded ? (
+      {isFetched ? (
         // @ts-ignore FIXME
         <StatusContainer {...props} showGroup={false} />
       ) : (
