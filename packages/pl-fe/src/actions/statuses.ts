@@ -3,6 +3,7 @@ import { scheduledStatusesQueryOptions } from 'pl-fe/queries/statuses/scheduled-
 import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 import { shouldHaveCard } from 'pl-fe/utils/status';
 
@@ -109,6 +110,7 @@ const deleteStatus = (statusId: string, withRedraft = false) =>
     dispatch<StatusesAction>({ type: STATUS_DELETE_REQUEST, params: status });
 
     return getClient(state).statuses.deleteStatus(statusId).then(response => {
+      useStatusMetaStore.getState().setStatusDeleted(statusId);
       dispatch<StatusesAction>({ type: STATUS_DELETE_SUCCESS, statusId });
       dispatch(deleteFromTimelines(statusId));
 

@@ -7,6 +7,7 @@ import StatusContainer from 'pl-fe/containers/status-container';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
 interface IThreadStatus {
   id: string;
@@ -23,7 +24,7 @@ const ThreadStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
   const replyToId = useAppSelector(state => state.contexts.inReplyTos[id]);
   const replyCount = useAppSelector(state => (state.contexts.replies[id] || []).length);
   const { isFetched } = useQuery(statusQueryOptions(id));
-  const isDeleted = useAppSelector(state => Boolean(state.statuses[id]?.deleted));
+  const isDeleted = useStatusMetaStore().statuses[id]?.deleted;
 
   if (isDeleted) {
     return (

@@ -5,8 +5,8 @@ import React from 'react';
 import Tombstone from 'pl-fe/components/tombstone';
 import StatusContainer from 'pl-fe/containers/status-container';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
 interface IThreadStatus {
   id: string;
@@ -23,7 +23,7 @@ const TimelineStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
   const { id, isConnectedTop, isConnectedBottom } = props;
 
   const { isFetched } = useQuery(statusQueryOptions(id));
-  const isDeleted = useAppSelector(state => Boolean(state.statuses[id]?.deleted));
+  const isDeleted = useStatusMetaStore().statuses[id]?.deleted;
 
   if (isDeleted) {
     return (
