@@ -13,7 +13,7 @@ const useFamiliarFollowers = (accountId: string) => {
   const { isLoggedIn } = useLoggedIn();
 
   return useQuery({
-    queryKey: ['accountsLists', 'endorsedAccounts', accountId],
+    queryKey: ['accountsLists', 'familiarFollowers', accountId],
     queryFn: () => client.accounts.getFamiliarFollowers([accountId]).then((response) => {
       const result = response.find(({ id }) => id === accountId);
       if (!result) return [];
