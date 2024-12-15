@@ -5,7 +5,7 @@ import { getClient } from 'pl-fe/api';
 import { store } from 'pl-fe/store';
 
 const familiarFollowersQueryOptions = (accountId: string) => queryOptions({
-  queryKey: ['accountsLists', 'endorsedAccounts', accountId],
+  queryKey: ['accountsLists', 'familiarFollowers', accountId],
   queryFn: () => getClient().accounts.getFamiliarFollowers([accountId]).then((response) => {
     const result = response.find(({ id }) => id === accountId);
     if (!result) return [];
