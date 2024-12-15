@@ -7,12 +7,14 @@ import OutlineBox from 'pl-fe/components/outline-box';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
+import { Entities } from 'pl-fe/entity-store/entities';
 import { queryClient } from 'pl-fe/queries/client';
 import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import { selectAccount } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
+import type { Account } from 'pl-fe/normalizers/account';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const messages = defineMessages({
@@ -135,7 +137,7 @@ const toggleStatusSensitivityModal = (intl: IntlShape, statusId: string, sensiti
 const deleteStatusModal = (intl: IntlShape, statusId: string, afterConfirm = () => {}) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const acct = state.statuses[statusId]!.account.acct;
+    const acct = (state.entities[Entities.ACCOUNTS]!.store[queryClient.getQueryData(statusQueryOptions(statusId).queryKey)!.account_id] as Account).acct;
 
     useModalsStore.getState().openModal('CONFIRM', {
       heading: intl.formatMessage(messages.deleteStatusHeading),
