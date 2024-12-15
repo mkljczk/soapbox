@@ -256,9 +256,8 @@ interface PlApiClientConstructorOpts {
 }
 
 /**
- * @category Clients
- *
  * Mastodon API client.
+ * @category Clients
  */
 class PlApiClient {
 
