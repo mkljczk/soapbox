@@ -10,7 +10,6 @@ import {
   submitEvent,
 } from 'pl-fe/actions/events';
 import { uploadFile } from 'pl-fe/actions/media';
-import { fetchStatus } from 'pl-fe/actions/statuses';
 import { ADDRESS_ICONS } from 'pl-fe/components/autosuggest-location';
 import LocationSearch from 'pl-fe/components/location-search';
 import Button from 'pl-fe/components/ui/button';
@@ -27,6 +26,7 @@ import Toggle from 'pl-fe/components/ui/toggle';
 import { isCurrentOrFutureDate } from 'pl-fe/features/compose/components/schedule-form';
 import { ComposeEditor, DatePicker } from 'pl-fe/features/ui/util/async-components';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { queryClient } from 'pl-fe/queries/client';
 import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import toast from 'pl-fe/toast';
 
@@ -135,7 +135,7 @@ const EditEvent: React.FC<IEditEvent> = ({ statusId }) => {
 
   useEffect(() => {
     if (statusId) {
-      Promise.all([dispatch(initEventEdit(statusId)), dispatch(fetchStatus(statusId))])
+      Promise.all([dispatch(initEventEdit(statusId)), queryClient.ensureQueryData(statusQueryOptions(statusId))])
         .then(([source, status]) => {
           if (!source || !status) throw new Error();
 

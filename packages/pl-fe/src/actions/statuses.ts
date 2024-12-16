@@ -79,18 +79,6 @@ const editStatus = (statusId: string) => (dispatch: AppDispatch, getState: () =>
   });
 };
 
-const fetchStatus = (statusId: string, intl?: IntlShape) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const params = intl && useSettingsStore.getState().settings.autoTranslate ? {
-      language: intl.locale,
-    } : undefined;
-
-    return getClient(getState()).statuses.getStatus(statusId, params).then(status => {
-      dispatch(importEntities({ statuses: [status] }));
-      return status;
-    });
-  };
-
 const updateStatus = (status: BaseStatus) => (dispatch: AppDispatch) =>
   dispatch(importEntities({ statuses: [status] }));
 
@@ -181,7 +169,6 @@ export {
   CONTEXT_FETCH_SUCCESS,
   createStatus,
   editStatus,
-  fetchStatus,
   updateStatus,
   fetchContext,
   type StatusesAction,
