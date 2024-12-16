@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
@@ -26,8 +27,7 @@ import Toggle from 'pl-fe/components/ui/toggle';
 import { isCurrentOrFutureDate } from 'pl-fe/features/compose/components/schedule-form';
 import { ComposeEditor, DatePicker } from 'pl-fe/features/ui/util/async-components';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import toast from 'pl-fe/toast';
 
 import UploadButton from '../components/upload-button';
@@ -52,8 +52,7 @@ const EditEvent: React.FC<IEditEvent> = ({ statusId }) => {
   const dispatch = useAppDispatch();
   const history = useHistory();
 
-  const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector((state) => statusId ? getStatus(state, { id: statusId }) : undefined);
+  const { data: status } = useQuery(statusQueryOptions(statusId || undefined));
 
   const [name, setName] = useState(status?.event?.name || '');
   const [text, setText] = useState('');
