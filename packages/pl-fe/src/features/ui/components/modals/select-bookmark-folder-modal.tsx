@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage } from 'react-intl';
 
 import { RadioGroup, RadioItem } from 'pl-fe/components/radio';
 import Emoji from 'pl-fe/components/ui/emoji';
@@ -13,8 +13,14 @@ import NewFolderForm from 'pl-fe/features/bookmark-folders/components/new-folder
 import { bookmarkFoldersQueryOptions } from 'pl-fe/queries/statuses/bookmark-folders';
 import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import { bookmarkStatusMutationOptions } from 'pl-fe/queries/statuses/status-interactions';
+import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';
+
+const messages = defineMessages({
+  folderChanged: { id: 'status.bookmark_folder_changed', defaultMessage: 'Changed folder' },
+  view: { id: 'toast.view', defaultMessage: 'View' },
+});
 
 interface SelectBookmarkFolderModalProps {
   statusId: string;
@@ -33,6 +39,10 @@ const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseM
 
     bookmarkStatus({ statusId, folderId }, {
       onSuccess: () => {
+        toast.success(messages.folderChanged, {
+          actionLabel: messages.view,
+          actionLink: `/bookmarks/${folderId}`,
+        });
         onClose('SELECT_BOOKMARK_FOLDER');
       },
     });

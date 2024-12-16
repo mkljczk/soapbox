@@ -49,7 +49,7 @@ import {
 } from 'pl-fe/queries/statuses/status-interactions';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
-import toast from 'pl-fe/toast';
+import toast, { type IToastOptions } from 'pl-fe/toast';
 import copy from 'pl-fe/utils/copy';
 
 import GroupPopover from './groups/popover/group-popover';
@@ -129,6 +129,11 @@ const messages = defineMessages({
   addKnownLanguage: { id: 'status.add_known_language', defaultMessage: 'Do not auto-translate posts in {language}.' },
   translate: { id: 'status.translate', defaultMessage: 'Translate' },
   hideTranslation: { id: 'status.hide_translation', defaultMessage: 'Hide translation' },
+
+  bookmarkAdded: { id: 'status.bookmarked', defaultMessage: 'Bookmark added.' },
+  bookmarkRemoved: { id: 'status.unbookmarked', defaultMessage: 'Bookmark removed.' },
+  view: { id: 'toast.view', defaultMessage: 'View' },
+  selectFolder: { id: 'status.bookmark.select_folder', defaultMessage: 'Select folder' },
 
   favouriteInteractionPolicyHeader: { id: 'status.interaction_policy.favourite.header', defaultMessage: 'The author limits who can like this post.' },
   reblogInteractionPolicyHeader: { id: 'status.interaction_policy.reblog.header', defaultMessage: 'The author limits who can repost this post.' },
@@ -659,8 +664,28 @@ const MenuButton: React.FC<IMenuButton> = ({
   const isAdmin = account ? account.is_admin : false;
 
   const handleBookmarkClick: React.EventHandler<React.MouseEvent> = (e) => {
-    if (status.bookmarked) unbookmarkStatus(status.id);
-    else bookmarkStatus({ statusId: status.id });
+    if (status.bookmarked) unbookmarkStatus(status.id, {
+      onSuccess: () => toast.success(messages.bookmarkRemoved),
+    });
+    else bookmarkStatus({ statusId: status.id }, {
+      onSuccess: () => {
+        let opts: IToastOptions = {
+          actionLabel: messages.view,
+          actionLink: '/bookmarks/all',
+        };
+
+        if (features.bookmarkFolders) {
+          opts = {
+            actionLabel: messages.selectFolder,
+            action: () => useModalsStore.getState().openModal('SELECT_BOOKMARK_FOLDER', {
+              statusId: status.id,
+            }),
+          };
+        }
+
+        toast.success(messages.bookmarkAdded, opts);
+      },
+    });
   };
 
   const handleBookmarkFolderClick = () => {
