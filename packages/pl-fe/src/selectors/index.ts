@@ -97,37 +97,11 @@ const regexFromFilters = (filters: Array<Filter>) => {
   ).join('|'), 'i');
 };
 
-// const checkFiltered = (index: string, filters: Array<Filter>) =>
-//   filters.reduce((result: Array<string>, filter) =>
-//     result.concat(filter.keywords.reduce((result: Array<string>, keyword) => {
-//       let expr = escapeRegExp(keyword.keyword);
-
-//       if (keyword.whole_word) {
-//         if (/^[\w]/.test(expr)) {
-//           expr = `\\b${expr}`;
-//         }
-
-//         if (/[\w]$/.test(expr)) {
-//           expr = `${expr}\\b`;
-//         }
-//       }
-
-//       const regex = new RegExp(expr);
-
-//       if (regex.test(index)) return result.concat(filter.title);
-//       return result;
-//     }, [])), []);
-
 // const makeGetStatus = () => createSelector(
 //   (statusBase, statusReblog, statusQuote, statusGroup, poll, username, filters, me, features) => {
 
-//     const filtered = features.filtersV2
-//       ? statusBase.filtered
-//       : features.filters && account.id !== me && checkFiltered(statusReblog?.search_index || statusBase.search_index || '', filters) || [];
-
 //     return {
 //       ...statusBase,
-//       reblog: statusReblog || null,
 //       poll,
 //       filtered,
 //     };
@@ -304,6 +278,7 @@ export {
   makeGetAccount,
   type SelectedAccount,
   getFilters,
+  escapeRegExp,
   regexFromFilters,
   makeGetNotification,
   type SelectedNotification,

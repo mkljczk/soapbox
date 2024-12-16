@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
+import { Filter } from 'pl-api';
 import React, { useEffect, useRef } from 'react';
 import { defineMessages, useIntl, FormattedList, FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
@@ -16,9 +17,10 @@ import StatusTypeIcon from 'pl-fe/features/status/components/status-type-icon';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { favouriteStatusMutationOptions, reblogStatusMutationOptions, unfavouriteStatusMutationOptions, unreblogStatusMutationOptions } from 'pl-fe/queries/statuses/status-interactions';
-import { selectAccounts } from 'pl-fe/selectors';
+import { escapeRegExp, getFilters, selectAccounts } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { textForScreenReader } from 'pl-fe/utils/status';
@@ -75,6 +77,37 @@ const RebloggedBy: React.FC<IRebloggedBy> = ({ rebloggedBy }) => {
       }}
     />
   );
+};
+
+const checkFiltered = (index: string, filters: Array<Filter>) =>
+  filters.reduce((result: Array<string>, filter) =>
+    result.concat(filter.keywords.reduce((result: Array<string>, keyword) => {
+      let expr = escapeRegExp(keyword.keyword);
+
+      if (keyword.whole_word) {
+        if (/^[\w]/.test(expr)) {
+          expr = `\\b${expr}`;
+        }
+
+        if (/[\w]$/.test(expr)) {
+          expr = `${expr}\\b`;
+        }
+      }
+
+      const regex = new RegExp(expr);
+
+      if (regex.test(index)) return result.concat(filter.title);
+      return result;
+    }, [])), []);
+
+const useFiltered = (status: NormalizedStatus) => {
+  const features = useFeatures();
+  const me = useAppSelector((state) => state.me);
+  const filters = useAppSelector((state) => getFilters(state, {}));
+
+  return features.filtersV2
+    ? status.filtered
+    : features.filters && status.account_id !== me && checkFiltered(status?.search_index || '', filters) || [];
 };
 
 interface IStatus {
@@ -137,7 +170,8 @@ const Status: React.FC<IStatus> = (props) => {
   const statusUrl = `/@${status.account.acct}/posts/${status.id}`;
   const { group } = useGroup(status.group_id);
 
-  const filtered = (status.filtered?.length || status.filtered?.length) > 0;
+  const filtered = useFiltered(status);
+  //  (status.filtered?.length || status.filtered?.length) > 0;
 
   // Track height changes we know about to compensate scrolling.
   useEffect(() => {
@@ -342,7 +376,7 @@ const Status: React.FC<IStatus> = (props) => {
     <Tombstone id={status.id} onMoveUp={onMoveUp} onMoveDown={onMoveDown} deleted />
   );
 
-  if (filtered && statusMeta?.showFiltered !== false) {
+  if (filtered.length && statusMeta?.showFiltered !== false) {
     const minHandlers = muted ? undefined : {
       moveUp: handleHotkeyMoveUp,
       moveDown: handleHotkeyMoveDown,
@@ -352,7 +386,7 @@ const Status: React.FC<IStatus> = (props) => {
       <HotKeys handlers={minHandlers}>
         <div className={clsx('status__wrapper text-center', { focusable })} tabIndex={focusable ? 0 : undefined} ref={node}>
           <Text theme='muted'>
-            <FormattedMessage id='status.filtered' defaultMessage='Filtered' />: {status.filtered.join(', ')}.
+            <FormattedMessage id='status.filtered' defaultMessage='Filtered' />: {filtered.join(', ')}.
             {' '}
             <button className='text-primary-600 hover:underline dark:text-accent-blue' onClick={handleUnfilter}>
               <FormattedMessage id='status.show_filter_reason' defaultMessage='Show anyway' />
