@@ -149,7 +149,7 @@
     "@formatjs/cli": "^6.3.11",
     "@jedmao/redux-mock-store": "^3.0.5",
     "@sentry/types": "^8.42.0",
-    "@stylistic/eslint-plugin": "^2.11.0",
+    "@stylistic/eslint-plugin": "^2.12.1",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.1",
     "@testing-library/react-hooks": "^8.0.1",
