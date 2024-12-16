@@ -302,7 +302,7 @@ const Status: React.FC<IStatus> = (props) => {
     <Tombstone id={status.id} onMoveUp={onMoveUp} onMoveDown={onMoveDown} deleted />
   );
 
-  if (filtered && status.showFiltered !== false) {
+  if (filtered && status.showFiltered !== true) {
     const minHandlers = muted ? undefined : {
       moveUp: handleHotkeyMoveUp,
       moveDown: handleHotkeyMoveDown,
