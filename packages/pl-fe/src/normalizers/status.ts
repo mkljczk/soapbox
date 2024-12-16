@@ -129,7 +129,7 @@ const normalizeStatus = (status: BaseStatus & {
     group,
     media_attachments,
     search_index: searchIndex,
-  }, ['group', 'quote']);
+  }, ['group', 'quote', 'reblog']);
 };
 
 type Status = ReturnType<typeof normalizeStatus>;
