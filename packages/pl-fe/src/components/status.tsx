@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { Filter } from 'pl-api';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { defineMessages, useIntl, FormattedList, FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
@@ -105,9 +105,13 @@ const useFiltered = (status: NormalizedStatus) => {
   const me = useAppSelector((state) => state.me);
   const filters = useAppSelector((state) => getFilters(state, {}));
 
-  return features.filtersV2
-    ? status.filtered
-    : features.filters && status.account_id !== me && checkFiltered(status?.search_index || '', filters) || [];
+  return useMemo(
+    () => features.filtersV2
+      ? status.filtered
+      : features.filters && status.account_id !== me && checkFiltered(status.search_index || '', filters) || [],
+    [status.filtered, status.search_index, filters],
+  );
+
 };
 
 interface IStatus {
