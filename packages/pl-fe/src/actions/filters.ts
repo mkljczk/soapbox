@@ -22,7 +22,8 @@ const fetchFilters = () =>
     if (!isLoggedIn(getState)) return;
 
     return getClient(getState).filtering.getFilters()
-      .then((data) => ({
+      .then((data) => dispatch<FiltersAction>({
+        type: FILTERS_FETCH_SUCCESS,
         filters: data,
       }))
       .catch(error => ({
