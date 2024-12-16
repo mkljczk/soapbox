@@ -128,8 +128,6 @@ const regexFromFilters = (filters: Array<Filter>) => {
 //     return {
 //       ...statusBase,
 //       reblog: statusReblog || null,
-//       quote: statusQuote || null,
-//       group: statusGroup || null,
 //       poll,
 //       filtered,
 //     };

@@ -43,7 +43,7 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
   };
 
   const renderStatusInfo = () => {
-    if (status.group) {
+    if (status.group_id) {
       return (
         <div className='mb-4'>
           <StatusInfo
@@ -60,7 +60,7 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
                 defaultMessage='Posted in {group}'
                 values={{
                   group: (
-                    <Link to={`/groups/${status.group.id}`} className='hover:underline'>
+                    <Link to={`/groups/${status.group_id}`} className='hover:underline'>
                       <bdi className='truncate'>
                         <strong className='text-gray-800 dark:text-gray-200'>
                           <Emojify text={status.account.display_name} emojis={status.account.emojis} />

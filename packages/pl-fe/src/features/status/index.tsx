@@ -88,10 +88,8 @@ const StatusDetails: React.FC<IStatusDetails> = (props) => {
     );
   }
 
-  if (status.group && typeof status.group === 'object') {
-    if (status.group.id && !props.params.groupId) {
-      return <Redirect to={`/groups/${status.group.id}/posts/${props.params.statusId}`} />;
-    }
+  if (status.group_id && !props.params.groupId) {
+    return <Redirect to={`/groups/${status.group_id}/posts/${props.params.statusId}`} />;
   }
 
   const titleMessage = () => {

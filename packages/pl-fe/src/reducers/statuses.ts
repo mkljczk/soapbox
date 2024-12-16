@@ -22,7 +22,7 @@ type State = Record<string, MinifiedStatus>;
 
 type MinifiedStatus = ReturnType<typeof minifyStatus>;
 
-const minifyStatus = (status: StatusRecord) => omit(status, ['reblog', 'poll', 'quote', 'group']);
+const minifyStatus = (status: StatusRecord) => omit(status, ['reblog', 'poll']);
 
 const fixStatus = (state: State, status: BaseStatus): MinifiedStatus => {
   const oldStatus = state[status.id];

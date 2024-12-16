@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import Link from 'pl-fe/components/link';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
@@ -18,7 +19,7 @@ const ReplyGroupIndicator = (props: IReplyGroupIndicator) => {
   const { in_reply_to: inReplyTo } = useCompose(composeId);
 
   const { data: status } = useQuery(statusQueryOptions(inReplyTo!));
-  const group = status?.group;
+  const { group } = useGroup(status?.group_id || '');
 
   if (!group) {
     return null;

@@ -5,6 +5,7 @@ import { defineMessages, useIntl, FormattedList, FormattedMessage } from 'react-
 import { Link, useHistory } from 'react-router-dom';
 
 import { mentionCompose, replyCompose } from 'pl-fe/actions/compose';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import Card from 'pl-fe/components/ui/card';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
@@ -134,7 +135,7 @@ const Status: React.FC<IStatus> = (props) => {
 
   const isReblog = status.reblog_id;
   const statusUrl = `/@${status.account.acct}/posts/${status.id}`;
-  const group = status.group;
+  const { group } = useGroup(status.group_id);
 
   const filtered = (status.filtered?.length || status.filtered?.length) > 0;
 

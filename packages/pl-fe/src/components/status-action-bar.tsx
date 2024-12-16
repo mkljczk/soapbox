@@ -222,13 +222,13 @@ const ReplyButton: React.FC<IReplyButton> = ({
   const intl = useIntl();
 
   const canReply = useCanInteract(status, 'can_reply');
-  const { groupRelationship } = useGroupRelationship(status.group_id || undefined);
+  const { group } = useGroup(status.group_id);
 
   let replyTitle;
   let replyDisabled = false;
   const replyCount = status.replies_count;
 
-  if ((status.group as Group)?.membership_required && !groupRelationship?.member) {
+  if (group?.membership_required && !group.relationship?.member) {
     replyDisabled = true;
     replyTitle = intl.formatMessage(messages.replies_disabled_group);
   }
@@ -268,9 +268,9 @@ const ReplyButton: React.FC<IReplyButton> = ({
     </Popover>
   );
 
-  return status.group ? (
+  return group ? (
     <GroupPopover
-      group={status.group}
+      group={group}
       isEnabled={replyDisabled}
     >
       {replyButton}
@@ -620,7 +620,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   const { statuses: statusesMeta, fetchTranslation, hideTranslation } = useStatusMetaStore();
   const targetLanguage = statusesMeta[status.id]?.targetLanguage;
   const { openModal } = useModalsStore();
-  const { group } = useGroup((status.group as Group)?.id as string);
+  const { group } = useGroup(status.group_id);
   const deleteGroupStatus = useDeleteGroupStatus(group as Group, status.id);
   const { mutate: reblogStatus } = useMutation(reblogStatusMutationOptions);
   const { mutate: unreblogStatus } = useMutation(unreblogStatusMutationOptions);
@@ -630,7 +630,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   const { mutate: unmuteStatus } = useMutation(unmuteStatusMutationOptions);
   const { mutate: pinStatus } = useMutation(pinStatusMutationOptions);
   const { mutate: unpinStatus } = useMutation(unpinStatusMutationOptions);
-  const { mutate: blockGroupMember } = useMutation(blockGroupUserMutationOptions(status.group?.id as string, status.account.id));
+  const { mutate: blockGroupMember } = useMutation(blockGroupUserMutationOptions(status.group_id as string, status.account_id));
   const { getOrCreateChatByAccountId } = useChats();
 
   const { groupRelationship } = useGroupRelationship(status.group_id || undefined);
@@ -870,7 +870,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       });
     }
 
-    const isGroupStatus = typeof status.group === 'object';
+    const isGroupStatus = !!status.group_id;
 
     if (features.bookmarks) {
       menu.push({
@@ -1007,7 +1007,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       });
     }
 
-    if (isGroupStatus && !!status.group) {
+    if (isGroupStatus && !!status.group_id) {
       const isGroupOwner = groupRelationship?.role === GroupRoles.OWNER;
       const isGroupAdmin = groupRelationship?.role === GroupRoles.ADMIN;
       // const isStatusFromOwner = group.owner.id === account.id;
