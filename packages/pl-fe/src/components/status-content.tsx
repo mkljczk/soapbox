@@ -45,7 +45,7 @@ const ReadMoreButton: React.FC<IReadMoreButton> = ({ onClick, quote, poll, previ
     })}
   >
     <div
-      className={clsx('absolute -top-16 h-16 w-full bg-gradient-to-b from-transparent', {
+      className={clsx('pointer-events-none absolute -top-16 h-16 w-full bg-gradient-to-b from-transparent', {
         'to-white black:to-black dark:to-primary-900': !poll,
         'to-gray-100 dark:to-primary-800': poll,
         'group-hover:to-gray-100 black:group-hover:to-gray-800 dark:group-hover:to-gray-800': quote,

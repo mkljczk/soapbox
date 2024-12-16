@@ -21,9 +21,8 @@ interface Params {
 }
 
 /**
- * @category Clients
- * 
  * joinmastodon.org-compatible server directory client.
+ * @category Clients
  */
 class PlApiDirectoryClient {
 
