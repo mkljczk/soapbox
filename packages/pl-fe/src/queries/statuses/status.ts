@@ -6,6 +6,7 @@ import { importEntities } from 'pl-fe/actions/importer';
 import { getClient } from 'pl-fe/api';
 import { normalizeStatus, type Status } from 'pl-fe/normalizers/status';
 import { store } from 'pl-fe/store';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
 import { queryClient } from '../client';
 import { mutationOptions } from '../utils/mutation-options';
@@ -71,4 +72,39 @@ const updateStatusMutationOptions = mutationOptions({
   },
 });
 
-export { statusQueryOptions, createStatusMutationOptions, updateStatusMutationOptions };
+const deleteStatusMutationOptions = mutationOptions({
+  mutationFn: (statusId: string) => getClient().statuses.deleteStatus(statusId),
+  onMutate: (statusId) => {
+    const status = queryClient.getQueryData(statusQueryOptions(statusId).queryKey);
+
+    if (status?.in_reply_to_id) {
+      queryClient.setQueryData(statusQueryOptions(status.in_reply_to_id).queryKey, (status) => status ? create(status, (draft) => {
+        draft.replies_count = Math.max(draft.replies_count - 1, 0);
+      }) : undefined);
+    }
+    if (status?.quote_id) {
+      queryClient.setQueryData(statusQueryOptions(status.quote_id).queryKey, (status) => status ? create(status, (draft) => {
+        draft.quotes_count = Math.max(draft.quotes_count - 1, 0);
+      }) : undefined);
+    }
+  },
+  onSuccess: ({ id }) => {
+    useStatusMetaStore.getState().setStatusDeleted(id);
+  },
+  onError: (_, statusId) => {
+    const status = queryClient.getQueryData(statusQueryOptions(statusId).queryKey);
+
+    if (status?.in_reply_to_id) {
+      queryClient.setQueryData(statusQueryOptions(status.in_reply_to_id).queryKey, (status) => status ? create(status, (draft) => {
+        draft.replies_count += 1;
+      }) : undefined);
+    }
+    if (status?.quote_id) {
+      queryClient.setQueryData(statusQueryOptions(status.quote_id).queryKey, (status) => status ? create(status, (draft) => {
+        draft.quotes_count += 1;
+      }) : undefined);
+    }
+  },
+});
+
+export { statusQueryOptions, createStatusMutationOptions, updateStatusMutationOptions, deleteStatusMutationOptions };

@@ -5,7 +5,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
-import { directCompose, mentionCompose, quoteCompose, replyCompose } from 'pl-fe/actions/compose';
+import { directCompose, mentionCompose, quoteCompose, replyCompose, setComposeToStatus } from 'pl-fe/actions/compose';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { changeSetting } from 'pl-fe/actions/settings';
@@ -30,6 +30,7 @@ import { useChats } from 'pl-fe/queries/chats';
 import { blockGroupUserMutationOptions } from 'pl-fe/queries/groups/group-blocks';
 import { customEmojisQueryOptions } from 'pl-fe/queries/instance/custom-emojis';
 import { translationLanguagesQueryOptions } from 'pl-fe/queries/instance/translation-languages';
+import { deleteStatusMutationOptions } from 'pl-fe/queries/statuses/status';
 import {
   bookmarkStatusMutationOptions,
   createStatusReactionMutationOptions,
@@ -631,6 +632,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   const { mutate: pinStatus } = useMutation(pinStatusMutationOptions);
   const { mutate: unpinStatus } = useMutation(unpinStatusMutationOptions);
   const { mutate: blockGroupMember } = useMutation(blockGroupUserMutationOptions(status.group_id as string, status.account_id));
+  const { mutate: deleteStatus } = useMutation(deleteStatusMutationOptions);
   const { getOrCreateChatByAccountId } = useChats();
 
   const { groupRelationship } = useGroupRelationship(status.group_id || undefined);
@@ -668,14 +670,20 @@ const MenuButton: React.FC<IMenuButton> = ({
   };
 
   const doDeleteStatus = (withRedraft = false) => {
+    const deleteAction = () => deleteStatus(status.id, {
+      onSuccess: (response) => {
+        dispatch(setComposeToStatus(status, status.poll, response.text || '', response.spoiler_text, response.content_type, withRedraft));
+        openModal('COMPOSE');
+      },
+    });
     if (!deleteModal) {
-      dispatch(deleteStatus(status.id, withRedraft));
+      deleteAction();
     } else {
       openModal('CONFIRM', {
         heading: intl.formatMessage(withRedraft ? messages.redraftHeading : messages.deleteHeading),
         message: intl.formatMessage(withRedraft ? messages.redraftMessage : messages.deleteMessage),
         confirm: intl.formatMessage(withRedraft ? messages.redraftConfirm : messages.deleteConfirm),
-        onConfirm: () => dispatch(deleteStatus(status.id, withRedraft)),
+        onConfirm: deleteAction,
       });
     }
   };

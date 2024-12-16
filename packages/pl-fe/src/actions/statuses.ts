@@ -3,8 +3,6 @@ import { scheduledStatusesQueryOptions } from 'pl-fe/queries/statuses/scheduled-
 import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
-import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
-import { isLoggedIn } from 'pl-fe/utils/auth';
 import { shouldHaveCard } from 'pl-fe/utils/status';
 
 import { getClient } from '../api';
@@ -14,7 +12,6 @@ import { importEntities } from './importer';
 import { deleteFromTimelines } from './timelines';
 
 import type { CreateStatusParams, Status as BaseStatus, ScheduledStatus } from 'pl-api';
-import type { Status } from 'pl-fe/normalizers/status';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 import type { IntlShape } from 'react-intl';
 
@@ -25,10 +22,6 @@ const STATUS_CREATE_FAIL = 'STATUS_CREATE_FAIL' as const;
 const STATUS_FETCH_SOURCE_REQUEST = 'STATUS_FETCH_SOURCE_REQUEST' as const;
 const STATUS_FETCH_SOURCE_SUCCESS = 'STATUS_FETCH_SOURCE_SUCCESS' as const;
 const STATUS_FETCH_SOURCE_FAIL = 'STATUS_FETCH_SOURCE_FAIL' as const;
-
-const STATUS_DELETE_REQUEST = 'STATUS_DELETE_REQUEST' as const;
-const STATUS_DELETE_SUCCESS = 'STATUS_DELETE_SUCCESS' as const;
-const STATUS_DELETE_FAIL = 'STATUS_DELETE_FAIL' as const;
 
 const CONTEXT_FETCH_SUCCESS = 'CONTEXT_FETCH_SUCCESS' as const;
 
@@ -96,32 +89,6 @@ const fetchStatus = (statusId: string, intl?: IntlShape) =>
       dispatch(importEntities({ statuses: [status] }));
       return status;
     });
-  };
-
-const deleteStatus = (statusId: string, withRedraft = false) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return null;
-
-    const state = getState();
-
-    const status = queryClient.getQueryData(statusQueryOptions(statusId).queryKey)!;
-    const poll = status.poll_id ? state.polls[status.poll_id] : undefined;
-
-    dispatch<StatusesAction>({ type: STATUS_DELETE_REQUEST, params: status });
-
-    return getClient(state).statuses.deleteStatus(statusId).then(response => {
-      useStatusMetaStore.getState().setStatusDeleted(statusId);
-      dispatch<StatusesAction>({ type: STATUS_DELETE_SUCCESS, statusId });
-      dispatch(deleteFromTimelines(statusId));
-
-      if (withRedraft) {
-        dispatch(setComposeToStatus(status, poll, response.text || '', response.spoiler_text, response.content_type, withRedraft));
-        useModalsStore.getState().openModal('COMPOSE');
-      }
-    })
-      .catch(error => {
-        dispatch<StatusesAction>({ type: STATUS_DELETE_FAIL, params: status, error });
-      });
   };
 
 const updateStatus = (status: BaseStatus) => (dispatch: AppDispatch) =>
@@ -202,9 +169,6 @@ type StatusesAction =
   | { type: typeof STATUS_FETCH_SOURCE_REQUEST }
   | { type: typeof STATUS_FETCH_SOURCE_SUCCESS }
   | { type: typeof STATUS_FETCH_SOURCE_FAIL; error: unknown }
-  | { type: typeof STATUS_DELETE_REQUEST; params: Pick<Status, 'in_reply_to_id' | 'quote_id'> }
-  | { type: typeof STATUS_DELETE_SUCCESS; statusId: string }
-  | { type: typeof STATUS_DELETE_FAIL; params: Pick<Status, 'in_reply_to_id' | 'quote_id'>; error: unknown }
   | { type: typeof CONTEXT_FETCH_SUCCESS; statusId: string; ancestors: Array<BaseStatus>; descendants: Array<BaseStatus> };
 
 export {
@@ -214,14 +178,10 @@ export {
   STATUS_FETCH_SOURCE_REQUEST,
   STATUS_FETCH_SOURCE_SUCCESS,
   STATUS_FETCH_SOURCE_FAIL,
-  STATUS_DELETE_REQUEST,
-  STATUS_DELETE_SUCCESS,
-  STATUS_DELETE_FAIL,
   CONTEXT_FETCH_SUCCESS,
   createStatus,
   editStatus,
   fetchStatus,
-  deleteStatus,
   updateStatus,
   fetchContext,
   type StatusesAction,

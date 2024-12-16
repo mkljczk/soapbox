@@ -7,7 +7,6 @@ import { blockAccount } from 'pl-fe/actions/accounts';
 import { directCompose, mentionCompose, quoteCompose } from 'pl-fe/actions/compose';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
-import { deleteStatus } from 'pl-fe/actions/statuses';
 import DropdownMenu, { type Menu as MenuType } from 'pl-fe/components/dropdown-menu';
 import Icon from 'pl-fe/components/icon';
 import StillImage from 'pl-fe/components/still-image';
@@ -24,6 +23,7 @@ import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
+import { deleteStatusMutationOptions } from 'pl-fe/queries/statuses/status';
 import { bookmarkStatusMutationOptions, pinStatusMutationOptions, reblogStatusMutationOptions, unbookmarkStatusMutationOptions, unpinStatusMutationOptions, unreblogStatusMutationOptions } from 'pl-fe/queries/statuses/status-interactions';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import copy from 'pl-fe/utils/copy';
@@ -83,6 +83,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
   const { mutate: unbookmarkStatus } = useMutation(unbookmarkStatusMutationOptions);
   const { mutate: pinStatus } = useMutation(pinStatusMutationOptions);
   const { mutate: unpinStatus } = useMutation(unpinStatusMutationOptions);
+  const { mutate: deleteStatus } = useMutation(deleteStatusMutationOptions);
 
   const { openModal } = useModalsStore();
   const { getOrCreateChatByAccountId } = useChats();
@@ -158,7 +159,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
       heading: intl.formatMessage(messages.deleteHeading),
       message: intl.formatMessage(messages.deleteMessage),
       confirm: intl.formatMessage(messages.deleteConfirm),
-      onConfirm: () => dispatch(deleteStatus(status.id)),
+      onConfirm: () => deleteStatus(status.id),
     });
   };
 

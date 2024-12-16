@@ -9,9 +9,6 @@ import { STATUS_IMPORT, STATUSES_IMPORT, type ImporterAction } from '../actions/
 import {
   STATUS_CREATE_REQUEST,
   STATUS_CREATE_FAIL,
-  STATUS_DELETE_REQUEST,
-  STATUS_DELETE_FAIL,
-  STATUS_DELETE_SUCCESS,
   type StatusesAction,
 } from '../actions/statuses';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
@@ -87,19 +84,8 @@ const statuses = (state = initialState, action: ImporterAction | StatusesAction 
       return action.editing ? state : create(state, (draft) => incrementReplyCount(draft, action.params));
     case STATUS_CREATE_FAIL:
       return action.editing ? state : create(state, (draft) => decrementReplyCount(draft, action.params));
-    case STATUS_DELETE_REQUEST:
-      return create(state, (draft) => decrementReplyCount(draft, action.params));
-    case STATUS_DELETE_FAIL:
-      return create(state, (draft) => incrementReplyCount(draft, action.params));
     case TIMELINE_DELETE:
       return create(state, (draft) => deleteStatus(draft, action.statusId, action.references));
-    case STATUS_DELETE_SUCCESS:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.deleted = true;
-        }
-      });
     default:
       return state;
   }
