@@ -8,9 +8,9 @@ import LoadMore from 'pl-fe/components/load-more';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import Column from 'pl-fe/components/ui/column';
 import Spinner from 'pl-fe/components/ui/spinner';
+import { useAccountGallery, type AccountGalleryAttachment } from 'pl-fe/hooks/use-account-gallery';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { type AccountGalleryAttachment, getAccountGallery } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import MediaItem from './components/media-item';
@@ -26,7 +26,7 @@ const AccountGallery = () => {
     isUnavailable,
   } = useAccountLookup(username, { withRelationship: true });
 
-  const attachments: Array<AccountGalleryAttachment> = useAppSelector((state) => account ? getAccountGallery(state, account.id) : []);
+  const attachments = useAccountGallery(account?.id);
   const isLoading = useAppSelector((state) => state.timelines[`account:${account?.id}:with_replies:media`]?.isLoading);
   const hasMore = useAppSelector((state) => state.timelines[`account:${account?.id}:with_replies:media`]?.hasMore);
 
