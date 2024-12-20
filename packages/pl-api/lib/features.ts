@@ -402,7 +402,10 @@ const getFeatures = (instance: Instance) => {
     /**
      * @see POST /api/v1/statuses
      */
-    createStatusLocalScope: v.software === PLEROMA,
+    createStatusLocalScope: any([
+      v.software === ICESHRIMP_NET,
+      v.software === PLEROMA,
+    ]),
 
     /**
      * @see POST /api/v1/statuses
@@ -552,6 +555,15 @@ const getFeatures = (instance: Instance) => {
       v.software === PLEROMA && gte(v.version, '2.7.0'),
       v.software === TAKAHE,
     ]),
+
+    /**
+     * @see GET /api/v1/accounts/:accountId/featured_tags
+     * @see GET /api/v1/featured_tags
+     * @see POST /api/v1/featured_tags
+     * @see DELETE /api/v1/featured_tags
+     * @see GET /api/v1/featured_tags/suggestions
+     */
+    featuredTags: v.software === MASTODON,
 
     /** Whether the instance federates. */
     federating: federation,

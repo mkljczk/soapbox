@@ -580,6 +580,8 @@ class PlApiClient {
     /**
      * Get account’s featured tags
      * Tags featured by this account.
+     *
+     * Requires features{@link Features['featuredTags']}.
      * @see {@link https://docs.joinmastodon.org/methods/accounts/#featured_tags}
      */
     getAccountFeaturedTags: async (accountId: string) => {
@@ -867,6 +869,8 @@ class PlApiClient {
     /**
      * View your featured tags
      * List all hashtags featured on your profile.
+     *
+     * Requires features{@link Features['featuredTags']}.
      * @see {@link https://docs.joinmastodon.org/methods/featured_tags/#get}
      */
     getFeaturedTags: async () => {
@@ -878,6 +882,8 @@ class PlApiClient {
     /**
      * Feature a tag
      * Promote a hashtag on your profile.
+     *
+     * Requires features{@link Features['featuredTags']}.
      * @see {@link https://docs.joinmastodon.org/methods/featured_tags/#feature}
      */
     featureTag: async (name: string) => {
@@ -892,6 +898,8 @@ class PlApiClient {
     /**
      * Unfeature a tag
      * Stop promoting a hashtag on your profile.
+     *
+     * Requires features{@link Features['featuredTags']}.
      * @see {@link https://docs.joinmastodon.org/methods/featured_tags/#unfeature}
      */
     unfeatureTag: async (name: string) => {
@@ -906,6 +914,8 @@ class PlApiClient {
     /**
      * View suggested tags to feature
      * Shows up to 10 recently-used tags.
+     *
+     * Requires features{@link Features['featuredTags']}.
      * @see {@link https://docs.joinmastodon.org/methods/featured_tags/#suggestions}
      */
     getFeaturedTagsSuggestions: async () => {
