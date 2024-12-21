@@ -156,6 +156,16 @@ type EditStatusParams = (CreateStatusWithContent | CreateStatusWithMedia) & Edit
  */
 type GetStatusQuotesParams = PaginationParams;
 
+/**
+ * @category Request params
+ */
+type GetStatusReferencesParams = PaginationParams;
+
+/**
+ * @category Request params
+ */
+type GetStatusMentionedUsersParams = PaginationParams;
+
 export type {
   CreateStatusParams,
   GetStatusParams,
@@ -165,5 +175,7 @@ export type {
   GetFavouritedByParams,
   EditStatusParams,
   GetStatusQuotesParams,
+  GetStatusReferencesParams,
+  GetStatusMentionedUsersParams,
 };
 

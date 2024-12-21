@@ -50,6 +50,11 @@ type ListTimelineParams = PaginationParams & WithMutedParam & OnlyEventsParam & 
 /**
  * @category Request params
  */
+type AntennaTimelineParams = PaginationParams & WithMutedParam & OnlyEventsParam & LanguageParam;
+
+/**
+ * @category Request params
+ */
 interface GetConversationsParams extends PaginationParams, LanguageParam {
   /**
    * Only return conversations with the given recipients (a list of user ids).
@@ -92,4 +97,5 @@ export type {
   SaveMarkersParams,
   GroupTimelineParams,
   BubbleTimelineParams,
+  AntennaTimelineParams,
 };

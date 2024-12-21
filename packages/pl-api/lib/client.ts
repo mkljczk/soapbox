@@ -221,10 +221,13 @@ import type {
   GetRebloggedByParams,
   GetStatusContextParams,
   GetStatusesParams,
+  GetStatusMentionedUsersParams,
   GetStatusParams,
   GetStatusQuotesParams,
+  GetStatusReferencesParams,
 } from './params/statuses';
 import type {
+  AntennaTimelineParams,
   BubbleTimelineParams,
   GetConversationsParams,
   GroupTimelineParams,
@@ -601,6 +604,27 @@ class PlApiClient {
       const response = await this.request(`/api/v1/accounts/${accountId}/lists`);
 
       return v.parse(filteredArray(listSchema), response.json);
+    },
+
+    /**
+     * Get antennas containing this account
+     * User antennas that you have added this account to.
+     * Requires features{@link Features['antennas']}.
+     */
+    getAccountAntennas: async (accountId: string) => {
+      const response = await this.request(`/api/v1/accounts/${accountId}/antennas`);
+
+      return v.parse(filteredArray(antennaSchema), response.json);
+    },
+
+    /**
+     * Get antennas excluding this account
+     * Requires features{@link Features['antennas']}.
+     */
+    getAccountExcludeAntennas: async (accountId: string) => {
+      const response = await this.request(`/api/v1/accounts/${accountId}/exclude_antennas`);
+
+      return v.parse(filteredArray(antennaSchema), response.json);
     },
 
     /**
@@ -2248,6 +2272,12 @@ class PlApiClient {
 
       return v.parse(statusSchema, response.json);
     },
+
+    getStatusReferences: async (statusId: string, params?: GetStatusReferencesParams) =>
+      this.#paginatedGet(`/api/v1/statuses/${statusId}/referred_by`, { params }, statusSchema),
+
+    getStatusMentionedUsers: async (statusId: string, params?: GetStatusMentionedUsersParams) =>
+      this.#paginatedGet(`/api/v1/statuses/${statusId}/mentioned_by`, { params }, accountSchema),
   };
 
   public readonly media = {
@@ -2459,6 +2489,13 @@ class PlApiClient {
      */
     bubbleTimeline: async (params?: BubbleTimelineParams) =>
       this.#paginatedGet('/api/v1/timelines/bubble', { params }, statusSchema),
+
+    /**
+     * View antennatimeline
+     * Requires features{@link Features['antennas']}.
+     */
+    antennaTimeline: (antennaId: string, params?: AntennaTimelineParams) =>
+      this.#paginatedGet(`/api/v1/timelines/list/${antennaId}`, { params }, statusSchema),
   };
 
   public readonly lists = {
@@ -4498,6 +4535,15 @@ class PlApiClient {
     /**
      * Requires features{@link Features['antennas']}.
      */
+    getAntennas: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}`);
+
+      return v.parse(antennaSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
     createAntenna: async (params: CreateAntennaParams) => {
       const response = await this.request('/api/v1/antennas', { method: 'POST', body: params });
 
@@ -4517,9 +4563,255 @@ class PlApiClient {
      * Requires features{@link Features['antennas']}.
      */
     deleteAntenna: async (antennaId: string) => {
-      const response = await this.request(`/api/v1/antennas/${antennaId}`, { method: 'DELETE' });
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}`, { method: 'DELETE' });
 
-      return response.json as {};
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    getAntennaAccounts: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}/accounts`);
+
+      return v.parse(filteredArray(accountSchema), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaAccount: async (antennaId: string, accountId: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/accounts`, {
+        method: 'POST',
+        body: { account_ids: [accountId] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaAccount: async (antennaId: string, accountId: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/accounts`, {
+        method: 'DELETE',
+        body: { account_ids: [accountId] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    getAntennaExcludeAccounts: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}/exclude_accounts`);
+
+      return v.parse(filteredArray(accountSchema), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaExcludeAccount: async (antennaId: string, accountId: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_accounts`, {
+        method: 'POST',
+        body: { account_ids: [accountId] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaExcludeAccount: async (antennaId: string, accountId: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_accounts`, {
+        method: 'DELETE',
+        body: { account_ids: [accountId] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    getAntennaDomains: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}/domains`);
+
+      return v.parse(v.object({
+        domains: filteredArray(v.string()),
+        exclude_domains: filteredArray(v.string()),
+      }), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaDomain: async (antennaId: string, domain: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/domains`, {
+        method: 'POST',
+        body: { domains: [domain] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaDomain: async (antennaId: string, domain: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/domains`, {
+        method: 'DELETE',
+        body: { domains: [domain] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaExcludeDomain: async (antennaId: string, domain: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_domains`, {
+        method: 'POST',
+        body: { domains: [domain] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaExcludeDomain: async (antennaId: string, domain: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_domains`, {
+        method: 'DELETE',
+        body: { domains: [domain] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    getAntennaKeywords: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}/keywords`);
+
+      return v.parse(v.object({
+        keywords: filteredArray(v.string()),
+        exclude_keywords: filteredArray(v.string()),
+      }), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaKeyword: async (antennaId: string, keyword: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/keywords`, {
+        method: 'POST',
+        body: { keywords: [keyword] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaKeyword: async (antennaId: string, keyword: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/keywords`, {
+        method: 'DELETE',
+        body: { keywords: [keyword] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaExcludeKeyword: async (antennaId: string, keyword: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_keywords`, {
+        method: 'POST',
+        body: { keywords: [keyword] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaExcludeKeyword: async (antennaId: string, keyword: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_keywords`, {
+        method: 'DELETE',
+        body: { keywords: [keyword] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    getAntennaTags: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}/tags`);
+
+      return v.parse(v.object({
+        tags: filteredArray(v.string()),
+        exclude_tags: filteredArray(v.string()),
+      }), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaTag: async (antennaId: string, tag: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/tags`, {
+        method: 'POST',
+        body: { tags: [tag] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaTag: async (antennaId: string, tag: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/tags`, {
+        method: 'DELETE',
+        body: { tags: [tag] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaExcludeTag: async (antennaId: string, tag: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_tags`, {
+        method: 'POST',
+        body: { tags: [tag] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaExcludeTag: async (antennaId: string, tag: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_tags`, {
+        method: 'DELETE',
+        body: { tags: [tag] },
+      });
+
+      return response.json;
     },
   };
 

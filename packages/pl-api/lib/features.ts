@@ -271,6 +271,8 @@ const getFeatures = (instance: Instance) => {
      */
     announcementsReactions: v.software === MASTODON,
 
+    kmyblue_antenna: instance.api_versions['kmyblue_antenna.fedibird.pl-api'] >= 1,
+
     /**
      * Set your birthday and view upcoming birthdays.
      * @see GET /api/v1/pleroma/birthdays
