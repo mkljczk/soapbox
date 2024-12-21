@@ -1294,18 +1294,22 @@ const getFeatures = (instance: Instance) => {
     unrestrictedLists: v.software === PLEROMA,
 
     /**
+     * Ability to post statuses that don't federate.
+     * @see POST /api/v1/statuses
+     */
+    visibilityLocalOnly: federation && v.software === PLEROMA,
+
+    /**
      * Ability to post statuses only to accounts with mutual relationship.
      * @see POST /api/v1/statuses
      */
     visibilityMutualsOnly: v.software === GOTOSOCIAL,
 
     /**
-     * Ability to post statuses that don't federate.
+     * Ability to post statuses only to your subscribers.
      * @see POST /api/v1/statuses
      */
-    visibilityLocalOnly: federation && any([
-      v.software === PLEROMA,
-    ]),
+    visibilitySubscribers: v.software === MITRA,
   };
 };
 
