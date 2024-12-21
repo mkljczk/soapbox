@@ -22,6 +22,7 @@ import {
   adminRuleSchema,
   adminTagSchema,
   announcementSchema,
+  antennaSchema,
   applicationSchema,
   backupSchema,
   bookmarkFolderSchema,
@@ -74,125 +75,10 @@ import {
   trendsLinkSchema,
   webPushSubscriptionSchema,
 } from './entities';
-import { GroupedNotificationsResults, groupedNotificationsResultsSchema, NotificationGroup } from './entities/grouped-notifications-results';
+import { type GroupedNotificationsResults, groupedNotificationsResultsSchema, type NotificationGroup } from './entities/grouped-notifications-results';
 import { filteredArray } from './entities/utils';
 import { AKKOMA, type Features, getFeatures, GOTOSOCIAL, MITRA } from './features';
-import {
-  CreateScrobbleParams,
-  FollowAccountParams,
-  GetAccountEndorsementsParams,
-  GetAccountFavouritesParams,
-  GetAccountFollowersParams,
-  GetAccountFollowingParams,
-  GetAccountParams,
-  GetAccountStatusesParams,
-  GetRelationshipsParams,
-  GetScrobblesParams,
-  ReportAccountParams,
-  SearchAccountParams,
-} from './params/accounts';
-import { CreateApplicationParams } from './params/apps';
-import {
-  CreateChatMessageParams,
-  GetChatMessagesParams,
-  GetChatsParams,
-} from './params/chats';
-import {
-  CreateEventParams,
-  EditEventParams,
-  GetEventParticipationRequestsParams,
-  GetEventParticipationsParams,
-  GetJoinedEventsParams,
-} from './params/events';
-import {
-  CreateFilterParams,
-  GetBlocksParams,
-  GetDomainBlocksParams,
-  GetMutesParams,
-  MuteAccountParams,
-  UpdateFilterParams,
-} from './params/filtering';
-import { GetGroupedNotificationsParams, GetUnreadNotificationGroupCountParams } from './params/grouped-notifications';
-import {
-  CreateGroupParams,
-  GetGroupBlocksParams,
-  GetGroupMembershipRequestsParams,
-  GetGroupMembershipsParams,
-  UpdateGroupParams,
-} from './params/groups';
-import { ProfileDirectoryParams } from './params/instance';
-import {
-  GetInteractionRequestsParams,
-} from './params/interaction-requests';
-import {
-  CreateListParams,
-  GetListAccountsParams,
-  UpdateListParams,
-} from './params/lists';
-import {
-  UpdateMediaParams,
-  UploadMediaParams,
-} from './params/media';
-import {
-  CreateBookmarkFolderParams,
-  GetBookmarksParams,
-  GetEndorsementsParams,
-  GetFavouritesParams,
-  GetFollowedTagsParams,
-  GetFollowRequestsParams,
-  UpdateBookmarkFolderParams,
-} from './params/my-account';
-import {
-  GetNotificationParams,
-  GetNotificationRequestsParams,
-  GetUnreadNotificationCountParams,
-  UpdateNotificationPolicyRequest,
-} from './params/notifications';
-import {
-  GetTokenParams,
-  MfaChallengeParams,
-  OauthAuthorizeParams,
-  RevokeTokenParams,
-} from './params/oauth';
-import {
-  CreatePushNotificationsSubscriptionParams,
-  UpdatePushNotificationsSubscriptionParams,
-} from './params/push-notifications';
-import { GetScheduledStatusesParams } from './params/scheduled-statuses';
-import { SearchParams } from './params/search';
-import {
-  CreateAccountParams,
-  UpdateCredentialsParams,
-  UpdateInteractionPoliciesParams,
-  UpdateNotificationSettingsParams,
-} from './params/settings';
-import {
-  CreateStatusParams,
-  EditStatusParams,
-  GetFavouritedByParams,
-  GetRebloggedByParams,
-  GetStatusContextParams,
-  GetStatusesParams,
-  GetStatusParams,
-  GetStatusQuotesParams,
-} from './params/statuses';
-import {
-  BubbleTimelineParams,
-  GetConversationsParams,
-  GroupTimelineParams,
-  HashtagTimelineParams,
-  HomeTimelineParams,
-  LinkTimelineParams,
-  ListTimelineParams,
-  PublicTimelineParams,
-  SaveMarkersParams,
-} from './params/timelines';
-import {
-  GetTrendingLinks,
-  GetTrendingStatuses,
-  GetTrendingTags,
-} from './params/trends';
-import request, { getNextLink, getPrevLink, type RequestBody, RequestMeta } from './request';
+import request, { getNextLink, getPrevLink, type RequestBody, type RequestMeta } from './request';
 import { buildFullPath } from './utils/url';
 
 import type {
@@ -209,6 +95,20 @@ import type {
   StreamingEvent,
 } from './entities';
 import type { PlApiResponse } from './main';
+import type {
+  CreateScrobbleParams,
+  FollowAccountParams,
+  GetAccountEndorsementsParams,
+  GetAccountFavouritesParams,
+  GetAccountFollowersParams,
+  GetAccountFollowingParams,
+  GetAccountParams,
+  GetAccountStatusesParams,
+  GetRelationshipsParams,
+  GetScrobblesParams,
+  ReportAccountParams,
+  SearchAccountParams,
+} from './params/accounts';
 import type {
   AdminAccountAction,
   AdminCreateAnnouncementParams,
@@ -238,6 +138,108 @@ import type {
   AdminUpdateRuleParams,
   AdminUpdateStatusParams,
 } from './params/admin';
+import type { CreateAntennaParams, UpdateAntennaParams } from './params/antenna';
+import type { CreateApplicationParams } from './params/apps';
+import type {
+  CreateChatMessageParams,
+  GetChatMessagesParams,
+  GetChatsParams,
+} from './params/chats';
+import type {
+  CreateEventParams,
+  EditEventParams,
+  GetEventParticipationRequestsParams,
+  GetEventParticipationsParams,
+  GetJoinedEventsParams,
+} from './params/events';
+import type {
+  CreateFilterParams,
+  GetBlocksParams,
+  GetDomainBlocksParams,
+  GetMutesParams,
+  MuteAccountParams,
+  UpdateFilterParams,
+} from './params/filtering';
+import type { GetGroupedNotificationsParams, GetUnreadNotificationGroupCountParams } from './params/grouped-notifications';
+import type {
+  CreateGroupParams,
+  GetGroupBlocksParams,
+  GetGroupMembershipRequestsParams,
+  GetGroupMembershipsParams,
+  UpdateGroupParams,
+} from './params/groups';
+import type { ProfileDirectoryParams } from './params/instance';
+import type {
+  GetInteractionRequestsParams,
+} from './params/interaction-requests';
+import type {
+  CreateListParams,
+  GetListAccountsParams,
+  UpdateListParams,
+} from './params/lists';
+import type {
+  UpdateMediaParams,
+  UploadMediaParams,
+} from './params/media';
+import type {
+  CreateBookmarkFolderParams,
+  GetBookmarksParams,
+  GetEndorsementsParams,
+  GetFavouritesParams,
+  GetFollowedTagsParams,
+  GetFollowRequestsParams,
+  UpdateBookmarkFolderParams,
+} from './params/my-account';
+import type {
+  GetNotificationParams,
+  GetNotificationRequestsParams,
+  GetUnreadNotificationCountParams,
+  UpdateNotificationPolicyRequest,
+} from './params/notifications';
+import type {
+  GetTokenParams,
+  MfaChallengeParams,
+  OauthAuthorizeParams,
+  RevokeTokenParams,
+} from './params/oauth';
+import type {
+  CreatePushNotificationsSubscriptionParams,
+  UpdatePushNotificationsSubscriptionParams,
+} from './params/push-notifications';
+import type { GetScheduledStatusesParams } from './params/scheduled-statuses';
+import type { SearchParams } from './params/search';
+import type {
+  CreateAccountParams,
+  UpdateCredentialsParams,
+  UpdateInteractionPoliciesParams,
+  UpdateNotificationSettingsParams,
+} from './params/settings';
+import type {
+  CreateStatusParams,
+  EditStatusParams,
+  GetFavouritedByParams,
+  GetRebloggedByParams,
+  GetStatusContextParams,
+  GetStatusesParams,
+  GetStatusParams,
+  GetStatusQuotesParams,
+} from './params/statuses';
+import type {
+  BubbleTimelineParams,
+  GetConversationsParams,
+  GroupTimelineParams,
+  HashtagTimelineParams,
+  HomeTimelineParams,
+  LinkTimelineParams,
+  ListTimelineParams,
+  PublicTimelineParams,
+  SaveMarkersParams,
+} from './params/timelines';
+import type {
+  GetTrendingLinks,
+  GetTrendingStatuses,
+  GetTrendingTags,
+} from './params/trends';
 import type { PaginatedResponse } from './responses';
 
 const GROUPED_TYPES = ['favourite', 'reblog', 'emoji_reaction', 'event_reminder', 'participation_accepted', 'participation_request'];
@@ -4480,6 +4482,44 @@ class PlApiClient {
       const response = await this.request(`/api/v1/interaction_requests/${interactionRequestId}/authorize`, { method: 'POST' });
 
       return v.parse(interactionRequestSchema, response.json);
+    },
+  };
+
+  public readonly antennas = {
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    fetchAntennas: async () => {
+      const response = await this.request('/api/v1/antennas');
+
+      return v.parse(filteredArray(antennaSchema), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    createAntenna: async (params: CreateAntennaParams) => {
+      const response = await this.request('/api/v1/antennas', { method: 'POST', body: params });
+
+      return v.parse(antennaSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    updateAntenna: async (antennaId: string, params: UpdateAntennaParams) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}`, { method: 'PUT', body: params });
+
+      return v.parse(antennaSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    deleteAntenna: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}`, { method: 'DELETE' });
+
+      return response.json as {};
     },
   };
 
