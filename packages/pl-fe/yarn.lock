@@ -8216,10 +8216,10 @@ pkg-dir@^4.1.0:
   dependencies:
     find-up "^4.0.0"
 
-pl-api@^1.0.0-rc.5:
-  version "1.0.0-rc.5"
-  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-1.0.0-rc.5.tgz#b82d27c7fc1a50a36bdd98a623b9a349de78c3e3"
-  integrity sha512-+FtJNGZvZEVaceMBTuXzRw/NnNbJypPJsCSPvonZNtIe9almSDfL3UGVZLgtERhXNjgH2ZxYWubfkb6d6ZaQjA==
+pl-api@^1.0.0-rc.6:
+  version "1.0.0-rc.6"
+  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-1.0.0-rc.6.tgz#58e37a995f34dbad1ea92760ef13eb6563630ccd"
+  integrity sha512-1kTUowZcQnTbGQqK0XfTzbRRdN+mcHDFpbjwl9M6WqnWrOmekJxrBaQ/hnBprbkarDsm/EUun+BuTRFxUNDfvw==
   dependencies:
     blurhash "^2.0.5"
     http-link-header "^1.1.3"

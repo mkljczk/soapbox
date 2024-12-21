@@ -28,6 +28,8 @@ const messages = defineMessages({
   local_long: { id: 'privacy.local.long', defaultMessage: 'Only visible on your instance' },
   list_short: { id: 'privacy.list.short', defaultMessage: 'List only' },
   list_long: { id: 'privacy.list.long', defaultMessage: 'Visible to members of a list' },
+  subscribers_short: { id: 'privacy.subscribers.short', defaultMessage: 'Subscribers-only' },
+  subscribers_long: { id: 'privacy.subscribers.long', defaultMessage: 'Post to users subscribing you only' },
 
   change_privacy: { id: 'privacy.change', defaultMessage: 'Adjust post privacy' },
   local: { id: 'privacy.local', defaultMessage: '{privacy} (local-only)' },
@@ -65,6 +67,12 @@ const getItems = (features: Features, lists: ReturnType<typeof getOrderedLists>,
     value: 'mutuals_only',
     text: intl.formatMessage(messages.mutuals_only_short),
     meta: intl.formatMessage(messages.mutuals_only_long),
+  } : undefined,
+  features.visibilitySubscribers ? {
+    icon: require('@tabler/icons/outline/coin.svg'),
+    value: 'subscribers',
+    text: intl.formatMessage(messages.subscribers_short),
+    meta: intl.formatMessage(messages.subscribers_long),
   } : undefined,
   {
     icon: require('@tabler/icons/outline/mail.svg'),
