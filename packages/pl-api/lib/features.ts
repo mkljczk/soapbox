@@ -782,6 +782,13 @@ const getFeatures = (instance: Instance) => {
     ]),
 
     /**
+     * Can add a list to favourites.
+     * @see POST /api/v1/lists/:list_id/favourite
+     * @see POST /api/v1/lists/:list_id/unfavourite
+     */
+    listsFavourites: instance.api_versions['favourite_list.fedibird.pl-api'] >= 1,
+
+    /**
      * Ability to post statuses that don't federate.
      * @see POST /api/v1/statuses
      */

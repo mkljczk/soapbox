@@ -2598,6 +2598,28 @@ class PlApiClient {
 
       return response.json as {};
     },
+
+    /**
+     * Add a list to favourites
+     *
+     * Requires features{@link Features['listsFavourite']}.
+     */
+    favouriteList: async (listId: string) => {
+      const response = await this.request(`/api/v1/lists/${listId}/favourite`, { method: 'POST' });
+
+      return v.parse(listSchema, response.json);
+    },
+
+    /**
+     * Remove a list from favourites
+     *
+     * Requires features{@link Features['listsFavourite']}.
+     */
+    unfavouriteList: async (listId: string) => {
+      const response = await this.request(`/api/v1/lists/${listId}/unfavourite`, { method: 'POST' });
+
+      return v.parse(listSchema, response.json);
+    },
   };
 
   public readonly streaming = {
