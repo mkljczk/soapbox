@@ -75,6 +75,7 @@ import {
   trendsLinkSchema,
   webPushSubscriptionSchema,
 } from './entities';
+import { circleSchema } from './entities/circle';
 import { type GroupedNotificationsResults, groupedNotificationsResultsSchema, type NotificationGroup } from './entities/grouped-notifications-results';
 import { filteredArray } from './entities/utils';
 import { AKKOMA, type Features, getFeatures, GOTOSOCIAL, MITRA } from './features';
@@ -138,13 +139,14 @@ import type {
   AdminUpdateRuleParams,
   AdminUpdateStatusParams,
 } from './params/admin';
-import type { CreateAntennaParams, UpdateAntennaParams } from './params/antenna';
+import type { CreateAntennaParams, UpdateAntennaParams } from './params/antennas';
 import type { CreateApplicationParams } from './params/apps';
 import type {
   CreateChatMessageParams,
   GetChatMessagesParams,
   GetChatsParams,
 } from './params/chats';
+import type { GetCircleStatusesParams } from './params/circles';
 import type {
   CreateEventParams,
   EditEventParams,
@@ -622,6 +624,17 @@ class PlApiClient {
      * Requires features{@link Features['antennas']}.
      */
     getAccountExcludeAntennas: async (accountId: string) => {
+      const response = await this.request(`/api/v1/accounts/${accountId}/circles`);
+
+      return v.parse(filteredArray(circleSchema), response.json);
+    },
+
+    /**
+     * Get circles including this account
+     * User circles that you have added this account to.
+     * Requires features{@link Features['circles']}.
+     */
+    getAccountCircles: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/exclude_antennas`);
 
       return v.parse(filteredArray(antennaSchema), response.json);
@@ -4813,6 +4826,56 @@ class PlApiClient {
 
       return response.json;
     },
+  };
+
+  public readonly circles = {
+    /**
+     * Requires features{@link Features['circles']}.
+     */
+    fetchCircles: async () => {
+      const response = await this.request('/api/v1/circles');
+
+      return v.parse(filteredArray(circleSchema), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['circles']}.
+     */
+    getCircles: async (circleId: string) => {
+      const response = await this.request(`/api/v1/circles/${circleId}`);
+
+      return v.parse(circleSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['circles']}.
+     */
+    createCircle: async (title: string) => {
+      const response = await this.request('/api/v1/circles', { method: 'POST', body: { title } });
+
+      return v.parse(circleSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['circles']}.
+     */
+    updateCircle: async (circleId: string, title: string) => {
+      const response = await this.request(`/api/v1/circles/${circleId}`, { method: 'PUT', body: { title } });
+
+      return v.parse(circleSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['circles']}.
+     */
+    deleteCircle: async (circleId: string) => {
+      const response = await this.request<{}>(`/api/v1/circles/${circleId}`, { method: 'DELETE' });
+
+      return response.json;
+    },
+
+    getCircleStatuses: (circleId: string, params: GetCircleStatusesParams) =>
+      this.#paginatedGet(`/api/v1/circles/${circleId}/statuses`, { params }, statusSchema),
   };
 
   /** Routes that are not part of any stable release */

@@ -356,6 +356,8 @@ const getFeatures = (instance: Instance) => {
       v.software === PLEROMA && v.build === PL,
     ]),
 
+    circles: instance.api_versions['kmyblue_circle_history.fedibird.pl-api'] >= 1,
+
     /**
      * Mastodon's newer solution for direct messaging.
      * @see {@link https://docs.joinmastodon.org/methods/conversations/}
