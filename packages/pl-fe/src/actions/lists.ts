@@ -276,7 +276,6 @@ const removeFromListSuccess = (listId: string, accountId: string) => ({
   accountId,
 });
 
-
 const resetListAdder = () => ({
   type: LIST_ADDER_RESET,
 });

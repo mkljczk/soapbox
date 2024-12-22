@@ -118,7 +118,6 @@ const blockAccountSuccess = (relationship: Relationship, statuses: Record<string
   statuses,
 });
 
-
 const muteAccount = (accountId: string, notifications?: boolean, duration = 0) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return null;

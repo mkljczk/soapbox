@@ -73,7 +73,6 @@ const updateNotifications = (notification: BaseNotification) =>
       statuses: [getNotificationStatus(notification) as any],
     }));
 
-
     if (showInColumn) {
       const normalizedNotification = normalizeNotification(notification);
 
