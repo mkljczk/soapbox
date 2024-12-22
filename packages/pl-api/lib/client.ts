@@ -1935,9 +1935,19 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/statuses/#create}
      */
     createStatus: async (params: CreateStatusParams) => {
+      type ExtendedCreateStatusParams = CreateStatusParams & {
+        markdown?: boolean;
+      };
+
+      const fixedParams: ExtendedCreateStatusParams = params;
+
+      if (params.content_type === 'text/markdown' && this.#instance.api_versions['kmyblue_markdown.fedibird.pl-api'] >= 1) {
+        fixedParams.markdown = true;
+      }
+
       const response = await this.request('/api/v1/statuses', {
         method: 'POST',
-        body: params,
+        body: fixedParams,
       });
 
       if (response.json?.scheduled_at) return v.parse(scheduledStatusSchema, response.json);
