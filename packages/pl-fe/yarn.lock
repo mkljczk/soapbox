@@ -2203,10 +2203,10 @@
   resolved "https://registry.yarnpkg.com/@reach/utils/-/utils-0.18.0.tgz#4f3cebe093dd436eeaff633809bf0f68f4f9d2ee"
   integrity sha512-KdVMdpTgDyK8FzdKO9SCpiibuy/kbv3pwgfXshTI6tEcQT1OOwj7BAksnzGC0rPz0UholwC+AgkqEl3EJX3M1A==
 
-"@reduxjs/toolkit@^2.0.1":
-  version "2.2.7"
-  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-2.2.7.tgz#199e3d10ccb39267cb5aee92c0262fd9da7fdfb2"
-  integrity sha512-faI3cZbSdFb8yv9dhDTmGwclW0vk0z5o1cia+kf7gCbaCwHI5e+7tP57mJUv22pNcNbeA62GSrPpfrUfdXcQ6g==
+"@reduxjs/toolkit@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-2.5.0.tgz#4679b09b4da211cb9a821803aabf86a13c96fbfa"
+  integrity sha512-awNe2oTodsZ6LmRqmkFhtb/KH03hUhxOamEQy411m3Njj3BbFvoBovxo4Q1cBWnV1ErprVj9MlF0UPXkng0eyg==
   dependencies:
     immer "^10.0.3"
     redux "^5.0.1"

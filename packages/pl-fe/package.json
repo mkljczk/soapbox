@@ -58,7 +58,7 @@
     "@reach/combobox": "^0.18.0",
     "@reach/rect": "^0.18.0",
     "@reach/tabs": "^0.18.0",
-    "@reduxjs/toolkit": "^2.0.1",
+    "@reduxjs/toolkit": "^2.5.0",
     "@sentry/browser": "^8.42.0",
     "@sentry/react": "^8.42.0",
     "@tabler/icons": "^3.26.0",
