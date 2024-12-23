@@ -1937,12 +1937,17 @@ class PlApiClient {
     createStatus: async (params: CreateStatusParams) => {
       type ExtendedCreateStatusParams = CreateStatusParams & {
         markdown?: boolean;
+        circle_id?: string | null;
       };
 
       const fixedParams: ExtendedCreateStatusParams = params;
 
       if (params.content_type === 'text/markdown' && this.#instance.api_versions['kmyblue_markdown.fedibird.pl-api'] >= 1) {
         fixedParams.markdown = true;
+      }
+      if (params.visibility?.startsWith('circle:')) {
+        fixedParams.circle_id = params.visibility.slice(7);
+        fixedParams.visibility = 'circle';
       }
 
       const response = await this.request('/api/v1/statuses', {
@@ -2160,6 +2165,16 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/statuses/#unpin}
      */
     editStatus: async (statusId: string, params: EditStatusParams) => {
+      type ExtendedEditStatusParams = EditStatusParams & {
+        markdown?: boolean;
+      };
+
+      const fixedParams: ExtendedEditStatusParams = params;
+
+      if (params.content_type === 'text/markdown' && this.#instance.api_versions['kmyblue_markdown.fedibird.pl-api'] >= 1) {
+        fixedParams.markdown = true;
+      }
+
       const response = await this.request(`/api/v1/statuses/${statusId}`, { method: 'PUT', body: params });
 
       return v.parse(statusSchema, response.json);

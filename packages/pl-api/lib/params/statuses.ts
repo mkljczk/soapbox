@@ -47,7 +47,10 @@ interface CreateStatusOptionalParams {
   /**
    * String. Sets the visibility of the posted status to `public`, `unlisted`, `private`, `direct`.
    * `local` — Requires features{@link Features['createStatusLocalScope']}.
+   * `mutuals_only` — Requires features{@link Features['createStatusMutualsOnlyScope']}.
+   * `subscribers` — Requires features{@link Features['createStatusSubscribersScope']}.
    * `list:LIST_ID` — Requires features{@link Features['createStatusListScope']}.
+   * `circle:LIST_ID` — Requires features{@link Features['circles']}.
    */
   visibility?: string;
   /** String. ISO 639 language code for this status. */
@@ -140,11 +143,7 @@ type GetFavouritedByParams = Omit<PaginationParams, 'min_id'>
 /**
  * @category Request params
  */
-interface EditStatusOptionalParams {
-  sensitive?: boolean;
-  spoiler_text?: string;
-  language?: string;
-}
+type EditStatusOptionalParams = Pick<CreateStatusOptionalParams, 'content_type' | 'sensitive' | 'spoiler_text' | 'language'>;
 
 /**
  * @category Request params

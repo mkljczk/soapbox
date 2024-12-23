@@ -399,6 +399,7 @@ const getFeatures = (instance: Instance) => {
     createStatusReplyToConversation: v.software === PLEROMA,
 
     /**
+     * Ability to address a status to a list of users.
      * @see POST /api/v1/statuses
      */
     createStatusListScope: v.software === PLEROMA,
@@ -410,6 +411,18 @@ const getFeatures = (instance: Instance) => {
       v.software === ICESHRIMP_NET,
       v.software === PLEROMA,
     ]),
+
+    /**
+     * Ability to post statuses only to accounts with mutual relationship.
+     * @see POST /api/v1/statuses
+     */
+    createStatusMutualsOnlyScope: v.software === GOTOSOCIAL,
+
+    /**
+     * Ability to post statuses only to your subscribers.
+     * @see POST /api/v1/statuses
+     */
+    createStatusSubscribersScope: v.software === MITRA,
 
     /**
      * @see POST /api/v1/statuses
@@ -1303,24 +1316,6 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/lists/:id/accounts
      */
     unrestrictedLists: v.software === PLEROMA,
-
-    /**
-     * Ability to post statuses that don't federate.
-     * @see POST /api/v1/statuses
-     */
-    visibilityLocalOnly: federation && v.software === PLEROMA,
-
-    /**
-     * Ability to post statuses only to accounts with mutual relationship.
-     * @see POST /api/v1/statuses
-     */
-    visibilityMutualsOnly: v.software === GOTOSOCIAL,
-
-    /**
-     * Ability to post statuses only to your subscribers.
-     * @see POST /api/v1/statuses
-     */
-    visibilitySubscribers: v.software === MITRA,
   };
 };
 

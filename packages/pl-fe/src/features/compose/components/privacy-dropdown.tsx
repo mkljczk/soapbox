@@ -62,13 +62,13 @@ const getItems = (features: Features, lists: ReturnType<typeof getOrderedLists>,
     text: intl.formatMessage(messages.private_short),
     meta: intl.formatMessage(messages.private_long),
   },
-  features.visibilityMutualsOnly ? {
+  features.createStatusMutualsOnlyScope ? {
     icon: require('@tabler/icons/outline/users-group.svg'),
     value: 'mutuals_only',
     text: intl.formatMessage(messages.mutuals_only_short),
     meta: intl.formatMessage(messages.mutuals_only_long),
   } : undefined,
-  features.visibilitySubscribers ? {
+  features.createStatusSubscribersScope ? {
     icon: require('@tabler/icons/outline/coin.svg'),
     value: 'subscribers',
     text: intl.formatMessage(messages.subscribers_short),
@@ -80,13 +80,13 @@ const getItems = (features: Features, lists: ReturnType<typeof getOrderedLists>,
     text: intl.formatMessage(messages.direct_short),
     meta: intl.formatMessage(messages.direct_long),
   },
-  features.visibilityLocalOnly ? {
+  features.createStatusLocalScope ? {
     icon: require('@tabler/icons/outline/affiliate.svg'),
     value: 'local',
     text: intl.formatMessage(messages.local_short),
     meta: intl.formatMessage(messages.local_long),
   } : undefined,
-  features.addressableLists && Object.keys(lists).length ? {
+  features.createStatusListScope && Object.keys(lists).length ? {
     icon: require('@tabler/icons/outline/list.svg'),
     value: '',
     items: Object.values(lists).map((list) => ({
