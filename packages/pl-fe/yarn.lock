@@ -8776,14 +8776,14 @@ react-refresh@^0.14.2:
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.14.2.tgz#3833da01ce32da470f1f936b9d477da5c7028bf9"
   integrity sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==
 
-react-router-dom-v5-compat@^6.28.0:
-  version "6.28.0"
-  resolved "https://registry.yarnpkg.com/react-router-dom-v5-compat/-/react-router-dom-v5-compat-6.28.0.tgz#122916f3558eb3bf96b44e2f9e2c82e40f194ded"
-  integrity sha512-KrTxsn2vibvoTeGstcBMEuchuT+BxXGftfa7njf1vNSlzO8t+4Y5oN2h3WeAq2rK7MyA5mFUXrE/+lMOR0ay9Q==
+react-router-dom-v5-compat@^6.28.1:
+  version "6.28.1"
+  resolved "https://registry.yarnpkg.com/react-router-dom-v5-compat/-/react-router-dom-v5-compat-6.28.1.tgz#7ea870d57153fae896b49dd59b0a7b63ffc4cfd2"
+  integrity sha512-yJLpBnJd69x6RoUNCGNAScTWyc3/N8ztwXYM6si8EfleWHs3JYI800/HrwtpBgifOy6oHYtJQ2cpFlPbFosR+Q==
   dependencies:
     "@remix-run/router" "1.21.0"
     history "^5.3.0"
-    react-router "6.28.0"
+    react-router "6.28.1"
 
 react-router-dom@^5.3.4:
   version "5.3.4"
@@ -8821,10 +8821,10 @@ react-router@5.3.4:
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
 
-react-router@6.28.0:
-  version "6.28.0"
-  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.28.0.tgz#29247c86d7ba901d7e5a13aa79a96723c3e59d0d"
-  integrity sha512-HrYdIFqdrnhDw0PqG/AKjAqEqM7AvxCz0DQ4h2W8k6nqmc5uRBYDag0SBxx9iYz5G8gnuNVLzUe13wl9eAsXXg==
+react-router@6.28.1:
+  version "6.28.1"
+  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.28.1.tgz#f82317ab24eee67d7beb7b304c0378b2b48fa178"
+  integrity sha512-2omQTA3rkMljmrvvo6WtewGdVh45SpL9hGiCI9uUrwGGfNFDIvGK4gYJsKlJoNVi6AQZcopSCballL+QGOm7fA==
   dependencies:
     "@remix-run/router" "1.21.0"
 
