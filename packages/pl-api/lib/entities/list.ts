@@ -12,7 +12,7 @@ const listSchema = v.object({
   title: v.string(),
   replies_policy: v.fallback(v.optional(v.string()), undefined),
   exclusive: v.fallback(v.optional(v.boolean()), undefined),
-  antennas: filteredArray(antennaSchema),
+  antennas: filteredArray(v.lazy(() => antennaSchema)),
   notify: v.fallback(v.optional(v.boolean()), undefined),
   favourite: v.fallback(v.optional(v.boolean()), undefined),
 });
