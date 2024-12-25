@@ -78,7 +78,7 @@ import {
 import { circleSchema } from './entities/circle';
 import { type GroupedNotificationsResults, groupedNotificationsResultsSchema, type NotificationGroup } from './entities/grouped-notifications-results';
 import { filteredArray } from './entities/utils';
-import { AKKOMA, type Features, getFeatures, GOTOSOCIAL, MITRA } from './features';
+import { AKKOMA, type Features, getFeatures, GOTOSOCIAL, MITRA, PIXELFED } from './features';
 import request, { getNextLink, getPrevLink, type RequestBody, type RequestMeta } from './request';
 import { buildFullPath } from './utils/url';
 
@@ -492,7 +492,7 @@ class PlApiClient {
     getToken: async (params: GetTokenParams) => {
       const response = await this.request('/oauth/token', { method: 'POST', body: params });
 
-      return v.parse(tokenSchema, { scope: params.scope, ...response.json });
+      return v.parse(tokenSchema, { scope: params.scope || '', ...response.json });
     },
 
     /**
@@ -1015,7 +1015,11 @@ class PlApiClient {
      */
     getSuggestions: async (limit?: number) => {
       const response = await this.request(
-        this.features.suggestionsV2 ? '/api/v2/suggestions' : '/api/v1/suggestions',
+        this.features.version.software === PIXELFED
+          ? '/api/v1.1/discover/accounts/popular'
+          : this.features.suggestionsV2
+            ? '/api/v2/suggestions'
+            : '/api/v1/suggestions',
         { params: { limit } },
       );
 
@@ -3212,7 +3216,10 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/trends/#tags}
      */
     getTrendingTags: async (params?: GetTrendingTags) => {
-      const response = await this.request('/api/v1/trends/tags', { params });
+      const response = await this.request(
+        this.features.version.software === PIXELFED ? '/api/v1.1/discover/posts/hashtags' : '/api/v1/trends/tags',
+        { params },
+      );
 
       return v.parse(filteredArray(tagSchema), response.json);
     },
@@ -3223,7 +3230,10 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/trends/#statuses}
      */
     getTrendingStatuses: async (params?: GetTrendingStatuses) => {
-      const response = await this.request('/api/v1/trends/statuses', { params });
+      const response = await this.request(
+        this.features.version.software === PIXELFED ? '/api/pixelfed/v2/discover/posts/trending' : '/api/v1/trends/statuses',
+        { params },
+      );
 
       return v.parse(filteredArray(statusSchema), response.json);
     },

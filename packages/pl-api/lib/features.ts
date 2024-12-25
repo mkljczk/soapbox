@@ -1254,6 +1254,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === ICESHRIMP,
       v.software === MASTODON,
+      v.software === PIXELFED,
       instance.api_versions['v2_suggestions.pleroma.pl-api'] >= 1,
     ]),
 
@@ -1302,7 +1303,14 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA && gte(v.version, '2022.12.0'),
       v.software === ICESHRIMP,
       v.software === MASTODON,
+      v.software === PIXELFED,
     ]),
+
+    /**
+     * Display trends from a given time range.
+     * @see GET /api/pixelfed/v2/discover/posts/trending
+     */
+    trendingStatusesRange: v.software === PIXELFED,
 
     /**
      * Can display trending hashtags.
@@ -1314,6 +1322,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA && gte(v.version, '2022.12.0'),
       v.software === ICESHRIMP,
       v.software === MASTODON,
+      v.software === PIXELFED,
     ]),
 
     /**
