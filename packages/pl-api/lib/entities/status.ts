@@ -131,6 +131,14 @@ const preprocess = (status: any) => {
     ...status,
   };
 
+  if (!status.interaction_policy && status.comments_disabled === true) {
+    status.interaction_policy = {
+      can_reply: {
+        always: ['author'],
+      },
+    };
+  }
+
   return status;
 };
 
