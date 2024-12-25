@@ -492,7 +492,7 @@ class PlApiClient {
     getToken: async (params: GetTokenParams) => {
       const response = await this.request('/oauth/token', { method: 'POST', body: params });
 
-      return v.parse(tokenSchema, response.json);
+      return v.parse(tokenSchema, { scope: params.scope, ...response.json });
     },
 
     /**
