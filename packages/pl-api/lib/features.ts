@@ -621,6 +621,19 @@ const getFeatures = (instance: Instance) => {
     // followAccountLanguages: any([]),
 
     /**
+     * Ability to list followed hashtags.
+     * @see GET /api/v1/followed_tags
+     */
+    followedHashtagsList: any([
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
+      v.software === MASTODON && gte(v.compatVersion, '4.1.0'),
+      v.software === PIXELFED,
+      v.software === PLEROMA && v.build === AKKOMA,
+      v.software === PLEROMA && v.build === PL,
+      v.software === TAKAHE && gte(v.version, '0.9.0'),
+    ]),
+
+    /**
      * Ability to follow hashtags.
      * @see POST /api/v1/tags/:name/follow
      * @see POST /api/v1/tags/:name/unfollow
@@ -628,6 +641,7 @@ const getFeatures = (instance: Instance) => {
     followHashtags: any([
       v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === MASTODON && gte(v.compatVersion, '4.0.0'),
+      v.software === PIXELFED,
       v.software === PLEROMA && v.build === AKKOMA,
       v.software === PLEROMA && v.build === PL,
       v.software === TAKAHE && gte(v.version, '0.9.0'),
@@ -644,18 +658,6 @@ const getFeatures = (instance: Instance) => {
       v.software === MITRA,
       v.software === PLEROMA,
       v.software === TOKI,
-    ]),
-
-    /**
-     * Ability to list followed hashtags.
-     * @see GET /api/v1/followed_tags
-     */
-    followedHashtagsList: any([
-      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
-      v.software === MASTODON && gte(v.compatVersion, '4.1.0'),
-      v.software === PLEROMA && v.build === AKKOMA,
-      v.software === PLEROMA && v.build === PL,
-      v.software === TAKAHE && gte(v.version, '0.9.0'),
     ]),
 
     /**
