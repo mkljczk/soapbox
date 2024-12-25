@@ -725,9 +725,22 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/accounts/#familiar_followers}
      */
     getFamiliarFollowers: async (accountIds: string[]) => {
-      const response = await this.request('/api/v1/accounts/familiar_followers', { params: { id: accountIds } });
+      let response: any;
 
-      return v.parse(filteredArray(familiarFollowersSchema), response.json);
+      if (this.features.version.software === PIXELFED) {
+        response = [];
+        for (const accountId of accountIds) {
+          const accounts = (await this.request(`/api/v1.1/accounts/mutuals/${accountId}`)).json;
+          response.push({
+            id: accountId,
+            accounts,
+          });
+        }
+      } else {
+        response = (await this.request('/api/v1/accounts/familiar_followers', { params: { id: accountIds } })).json;
+      }
+
+      return v.parse(filteredArray(familiarFollowersSchema), response);
     },
 
     /**
