@@ -1296,6 +1296,17 @@ class PlApiClient {
             body: { new_password },
           });
           break;
+        case PIXELFED:
+          response = await this.request('/api/v1.1/accounts/change-password', {
+            method: 'POST',
+            body: {
+              current_password,
+              new_password,
+              confirm_password: new_password,
+            },
+          });
+          if (response.redirected) throw response;
+          break;
         default:
           response = await this.request('/api/pleroma/change_password', {
             method: 'POST',

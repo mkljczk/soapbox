@@ -1220,6 +1220,7 @@ const getFeatures = (instance: Instance) => {
     changePassword: any([
       v.software === GOTOSOCIAL,
       v.software === MITRA,
+      v.software === PIXELFED,
       v.software === PLEROMA,
     ]),
 
