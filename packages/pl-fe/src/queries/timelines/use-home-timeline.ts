@@ -38,7 +38,7 @@ const processPage = ({ items: statuses, next }: PaginatedResponse<Status>) => {
   // });
 
   const processStatus = (status: Status) => {
-    if (timelinePage.some((entry) => entry.type === 'status' && entry.id === status.id)) return false;
+    if (timelinePage.some((entry) => entry.type === 'status' && entry.id === (status.reblog || status).id)) return false;
 
     let isConnectedTop = false;
     const inReplyToId = (status.reblog || status).in_reply_to_id;
