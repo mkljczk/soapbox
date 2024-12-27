@@ -1215,6 +1215,7 @@ const getFeatures = (instance: Instance) => {
     /**
      * @see POST /api/v1/user/password_change
      * @see POST /api/v1/settings/change_password
+     * @see POST /api/v1.1/accounts/change-password
      * @see POST /api/pleroma/change_password
      */
     changePassword: any([
