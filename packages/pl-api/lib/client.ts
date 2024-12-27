@@ -5005,25 +5005,50 @@ class PlApiClient {
     groups: {
       /** returns an array of `Group` entities the current user is a member of */
       getGroups: async () => {
-        const response = await this.request('/api/v1/groups');
+        let response;
+        if (this.features.version.software === PIXELFED) {
+          response = await this.request('/api/v0/groups/self/list');
+        } else {
+          response = await this.request('/api/v1/groups');
+        }
 
         return v.parse(filteredArray(groupSchema), response.json);
       },
 
       /** create a group with the given attributes (`display_name`, `note`, `avatar` and `header`). Sets the user who made the request as group administrator */
       createGroup: async (params: CreateGroupParams) => {
-        const response = await this.request('/api/v1/groups', {
-          method: 'POST',
-          body: params,
-          contentType: params.avatar || params.header ? '' : undefined,
-        });
+        let response;
+
+        if (this.features.version.software === PIXELFED) {
+          response = await this.request('/api/v0/groups/create', {
+            method: 'POST',
+            body: { ...params, name: params.display_name, description: params.note, membership: 'public' },
+            contentType: params.avatar || params.header ? '' : undefined,
+          });
+
+          if (response.json?.id) {
+            return this.experimental.groups.getGroup(response.json.id);
+          }
+        } else {
+          response = await this.request('/api/v1/groups', {
+            method: 'POST',
+            body: params,
+            contentType: params.avatar || params.header ? '' : undefined,
+          });
+        }
 
         return v.parse(groupSchema, response.json);
       },
 
       /** returns the `Group` entity describing a given group */
       getGroup: async (groupId: string) => {
-        const response = await this.request(`/api/v1/groups/${groupId}`);
+        let response;
+
+        if (this.features.version.software === PIXELFED) {
+          response = await this.request(`/api/v0/groups/${groupId}`);
+        } else {
+          response = await this.request(`/api/v1/groups/${groupId}`);
+        }
 
         return v.parse(groupSchema, response.json);
       },
