@@ -242,7 +242,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
 
       {!shouldCondense && !event && !group && <ReplyMentions composeId={id} />}
 
-      {!!selectButtons && (
+      {selectButtons.length > 0 && (
         <HStack space={2} wrap className={clsx(transparent && '-mb-2')}>
           {selectButtons}
         </HStack>
