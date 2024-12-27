@@ -8,7 +8,7 @@ import { datetimeSchema, filteredArray } from './utils';
  * @category Schemas
  */
 const groupSchema = v.pipe(v.any(), v.transform((group: any) => {
-  if (group.config) {
+  if (group?.config) {
     return {
       display_name: group.name,
       members_count: group.member_count,

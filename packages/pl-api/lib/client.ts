@@ -2548,7 +2548,11 @@ class PlApiClient {
      * Requires features{@link Features['groups']}.
      */
     groupTimeline: async (groupId: string, params?: GroupTimelineParams) =>
-      this.#paginatedGet(`/api/v1/timelines/group/${groupId}`, { params }, statusSchema),
+      this.#paginatedGet(
+        this.features.version.software === PIXELFED ? `/api/v0/groups/${groupId}/feed` : `/api/v1/timelines/group/${groupId}`,
+        { params },
+        statusSchema,
+      ),
 
     /**
      * Requires features{@link Features['bubbleTimeline']}.
@@ -5066,18 +5070,32 @@ class PlApiClient {
 
       /** irreversibly deletes the group */
       deleteGroup: async (groupId: string) => {
-        const response = await this.request(`/api/v1/groups/${groupId}`, { method: 'DELETE' });
+        let response;
+
+        if (this.features.version.software === PIXELFED) {
+          response = await this.request('/api/v0/groups/delete', { method: 'POST', params: { gid: groupId } });
+        } else {
+          response = await this.request(`/api/v1/groups/${groupId}`, { method: 'DELETE' });
+        }
 
         return response.json as {};
       },
 
       /** Has an optional role attribute that can be used to filter by role (valid roles are `"admin"`, `"moderator"`, `"user"`). */
       getGroupMemberships: async (groupId: string, role?: GroupRole, params?: GetGroupMembershipsParams) =>
-        this.#paginatedGet(`/api/v1/groups/${groupId}/memberships`, { params: { ...params, role } }, groupMemberSchema),
+        this.#paginatedGet(
+          this.features.version.software === PIXELFED ? `/api/v0/groups/members/list?gid=${groupId}` : `/api/v1/groups/${groupId}/memberships`,
+          { params: { ...params, role } },
+          groupMemberSchema,
+        ),
 
       /** returns an array of `Account` entities representing pending requests to join a group */
       getGroupMembershipRequests: async (groupId: string, params?: GetGroupMembershipRequestsParams) =>
-        this.#paginatedGet(`/api/v1/groups/${groupId}/membership_requests`, { params }, accountSchema),
+        this.#paginatedGet(
+          this.features.version.software === PIXELFED ? `/api/v0/groups/members/requests?gid=${groupId}` : `/api/v1/groups/${groupId}/membership_requests`,
+          { params },
+          accountSchema,
+        ),
 
       /** accept a pending request to become a group member */
       acceptGroupMembershipRequest: async (groupId: string, accountId: string) => {
