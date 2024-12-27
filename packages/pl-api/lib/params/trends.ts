@@ -16,7 +16,14 @@ type GetTrendingTags = GetTrends;
 /**
  * @category Request params
  */
-type GetTrendingStatuses = GetTrends;
+interface GetTrendingStatuses extends GetTrends {
+  /**
+   * Display trends from a given time range.
+   *
+   * Requires features{@link Features['trendingStatusesRange']}.
+   */
+  range?: 'daily' | 'monthly' | 'yearly';
+}
 
 /**
  * @category Request params

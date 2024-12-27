@@ -17,23 +17,24 @@ type PlfeResponse<T = any> = Response & { data: string; json: T };
   * It uses FE_SUBDIRECTORY and parses JSON if possible.
   * No authorization is needed.
   */
-const staticFetch = (input: URL | RequestInfo, init?: RequestInit | undefined) => {
+const staticFetch = async (input: URL | RequestInfo, init?: RequestInit | undefined) => {
   const fullPath = buildFullPath(input.toString(), BuildConfig.BACKEND_URL);
 
-  return fetch(fullPath, init).then(async (response) => {
-    if (!response.ok) throw { response };
-    const data = await response.text();
-    let json: any = undefined!;
-    try {
-      json = JSON.parse(data);
-    } catch (e) {
-      //
-    }
+  const response = await fetch(fullPath, init);
+  if (!response.ok) throw { response };
 
-    const { headers, ok, redirected, status, statusText, type, url } = response;
+  const data = await response.text();
 
-    return { headers, ok, redirected, status, statusText, type, url, data, json } as any as PlfeResponse;
-  });
+  let json: any = undefined!;
+  try {
+    json = JSON.parse(data);
+  } catch (e) {
+    //
+  }
+
+  const { headers, ok, redirected, status, statusText, type, url } = response;
+
+  return { headers, ok, redirected, status, statusText, type, url, data, json } as any as PlfeResponse;
 };
 
 const getClient = (state: RootState | (() => RootState) = store?.getState()) => {

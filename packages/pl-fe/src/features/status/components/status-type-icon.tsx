@@ -17,6 +17,7 @@ const messages: Record<string, MessageDescriptor> = defineMessages({
   local: { id: 'status.visibility.local', defaultMessage: 'The post is only visible to users on your instance' },
   list: { id: 'status.visibility.list', defaultMessage: 'The post is only visible to the members of a list' },
   list_named: { id: 'status.visibility.list.named', defaultMessage: 'The post is only visible to the members of a {name} list' },
+  subscribers: { id: 'status.visibility.subscribers', defaultMessage: 'The post is only visible to users subscribing the author' },
 });
 
 const STATUS_TYPE_ICONS: Record<string, string> = {
@@ -25,6 +26,7 @@ const STATUS_TYPE_ICONS: Record<string, string> = {
   mutuals_only: require('@tabler/icons/outline/users-group.svg'),
   local: require('@tabler/icons/outline/affiliate.svg'),
   list: require('@tabler/icons/outline/list.svg'),
+  subscribers: require('@tabler/icons/outline/coin.svg'),
 };
 
 const StatusTypeIcon: React.FC<IStatusTypeIcon> = ({ status }) => {

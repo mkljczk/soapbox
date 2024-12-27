@@ -24,13 +24,9 @@ const messages = defineMessages({
 });
 
 const formatTime = (secondsNum: number): string => {
-  let hours: number | string = Math.floor(secondsNum / 3600);
-  let minutes: number | string = Math.floor((secondsNum - (hours * 3600)) / 60);
-  let seconds: number | string = secondsNum - (hours * 3600) - (minutes * 60);
-
-  if (hours   < 10) hours = '0' + hours;
-  if (minutes < 10) minutes = '0' + minutes;
-  if (seconds < 10) seconds = '0' + seconds;
+  const hours = Math.floor(secondsNum / 3600).toString().padStart(2, '0');
+  const minutes = Math.floor((secondsNum % 3600) / 60).toString().padStart(2, '0');
+  const seconds = (secondsNum % 60).toString().padStart(2, '0');
 
   return (hours === '00' ? '' : `${hours}:`) + `${minutes}:${seconds}`;
 };

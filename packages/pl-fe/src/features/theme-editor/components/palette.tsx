@@ -53,7 +53,7 @@ const Palette: React.FC<IPalette> = ({ palette, onChange, resetKey, allowTintCha
     <Stack className='w-full'>
       <HStack className='h-8 overflow-hidden rounded-md'>
         {tints.map(tint => (
-          <Color color={palette[tint]} onChange={allowTintChange ? handleChange(tint) : undefined} />
+          <Color key={tint} color={palette[tint]} onChange={allowTintChange ? handleChange(tint) : undefined} />
         ))}
       </HStack>
 

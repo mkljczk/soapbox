@@ -146,6 +146,8 @@ const baseAccountSchema = v.object({
   verified: v.fallback(v.optional(v.boolean()), undefined),
   domain: v.fallback(v.string(), ''),
 
+  pronouns: v.fallback(v.array(v.string()), []),
+
   __meta: coerceObject({
     pleroma: v.fallback(v.any(), undefined),
     source: v.fallback(v.any(), undefined),

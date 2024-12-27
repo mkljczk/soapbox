@@ -7,7 +7,26 @@ import { datetimeSchema, filteredArray } from './utils';
 /**
  * @category Schemas
  */
-const groupSchema = v.object({
+const groupSchema = v.pipe(v.any(), v.transform((group: any) => {
+  if (group?.config) {
+    return {
+      display_name: group.name,
+      members_count: group.member_count,
+      note: group.short_description,
+      relationship: group.self ? {
+        ...group.self,
+        member: group.self.is_member,
+        role: {
+          founder: 'owner',
+          admin: 'admin',
+        }[group.self.role as string] || 'user',
+        id: group.id,
+      } : null,
+      ...group,
+    };
+  }
+  return group;
+}), v.object({
   avatar: v.fallback(v.string(), ''),
   avatar_static: v.fallback(v.string(), ''),
   created_at: v.fallback(datetimeSchema, new Date().toISOString()),
@@ -22,14 +41,14 @@ const groupSchema = v.object({
   members_count: v.fallback(v.number(), 0),
   owner: v.fallback(v.nullable(v.object({ id: v.string() })), null),
   note: v.fallback(v.pipe(v.string(), v.transform(note => note === '<p></p>' ? '' : note)), ''),
-  relationship: v.fallback(v.nullable(groupRelationshipSchema), null), // Dummy field to be overwritten later
+  relationship: v.fallback(v.nullable(groupRelationshipSchema), null),
   statuses_visibility: v.fallback(v.string(), 'public'),
   uri: v.fallback(v.string(), ''),
   url: v.fallback(v.string(), ''),
 
   avatar_description: v.fallback(v.string(), ''),
   header_description: v.fallback(v.string(), ''),
-});
+}));
 
 /**
  * @category Entity types

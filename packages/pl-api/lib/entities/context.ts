@@ -9,6 +9,7 @@ import { statusSchema } from './status';
 const contextSchema = v.object({
   ancestors: v.array(statusSchema),
   descendants: v.array(statusSchema),
+  references: v.fallback(v.array(statusSchema), []),
 });
 
 /**
