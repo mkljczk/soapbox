@@ -13,6 +13,15 @@ const groupSchema = v.pipe(v.any(), v.transform((group: any) => {
       display_name: group.name,
       members_count: group.member_count,
       note: group.short_description,
+      relationship: group.self ? {
+        ...group.self,
+        member: group.self.is_member,
+        role: {
+          founder: 'owner',
+          admin: 'admin',
+        }[group.self.role as string] || 'user',
+        id: group.id,
+      } : null,
       ...group,
     };
   }

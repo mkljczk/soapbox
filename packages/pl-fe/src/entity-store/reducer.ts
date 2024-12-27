@@ -1,4 +1,4 @@
-import { create, type Immutable } from 'mutative';
+import { create, type Immutable, type Draft } from 'mutative';
 
 import {
   ENTITIES_IMPORT,
@@ -7,14 +7,15 @@ import {
   ENTITIES_FETCH_REQUEST,
   ENTITIES_FETCH_SUCCESS,
   ENTITIES_FETCH_FAIL,
-  EntityAction,
   ENTITIES_INVALIDATE_LIST,
   ENTITIES_INCREMENT,
   ENTITIES_TRANSACTION,
+  type EntityAction,
+  type DeleteEntitiesOpts,
 } from './actions';
+import { Entities } from './entities';
 import { createCache, createList, updateStore, updateList } from './utils';
 
-import type { DeleteEntitiesOpts } from './actions';
 import type { EntitiesTransaction, Entity, EntityCache, EntityListState, ImportPosition } from './types';
 
 /** Entity reducer state. */
@@ -24,14 +25,14 @@ type State = Immutable<{
 
 /** Import entities into the cache. */
 const importEntities = (
-  state: State,
+  draft: Draft<State>,
   entityType: string,
   entities: Entity[],
   listKey?: string,
   pos?: ImportPosition,
   newState?: EntityListState,
   overwrite = false,
-): State => create(state, draft => {
+) => {
   const cache = draft[entityType] ?? createCache();
   cache.store = updateStore(cache.store, entities);
 
@@ -53,15 +54,23 @@ const importEntities = (
 
   draft[entityType] = cache;
 
-  return draft;
-}, { enableAutoFreeze: true });
+  if (entityType === Entities.GROUPS) {
+    importEntities(
+      draft,
+      Entities.GROUP_RELATIONSHIPS,
+      entities.map((entity: any) => entity?.relationship).filter((relationship: any) => relationship),
+      listKey,
+      pos,
+    );
+  }
+};
 
 const deleteEntities = (
-  state: State,
+  draft: Draft<State>,
   entityType: string,
   ids: Iterable<string>,
   opts: DeleteEntitiesOpts,
-) => create(state, draft => {
+) => {
   const cache = draft[entityType] ?? createCache();
 
   for (const id of ids) {
@@ -81,14 +90,14 @@ const deleteEntities = (
   }
 
   draft[entityType] = cache;
-});
+};
 
 const dismissEntities = (
-  state: State,
+  draft: Draft<State>,
   entityType: string,
   ids: Iterable<string>,
   listKey: string,
-) => create(state, draft => {
+) => {
   const cache = draft[entityType] ?? createCache();
   const list = cache.lists[listKey];
 
@@ -103,14 +112,14 @@ const dismissEntities = (
 
     draft[entityType] = cache;
   }
-});
+};
 
 const incrementEntities = (
-  state: State,
+  draft: Draft<State>,
   entityType: string,
   listKey: string,
   diff: number,
-) => create(state, draft => {
+) => {
   const cache = draft[entityType] ?? createCache();
   const list = cache.lists[listKey];
 
@@ -118,15 +127,15 @@ const incrementEntities = (
     list.state.totalCount += diff;
     draft[entityType] = cache;
   }
-});
+};
 
 const setFetching = (
-  state: State,
+  draft: Draft<State>,
   entityType: string,
   listKey: string | undefined,
   isFetching: boolean,
   error?: any,
-) => create(state, draft => {
+) => {
   const cache = draft[entityType] ?? createCache();
 
   if (typeof listKey === 'string') {
@@ -137,15 +146,15 @@ const setFetching = (
   }
 
   draft[entityType] = cache;
-});
+};
 
-const invalidateEntityList = (state: State, entityType: string, listKey: string) => create(state, draft => {
+const invalidateEntityList = (draft: Draft<State>, entityType: string, listKey: string) => {
   const cache = draft[entityType] ?? createCache();
   const list = cache.lists[listKey] ?? createList();
   list.state.invalid = true;
-});
+};
 
-const doTransaction = (state: State, transaction: EntitiesTransaction) => create(state, draft => {
+const doTransaction = (draft: Draft<State>, transaction: EntitiesTransaction) => {
   for (const [entityType, changes] of Object.entries(transaction)) {
     const cache = draft[entityType] ?? createCache();
     for (const [id, change] of Object.entries(changes)) {
@@ -155,29 +164,29 @@ const doTransaction = (state: State, transaction: EntitiesTransaction) => create
       }
     }
   }
-});
+};
 
 /** Stores various entity data and lists in a one reducer. */
 const reducer = (state: Readonly<State> = {}, action: EntityAction): State => {
   switch (action.type) {
     case ENTITIES_IMPORT:
-      return importEntities(state, action.entityType, action.entities, action.listKey, action.pos);
+      return create(state, draft => importEntities(draft, action.entityType, action.entities, action.listKey, action.pos), { enableAutoFreeze: true });
     case ENTITIES_DELETE:
-      return deleteEntities(state, action.entityType, action.ids, action.opts);
+      return create(state, draft => deleteEntities(draft, action.entityType, action.ids, action.opts));
     case ENTITIES_DISMISS:
-      return dismissEntities(state, action.entityType, action.ids, action.listKey);
+      return create(state, draft => dismissEntities(draft, action.entityType, action.ids, action.listKey));
     case ENTITIES_INCREMENT:
-      return incrementEntities(state, action.entityType, action.listKey, action.diff);
+      return create(state, draft => incrementEntities(draft, action.entityType, action.listKey, action.diff));
     case ENTITIES_FETCH_SUCCESS:
-      return importEntities(state, action.entityType, action.entities, action.listKey, action.pos, action.newState, action.overwrite);
+      return create(state, draft => importEntities(draft, action.entityType, action.entities, action.listKey, action.pos, action.newState, action.overwrite), { enableAutoFreeze: true });
     case ENTITIES_FETCH_REQUEST:
-      return setFetching(state, action.entityType, action.listKey, true);
+      return create(state, draft => setFetching(draft, action.entityType, action.listKey, true));
     case ENTITIES_FETCH_FAIL:
-      return setFetching(state, action.entityType, action.listKey, false, action.error);
+      return create(state, draft => setFetching(draft, action.entityType, action.listKey, false, action.error));
     case ENTITIES_INVALIDATE_LIST:
-      return invalidateEntityList(state, action.entityType, action.listKey);
+      return create(state, draft => invalidateEntityList(draft, action.entityType, action.listKey));
     case ENTITIES_TRANSACTION:
-      return doTransaction(state, action.transaction);
+      return create(state, draft => doTransaction(draft, action.transaction));
     default:
       return state;
   }
