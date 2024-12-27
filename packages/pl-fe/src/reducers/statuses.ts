@@ -11,7 +11,6 @@ import {
   STATUS_CREATE_FAIL,
   type StatusesAction,
 } from '../actions/statuses';
-import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
 import type { Status as BaseStatus, CreateStatusParams } from 'pl-api';
 
@@ -34,14 +33,6 @@ const importStatus = (state: State, status: BaseStatus) =>{
 
 const importStatuses = (state: State, statuses: Array<BaseStatus>) =>{
   statuses.forEach(status => importStatus(state, status));
-};
-
-const deleteStatus = (state: State, statusId: string, references: Array<[string, string]>) => {
-  references.forEach(ref => {
-    deleteStatus(state, ref[0], []);
-  });
-
-  delete state[statusId];
 };
 
 const incrementReplyCount = (state: State, { in_reply_to_id, quote_id }: Pick<BaseStatus | CreateStatusParams, 'in_reply_to_id' | 'quote_id'>) => {
@@ -74,7 +65,7 @@ const decrementReplyCount = (state: State, { in_reply_to_id, quote_id }: Pick<Ba
 
 const initialState: State = {};
 
-const statuses = (state = initialState, action: ImporterAction | StatusesAction | TimelineAction): State => {
+const statuses = (state = initialState, action: ImporterAction | StatusesAction): State => {
   switch (action.type) {
     case STATUS_IMPORT:
       return create(state, (draft) => importStatus(draft, action.status));
@@ -84,8 +75,6 @@ const statuses = (state = initialState, action: ImporterAction | StatusesAction 
       return action.editing ? state : create(state, (draft) => incrementReplyCount(draft, action.params));
     case STATUS_CREATE_FAIL:
       return action.editing ? state : create(state, (draft) => decrementReplyCount(draft, action.params));
-    case TIMELINE_DELETE:
-      return create(state, (draft) => deleteStatus(draft, action.statusId, action.references));
     default:
       return state;
   }
