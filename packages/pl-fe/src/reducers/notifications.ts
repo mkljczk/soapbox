@@ -104,7 +104,7 @@ const deleteByStatus = (state: State, statusId: string) =>
   });
 
 const importMarker = (state: State, marker: Markers) => {
-  const lastReadId = marker.notifications.last_read_id || -1 as string | -1;
+  const lastReadId = marker.notifications?.last_read_id || -1 as string | -1;
 
   if (!lastReadId) {
     return state;
