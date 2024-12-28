@@ -37,6 +37,7 @@ const settingsSchema = v.object({
   autoTranslate: v.fallback(v.boolean(), false),
   knownLanguages: v.fallback(v.array(v.string()), []),
   showWrenchButton: v.fallback(v.boolean(), false),
+  rememberSearchHistory: v.fallback(v.boolean(), false),
 
   theme: v.fallback(v.optional(v.object({
     brandColor: v.fallback(v.string(), ''),
@@ -86,6 +87,9 @@ const settingsSchema = v.object({
 
   frequentlyUsedEmojis: v.fallback(v.record(v.string(), v.number()), {}),
   frequentlyUsedLanguages: v.fallback(v.record(v.string(), v.number()), {}),
+
+  recentSearches: v.fallback(v.pipe(v.array(v.string()), v.transform((array) => [...new Set(array)])), []),
+  pinnedSearches: v.fallback(v.pipe(v.array(v.string()), v.transform((array) => [...new Set(array)])), []),
 
   saved: v.fallback(v.boolean(), true),
 

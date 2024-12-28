@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import AutosuggestEmoji from 'pl-fe/components/autosuggest-emoji';
 import Icon from 'pl-fe/components/icon';
@@ -208,6 +209,15 @@ const AutosuggestInput: React.FC<IAutosuggestInput> = ({
     handleMenuItemAction(item, e);
   };
 
+  const handleMenuSecondaryActionClick = (item: MenuItem | null): React.MouseEventHandler => e => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (item?.secondaryAction) {
+      item.secondaryAction(e);
+    }
+  };
+
   const renderMenu = () => {
     const { menu, suggestions } = props;
 
@@ -215,24 +225,52 @@ const AutosuggestInput: React.FC<IAutosuggestInput> = ({
       return null;
     }
 
-    return menu.map((item, i) => (
-      <a
-        className={clsx('flex cursor-pointer items-center space-x-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 dark:text-gray-500 dark:hover:bg-gray-800 dark:focus:bg-primary-800', {
-          selected: suggestions.length - selectedSuggestion === i,
-        })}
-        href='#'
-        role='button'
-        tabIndex={0}
-        onMouseDown={handleMenuItemClick(item)}
-        key={i}
-      >
-        {item?.icon && (
-          <Icon src={item.icon} />
-        )}
+    return menu.map((item, i) => {
+      const className = clsx('flex cursor-pointer items-center space-x-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 dark:text-gray-500 dark:hover:bg-gray-800 dark:focus:bg-primary-800', {
+        selected: suggestions.length - selectedSuggestion === i,
+      });
 
-        <span>{item?.text}</span>
-      </a>
-    ));
+      const children = (
+        <>
+          {item?.icon && (
+            <Icon src={item.icon} />
+          )}
+
+          <span className='grow'>{item?.text}</span>
+
+          {item?.secondaryIcon && (
+            <Icon
+              className='ml-auto'
+              src={item.secondaryIcon}
+              onMouseDown={handleMenuSecondaryActionClick(item)}
+              title={item.secondaryTitle}
+            />
+          )}
+        </>
+      );
+
+      if (item?.to) return (
+        <Link
+          className={className}
+          to={item.to}
+          tabIndex={0}
+          key={i}
+        >
+          {children}
+        </Link>
+      );
+
+      return (
+        <button
+          className={className}
+          tabIndex={0}
+          onMouseDown={handleMenuItemClick(item)}
+          key={i}
+        >
+          {children}
+        </button>
+      );
+    });
   };
 
   const setPortalPosition = () => {
@@ -245,7 +283,7 @@ const AutosuggestInput: React.FC<IAutosuggestInput> = ({
     return { left, width, top: top + height };
   };
 
-  const visible = !suggestionsHidden && (props.suggestions.length || (props.menu && props.value));
+  const visible = !suggestionsHidden; // && (props.suggestions.length || (props.menu && props.value));
 
   return [
     <div key='input' className='relative w-full'>
@@ -273,22 +311,24 @@ const AutosuggestInput: React.FC<IAutosuggestInput> = ({
         lang={props.lang}
       />
     </div>,
-    <Portal key='portal'>
-      <div
-        style={setPortalPosition()}
-        className={clsx({
-          'fixed w-full z-[1001] shadow bg-white dark:bg-gray-900 rounded-lg py-1 dark:ring-2 dark:ring-primary-700 focus:outline-none': true,
-          hidden: !visible,
-          block: visible,
-        })}
-      >
-        <div className='space-y-0.5'>
-          {props.suggestions.map(renderSuggestion)}
-        </div>
+    props.menu?.length ? (
+      <Portal key='portal'>
+        <div
+          style={setPortalPosition()}
+          className={clsx({
+            'fixed w-full z-[1001] shadow bg-white dark:bg-gray-900 rounded-lg py-1 dark:ring-2 dark:ring-primary-700 focus:outline-none': true,
+            hidden: !visible,
+            block: visible,
+          })}
+        >
+          <div className='space-y-0.5'>
+            {props.suggestions.map(renderSuggestion)}
+          </div>
 
-        {renderMenu()}
-      </div>
-    </Portal>,
+          {renderMenu()}
+        </div>
+      </Portal>
+    ) : null,
   ];
 };
 

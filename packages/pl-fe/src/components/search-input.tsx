@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
+import { saveSettings } from 'pl-fe/actions/settings';
 import AutosuggestAccountInput from 'pl-fe/components/autosuggest-account-input';
 import SvgIcon from 'pl-fe/components/ui/svg-icon';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { selectAccount } from 'pl-fe/selectors';
+import { useSettingsStore } from 'pl-fe/stores/settings';
 
 import type { AppDispatch, RootState } from 'pl-fe/store';
 import type { History } from 'pl-fe/types/history';
@@ -14,6 +16,7 @@ import type { History } from 'pl-fe/types/history';
 const messages = defineMessages({
   placeholder: { id: 'search.placeholder', defaultMessage: 'Search' },
   action: { id: 'search.action', defaultMessage: 'Search for “{query}”' },
+  forgetSearchHistory: { id: 'search.history.forget', defaultMessage: 'Remove recent search' },
 });
 
 const redirectToAccount = (accountId: string, routerHistory: History) =>
@@ -31,6 +34,8 @@ const SearchInput = () => {
   const dispatch = useAppDispatch();
   const history = useHistory();
   const intl = useIntl();
+  const { settings, forgetSearch } = useSettingsStore();
+  const { recentSearches, pinnedSearches } = settings;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -62,12 +67,31 @@ const SearchInput = () => {
     dispatch(redirectToAccount(accountId, history));
   };
 
-  const makeMenu = () => [
+  const handleForgetSearchHistory = (value: string) => () => {
+    forgetSearch(value);
+    dispatch(saveSettings());
+  };
+
+  const makeMenu = () => value.length ? [
     {
       text: intl.formatMessage(messages.action, { query: value }),
       icon: require('@tabler/icons/outline/search.svg'),
       action: handleSubmit,
     },
+  ] : [
+    ...recentSearches.map((value) => ({
+      text: value,
+      icon: require('@tabler/icons/outline/history.svg'),
+      to: '/search?' + new URLSearchParams({ q: value }),
+      secondaryIcon: require('@tabler/icons/outline/x.svg'),
+      secondaryAction: handleForgetSearchHistory(value),
+      secondaryTitle: intl.formatMessage(messages.forgetSearchHistory),
+    })),
+    ...pinnedSearches.map((value) => ({
+      text: value,
+      icon: require('@tabler/icons/outline/pin.svg'),
+      to: '/search?' + new URLSearchParams({ q: value }),
+    })),
   ];
 
   const hasValue = value.length > 0;

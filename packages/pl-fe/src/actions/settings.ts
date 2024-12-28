@@ -17,6 +17,7 @@ const FE_NAME = 'pl_fe';
 type SettingOpts = {
   /** Whether to display an alert when settings are saved. */
   showAlert?: boolean;
+  alertMessage?: string;
   save?: boolean;
 }
 
@@ -42,7 +43,7 @@ const saveSettings = (opts?: SettingOpts) =>
       userSettingsSaving();
 
       if (opts?.showAlert) {
-        toast.success(saveSuccessMessage);
+        toast.success(opts.alertMessage || saveSuccessMessage);
       }
     }).catch(error => {
       toast.showAlertForError(error);

@@ -11,9 +11,8 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 
-import Preferences from '../preferences';
-
 import MessagesSettings from './components/messages-settings';
+import Preferences from './components/preferences';
 
 const any = (arr: Array<any>): boolean => arr.some(Boolean);
 
@@ -38,6 +37,7 @@ const messages = defineMessages({
   mutesAndBlocks: { id: 'settings.mutes_blocks', defaultMessage: 'Mutes and blocks' },
   other: { id: 'settings.other', defaultMessage: 'Other options' },
   preferences: { id: 'settings.preferences', defaultMessage: 'Preferences' },
+  privacy: { id: 'settings.privacy', defaultMessage: 'Privacy' },
   profile: { id: 'settings.profile', defaultMessage: 'Profile' },
   security: { id: 'settings.security', defaultMessage: 'Security' },
   sessions: { id: 'settings.sessions', defaultMessage: 'Active sessions' },
@@ -144,6 +144,14 @@ const Settings = () => {
 
         <CardBody>
           <Preferences />
+        </CardBody>
+
+        <CardHeader>
+          <CardTitle title={intl.formatMessage(messages.privacy)} />
+        </CardHeader>
+
+        <CardBody>
+          {/* <Preferences /> */}
         </CardBody>
 
         {any([

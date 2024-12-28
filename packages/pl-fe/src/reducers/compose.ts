@@ -66,7 +66,7 @@ import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 import { unescapeHTML } from '../utils/html';
 
 import type { Emoji } from 'pl-fe/features/emoji';
-import type { Language } from 'pl-fe/features/preferences';
+import type { Language } from 'pl-fe/features/settings/components/preferences';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';
 

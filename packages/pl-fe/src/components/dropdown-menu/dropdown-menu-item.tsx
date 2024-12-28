@@ -23,6 +23,9 @@ interface MenuItem {
   to?: string;
   type?: 'toggle';
   items?: Array<Omit<MenuItem, 'items'>>;
+  secondaryIcon?: string;
+  secondaryAction?: React.EventHandler<React.KeyboardEvent | React.MouseEvent>;
+  secondaryTitle?: string;
 }
 
 interface IDropdownMenuItem {

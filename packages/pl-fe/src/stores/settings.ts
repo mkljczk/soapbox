@@ -21,6 +21,9 @@ type State = {
   changeSetting: (path: string[], value: any) => void;
   rememberEmojiUse: (emoji: Emoji) => void;
   rememberLanguageUse: (language: string) => void;
+  rememberSearch: (value: string) => void;
+  forgetSearch: (value: string) => void;
+  handleSwitchPinnedSearch: (value: string) => void;
 }
 
 const changeSetting = (object: APIEntity, path: string[], value: any) => {
@@ -84,6 +87,37 @@ const useSettingsStore = create<State>()(mutative((set) => ({
 
     settings.frequentlyUsedLanguages[language] = (settings.frequentlyUsedLanguages[language] || 0) + 1;
     settings.saved = false;
+
+    mergeSettings(state);
+  }),
+
+  rememberSearch: (value: string) => set((state: State) => {
+    const settings = state.userSettings;
+
+    if (!settings.rememberSearchHistory) return;
+
+    if (!settings.recentSearches) settings.recentSearches = [];
+    settings.recentSearches = [...new Set([value, ...settings.recentSearches])];
+
+    mergeSettings(state);
+  }),
+
+  forgetSearch: (value: string) => set((state: State) => {
+    const settings = state.userSettings;
+    settings.recentSearches = settings.recentSearches?.filter((recentSearch) => recentSearch !== value);
+
+    mergeSettings(state);
+  }),
+
+  handleSwitchPinnedSearch: (value: string) => set((state: State) => {
+    const settings = state.userSettings;
+    if (!settings.pinnedSearches) settings.pinnedSearches = [];
+
+    if (settings.pinnedSearches.includes(value)) {
+      settings.pinnedSearches = settings.pinnedSearches.filter((pinnedSearch) => pinnedSearch !== value);
+    } else {
+      settings.pinnedSearches = [value, ...settings.pinnedSearches];
+    }
 
     mergeSettings(state);
   }),
