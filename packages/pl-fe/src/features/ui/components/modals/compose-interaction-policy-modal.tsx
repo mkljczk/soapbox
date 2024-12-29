@@ -45,7 +45,7 @@ const ComposeInteractionPolicyModal: React.FC<BaseModalProps & ComposeInteractio
 
   return (
     <Modal
-      title={<FormattedMessage id='navigation_bar.interaction_policy' defaultMessage='Status interaction policy' />}
+      title={<FormattedMessage id='navigation_bar.interaction_policy' defaultMessage='Status interaction rules' />}
       onClose={onClickClose}
       closeIcon={composeId === 'compose-modal' ? require('@tabler/icons/outline/arrow-left.svg') : undefined}
       closePosition={composeId === 'compose-modal' ? 'left' : undefined}

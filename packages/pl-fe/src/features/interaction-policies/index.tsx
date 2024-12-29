@@ -45,24 +45,24 @@ const scopeMessages = defineMessages({
 
 const titleMessages = {
   public: defineMessages({
-    can_favourite: { id: 'interaction_policies.title.public.can_favourite', defaultMessage: 'Who can like a public post?' },
-    can_reply: { id: 'interaction_policies.title.public.can_reply', defaultMessage: 'Who can reply to a public post?' },
-    can_reblog: { id: 'interaction_policies.title.public.can_reblog', defaultMessage: 'Who can repost a public post?' },
+    can_favourite: { id: 'interaction_policies.title.public.can_favourite', defaultMessage: 'Who can like your public posts?' },
+    can_reply: { id: 'interaction_policies.title.public.can_reply', defaultMessage: 'Who can reply to your public posts?' },
+    can_reblog: { id: 'interaction_policies.title.public.can_reblog', defaultMessage: 'Who can repost your public posts?' },
   }),
   unlisted: defineMessages({
-    can_favourite: { id: 'interaction_policies.title.unlisted.can_favourite', defaultMessage: 'Who can like an unlisted post?' },
-    can_reply: { id: 'interaction_policies.title.unlisted.can_reply', defaultMessage: 'Who can reply to an unlisted post?' },
-    can_reblog: { id: 'interaction_policies.title.unlisted.can_reblog', defaultMessage: 'Who can repost an unlisted post?' },
+    can_favourite: { id: 'interaction_policies.title.unlisted.can_favourite', defaultMessage: 'Who can like your unlisted posts?' },
+    can_reply: { id: 'interaction_policies.title.unlisted.can_reply', defaultMessage: 'Who can reply to your unlisted posts?' },
+    can_reblog: { id: 'interaction_policies.title.unlisted.can_reblog', defaultMessage: 'Who can repost your unlisted posts?' },
   }),
   private: defineMessages({
-    can_favourite: { id: 'interaction_policies.title.private.can_favourite', defaultMessage: 'Who can like a followers-only post?' },
-    can_reply: { id: 'interaction_policies.title.private.can_reply', defaultMessage: 'Who can reply to a followers-only post?' },
-    can_reblog: { id: 'interaction_policies.title.private.can_reblog', defaultMessage: 'Who can repost a followers-only post?' },
+    can_favourite: { id: 'interaction_policies.title.private.can_favourite', defaultMessage: 'Who can like your followers-only post?' },
+    can_reply: { id: 'interaction_policies.title.private.can_reply', defaultMessage: 'Who can reply to your followers-only post?' },
+    can_reblog: { id: 'interaction_policies.title.private.can_reblog', defaultMessage: 'Who can repost your followers-only post?' },
   }),
   single_post: defineMessages({
-    can_favourite: { id: 'interaction_policies.title.single_post.can_favourite', defaultMessage: 'Who can like the post?' },
-    can_reply: { id: 'interaction_policies.title.single_post.can_reply', defaultMessage: 'Who can reply to the post?' },
-    can_reblog: { id: 'interaction_policies.title.single_post.can_reblog', defaultMessage: 'Who can repost the post?' },
+    can_favourite: { id: 'interaction_policies.title.single_post.can_favourite', defaultMessage: 'Who can like this post?' },
+    can_reply: { id: 'interaction_policies.title.single_post.can_reply', defaultMessage: 'Who can reply to this post?' },
+    can_reblog: { id: 'interaction_policies.title.single_post.can_reblog', defaultMessage: 'Who can repost this post?' },
   }),
 };
 
