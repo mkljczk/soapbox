@@ -167,15 +167,6 @@ const InteractionPolicies = () => {
     });
   };
 
-  const renderPolicy = (visibility: 'public' | 'unlisted' | 'private') => (
-    <InteractionPolicyConfig
-      interactionPolicy={interactionPolicies[visibility]}
-      visibility={visibility}
-      onChange={(...props) => handleChange(visibility, ...props)}
-      disabled={isUpdating}
-    />
-  );
-
   return (
     <Column label={intl.formatMessage(messages.heading)} backHref='/settings'>
       <Form onSubmit={handleSubmit}>
@@ -199,7 +190,12 @@ const InteractionPolicies = () => {
           activeItem={visibility}
         />
 
-        {renderPolicy(visibility)}
+        <InteractionPolicyConfig
+          interactionPolicy={interactionPolicies[visibility]}
+          visibility={visibility}
+          onChange={(...props) => handleChange(visibility, ...props)}
+          disabled={isUpdating}
+        />
 
         <FormActions>
           <Button type='submit' theme='primary' disabled={isUpdating}>
