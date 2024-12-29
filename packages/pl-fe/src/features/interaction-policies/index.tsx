@@ -4,12 +4,12 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import List, { ListItem } from 'pl-fe/components/list';
 import Button from 'pl-fe/components/ui/button';
-import { CardTitle } from 'pl-fe/components/ui/card';
 import Column from 'pl-fe/components/ui/column';
 import Form from 'pl-fe/components/ui/form';
 import FormActions from 'pl-fe/components/ui/form-actions';
 import { InlineMultiselect } from 'pl-fe/components/ui/inline-multiselect';
 import Tabs from 'pl-fe/components/ui/tabs';
+import Text from 'pl-fe/components/ui/text';
 import { useInteractionPolicies } from 'pl-fe/queries/settings/use-interaction-policies';
 import toast from 'pl-fe/toast';
 
@@ -110,9 +110,9 @@ const InteractionPolicyConfig: React.FC<IInteractionPolicyConfig> = ({ interacti
 
         return (
           <React.Fragment key={policy}>
-            <CardTitle
-              title={intl.formatMessage(titleMessages[singlePost ? 'single_post' : visibility][policy])}
-            />
+            <Text size='lg' weight='bold'>
+              {intl.formatMessage(titleMessages[singlePost ? 'single_post' : visibility][policy])}
+            </Text>
 
             {policy === 'can_reply' && (
               <Warning message={<FormattedMessage id='interaction_policies.mentioned_warning' defaultMessage='Mentioned users can always reply.' />} />
