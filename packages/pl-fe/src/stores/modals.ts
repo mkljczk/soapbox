@@ -9,6 +9,7 @@ import type { AccountModerationModalProps } from 'pl-fe/features/ui/components/m
 import type { BoostModalProps } from 'pl-fe/features/ui/components/modals/boost-modal';
 import type { CompareHistoryModalProps } from 'pl-fe/features/ui/components/modals/compare-history-modal';
 import type { ComponentModalProps } from 'pl-fe/features/ui/components/modals/component-modal';
+import type { ComposeInteractionPolicyModalProps } from 'pl-fe/features/ui/components/modals/compose-interaction-policy-modal';
 import type { ComposeModalProps } from 'pl-fe/features/ui/components/modals/compose-modal';
 import type { ConfirmationModalProps } from 'pl-fe/features/ui/components/modals/confirmation-modal';
 import type { DislikesModalProps } from 'pl-fe/features/ui/components/modals/dislikes-modal';
@@ -45,6 +46,7 @@ type OpenModalProps =
   | [type: 'COMPARE_HISTORY', props: CompareHistoryModalProps]
   | [type: 'COMPONENT', props: ComponentModalProps]
   | [type: 'COMPOSE', props?: ComposeModalProps]
+  | [type: 'COMPOSE_INTERACTION_POLICY', props?: ComposeInteractionPolicyModalProps]
   | [type: 'CONFIRM', props: ConfirmationModalProps]
   | [type: 'CRYPTO_DONATE', props: ICryptoAddress]
   | [type: 'DISLIKES', props: DislikesModalProps]

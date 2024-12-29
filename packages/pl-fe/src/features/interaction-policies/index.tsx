@@ -207,4 +207,10 @@ const InteractionPolicies = () => {
   );
 };
 
-export { InteractionPolicies as default };
+export {
+  InteractionPolicies as default,
+  InteractionPolicyConfig,
+  type Policy,
+  type Rule,
+  type Scope,
+};
