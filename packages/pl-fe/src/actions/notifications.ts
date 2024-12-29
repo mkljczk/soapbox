@@ -190,10 +190,6 @@ const expandNotifications = ({ maxId }: Record<string, any> = {}, done: () => an
       }
     }
 
-    if (!maxId && notifications.items.length > 0) {
-      params.since_id = notifications.items[0]?.page_max_id;
-    }
-
     dispatch(expandNotificationsRequest());
 
     return getClient(state).groupedNotifications.getGroupedNotifications(params, { signal: abortExpandNotifications.signal }).then(({ items: { accounts, statuses, notification_groups }, next }) => {
