@@ -1,3 +1,4 @@
+import { create } from 'mutative';
 import React, { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
@@ -13,6 +14,8 @@ import { useInteractionPolicies } from 'pl-fe/queries/settings/use-interaction-p
 import toast from 'pl-fe/toast';
 
 import Warning from '../compose/components/warning';
+
+import type { InteractionPolicy } from 'pl-api';
 
 type Visibility = 'public' | 'unlisted' | 'private';
 type Policy = 'can_favourite' | 'can_reblog' | 'can_reply';
@@ -56,6 +59,11 @@ const titleMessages = {
     can_reply: { id: 'interaction_policies.title.private.can_reply', defaultMessage: 'Who can reply to a followers-only post?' },
     can_reblog: { id: 'interaction_policies.title.private.can_reblog', defaultMessage: 'Who can repost a followers-only post?' },
   }),
+  single_post: defineMessages({
+    can_favourite: { id: 'interaction_policies.title.single_post.can_favourite', defaultMessage: 'Who can like the post?' },
+    can_reply: { id: 'interaction_policies.title.single_post.can_reply', defaultMessage: 'Who can reply to the post?' },
+    can_reblog: { id: 'interaction_policies.title.single_post.can_reblog', defaultMessage: 'Who can repost the post?' },
+  }),
 };
 
 const options: Record<Visibility, Record<Policy, Array<Scope>>> = {
@@ -76,44 +84,34 @@ const options: Record<Visibility, Record<Policy, Array<Scope>>> = {
   },
 };
 
-const InteractionPolicies = () => {
-  const { interactionPolicies: initial, updateInteractionPolicies, isUpdating } = useInteractionPolicies();
+interface IInteractionPolicyConfig {
+  interactionPolicy: InteractionPolicy;
+  visibility: Visibility;
+  onChange: (policy: Policy, rule: Rule, value: Scope[]) => void;
+  singlePost?: boolean;
+  disabled?: boolean;
+}
+
+const InteractionPolicyConfig: React.FC<IInteractionPolicyConfig> = ({ interactionPolicy, visibility, onChange, singlePost, disabled }) => {
   const intl = useIntl();
-  const [interactionPolicies, setInteractionPolicies] = useState(initial);
-  const [visibility, setVisibility] = useState<Visibility>('public');
 
-  useEffect(() => {
-    setInteractionPolicies(initial);
-  }, [initial]);
+  const getItems = (policy: Policy) => Object.fromEntries(options[visibility][policy].map(scope => [scope, intl.formatMessage(scopeMessages[scope])])) as Record<Scope, string>;
 
-  const getItems = (visibility: Visibility, policy: Policy) => Object.fromEntries(options[visibility][policy].map(scope => [scope, intl.formatMessage(scopeMessages[scope])])) as Record<Scope, string>;
-
-  const handleChange = (visibility: Visibility, policy: Policy, rule: Rule) => (value: Array<Scope>) => {
-    const newPolicies = { ...interactionPolicies };
-    newPolicies[visibility][policy][rule] = value;
-    newPolicies[visibility][policy][rule === 'always' ? 'with_approval' : 'always'] = newPolicies[visibility][policy][rule === 'always' ? 'with_approval' : 'always'].filter(rule => !value.includes(rule as any));
-
-    setInteractionPolicies(newPolicies);
+  const handleChange = (policy: Policy, rule: Rule) => (value: Scope[]) => {
+    onChange(policy, rule, value);
   };
 
-  const handleSubmit = () => {
-    updateInteractionPolicies(interactionPolicies, {
-      onSuccess: () => toast.success(messages.success),
-      onError: () => toast.success(messages.fail),
-    });
-  };
-
-  const renderPolicy = (visibility: 'public' | 'unlisted' | 'private') => (
+  return (
     <>
       {policies.map((policy) => {
-        const items = getItems(visibility, policy);
+        const items = getItems(policy);
 
         if (!Object.keys(items).length) return null;
 
         return (
           <React.Fragment key={policy}>
             <CardTitle
-              title={intl.formatMessage(titleMessages[visibility][policy])}
+              title={intl.formatMessage(titleMessages[singlePost ? 'single_post' : visibility][policy])}
             />
 
             {policy === 'can_reply' && (
@@ -124,17 +122,17 @@ const InteractionPolicies = () => {
               <ListItem label={intl.formatMessage(messages.always)}>
                 <InlineMultiselect<Scope>
                   items={items}
-                  value={interactionPolicies[visibility][policy].always as Array<Scope>}
-                  onChange={handleChange(visibility, policy, 'always')}
-                  disabled={isUpdating}
+                  value={interactionPolicy[policy].always as Array<Scope>}
+                  onChange={handleChange(policy, 'always')}
+                  disabled={disabled}
                 />
               </ListItem>
               <ListItem label={intl.formatMessage(messages.with_approval)}>
                 <InlineMultiselect
                   items={items}
-                  value={interactionPolicies[visibility][policy].with_approval as Array<Scope>}
-                  onChange={handleChange(visibility, policy, 'with_approval')}
-                  disabled={isUpdating}
+                  value={interactionPolicy[policy].with_approval as Array<Scope>}
+                  onChange={handleChange(policy, 'with_approval')}
+                  disabled={disabled}
                 />
               </ListItem>
             </List>
@@ -142,6 +140,40 @@ const InteractionPolicies = () => {
         );
       })}
     </>
+  );
+};
+
+const InteractionPolicies = () => {
+  const { interactionPolicies: initial, updateInteractionPolicies, isUpdating } = useInteractionPolicies();
+  const intl = useIntl();
+  const [interactionPolicies, setInteractionPolicies] = useState(initial);
+  const [visibility, setVisibility] = useState<Visibility>('public');
+
+  useEffect(() => {
+    setInteractionPolicies(initial);
+  }, [initial]);
+
+  const handleChange = (visibility: Visibility, policy: Policy, rule: Rule, value: Array<Scope>) => {
+    setInteractionPolicies((policies) => create(policies, (draft) => {
+      draft[visibility][policy][rule] = value;
+      draft[visibility][policy][rule === 'always' ? 'with_approval' : 'always'] = draft[visibility][policy][rule === 'always' ? 'with_approval' : 'always'].filter(rule => !value.includes(rule as any));
+    }));
+  };
+
+  const handleSubmit = () => {
+    updateInteractionPolicies(interactionPolicies, {
+      onSuccess: () => toast.success(messages.success),
+      onError: () => toast.success(messages.fail),
+    });
+  };
+
+  const renderPolicy = (visibility: 'public' | 'unlisted' | 'private') => (
+    <InteractionPolicyConfig
+      interactionPolicy={interactionPolicies[visibility]}
+      visibility={visibility}
+      onChange={(...props) => handleChange(visibility, ...props)}
+      disabled={isUpdating}
+    />
   );
 
   return (
