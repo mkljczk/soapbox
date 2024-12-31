@@ -491,6 +491,7 @@ const getFeatures = (instance: Instance) => {
     editStatuses: any([
       v.software === FIREFISH,
       v.software === FRIENDICA && gte(v.version, '2022.12.0'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.4'),
       v.software === ICESHRIMP,
       v.software === ICESHRIMP_NET,
       v.software === MASTODON,
