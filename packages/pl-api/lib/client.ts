@@ -757,6 +757,8 @@ class PlApiClient {
     /**
      * Lookup account ID from Webfinger address
      * Quickly lookup a username to see if it is available, skipping WebFinger resolution.
+
+     * Requires features{@link Features['accountLookup']}.
      * @see {@link https://docs.joinmastodon.org/methods/accounts/#lookup}
      */
     lookupAccount: async (acct: string, meta?: RequestMeta) => {

@@ -5,6 +5,8 @@ import { accountSchema } from './account';
 import { ruleSchema } from './rule';
 import { coerceObject, filteredArray, mimeSchema } from './utils';
 
+const WORDPRESS_REGEX = /^WordPress\/[\w+.-]*, EMA\/([\w+.-]*)/;
+
 const getApiVersions = (instance: any): Record<string, number> => ({
   ...Object.fromEntries(instance.pleroma?.metadata?.features?.map((feature: string) => {
     let string = `${feature}.pleroma.pl-api`;
@@ -91,17 +93,23 @@ const instanceV1ToV2 = (data: any) => {
 const fixVersion = (version: string) => {
   // Handle Mastodon release candidates
   if (new RegExp(/[0-9.]+rc[0-9]+/g).test(version)) {
-    version = version.split('rc').join('-rc');
+    return version.split('rc').join('-rc');
   }
 
   // Rename Akkoma to Pleroma+akkoma
   if (version.includes('Akkoma')) {
-    version = '2.7.2 (compatible; Pleroma 2.4.50+akkoma)';
+    return '2.7.2 (compatible; Pleroma 2.4.50+akkoma)';
   }
 
   // Set Takahē version to a Pleroma-like string
   if (version.startsWith('takahe/')) {
-    version = `0.0.0 (compatible; Takahe ${version.slice(7)})`;
+    return `0.0.0 (compatible; Takahe ${version.slice(7)})`;
+  }
+
+  const wordPressMatch = WORDPRESS_REGEX.exec(version);
+
+  if (wordPressMatch) {
+    return `0.0.0 (compatible; WordPress ${wordPressMatch[1]})`;
   }
 
   return version;
