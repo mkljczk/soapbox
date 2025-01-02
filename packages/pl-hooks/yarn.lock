@@ -2158,10 +2158,10 @@ pkg-types@^1.0.3, pkg-types@^1.1.1:
     mlly "^1.7.1"
     pathe "^1.1.2"
 
-pl-api@^1.0.0-rc.1:
-  version "1.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-1.0.0-rc.1.tgz#e5b1ead42230ed86e57ebaf020f3a2114da3bce0"
-  integrity sha512-bwV831HoATajRlmZg4USIzQvHgZC9MBAg0/sN/T5uXrM5tcUzfM+qU5ZQIzk+r5gSQ0ZCwqkjbajvhbn9tRcBA==
+pl-api@^1.0.0-rc.11:
+  version "1.0.0-rc.11"
+  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-1.0.0-rc.11.tgz#57336fa1907ad62daf46c641e75bc32a93126554"
+  integrity sha512-7trd+istbYdDYC8lXE7soUVOJGBMlKdYM0RLuBSzdV6UnL8h0TOgJKQ6lD/hc8bFYKXbN0i/vJYW6GDgcuAEAQ==
   dependencies:
     blurhash "^2.0.5"
     http-link-header "^1.1.3"
@@ -2171,7 +2171,7 @@ pl-api@^1.0.0-rc.1:
     object-to-formdata "^4.5.1"
     query-string "^9.1.1"
     semver "^7.6.3"
-    valibot "^0.42.1"
+    valibot "^1.0.0-beta.9"
 
 possible-typed-array-names@^1.0.0:
   version "1.0.0"
@@ -2613,10 +2613,10 @@ uri-js@^4.2.2, uri-js@^4.4.1:
   dependencies:
     punycode "^2.1.0"
 
-valibot@^0.42.1:
-  version "0.42.1"
-  resolved "https://registry.yarnpkg.com/valibot/-/valibot-0.42.1.tgz#a31183d8e9d7552f98e22ca0977172cab8815188"
-  integrity sha512-3keXV29Ar5b//Hqi4MbSdV7lfVp6zuYLZuA9V1PvQUsXqogr+u5lvLPLk3A4f74VUXDnf/JfWMN6sB+koJ/FFw==
+valibot@^1.0.0-beta.9:
+  version "1.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/valibot/-/valibot-1.0.0-beta.9.tgz#8ae38ca53429a5c4c4cce4378e3c87cca708a287"
+  integrity sha512-yEX8gMAZ2R1yI2uwOO4NCtVnJQx36zn3vD0omzzj9FhcoblvPukENIiRZXKZwCnqSeV80bMm8wNiGhQ0S8fiww==
 
 vite-plugin-dts@^4.2.1:
   version "4.2.1"
