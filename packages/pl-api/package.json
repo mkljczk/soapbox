@@ -1,6 +1,6 @@
 {
   "name": "pl-api",
-  "version": "1.0.0-rc.11",
+  "version": "1.0.0-rc.15",
   "type": "module",
   "homepage": "https://github.com/mkljczk/pl-fe/tree/develop/packages/pl-api",
   "repository": {
@@ -31,6 +31,7 @@
     "eslint-plugin-compat": "6.0.2",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-promise": "^7.2.1",
+    "rollup-plugin-tree-shakeable": "^1.0.3",
     "typedoc": "^0.27.6",
     "typedoc-material-theme": "^1.2.0",
     "typedoc-plugin-valibot": "^1.0.0",
