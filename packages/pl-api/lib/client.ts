@@ -4,26 +4,97 @@ import pick from 'lodash.pick';
 import * as v from 'valibot';
 
 import {
-  type Account,
-  type AdminAccount,
-  type AdminAnnouncement,
-  type AdminModerationLogEntry,
-  type AdminReport,
-  type GroupRole,
-  type Instance,
+  accountSchema,
+  adminAccountSchema,
+  adminAnnouncementSchema,
+  adminCanonicalEmailBlockSchema,
+  adminCohortSchema,
+  adminDimensionSchema,
+  adminDomainAllowSchema,
+  adminDomainBlockSchema,
+  adminDomainSchema,
+  adminEmailDomainBlockSchema,
+  adminIpBlockSchema,
+  adminMeasureSchema,
+  adminModerationLogEntrySchema,
+  adminRelaySchema,
+  adminReportSchema,
+  adminRuleSchema,
+  adminTagSchema,
+  announcementSchema,
+  antennaSchema,
+  applicationSchema,
+  backupSchema,
+  bookmarkFolderSchema,
+  chatMessageSchema,
+  chatSchema,
+  contextSchema,
+  conversationSchema,
+  credentialAccountSchema,
+  credentialApplicationSchema,
+  customEmojiSchema,
+  domainBlockSchema,
+  emojiReactionSchema,
+  extendedDescriptionSchema,
+  familiarFollowersSchema,
+  featuredTagSchema,
+  filterKeywordSchema,
+  filterSchema,
+  filterStatusSchema,
+  groupMemberSchema,
+  groupRelationshipSchema,
+  groupSchema,
   instanceSchema,
-  type Notification,
-  type PleromaConfig,
-  type Status,
-  type StreamingEvent,
+  interactionPoliciesSchema,
+  interactionRequestSchema,
+  listSchema,
+  locationSchema,
+  markersSchema,
+  mediaAttachmentSchema,
+  mutedAccountSchema,
+  notificationPolicySchema,
+  notificationRequestSchema,
+  notificationSchema,
+  oauthTokenSchema,
+  pleromaConfigSchema,
+  pollSchema,
+  relationshipSchema,
+  reportSchema,
+  ruleSchema,
+  scheduledStatusSchema,
+  scrobbleSchema,
+  searchSchema,
+  statusEditSchema,
+  statusSchema,
+  statusSourceSchema,
+  streamingEventSchema,
+  suggestionSchema,
+  tagSchema,
+  tokenSchema,
+  translationSchema,
+  trendsLinkSchema,
+  webPushSubscriptionSchema,
 } from './entities';
+import { circleSchema } from './entities/circle';
+import { type GroupedNotificationsResults, groupedNotificationsResultsSchema, type NotificationGroup } from './entities/grouped-notifications-results';
 import { filteredArray } from './entities/utils';
 import { AKKOMA, type Features, getFeatures, GOTOSOCIAL, MITRA, PIXELFED } from './features';
 import request, { getNextLink, getPrevLink, type RequestBody, type RequestMeta } from './request';
-import { SCHEMAS } from './schemas';
 import { buildFullPath } from './utils/url';
 
-import type { GroupedNotificationsResults, NotificationGroup } from './entities/grouped-notifications-results';
+import type {
+  Account,
+  AdminAccount,
+  AdminAnnouncement,
+  AdminModerationLogEntry,
+  AdminReport,
+  GroupRole,
+  Instance,
+  Notification,
+  PleromaConfig,
+  Status,
+  StreamingEvent,
+} from './entities';
 import type { PlApiResponse } from './main';
 import type {
   CreateScrobbleParams,
@@ -273,7 +344,7 @@ class PlApiClient {
       next: response.json?.count > (params.page_size * ((params.page || 1) - 1) + response.json?.users?.length)
         ? () => this.#paginatedPleromaAccounts({ ...params, page: (params.page || 0) + 1 })
         : null,
-      items: v.parse(filteredArray(SCHEMAS.adminAccountSchema), response.json?.users),
+      items: v.parse(filteredArray(adminAccountSchema), response.json?.users),
       partial: response.status === 206,
       total: response.json?.total,
     };
@@ -292,7 +363,7 @@ class PlApiClient {
       next: response.json?.total > (params.page_size * ((params.page || 1) - 1) + response.json?.reports?.length)
         ? () => this.#paginatedPleromaReports({ ...params, page: (params.page || 0) + 1 })
         : null,
-      items: v.parse(filteredArray(SCHEMAS.adminReportSchema), response.json?.reports),
+      items: v.parse(filteredArray(adminReportSchema), response.json?.reports),
       partial: response.status === 206,
       total: response.json?.total,
     };
@@ -312,7 +383,7 @@ class PlApiClient {
       next: response.json?.length
         ? () => this.#paginatedPleromaStatuses({ ...params, page: (params.page || 0) + 1 })
         : null,
-      items: v.parse(filteredArray(SCHEMAS.statusSchema), response.json),
+      items: v.parse(filteredArray(statusSchema), response.json),
       partial: response.status === 206,
     };
   };
@@ -386,7 +457,7 @@ class PlApiClient {
     createApplication: async (params: CreateApplicationParams) => {
       const response = await this.request('/api/v1/apps', { method: 'POST', body: params });
 
-      return v.parse(SCHEMAS.credentialApplicationSchema, response.json);
+      return v.parse(credentialApplicationSchema, response.json);
     },
 
     /**
@@ -397,7 +468,7 @@ class PlApiClient {
     verifyApplication: async () => {
       const response = await this.request('/api/v1/apps/verify_credentials');
 
-      return v.parse(SCHEMAS.applicationSchema, response.json);
+      return v.parse(applicationSchema, response.json);
     },
   };
 
@@ -421,7 +492,7 @@ class PlApiClient {
     getToken: async (params: GetTokenParams) => {
       const response = await this.request('/oauth/token', { method: 'POST', body: params });
 
-      return v.parse(SCHEMAS.tokenSchema, { scope: params.scope || '', ...response.json });
+      return v.parse(tokenSchema, { scope: params.scope || '', ...response.json });
     },
 
     /**
@@ -452,7 +523,7 @@ class PlApiClient {
     mfaChallenge: async (params: MfaChallengeParams) => {
       const response = await this.request('/oauth/mfa/challenge', { method: 'POST', body: params });
 
-      return v.parse(SCHEMAS.tokenSchema, response.json);
+      return v.parse(tokenSchema, response.json);
     },
   };
 
@@ -473,7 +544,7 @@ class PlApiClient {
     getAccount: async (accountId: string, params?: GetAccountParams) => {
       const response = await this.request(`/api/v1/accounts/${accountId}`, { params });
 
-      return v.parse(SCHEMAS.accountSchema, response.json);
+      return v.parse(accountSchema, response.json);
     },
 
     /**
@@ -486,7 +557,7 @@ class PlApiClient {
     getAccounts: async (accountId: string[]) => {
       const response = await this.request('/api/v1/accounts', { params: { id: accountId } });
 
-      return v.parse(filteredArray(SCHEMAS.accountSchema), response.json);
+      return v.parse(filteredArray(accountSchema), response.json);
     },
 
     /**
@@ -495,7 +566,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/accounts/#statuses}
      */
     getAccountStatuses: async (accountId: string, params?: GetAccountStatusesParams) =>
-      this.#paginatedGet(`/api/v1/accounts/${accountId}/statuses`, { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet(`/api/v1/accounts/${accountId}/statuses`, { params }, statusSchema),
 
     /**
      * Get account’s followers
@@ -503,7 +574,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/accounts/#followers}
      */
     getAccountFollowers: async (accountId: string, params?: GetAccountFollowersParams) =>
-      this.#paginatedGet(`/api/v1/accounts/${accountId}/followers`, { params }, SCHEMAS.accountSchema),
+      this.#paginatedGet(`/api/v1/accounts/${accountId}/followers`, { params }, accountSchema),
 
     /**
      * Get account’s following
@@ -511,7 +582,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/accounts/#following}
      */
     getAccountFollowing: async (accountId: string, params?: GetAccountFollowingParams) =>
-      this.#paginatedGet(`/api/v1/accounts/${accountId}/following`, { params }, SCHEMAS.accountSchema),
+      this.#paginatedGet(`/api/v1/accounts/${accountId}/following`, { params }, accountSchema),
 
     /**
      * Get account’s featured tags
@@ -523,7 +594,7 @@ class PlApiClient {
     getAccountFeaturedTags: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/featured_tags`);
 
-      return v.parse(filteredArray(SCHEMAS.featuredTagSchema), response.json);
+      return v.parse(filteredArray(featuredTagSchema), response.json);
     },
 
     /**
@@ -534,7 +605,7 @@ class PlApiClient {
     getAccountLists: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/lists`);
 
-      return v.parse(filteredArray(SCHEMAS.listSchema), response.json);
+      return v.parse(filteredArray(listSchema), response.json);
     },
 
     /**
@@ -545,7 +616,7 @@ class PlApiClient {
     getAccountAntennas: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/antennas`);
 
-      return v.parse(filteredArray(SCHEMAS.antennaSchema), response.json);
+      return v.parse(filteredArray(antennaSchema), response.json);
     },
 
     /**
@@ -555,7 +626,7 @@ class PlApiClient {
     getAccountExcludeAntennas: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/circles`);
 
-      return v.parse(filteredArray(SCHEMAS.circleSchema), response.json);
+      return v.parse(filteredArray(circleSchema), response.json);
     },
 
     /**
@@ -566,7 +637,7 @@ class PlApiClient {
     getAccountCircles: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/exclude_antennas`);
 
-      return v.parse(filteredArray(SCHEMAS.antennaSchema), response.json);
+      return v.parse(filteredArray(antennaSchema), response.json);
     },
 
     /**
@@ -577,7 +648,7 @@ class PlApiClient {
     followAccount: async (accountId: string, params?: FollowAccountParams) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/follow`, { method: 'POST', body: params });
 
-      return v.parse(SCHEMAS.relationshipSchema, response.json);
+      return v.parse(relationshipSchema, response.json);
     },
 
     /**
@@ -588,7 +659,7 @@ class PlApiClient {
     unfollowAccount: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/unfollow`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.relationshipSchema, response.json);
+      return v.parse(relationshipSchema, response.json);
     },
 
     /**
@@ -599,7 +670,7 @@ class PlApiClient {
     removeAccountFromFollowers: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/remove_from_followers`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.relationshipSchema, response.json);
+      return v.parse(relationshipSchema, response.json);
     },
 
     /**
@@ -610,7 +681,7 @@ class PlApiClient {
     pinAccount: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/pin`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.relationshipSchema, response.json);
+      return v.parse(relationshipSchema, response.json);
     },
 
     /**
@@ -621,7 +692,7 @@ class PlApiClient {
     unpinAccount: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/unpin`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.relationshipSchema, response.json);
+      return v.parse(relationshipSchema, response.json);
     },
 
     /**
@@ -632,7 +703,7 @@ class PlApiClient {
     updateAccountNote: async (accountId: string, comment: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/note`, { method: 'POST', body: { comment } });
 
-      return v.parse(SCHEMAS.relationshipSchema, response.json);
+      return v.parse(relationshipSchema, response.json);
     },
 
     /**
@@ -643,7 +714,7 @@ class PlApiClient {
     getRelationships: async (accountIds: string[], params?: GetRelationshipsParams) => {
       const response = await this.request('/api/v1/accounts/relationships', { params: { ...params, id: accountIds } });
 
-      return v.parse(filteredArray(SCHEMAS.relationshipSchema), response.json);
+      return v.parse(filteredArray(relationshipSchema), response.json);
     },
 
     /**
@@ -669,7 +740,7 @@ class PlApiClient {
         response = (await this.request('/api/v1/accounts/familiar_followers', { params: { id: accountIds } })).json;
       }
 
-      return v.parse(filteredArray(SCHEMAS.familiarFollowersSchema), response);
+      return v.parse(filteredArray(familiarFollowersSchema), response);
     },
 
     /**
@@ -680,7 +751,7 @@ class PlApiClient {
     searchAccounts: async (q: string, params?: SearchAccountParams, meta?: RequestMeta) => {
       const response = await this.request('/api/v1/accounts/search', { ...meta, params: { ...params, q } });
 
-      return v.parse(filteredArray(SCHEMAS.accountSchema), response.json);
+      return v.parse(filteredArray(accountSchema), response.json);
     },
 
     /**
@@ -693,7 +764,7 @@ class PlApiClient {
     lookupAccount: async (acct: string, meta?: RequestMeta) => {
       const response = await this.request('/api/v1/accounts/lookup', { ...meta, params: { acct } });
 
-      return v.parse(SCHEMAS.accountSchema, response.json);
+      return v.parse(accountSchema, response.json);
     },
 
     /**
@@ -706,7 +777,7 @@ class PlApiClient {
         body: { ...params, account_id: accountId },
       });
 
-      return v.parse(SCHEMAS.reportSchema, response.json);
+      return v.parse(reportSchema, response.json);
     },
 
     /**
@@ -719,7 +790,7 @@ class PlApiClient {
     getAccountEndorsements: async (accountId: string, params?: GetAccountEndorsementsParams) => {
       const response = await this.request(`/api/v1/pleroma/accounts/${accountId}/endorsements`, { params });
 
-      return v.parse(filteredArray(SCHEMAS.accountSchema), response.json);
+      return v.parse(filteredArray(accountSchema), response.json);
     },
 
     /**
@@ -731,7 +802,7 @@ class PlApiClient {
     getBirthdays: async (day: number, month: number) => {
       const response = await this.request('/api/v1/pleroma/birthdays', { params: { day, month } });
 
-      return v.parse(filteredArray(SCHEMAS.accountSchema), response.json);
+      return v.parse(filteredArray(accountSchema), response.json);
     },
 
     /**
@@ -741,7 +812,7 @@ class PlApiClient {
      * @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#apiv1pleromaaccountsidfavourites}
      */
     getAccountFavourites: async (accountId: string, params?: GetAccountFavouritesParams) =>
-      this.#paginatedGet(`/api/v1/pleroma/accounts/${accountId}/favourites`, { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet(`/api/v1/pleroma/accounts/${accountId}/favourites`, { params }, statusSchema),
 
     /**
      * Interact with profile or status from remote account
@@ -780,7 +851,7 @@ class PlApiClient {
      * @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#get-apiv1pleromaaccountsidscrobbles}
      */
     getScrobbles: async (accountId: string, params?: GetScrobblesParams) =>
-      this.#paginatedGet(`/api/v1/pleroma/accounts/${accountId}/scrobbles`, { params }, SCHEMAS.scrobbleSchema),
+      this.#paginatedGet(`/api/v1/pleroma/accounts/${accountId}/scrobbles`, { params }, scrobbleSchema),
 
     /**
      * Creates a new Listen activity for an account
@@ -793,7 +864,7 @@ class PlApiClient {
 
       const response = await this.request('/api/v1/pleroma/scrobble', { body: params });
 
-      return v.parse(SCHEMAS.scrobbleSchema, response.json);
+      return v.parse(scrobbleSchema, response.json);
     },
   };
 
@@ -804,7 +875,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/bookmarks/#get}
      */
     getBookmarks: async (params?: GetBookmarksParams) =>
-      this.#paginatedGet('/api/v1/bookmarks', { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet('/api/v1/bookmarks', { params }, statusSchema),
 
     /**
      * View favourited statuses
@@ -812,14 +883,14 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/favourites/#get}
      */
     getFavourites: async (params?: GetFavouritesParams) =>
-      this.#paginatedGet('/api/v1/favourites', { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet('/api/v1/favourites', { params }, statusSchema),
 
     /**
      * View pending follow requests
      * @see {@link https://docs.joinmastodon.org/methods/follow_requests/#get}
      */
     getFollowRequests: async (params?: GetFollowRequestsParams) =>
-      this.#paginatedGet('/api/v1/follow_requests', { params }, SCHEMAS.accountSchema),
+      this.#paginatedGet('/api/v1/follow_requests', { params }, accountSchema),
 
     /**
      * Accept follow request
@@ -828,7 +899,7 @@ class PlApiClient {
     acceptFollowRequest: async (accountId: string) => {
       const response = await this.request(`/api/v1/follow_requests/${accountId}/authorize`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.relationshipSchema, response.json);
+      return v.parse(relationshipSchema, response.json);
     },
 
     /**
@@ -838,7 +909,7 @@ class PlApiClient {
     rejectFollowRequest: async (accountId: string) => {
       const response = await this.request(`/api/v1/follow_requests/${accountId}/reject`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.relationshipSchema, response.json);
+      return v.parse(relationshipSchema, response.json);
     },
 
     /**
@@ -847,7 +918,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/endorsements/#get}
      */
     getEndorsements: async (params?: GetEndorsementsParams) =>
-      this.#paginatedGet('/api/v1/endorsements', { params }, SCHEMAS.accountSchema),
+      this.#paginatedGet('/api/v1/endorsements', { params }, accountSchema),
 
     /**
      * View your featured tags
@@ -859,7 +930,7 @@ class PlApiClient {
     getFeaturedTags: async () => {
       const response = await this.request('/api/v1/featured_tags');
 
-      return v.parse(filteredArray(SCHEMAS.featuredTagSchema), response.json);
+      return v.parse(filteredArray(featuredTagSchema), response.json);
     },
 
     /**
@@ -875,7 +946,7 @@ class PlApiClient {
         body: { name },
       });
 
-      return v.parse(filteredArray(SCHEMAS.featuredTagSchema), response.json);
+      return v.parse(filteredArray(featuredTagSchema), response.json);
     },
 
     /**
@@ -904,7 +975,7 @@ class PlApiClient {
     getFeaturedTagsSuggestions: async () => {
       const response = await this.request('/api/v1/featured_tags/suggestions');
 
-      return v.parse(filteredArray(SCHEMAS.tagSchema), response.json);
+      return v.parse(filteredArray(tagSchema), response.json);
     },
 
     /**
@@ -915,7 +986,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/followed_tags/#get}
      */
     getFollowedTags: async (params?: GetFollowedTagsParams) =>
-      this.#paginatedGet('/api/v1/followed_tags', { params }, SCHEMAS.tagSchema),
+      this.#paginatedGet('/api/v1/followed_tags', { params }, tagSchema),
 
     /**
      * View information about a single tag
@@ -925,7 +996,7 @@ class PlApiClient {
     getTag: async (tagId: string) => {
       const response = await this.request(`/api/v1/tags/${tagId}`);
 
-      return v.parse(SCHEMAS.tagSchema, response.json);
+      return v.parse(tagSchema, response.json);
     },
 
     /**
@@ -936,7 +1007,7 @@ class PlApiClient {
     followTag: async (tagId: string) => {
       const response = await this.request(`/api/v1/tags/${tagId}/follow`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.tagSchema, response.json);
+      return v.parse(tagSchema, response.json);
     },
 
     /**
@@ -947,7 +1018,7 @@ class PlApiClient {
     unfollowTag: async (tagId: string) => {
       const response = await this.request(`/api/v1/tags/${tagId}/unfollow`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.tagSchema, response.json);
+      return v.parse(tagSchema, response.json);
     },
 
     /**
@@ -967,7 +1038,7 @@ class PlApiClient {
         { params: { limit } },
       );
 
-      return v.parse(filteredArray(SCHEMAS.suggestionSchema), response.json);
+      return v.parse(filteredArray(suggestionSchema), response.json);
     },
 
     /**
@@ -992,7 +1063,7 @@ class PlApiClient {
     getBookmarkFolders: async () => {
       const response = await this.request('/api/v1/pleroma/bookmark_folders');
 
-      return v.parse(filteredArray(SCHEMAS.bookmarkFolderSchema), response.json);
+      return v.parse(filteredArray(bookmarkFolderSchema), response.json);
     },
 
     /**
@@ -1004,7 +1075,7 @@ class PlApiClient {
     createBookmarkFolder: async (params: CreateBookmarkFolderParams) => {
       const response = await this.request('/api/v1/pleroma/bookmark_folders', { method: 'POST', body: params });
 
-      return v.parse(SCHEMAS.bookmarkFolderSchema, response.json);
+      return v.parse(bookmarkFolderSchema, response.json);
     },
 
     /**
@@ -1016,7 +1087,7 @@ class PlApiClient {
     updateBookmarkFolder: async (bookmarkFolderId: string, params: UpdateBookmarkFolderParams) => {
       const response = await this.request(`/api/v1/pleroma/bookmark_folders/${bookmarkFolderId}`, { method: 'PATCH', body: params });
 
-      return v.parse(SCHEMAS.bookmarkFolderSchema, response.json);
+      return v.parse(bookmarkFolderSchema, response.json);
     },
 
     /**
@@ -1028,7 +1099,7 @@ class PlApiClient {
     deleteBookmarkFolder: async (bookmarkFolderId: string) => {
       const response = await this.request(`/api/v1/pleroma/bookmark_folders/${bookmarkFolderId}`, { method: 'DELETE' });
 
-      return v.parse(SCHEMAS.bookmarkFolderSchema, response.json);
+      return v.parse(bookmarkFolderSchema, response.json);
     },
   };
 
@@ -1046,7 +1117,7 @@ class PlApiClient {
         body: { language: params.locale, ...params },
       });
 
-      return v.parse(SCHEMAS.tokenSchema, response.json);
+      return v.parse(tokenSchema, response.json);
     },
 
     /**
@@ -1057,7 +1128,7 @@ class PlApiClient {
     verifyCredentials: async () => {
       const response = await this.request('/api/v1/accounts/verify_credentials');
 
-      return v.parse(SCHEMAS.credentialAccountSchema, response.json);
+      return v.parse(credentialAccountSchema, response.json);
     },
 
     /**
@@ -1082,7 +1153,7 @@ class PlApiClient {
         body: params,
       });
 
-      return v.parse(SCHEMAS.credentialAccountSchema, response.json);
+      return v.parse(credentialAccountSchema, response.json);
     },
 
     /**
@@ -1093,7 +1164,7 @@ class PlApiClient {
     deleteAvatar: async () => {
       const response = await this.request('/api/v1/profile/avatar', { method: 'DELETE' });
 
-      return v.parse(SCHEMAS.credentialAccountSchema, response.json);
+      return v.parse(credentialAccountSchema, response.json);
     },
 
     /**
@@ -1104,7 +1175,7 @@ class PlApiClient {
     deleteHeader: async () => {
       const response = await this.request('/api/v1/profile/header', { method: 'DELETE' });
 
-      return v.parse(SCHEMAS.credentialAccountSchema, response.json);
+      return v.parse(credentialAccountSchema, response.json);
     },
 
     /**
@@ -1126,7 +1197,7 @@ class PlApiClient {
     createBackup: async () => {
       const response = await this.request('/api/v1/pleroma/backups', { method: 'POST' });
 
-      return v.parse(SCHEMAS.backupSchema, response.json);
+      return v.parse(backupSchema, response.json);
     },
 
     /**
@@ -1137,7 +1208,7 @@ class PlApiClient {
     getBackups: async () => {
       const response = await this.request('/api/v1/pleroma/backups');
 
-      return v.parse(filteredArray(SCHEMAS.backupSchema), response.json);
+      return v.parse(filteredArray(backupSchema), response.json);
     },
 
     /**
@@ -1187,7 +1258,7 @@ class PlApiClient {
     getOauthTokens: async () => {
       const response = await this.request('/api/oauth_tokens');
 
-      return v.parse(filteredArray(SCHEMAS.oauthTokenSchema), response.json);
+      return v.parse(filteredArray(oauthTokenSchema), response.json);
     },
 
     /**
@@ -1516,7 +1587,7 @@ class PlApiClient {
     getInteractionPolicies: async () => {
       const response = await this.request('/api/v1/interaction_policies/defaults');
 
-      return v.parse(SCHEMAS.interactionPoliciesSchema, response.json);
+      return v.parse(interactionPoliciesSchema, response.json);
     },
 
     /**
@@ -1528,7 +1599,7 @@ class PlApiClient {
     updateInteractionPolicies: async (params: UpdateInteractionPoliciesParams) => {
       const response = await this.request('/api/v1/interaction_policies/defaults', { method: 'PATCH', body: params });
 
-      return v.parse(SCHEMAS.interactionPoliciesSchema, response.json);
+      return v.parse(interactionPoliciesSchema, response.json);
     },
 
     /**
@@ -1565,7 +1636,7 @@ class PlApiClient {
     blockAccount: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/block`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.relationshipSchema, response.json);
+      return v.parse(relationshipSchema, response.json);
     },
 
     /**
@@ -1576,7 +1647,7 @@ class PlApiClient {
     unblockAccount: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/unblock`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.relationshipSchema, response.json);
+      return v.parse(relationshipSchema, response.json);
     },
 
     /**
@@ -1589,7 +1660,7 @@ class PlApiClient {
     muteAccount: async (accountId: string, params?: MuteAccountParams) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/mute`, { method: 'POST', body: params });
 
-      return v.parse(SCHEMAS.relationshipSchema, response.json);
+      return v.parse(relationshipSchema, response.json);
     },
 
     /**
@@ -1602,7 +1673,7 @@ class PlApiClient {
     unmuteAccount: async (accountId: string) => {
       const response = await this.request(`/api/v1/accounts/${accountId}/unmute`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.relationshipSchema, response.json);
+      return v.parse(relationshipSchema, response.json);
     },
 
     /**
@@ -1613,14 +1684,14 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/mutes/#get}
      */
     getMutes: async (params?: GetMutesParams) =>
-      this.#paginatedGet('/api/v1/mutes', { params }, SCHEMAS.mutedAccountSchema),
+      this.#paginatedGet('/api/v1/mutes', { params }, mutedAccountSchema),
 
     /**
      * View blocked users
      * @see {@link https://docs.joinmastodon.org/methods/blocks/#get}
      */
     getBlocks: async (params?: GetBlocksParams) =>
-      this.#paginatedGet('/api/v1/blocks', { params }, SCHEMAS.accountSchema),
+      this.#paginatedGet('/api/v1/blocks', { params }, accountSchema),
 
     /**
      * Get domain blocks
@@ -1669,7 +1740,7 @@ class PlApiClient {
     getFilters: async () => {
       const response = await this.request(this.features.filtersV2 ? '/api/v2/filters' : '/api/v1/filters');
 
-      return v.parse(filteredArray(SCHEMAS.filterSchema), response.json);
+      return v.parse(filteredArray(filterSchema), response.json);
     },
 
     /**
@@ -1686,7 +1757,7 @@ class PlApiClient {
           : `/api/v1/filters/${filterId}`,
       );
 
-      return v.parse(SCHEMAS.filterSchema, response.json);
+      return v.parse(filterSchema, response.json);
     },
 
     /**
@@ -1712,7 +1783,7 @@ class PlApiClient {
         },
       );
 
-      return v.parse(SCHEMAS.filterSchema, response.json);
+      return v.parse(filterSchema, response.json);
     },
 
     /**
@@ -1738,7 +1809,7 @@ class PlApiClient {
         },
       );
 
-      return v.parse(SCHEMAS.filterSchema, response.json);
+      return v.parse(filterSchema, response.json);
     },
 
     /**
@@ -1769,7 +1840,7 @@ class PlApiClient {
     getFilterKeywords: async (filterId: string) => {
       const response = await this.request(`/api/v2/filters/${filterId}/keywords`);
 
-      return v.parse(filteredArray(SCHEMAS.filterKeywordSchema), response.json);
+      return v.parse(filteredArray(filterKeywordSchema), response.json);
     },
 
     /**
@@ -1785,7 +1856,7 @@ class PlApiClient {
         body: { keyword, whole_word },
       });
 
-      return v.parse(SCHEMAS.filterKeywordSchema, response.json);
+      return v.parse(filterKeywordSchema, response.json);
     },
 
     /**
@@ -1798,7 +1869,7 @@ class PlApiClient {
     getFilterKeyword: async (filterId: string) => {
       const response = await this.request(`/api/v2/filters/keywords/${filterId}`);
 
-      return v.parse(SCHEMAS.filterKeywordSchema, response.json);
+      return v.parse(filterKeywordSchema, response.json);
     },
 
     /**
@@ -1814,7 +1885,7 @@ class PlApiClient {
         body: { keyword, whole_word },
       });
 
-      return v.parse(SCHEMAS.filterKeywordSchema, response.json);
+      return v.parse(filterKeywordSchema, response.json);
     },
 
     /**
@@ -1840,7 +1911,7 @@ class PlApiClient {
     getFilterStatuses: async (filterId: string) => {
       const response = await this.request(`/api/v2/filters/${filterId}/statuses`);
 
-      return v.parse(filteredArray(SCHEMAS.filterStatusSchema), response.json);
+      return v.parse(filteredArray(filterStatusSchema), response.json);
     },
 
     /**
@@ -1856,7 +1927,7 @@ class PlApiClient {
         body: { status_id: statusId },
       });
 
-      return v.parse(SCHEMAS.filterStatusSchema, response.json);
+      return v.parse(filterStatusSchema, response.json);
     },
 
     /**
@@ -1869,7 +1940,7 @@ class PlApiClient {
     getFilterStatus: async (statusId: string) => {
       const response = await this.request(`/api/v2/filters/statuses/${statusId}`);
 
-      return v.parse(SCHEMAS.filterStatusSchema, response.json);
+      return v.parse(filterStatusSchema, response.json);
     },
 
     /**
@@ -1914,8 +1985,8 @@ class PlApiClient {
         body: fixedParams,
       });
 
-      if (response.json?.scheduled_at) return v.parse(SCHEMAS.scheduledStatusSchema, response.json);
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      if (response.json?.scheduled_at) return v.parse(scheduledStatusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -1926,7 +1997,7 @@ class PlApiClient {
     getStatus: async (statusId: string, params?: GetStatusParams) => {
       const response = await this.request(`/api/v1/statuses/${statusId}`, { params });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -1939,7 +2010,7 @@ class PlApiClient {
     getStatuses: async (statusIds: string[], params?: GetStatusesParams) => {
       const response = await this.request('/api/v1/statuses', { params: { ...params, id: statusIds } });
 
-      return v.parse(filteredArray(SCHEMAS.statusSchema), response.json);
+      return v.parse(filteredArray(statusSchema), response.json);
     },
 
     /**
@@ -1950,7 +2021,7 @@ class PlApiClient {
     deleteStatus: async (statusId: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}`, { method: 'DELETE' });
 
-      return v.parse(SCHEMAS.statusSourceSchema, response.json);
+      return v.parse(statusSourceSchema, response.json);
     },
 
     /**
@@ -1961,7 +2032,7 @@ class PlApiClient {
     getContext: async (statusId: string, params?: GetStatusContextParams) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/context`, { params });
 
-      return v.parse(SCHEMAS.contextSchema, response.json);
+      return v.parse(contextSchema, response.json);
     },
 
     /**
@@ -1978,7 +2049,7 @@ class PlApiClient {
         response = await this.request(`/api/v1/statuses/${statusId}/translate`, { method: 'POST', body: { lang } });
       }
 
-      return v.parse(SCHEMAS.translationSchema, response.json);
+      return v.parse(translationSchema, response.json);
     },
 
     /**
@@ -1989,7 +2060,7 @@ class PlApiClient {
     translateStatuses: async (statusIds: Array<string>, lang: string) => {
       const response = await this.request('/api/v1/pl/statuses/translate', { method: 'POST', body: { ids: statusIds, lang } });
 
-      return v.parse(filteredArray(SCHEMAS.translationSchema), response.json);
+      return v.parse(filteredArray(translationSchema), response.json);
     },
 
     /**
@@ -1998,7 +2069,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/statuses/#reblogged_by}
      */
     getRebloggedBy: async (statusId: string, params?: GetRebloggedByParams) =>
-      this.#paginatedGet(`/api/v1/statuses/${statusId}/reblogged_by`, { params }, SCHEMAS.accountSchema),
+      this.#paginatedGet(`/api/v1/statuses/${statusId}/reblogged_by`, { params }, accountSchema),
 
     /**
      * See who favourited a status
@@ -2006,7 +2077,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/statuses/#favourited_by}
      */
     getFavouritedBy: async (statusId: string, params?: GetFavouritedByParams) =>
-      this.#paginatedGet(`/api/v1/statuses/${statusId}/favourited_by`, { params }, SCHEMAS.accountSchema),
+      this.#paginatedGet(`/api/v1/statuses/${statusId}/favourited_by`, { params }, accountSchema),
 
     /**
      * Favourite a status
@@ -2016,7 +2087,7 @@ class PlApiClient {
     favouriteStatus: async (statusId: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/favourite`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2027,7 +2098,7 @@ class PlApiClient {
     unfavouriteStatus: async (statusId: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/unfavourite`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2038,7 +2109,7 @@ class PlApiClient {
     reblogStatus: async (statusId: string, visibility?: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/reblog`, { method: 'POST', body: { visibility } });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2049,7 +2120,7 @@ class PlApiClient {
     unreblogStatus: async (statusId: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/unreblog`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2060,7 +2131,7 @@ class PlApiClient {
     bookmarkStatus: async (statusId: string, folderId?: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/bookmark`, { method: 'POST', body: { folder_id: folderId } });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2071,7 +2142,7 @@ class PlApiClient {
     unbookmarkStatus: async (statusId: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/unbookmark`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2082,7 +2153,7 @@ class PlApiClient {
     muteStatus: async (statusId: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/mute`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2093,7 +2164,7 @@ class PlApiClient {
     unmuteStatus: async (statusId: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/unmute`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2104,7 +2175,7 @@ class PlApiClient {
     pinStatus: async (statusId: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/pin`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2115,7 +2186,7 @@ class PlApiClient {
     unpinStatus: async (statusId: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/unpin`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2136,7 +2207,7 @@ class PlApiClient {
 
       const response = await this.request(`/api/v1/statuses/${statusId}`, { method: 'PUT', body: params });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2147,7 +2218,7 @@ class PlApiClient {
     getStatusHistory: async (statusId: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/history`);
 
-      return v.parse(filteredArray(SCHEMAS.statusEditSchema), response.json);
+      return v.parse(filteredArray(statusEditSchema), response.json);
     },
 
     /**
@@ -2158,7 +2229,7 @@ class PlApiClient {
     getStatusSource: async (statusId: string) => {
       const response = await this.request(`/api/v1/statuses/${statusId}/source`);
 
-      return v.parse(SCHEMAS.statusSourceSchema, response.json);
+      return v.parse(statusSourceSchema, response.json);
     },
 
     /**
@@ -2191,7 +2262,7 @@ class PlApiClient {
         }, []);
       }
 
-      return v.parse(filteredArray(SCHEMAS.emojiReactionSchema), response?.json || []);
+      return v.parse(filteredArray(emojiReactionSchema), response?.json || []);
     },
 
     /**
@@ -2211,7 +2282,7 @@ class PlApiClient {
         response = await this.request(`/api/v1/statuses/${statusId}/react/${encodeURIComponent(emoji)}`, { method: 'POST' });
       }
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2230,7 +2301,7 @@ class PlApiClient {
         response = await this.request(`/api/v1/statuses/${statusId}/unreact/${encodeURIComponent(emoji)}`, { method: 'POST' });
       }
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2239,7 +2310,7 @@ class PlApiClient {
      * Requires features{@link Features['quotePosts']}.
      */
     getStatusQuotes: async (statusId: string, params?: GetStatusQuotesParams) =>
-      this.#paginatedGet(`/api/v1/pleroma/statuses/${statusId}/quotes`, { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet(`/api/v1/pleroma/statuses/${statusId}/quotes`, { params }, statusSchema),
 
     /**
      * Returns the list of accounts that have disliked the status as known by the current server
@@ -2248,7 +2319,7 @@ class PlApiClient {
      * @see {@link https://github.com/friendica/friendica/blob/2024.06-rc/doc/API-Friendica.md#get-apifriendicastatusesiddisliked_by}
      */
     getDislikedBy: async (statusId: string) =>
-      this.#paginatedGet(`/api/v1/statuses/${statusId}/disliked_by`, {}, SCHEMAS.accountSchema),
+      this.#paginatedGet(`/api/v1/statuses/${statusId}/disliked_by`, {}, accountSchema),
 
     /**
      * Marks the given status as disliked by this user
@@ -2257,7 +2328,7 @@ class PlApiClient {
     dislikeStatus: async (statusId: string) => {
       const response = await this.request(`/api/friendica/statuses/${statusId}/dislike`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -2267,14 +2338,14 @@ class PlApiClient {
     undislikeStatus: async (statusId: string) => {
       const response = await this.request(`/api/friendica/statuses/${statusId}/undislike`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     getStatusReferences: async (statusId: string, params?: GetStatusReferencesParams) =>
-      this.#paginatedGet(`/api/v1/statuses/${statusId}/referred_by`, { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet(`/api/v1/statuses/${statusId}/referred_by`, { params }, statusSchema),
 
     getStatusMentionedUsers: async (statusId: string, params?: GetStatusMentionedUsersParams) =>
-      this.#paginatedGet(`/api/v1/statuses/${statusId}/mentioned_by`, { params }, SCHEMAS.accountSchema),
+      this.#paginatedGet(`/api/v1/statuses/${statusId}/mentioned_by`, { params }, accountSchema),
   };
 
   public readonly media = {
@@ -2289,7 +2360,7 @@ class PlApiClient {
         { ...meta, method: 'POST', body: params, contentType: '' },
       );
 
-      return v.parse(SCHEMAS.mediaAttachmentSchema, response.json);
+      return v.parse(mediaAttachmentSchema, response.json);
     },
 
     /**
@@ -2300,7 +2371,7 @@ class PlApiClient {
     getMedia: async (attachmentId: string) => {
       const response = await this.request(`/api/v1/media/${attachmentId}`);
 
-      return v.parse(SCHEMAS.mediaAttachmentSchema, response.json);
+      return v.parse(mediaAttachmentSchema, response.json);
     },
 
     /**
@@ -2314,7 +2385,7 @@ class PlApiClient {
         body: params, contentType: params.thumbnail ? '' : undefined,
       });
 
-      return v.parse(SCHEMAS.mediaAttachmentSchema, response.json);
+      return v.parse(mediaAttachmentSchema, response.json);
     },
   };
 
@@ -2327,7 +2398,7 @@ class PlApiClient {
     getPoll: async (pollId: string) => {
       const response = await this.request(`/api/v1/polls/${pollId}`);
 
-      return v.parse(SCHEMAS.pollSchema, response.json);
+      return v.parse(pollSchema, response.json);
     },
 
     /**
@@ -2338,7 +2409,7 @@ class PlApiClient {
     vote: async (pollId: string, choices: number[]) => {
       const response = await this.request(`/api/v1/polls/${pollId}/votes`, { method: 'POST', body: { choices } });
 
-      return v.parse(SCHEMAS.pollSchema, response.json);
+      return v.parse(pollSchema, response.json);
     },
   };
 
@@ -2348,7 +2419,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/scheduled_statuses/#get}
      */
     getScheduledStatuses: async (params?: GetScheduledStatusesParams) =>
-      this.#paginatedGet('/api/v1/scheduled_statuses', { params }, SCHEMAS.scheduledStatusSchema),
+      this.#paginatedGet('/api/v1/scheduled_statuses', { params }, scheduledStatusSchema),
 
     /**
      * View a single scheduled status
@@ -2357,7 +2428,7 @@ class PlApiClient {
     getScheduledStatus: async (scheduledStatusId: string) => {
       const response = await this.request(`/api/v1/scheduled_statuses/${scheduledStatusId}`);
 
-      return v.parse(SCHEMAS.scheduledStatusSchema, response.json);
+      return v.parse(scheduledStatusSchema, response.json);
     },
 
     /**
@@ -2370,7 +2441,7 @@ class PlApiClient {
         body: { scheduled_at },
       });
 
-      return v.parse(SCHEMAS.scheduledStatusSchema, response.json);
+      return v.parse(scheduledStatusSchema, response.json);
     },
 
     /**
@@ -2391,7 +2462,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/timelines/#public}
      */
     publicTimeline: (params?: PublicTimelineParams) =>
-      this.#paginatedGet('/api/v1/timelines/public', { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet('/api/v1/timelines/public', { params }, statusSchema),
 
     /**
      * View hashtag timeline
@@ -2399,7 +2470,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/timelines/#tag}
      */
     hashtagTimeline: (hashtag: string, params?: HashtagTimelineParams) =>
-      this.#paginatedGet(`/api/v1/timelines/tag/${hashtag}`, { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet(`/api/v1/timelines/tag/${hashtag}`, { params }, statusSchema),
 
     /**
      * View home timeline
@@ -2407,7 +2478,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/timelines/#home}
      */
     homeTimeline: (params?: HomeTimelineParams) =>
-      this.#paginatedGet('/api/v1/timelines/home', { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet('/api/v1/timelines/home', { params }, statusSchema),
 
     /**
      * View link timeline
@@ -2415,7 +2486,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/timelines/#link}
      */
     linkTimeline: (url: string, params?: LinkTimelineParams) =>
-      this.#paginatedGet('/api/v1/timelines/link', { params: { ...params, url } }, SCHEMAS.statusSchema),
+      this.#paginatedGet('/api/v1/timelines/link', { params: { ...params, url } }, statusSchema),
 
     /**
      * View list timeline
@@ -2423,14 +2494,14 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/timelines/#list}
      */
     listTimeline: (listId: string, params?: ListTimelineParams) =>
-      this.#paginatedGet(`/api/v1/timelines/list/${listId}`, { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet(`/api/v1/timelines/list/${listId}`, { params }, statusSchema),
 
     /**
      * View all conversations
      * @see {@link https://docs.joinmastodon.org/methods/conversations/#get}
      */
     getConversations: (params?: GetConversationsParams) =>
-      this.#paginatedGet('/api/v1/conversations', { params }, SCHEMAS.conversationSchema),
+      this.#paginatedGet('/api/v1/conversations', { params }, conversationSchema),
 
     /**
      * Remove a conversation
@@ -2450,7 +2521,7 @@ class PlApiClient {
     markConversationRead: async (conversationId: string) => {
       const response = await this.request(`/api/v1/conversations/${conversationId}/read`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.conversationSchema, response.json);
+      return v.parse(conversationSchema, response.json);
     },
 
     /**
@@ -2461,7 +2532,7 @@ class PlApiClient {
     getMarkers: async (timelines?: string[]) => {
       const response = await this.request('/api/v1/markers', { params: { timeline: timelines } });
 
-      return v.parse(SCHEMAS.markersSchema, response.json);
+      return v.parse(markersSchema, response.json);
     },
 
     /**
@@ -2472,7 +2543,7 @@ class PlApiClient {
     saveMarkers: async (params: SaveMarkersParams) => {
       const response = await this.request('/api/v1/markers', { method: 'POST', body: params });
 
-      return v.parse(SCHEMAS.markersSchema, response.json);
+      return v.parse(markersSchema, response.json);
     },
 
     /**
@@ -2482,21 +2553,21 @@ class PlApiClient {
       this.#paginatedGet(
         this.features.version.software === PIXELFED ? `/api/v0/groups/${groupId}/feed` : `/api/v1/timelines/group/${groupId}`,
         { params },
-        SCHEMAS.statusSchema,
+        statusSchema,
       ),
 
     /**
      * Requires features{@link Features['bubbleTimeline']}.
      */
     bubbleTimeline: async (params?: BubbleTimelineParams) =>
-      this.#paginatedGet('/api/v1/timelines/bubble', { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet('/api/v1/timelines/bubble', { params }, statusSchema),
 
     /**
      * View antennatimeline
      * Requires features{@link Features['antennas']}.
      */
     antennaTimeline: (antennaId: string, params?: AntennaTimelineParams) =>
-      this.#paginatedGet(`/api/v1/timelines/list/${antennaId}`, { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet(`/api/v1/timelines/list/${antennaId}`, { params }, statusSchema),
   };
 
   public readonly lists = {
@@ -2508,7 +2579,7 @@ class PlApiClient {
     getLists: async () => {
       const response = await this.request('/api/v1/lists');
 
-      return v.parse(filteredArray(SCHEMAS.listSchema), response.json);
+      return v.parse(filteredArray(listSchema), response.json);
     },
 
     /**
@@ -2519,7 +2590,7 @@ class PlApiClient {
     getList: async (listId: string) => {
       const response = await this.request(`/api/v1/lists/${listId}`);
 
-      return v.parse(SCHEMAS.listSchema, response.json);
+      return v.parse(listSchema, response.json);
     },
 
     /**
@@ -2530,7 +2601,7 @@ class PlApiClient {
     createList: async (params: CreateListParams) => {
       const response = await this.request('/api/v1/lists', { method: 'POST', body: params });
 
-      return v.parse(SCHEMAS.listSchema, response.json);
+      return v.parse(listSchema, response.json);
     },
 
     /**
@@ -2541,7 +2612,7 @@ class PlApiClient {
     updateList: async (listId: string, params: UpdateListParams) => {
       const response = await this.request(`/api/v1/lists/${listId}`, { method: 'PUT', body: params });
 
-      return v.parse(SCHEMAS.listSchema, response.json);
+      return v.parse(listSchema, response.json);
     },
 
     /**
@@ -2559,7 +2630,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/lists/#accounts}
      */
     getListAccounts: async (listId: string, params?: GetListAccountsParams) =>
-      this.#paginatedGet(`/api/v1/lists/${listId}/accounts`, { params }, SCHEMAS.accountSchema),
+      this.#paginatedGet(`/api/v1/lists/${listId}/accounts`, { params }, accountSchema),
 
     /**
      * Add accounts to a list
@@ -2595,7 +2666,7 @@ class PlApiClient {
     favouriteList: async (listId: string) => {
       const response = await this.request(`/api/v1/lists/${listId}/favourite`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.listSchema, response.json);
+      return v.parse(listSchema, response.json);
     },
 
     /**
@@ -2606,7 +2677,7 @@ class PlApiClient {
     unfavouriteList: async (listId: string) => {
       const response = await this.request(`/api/v1/lists/${listId}/unfavourite`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.listSchema, response.json);
+      return v.parse(listSchema, response.json);
     },
   };
 
@@ -2640,7 +2711,7 @@ class PlApiClient {
       const enqueue = (fn: () => any) => ws.readyState === WebSocket.CONNECTING ? queue.push(fn) : fn();
 
       ws.onmessage = (event) => {
-        const message = v.parse(SCHEMAS.streamingEventSchema, JSON.parse(event.data as string));
+        const message = v.parse(streamingEventSchema, JSON.parse(event.data as string));
 
         listeners.filter(({ listener, stream }) => (!stream || message.stream.includes(stream)) && listener(message));
       };
@@ -2687,7 +2758,7 @@ class PlApiClient {
         ...params.exclude_types.filter(type => PLEROMA_TYPES.includes(type)).map(type => `pleroma:${type}`),
       ];
 
-      return this.#paginatedGet('/api/v1/notifications', { ...meta, params }, SCHEMAS.notificationSchema);
+      return this.#paginatedGet('/api/v1/notifications', { ...meta, params }, notificationSchema);
     },
 
     /**
@@ -2698,7 +2769,7 @@ class PlApiClient {
     getNotification: async (notificationId: string) => {
       const response = await this.request(`/api/v1/notifications/${notificationId}`);
 
-      return v.parse(SCHEMAS.notificationSchema, response.json);
+      return v.parse(notificationSchema, response.json);
     },
 
     /**
@@ -2748,7 +2819,7 @@ class PlApiClient {
     getNotificationPolicy: async () => {
       const response = await this.request('/api/v2/notifications/policy');
 
-      return v.parse(SCHEMAS.notificationPolicySchema, response.json);
+      return v.parse(notificationPolicySchema, response.json);
     },
 
     /**
@@ -2761,7 +2832,7 @@ class PlApiClient {
     updateNotificationPolicy: async (params: UpdateNotificationPolicyRequest) => {
       const response = await this.request('/api/v2/notifications/policy', { method: 'PATCH', body: params });
 
-      return v.parse(SCHEMAS.notificationPolicySchema, response.json);
+      return v.parse(notificationPolicySchema, response.json);
     },
 
     /**
@@ -2770,7 +2841,7 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/notifications/#get-requests}
      */
     getNotificationRequests: async (params?: GetNotificationRequestsParams) =>
-      this.#paginatedGet('/api/v1/notifications/requests', { params }, SCHEMAS.notificationRequestSchema),
+      this.#paginatedGet('/api/v1/notifications/requests', { params }, notificationRequestSchema),
 
     /**
      * Get a single notification request
@@ -2780,7 +2851,7 @@ class PlApiClient {
     getNotificationRequest: async (notificationRequestId: string) => {
       const response = await this.request(`/api/v1/notifications/requests/${notificationRequestId}`);
 
-      return v.parse(SCHEMAS.notificationRequestSchema, response.json);
+      return v.parse(notificationRequestSchema, response.json);
     },
 
     /**
@@ -2872,7 +2943,7 @@ class PlApiClient {
      */
     getGroupedNotifications: async (params: GetGroupedNotificationsParams, meta?: RequestMeta) => {
       if (this.features.groupedNotifications) {
-        return this.#paginatedGet('/api/v2/notifications', { ...meta, params }, SCHEMAS.groupedNotificationsResultsSchema, false);
+        return this.#paginatedGet('/api/v2/notifications', { ...meta, params }, groupedNotificationsResultsSchema, false);
       } else {
         const response = await this.notifications.getNotifications(
           pick(params, ['max_id', 'since_id', 'limit', 'min_id', 'types', 'exclude_types', 'account_id', 'include_filtered']),
@@ -2893,7 +2964,7 @@ class PlApiClient {
       if (this.features.groupedNotifications) {
         const response = await this.request(`/api/v2/notifications/${groupKey}`);
 
-        return v.parse(SCHEMAS.groupedNotificationsResultsSchema, response.json);
+        return v.parse(groupedNotificationsResultsSchema, response.json);
       } else {
         const response = await this.request(`/api/v1/notifications/${groupKey}`);
 
@@ -2933,7 +3004,7 @@ class PlApiClient {
       if (this.features.groupedNotifications) {
         const response = await this.request(`/api/v2/notifications/${groupKey}/accounts`);
 
-        return v.parse(filteredArray(SCHEMAS.accountSchema), response.json);
+        return v.parse(filteredArray(accountSchema), response.json);
       } else {
         return (await (this.groupedNotifications.getNotificationGroup(groupKey))).accounts;
       }
@@ -2970,7 +3041,7 @@ class PlApiClient {
     createSubscription: async (params: CreatePushNotificationsSubscriptionParams) => {
       const response = await this.request('/api/v1/push/subscription', { method: 'POST', body: params });
 
-      return v.parse(SCHEMAS.webPushSubscriptionSchema, response.json);
+      return v.parse(webPushSubscriptionSchema, response.json);
     },
 
     /**
@@ -2981,7 +3052,7 @@ class PlApiClient {
     getSubscription: async () => {
       const response = await this.request('/api/v1/push/subscription');
 
-      return v.parse(SCHEMAS.webPushSubscriptionSchema, response.json);
+      return v.parse(webPushSubscriptionSchema, response.json);
     },
 
     /**
@@ -2992,7 +3063,7 @@ class PlApiClient {
     updateSubscription: async (params: UpdatePushNotificationsSubscriptionParams) => {
       const response = await this.request('/api/v1/push/subscription', { method: 'PUT', body: params });
 
-      return v.parse(SCHEMAS.webPushSubscriptionSchema, response.json);
+      return v.parse(webPushSubscriptionSchema, response.json);
     },
 
     /**
@@ -3015,7 +3086,7 @@ class PlApiClient {
     search: async (q: string, params?: SearchParams, meta?: RequestMeta) => {
       const response = await this.request('/api/v2/search', { ...meta, params: { ...params, q } });
 
-      return v.parse(SCHEMAS.searchSchema, response.json);
+      return v.parse(searchSchema, response.json);
     },
 
     /**
@@ -3027,7 +3098,7 @@ class PlApiClient {
     searchLocation: async (q: string, meta?: RequestMeta) => {
       const response = await this.request('/api/v1/pleroma/search/location', { ...meta, params: { q } });
 
-      return v.parse(filteredArray(SCHEMAS.locationSchema), response.json);
+      return v.parse(filteredArray(locationSchema), response.json);
     },
   };
 
@@ -3045,7 +3116,7 @@ class PlApiClient {
         response = await this.request('/api/v1/instance');
       }
 
-      const instance = v.parse(v.pipe(SCHEMAS.instanceSchema, v.readonly()), response.json);
+      const instance = v.parse(v.pipe(instanceSchema, v.readonly()), response.json);
       this.#setInstance(instance);
 
       return instance;
@@ -3086,7 +3157,7 @@ class PlApiClient {
     getInstanceRules: async () => {
       const response = await this.request('/api/v1/instance/rules');
 
-      return v.parse(filteredArray(SCHEMAS.ruleSchema), response.json);
+      return v.parse(filteredArray(ruleSchema), response.json);
     },
 
     /**
@@ -3097,7 +3168,7 @@ class PlApiClient {
     getInstanceDomainBlocks: async () => {
       const response = await this.request('/api/v1/instance/rules');
 
-      return v.parse(filteredArray(SCHEMAS.domainBlockSchema), response.json);
+      return v.parse(filteredArray(domainBlockSchema), response.json);
     },
 
     /**
@@ -3108,7 +3179,7 @@ class PlApiClient {
     getInstanceExtendedDescription: async () => {
       const response = await this.request('/api/v1/instance/extended_description');
 
-      return v.parse(SCHEMAS.extendedDescriptionSchema, response.json);
+      return v.parse(extendedDescriptionSchema, response.json);
     },
 
     /**
@@ -3142,7 +3213,7 @@ class PlApiClient {
     profileDirectory: async (params?: ProfileDirectoryParams) => {
       const response = await this.request('/api/v1/directory', { params });
 
-      return v.parse(filteredArray(SCHEMAS.accountSchema), response.json);
+      return v.parse(filteredArray(accountSchema), response.json);
     },
 
     /**
@@ -3153,7 +3224,7 @@ class PlApiClient {
     getCustomEmojis: async () => {
       const response = await this.request('/api/v1/custom_emojis');
 
-      return v.parse(filteredArray(SCHEMAS.customEmojiSchema), response.json);
+      return v.parse(filteredArray(customEmojiSchema), response.json);
     },
 
     /**
@@ -3180,7 +3251,7 @@ class PlApiClient {
         { params },
       );
 
-      return v.parse(filteredArray(SCHEMAS.tagSchema), response.json);
+      return v.parse(filteredArray(tagSchema), response.json);
     },
 
     /**
@@ -3194,7 +3265,7 @@ class PlApiClient {
         { params },
       );
 
-      return v.parse(filteredArray(SCHEMAS.statusSchema), response.json);
+      return v.parse(filteredArray(statusSchema), response.json);
     },
 
     /**
@@ -3205,7 +3276,7 @@ class PlApiClient {
     getTrendingLinks: async (params?: GetTrendingLinks) => {
       const response = await this.request('/api/v1/trends/links', { params });
 
-      return v.parse(filteredArray(SCHEMAS.trendsLinkSchema), response.json);
+      return v.parse(filteredArray(trendsLinkSchema), response.json);
     },
   };
 
@@ -3218,7 +3289,7 @@ class PlApiClient {
     getAnnouncements: async () => {
       const response = await this.request('/api/v1/announcements');
 
-      return v.parse(filteredArray(SCHEMAS.announcementSchema), response.json);
+      return v.parse(filteredArray(announcementSchema), response.json);
     },
 
     /**
@@ -3265,7 +3336,7 @@ class PlApiClient {
        */
       getAccounts: async (params?: AdminGetAccountsParams) => {
         if (this.features.mastodonAdminV2) {
-          return this.#paginatedGet('/api/v2/admin/accounts', { params }, SCHEMAS.adminAccountSchema);
+          return this.#paginatedGet('/api/v2/admin/accounts', { params }, adminAccountSchema);
         } else {
           return this.#paginatedPleromaAccounts(params ? {
             query: params.username,
@@ -3299,7 +3370,7 @@ class PlApiClient {
           response = await this.request(`/api/v1/admin/users/${accountId}`);
         }
 
-        return v.parse(SCHEMAS.adminAccountSchema, response.json);
+        return v.parse(adminAccountSchema, response.json);
       },
 
       /**
@@ -3319,7 +3390,7 @@ class PlApiClient {
           response.json = response.json?.users?.[0];
         }
 
-        return v.parse(SCHEMAS.adminAccountSchema, response.json);
+        return v.parse(adminAccountSchema, response.json);
       },
 
       /**
@@ -3341,7 +3412,7 @@ class PlApiClient {
           } });
         }
 
-        return v.safeParse(SCHEMAS.adminAccountSchema, response.json).output || {};
+        return v.safeParse(adminAccountSchema, response.json).output || {};
       },
 
       /**
@@ -3352,7 +3423,7 @@ class PlApiClient {
       deleteAccount: async (accountId: string) => {
         const response = await this.request(`/api/v1/admin/accounts/${accountId}`, { method: 'DELETE' });
 
-        return v.parse(SCHEMAS.adminAccountSchema, response.json);
+        return v.parse(adminAccountSchema, response.json);
       },
 
       /**
@@ -3400,7 +3471,7 @@ class PlApiClient {
           response.json = response.json?.users?.[0];
         }
 
-        return v.parse(SCHEMAS.adminAccountSchema, response.json);
+        return v.parse(adminAccountSchema, response.json);
       },
 
       /**
@@ -3411,7 +3482,7 @@ class PlApiClient {
       unsilenceAccount: async (accountId: string) => {
         const response = await this.request(`/api/v1/admin/accounts/${accountId}/unsilence`, { method: 'POST' });
 
-        return v.parse(SCHEMAS.adminAccountSchema, response.json);
+        return v.parse(adminAccountSchema, response.json);
       },
 
       /**
@@ -3431,7 +3502,7 @@ class PlApiClient {
           response.json = response.json?.users?.[0];
         }
 
-        return v.parse(SCHEMAS.adminAccountSchema, response.json);
+        return v.parse(adminAccountSchema, response.json);
       },
 
       /**
@@ -3442,7 +3513,7 @@ class PlApiClient {
       unsensitiveAccount: async (accountId: string) => {
         const response = await this.request(`/api/v1/admin/accounts/${accountId}/unsensitive`, { method: 'POST' });
 
-        return v.parse(SCHEMAS.adminAccountSchema, response.json);
+        return v.parse(adminAccountSchema, response.json);
       },
 
       /**
@@ -3572,7 +3643,7 @@ class PlApiClient {
        * @see {@link https://docs.joinmastodon.org/methods/admin/domain_blocks/#get}
        */
       getDomainBlocks: (params?: AdminGetDomainBlocksParams) =>
-        this.#paginatedGet('/api/v1/admin/domain_blocks', { params }, SCHEMAS.adminDomainBlockSchema),
+        this.#paginatedGet('/api/v1/admin/domain_blocks', { params }, adminDomainBlockSchema),
 
       /**
        * Get a single blocked domain
@@ -3582,7 +3653,7 @@ class PlApiClient {
       getDomainBlock: async (domainBlockId: string) => {
         const response = await this.request(`/api/v1/admin/domain_blocks/${domainBlockId}`);
 
-        return v.parse(SCHEMAS.adminDomainBlockSchema, response.json);
+        return v.parse(adminDomainBlockSchema, response.json);
       },
 
       /**
@@ -3596,7 +3667,7 @@ class PlApiClient {
           body: { ...params, domain },
         });
 
-        return v.parse(SCHEMAS.adminDomainBlockSchema, response.json);
+        return v.parse(adminDomainBlockSchema, response.json);
       },
 
       /**
@@ -3610,7 +3681,7 @@ class PlApiClient {
           body: params,
         });
 
-        return v.parse(SCHEMAS.adminDomainBlockSchema, response.json);
+        return v.parse(adminDomainBlockSchema, response.json);
       },
 
       /**
@@ -3636,7 +3707,7 @@ class PlApiClient {
        */
       getReports: async (params?: AdminGetReportsParams) => {
         if (this.features.mastodonAdmin) {
-          return this.#paginatedGet('/api/v1/admin/reports', { params }, SCHEMAS.adminReportSchema);
+          return this.#paginatedGet('/api/v1/admin/reports', { params }, adminReportSchema);
         } else {
           return this.#paginatedPleromaReports({
             state: params?.resolved === true ? 'resolved' : params?.resolved === false ? 'open' : undefined,
@@ -3657,7 +3728,7 @@ class PlApiClient {
           response = await this.request(`/api/v1/pleroma/admin/reports/${reportId}`);
         }
 
-        return v.parse(SCHEMAS.adminReportSchema, response.json);
+        return v.parse(adminReportSchema, response.json);
       },
 
       /**
@@ -3668,7 +3739,7 @@ class PlApiClient {
       updateReport: async (reportId: string, params: AdminUpdateReportParams) => {
         const response = await this.request(`/api/v1/admin/reports/${reportId}`, { method: 'PUT', body: params });
 
-        return v.parse(SCHEMAS.adminReportSchema, response.json);
+        return v.parse(adminReportSchema, response.json);
       },
 
       /**
@@ -3679,7 +3750,7 @@ class PlApiClient {
       assignReportToSelf: async (reportId: string) => {
         const response = await this.request(`/api/v1/admin/reports/${reportId}/assign_to_self`, { method: 'POST' });
 
-        return v.parse(SCHEMAS.adminReportSchema, response.json);
+        return v.parse(adminReportSchema, response.json);
       },
 
       /**
@@ -3690,7 +3761,7 @@ class PlApiClient {
       unassignReport: async (reportId: string) => {
         const response = await this.request(`/api/v1/admin/reports/${reportId}/unassign`, { method: 'POST' });
 
-        return v.parse(SCHEMAS.adminReportSchema, response.json);
+        return v.parse(adminReportSchema, response.json);
       },
 
       /**
@@ -3709,7 +3780,7 @@ class PlApiClient {
           });
         }
 
-        return v.parse(SCHEMAS.adminReportSchema, response.json);
+        return v.parse(adminReportSchema, response.json);
       },
 
       /**
@@ -3728,7 +3799,7 @@ class PlApiClient {
           });
         }
 
-        return v.parse(SCHEMAS.adminReportSchema, response.json);
+        return v.parse(adminReportSchema, response.json);
       },
     },
 
@@ -3758,7 +3829,7 @@ class PlApiClient {
       getStatus: async (statusId: string) => {
         const response = await this.request(`/api/v1/pleroma/admin/statuses/${statusId}`);
 
-        return v.parse(SCHEMAS.statusSchema, response.json);
+        return v.parse(statusSchema, response.json);
       },
 
       /**
@@ -3770,7 +3841,7 @@ class PlApiClient {
       updateStatus: async (statusId: string, params: AdminUpdateStatusParams) => {
         const response = await this.request(`/api/v1/pleroma/admin/statuses/${statusId}`, { method: 'PUT', body: params });
 
-        return v.parse(SCHEMAS.statusSchema, response.json);
+        return v.parse(statusSchema, response.json);
       },
 
       /**
@@ -3795,7 +3866,7 @@ class PlApiClient {
       getTrendingLinks: async () => {
         const response = await this.request('/api/v1/admin/trends/links');
 
-        return v.parse(filteredArray(SCHEMAS.trendsLinkSchema), response.json);
+        return v.parse(filteredArray(trendsLinkSchema), response.json);
       },
 
       /**
@@ -3806,7 +3877,7 @@ class PlApiClient {
       getTrendingStatuses: async () => {
         const response = await this.request('/api/v1/admin/trends/statuses');
 
-        return v.parse(filteredArray(SCHEMAS.statusSchema), response.json);
+        return v.parse(filteredArray(statusSchema), response.json);
       },
 
       /**
@@ -3817,7 +3888,7 @@ class PlApiClient {
       getTrendingTags: async () => {
         const response = await this.request('/api/v1/admin/trends/links');
 
-        return v.parse(filteredArray(SCHEMAS.adminTagSchema), response.json);
+        return v.parse(filteredArray(adminTagSchema), response.json);
       },
     },
 
@@ -3828,7 +3899,7 @@ class PlApiClient {
        * @see {@link https://docs.joinmastodon.org/methods/admin/canonical_email_blocks/#get}
        */
       getCanonicalEmailBlocks: async (params?: AdminGetCanonicalEmailBlocks) =>
-        this.#paginatedGet('/api/v1/admin/canonical_email_blocks', { params }, SCHEMAS.adminCanonicalEmailBlockSchema),
+        this.#paginatedGet('/api/v1/admin/canonical_email_blocks', { params }, adminCanonicalEmailBlockSchema),
 
       /**
        * Show a single canonical email block
@@ -3837,7 +3908,7 @@ class PlApiClient {
       getCanonicalEmailBlock: async (canonicalEmailBlockId: string) => {
         const response = await this.request(`/api/v1/admin/canonical_email_blocks/${canonicalEmailBlockId}`);
 
-        return v.parse(SCHEMAS.adminCanonicalEmailBlockSchema, response.json);
+        return v.parse(adminCanonicalEmailBlockSchema, response.json);
       },
 
       /**
@@ -3848,7 +3919,7 @@ class PlApiClient {
       testCanonicalEmailBlock: async (email: string) => {
         const response = await this.request('/api/v1/admin/canonical_email_blocks/test', { method: 'POST', body: { email } });
 
-        return v.parse(filteredArray(SCHEMAS.adminCanonicalEmailBlockSchema), response.json);
+        return v.parse(filteredArray(adminCanonicalEmailBlockSchema), response.json);
       },
 
       /**
@@ -3858,7 +3929,7 @@ class PlApiClient {
       createCanonicalEmailBlock: async (email: string, canonical_email_hash?: string) => {
         const response = await this.request('/api/v1/admin/canonical_email_blocks', { method: 'POST', body: { email, canonical_email_hash } });
 
-        return v.parse(filteredArray(SCHEMAS.adminCanonicalEmailBlockSchema), response.json);
+        return v.parse(filteredArray(adminCanonicalEmailBlockSchema), response.json);
       },
 
       /**
@@ -3882,7 +3953,7 @@ class PlApiClient {
       getDimensions: async (keys: AdminDimensionKey[], params?: AdminGetDimensionsParams) => {
         const response = await this.request('/api/v1/admin/dimensions', { params: { ...params, keys } });
 
-        return v.parse(filteredArray(SCHEMAS.adminDimensionSchema), response.json);
+        return v.parse(filteredArray(adminDimensionSchema), response.json);
       },
     },
 
@@ -3894,7 +3965,7 @@ class PlApiClient {
        * @see {@link https://docs.joinmastodon.org/methods/admin/domain_allows/#get}
        */
       getDomainAllows: (params?: AdminGetDomainAllowsParams) =>
-        this.#paginatedGet('/api/v1/admin/domain_allows', { params }, SCHEMAS.adminDomainAllowSchema),
+        this.#paginatedGet('/api/v1/admin/domain_allows', { params }, adminDomainAllowSchema),
 
       /**
        * Get a single allowed domain
@@ -3904,7 +3975,7 @@ class PlApiClient {
       getDomainAllow: async (domainAllowId: string) => {
         const response = await this.request(`/api/v1/admin/domain_allows/${domainAllowId}`);
 
-        return v.parse(SCHEMAS.adminDomainAllowSchema, response.json);
+        return v.parse(adminDomainAllowSchema, response.json);
       },
 
       /**
@@ -3915,7 +3986,7 @@ class PlApiClient {
       createDomainAllow: async (domain: string) => {
         const response = await this.request('/api/v1/admin/domain_allows', { method: 'POST', body: { domain } });
 
-        return v.parse(SCHEMAS.adminDomainAllowSchema, response.json);
+        return v.parse(adminDomainAllowSchema, response.json);
       },
 
       /**
@@ -3938,7 +4009,7 @@ class PlApiClient {
        * @see {@link https://docs.joinmastodon.org/methods/admin/email_domain_blocks/#get}
        */
       getEmailDomainBlocks: (params?: AdminGetEmailDomainBlocksParams) =>
-        this.#paginatedGet('/api/v1/admin/email_domain_blocks', { params }, SCHEMAS.adminEmailDomainBlockSchema),
+        this.#paginatedGet('/api/v1/admin/email_domain_blocks', { params }, adminEmailDomainBlockSchema),
 
       /**
        * Get a single blocked email domain
@@ -3948,7 +4019,7 @@ class PlApiClient {
       getEmailDomainBlock: async (emailDomainBlockId: string) => {
         const response = await this.request(`/api/v1/admin/email_domain_blocks/${emailDomainBlockId}`);
 
-        return v.parse(SCHEMAS.adminEmailDomainBlockSchema, response.json);
+        return v.parse(adminEmailDomainBlockSchema, response.json);
       },
 
       /**
@@ -3959,7 +4030,7 @@ class PlApiClient {
       createEmailDomainBlock: async (domain: string) => {
         const response = await this.request('/api/v1/admin/email_domain_blocks', { method: 'POST', body: { domain } });
 
-        return v.parse(SCHEMAS.adminEmailDomainBlockSchema, response.json);
+        return v.parse(adminEmailDomainBlockSchema, response.json);
       },
 
       /**
@@ -3982,7 +4053,7 @@ class PlApiClient {
        * @see {@link https://docs.joinmastodon.org/methods/admin/ip_blocks/#get}
        */
       getIpBlocks: (params?: AdminGetIpBlocksParams) =>
-        this.#paginatedGet('/api/v1/admin/ip_blocks', { params }, SCHEMAS.adminIpBlockSchema),
+        this.#paginatedGet('/api/v1/admin/ip_blocks', { params }, adminIpBlockSchema),
 
       /**
        * Get a single IP block
@@ -3992,7 +4063,7 @@ class PlApiClient {
       getIpBlock: async (ipBlockId: string) => {
         const response = await this.request(`/api/v1/admin/ip_blocks/${ipBlockId}`);
 
-        return v.parse(SCHEMAS.adminIpBlockSchema, response.json);
+        return v.parse(adminIpBlockSchema, response.json);
       },
 
       /**
@@ -4003,7 +4074,7 @@ class PlApiClient {
       createIpBlock: async (params: AdminCreateIpBlockParams) => {
         const response = await this.request('/api/v1/admin/ip_blocks', { method: 'POST', body: params });
 
-        return v.parse(SCHEMAS.adminIpBlockSchema, response.json);
+        return v.parse(adminIpBlockSchema, response.json);
       },
 
       /**
@@ -4014,7 +4085,7 @@ class PlApiClient {
       updateIpBlock: async (ipBlockId: string, params: AdminCreateIpBlockParams) => {
         const response = await this.request(`/api/v1/admin/ip_blocks/${ipBlockId}`, { method: 'POST', body: params });
 
-        return v.parse(SCHEMAS.adminIpBlockSchema, response.json);
+        return v.parse(adminIpBlockSchema, response.json);
       },
 
       /**
@@ -4039,7 +4110,7 @@ class PlApiClient {
       getMeasures: async (keys: AdminMeasureKey[], start_at: string, end_at: string, params?: AdminGetMeasuresParams) => {
         const response = await this.request('/api/v1/admin/measures', { params: { ...params, keys, start_at, end_at } });
 
-        return v.parse(filteredArray(SCHEMAS.adminMeasureSchema), response.json);
+        return v.parse(filteredArray(adminMeasureSchema), response.json);
       },
     },
 
@@ -4054,7 +4125,7 @@ class PlApiClient {
       getRetention: async (start_at: string, end_at: string, frequency: 'day' | 'month') => {
         const response = await this.request('/api/v1/admin/retention', { params: { start_at, end_at, frequency } });
 
-        return v.parse(SCHEMAS.adminCohortSchema, response.json);
+        return v.parse(adminCohortSchema, response.json);
       },
     },
 
@@ -4068,7 +4139,7 @@ class PlApiClient {
       getAnnouncements: async (params?: AdminGetAnnouncementsParams): Promise<PaginatedResponse<AdminAnnouncement>> => {
         const response = await this.request('/api/v1/pleroma/admin/announcements', { params });
 
-        const items = v.parse(filteredArray(SCHEMAS.adminAnnouncementSchema), response.json);
+        const items = v.parse(filteredArray(adminAnnouncementSchema), response.json);
 
         return {
           previous: null,
@@ -4087,7 +4158,7 @@ class PlApiClient {
       getAnnouncement: async (announcementId: string) => {
         const response = await this.request(`/api/v1/pleroma/admin/announcements/${announcementId}`);
 
-        return v.parse(SCHEMAS.adminAnnouncementSchema, response.json);
+        return v.parse(adminAnnouncementSchema, response.json);
       },
 
       /**
@@ -4099,7 +4170,7 @@ class PlApiClient {
       createAnnouncement: async (params: AdminCreateAnnouncementParams) => {
         const response = await this.request('/api/v1/pleroma/admin/announcements', { method: 'POST', body: params });
 
-        return v.parse(SCHEMAS.adminAnnouncementSchema, response.json);
+        return v.parse(adminAnnouncementSchema, response.json);
       },
 
       /**
@@ -4111,7 +4182,7 @@ class PlApiClient {
       updateAnnouncement: async (announcementId: string, params: AdminUpdateAnnouncementParams) => {
         const response = await this.request(`/api/v1/pleroma/admin/announcements/${announcementId}`, { method: 'PATCH', body: params });
 
-        return v.parse(SCHEMAS.adminAnnouncementSchema, response.json);
+        return v.parse(adminAnnouncementSchema, response.json);
       },
 
       /**
@@ -4136,7 +4207,7 @@ class PlApiClient {
       getDomains: async () => {
         const response = await this.request('/api/v1/pleroma/admin/domains');
 
-        return v.parse(filteredArray(SCHEMAS.adminDomainSchema), response.json);
+        return v.parse(filteredArray(adminDomainSchema), response.json);
       },
 
       /**
@@ -4147,7 +4218,7 @@ class PlApiClient {
       createDomain: async (params: AdminCreateDomainParams) => {
         const response = await this.request('/api/v1/pleroma/admin/domains', { method: 'POST', body: params });
 
-        return v.parse(SCHEMAS.adminDomainSchema, response.json);
+        return v.parse(adminDomainSchema, response.json);
       },
 
       /**
@@ -4158,7 +4229,7 @@ class PlApiClient {
       updateDomain: async (domainId: string, isPublic: boolean) => {
         const response = await this.request(`/api/v1/pleroma/admin/domains/${domainId}`, { method: 'PATCH', body: { public: isPublic } });
 
-        return v.parse(SCHEMAS.adminDomainSchema, response.json);
+        return v.parse(adminDomainSchema, response.json);
       },
 
       /**
@@ -4183,7 +4254,7 @@ class PlApiClient {
       getModerationLog: async ({ limit, ...params }: AdminGetModerationLogParams = {}): Promise<PaginatedResponse<AdminModerationLogEntry>> => {
         const response = await this.request('/api/v1/pleroma/admin/moderation_log', { params: { page_size: limit, ...params } });
 
-        const items = v.parse(filteredArray(SCHEMAS.adminModerationLogEntrySchema), response.json.items);
+        const items = v.parse(filteredArray(adminModerationLogEntrySchema), response.json.items);
 
         return {
           previous: (params.page && params.page > 1) ? () => this.admin.moderationLog.getModerationLog({ ...params, page: params.page! - 1 }) : null,
@@ -4204,7 +4275,7 @@ class PlApiClient {
       getRelays: async () => {
         const response = await this.request('/api/v1/pleroma/admin/relay');
 
-        return v.parse(filteredArray(SCHEMAS.adminRelaySchema), response.json);
+        return v.parse(filteredArray(adminRelaySchema), response.json);
       },
 
       /**
@@ -4216,7 +4287,7 @@ class PlApiClient {
       followRelay: async (relayUrl: string) => {
         const response = await this.request('/api/v1/pleroma/admin/relay', { method: 'POST', body: { relay_url: relayUrl } });
 
-        return v.parse(SCHEMAS.adminRelaySchema, response.json);
+        return v.parse(adminRelaySchema, response.json);
       },
 
       /**
@@ -4228,7 +4299,7 @@ class PlApiClient {
       unfollowRelay: async (relayUrl: string, force = false) => {
         const response = await this.request('/api/v1/pleroma/admin/relay', { method: 'DELETE', body: { relay_url: relayUrl, force } });
 
-        return v.parse(SCHEMAS.adminRelaySchema, response.json);
+        return v.parse(adminRelaySchema, response.json);
       },
     },
 
@@ -4242,7 +4313,7 @@ class PlApiClient {
       getRules: async () => {
         const response = await this.request('/api/v1/pleroma/admin/rules');
 
-        return v.parse(filteredArray(SCHEMAS.adminRuleSchema), response.json);
+        return v.parse(filteredArray(adminRuleSchema), response.json);
       },
 
       /**
@@ -4254,7 +4325,7 @@ class PlApiClient {
       createRule: async (params: AdminCreateRuleParams) => {
         const response = await this.request('/api/v1/pleroma/admin/rules', { method: 'POST', body: params });
 
-        return v.parse(SCHEMAS.adminRuleSchema, response.json);
+        return v.parse(adminRuleSchema, response.json);
       },
 
       /**
@@ -4266,7 +4337,7 @@ class PlApiClient {
       updateRule: async (ruleId: string, params: AdminUpdateRuleParams) => {
         const response = await this.request(`/api/v1/pleroma/admin/rules/${ruleId}`, { method: 'PATCH', body: params });
 
-        return v.parse(SCHEMAS.adminRuleSchema, response.json);
+        return v.parse(adminRuleSchema, response.json);
       },
 
       /**
@@ -4286,13 +4357,13 @@ class PlApiClient {
       getPleromaConfig: async () => {
         const response = await this.request('/api/v1/pleroma/admin/config');
 
-        return v.parse(SCHEMAS.pleromaConfigSchema, response.json);
+        return v.parse(pleromaConfigSchema, response.json);
       },
 
       updatePleromaConfig: async (params: PleromaConfig['configs']) => {
         const response = await this.request('/api/v1/pleroma/admin/config', { method: 'POST', body: { configs: params } });
 
-        return v.parse(SCHEMAS.pleromaConfigSchema, response.json);
+        return v.parse(pleromaConfigSchema, response.json);
       },
     },
   };
@@ -4329,7 +4400,7 @@ class PlApiClient {
     createChat: async (accountId: string) => {
       const response = await this.request(`/api/v1/pleroma/chats/by-account-id/${accountId}`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.chatSchema, response.json);
+      return v.parse(chatSchema, response.json);
     },
 
     /**
@@ -4338,7 +4409,7 @@ class PlApiClient {
     getChat: async (chatId: string) => {
       const response = await this.request(`/api/v1/pleroma/chats/${chatId}`);
 
-      return v.parse(SCHEMAS.chatSchema, response.json);
+      return v.parse(chatSchema, response.json);
     },
 
     /**
@@ -4349,7 +4420,7 @@ class PlApiClient {
     markChatAsRead: async (chatId: string, last_read_id: string) => {
       const response = await this.request(`/api/v1/pleroma/chats/${chatId}/read`, { method: 'POST', body: { last_read_id } });
 
-      return v.parse(SCHEMAS.chatSchema, response.json);
+      return v.parse(chatSchema, response.json);
     },
 
     /**
@@ -4360,7 +4431,7 @@ class PlApiClient {
     markChatMessageAsRead: async (chatId: string, chatMessageId: string) => {
       const response = await this.request(`/api/v1/pleroma/chats/${chatId}/messages/${chatMessageId}/read`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.chatSchema, response.json);
+      return v.parse(chatSchema, response.json);
     },
 
     /**
@@ -4369,14 +4440,14 @@ class PlApiClient {
      * @see {@link https://docs.pleroma.social/backend/development/API/chats/#getting-a-list-of-chats}
      */
     getChats: async (params?: GetChatsParams) =>
-      this.#paginatedGet('/api/v2/pleroma/chats', { params }, SCHEMAS.chatSchema),
+      this.#paginatedGet('/api/v2/pleroma/chats', { params }, chatSchema),
 
     /**
      * Getting the messages for a Chat
      * For a given Chat id, you can get the associated messages with
      */
     getChatMessages: async (chatId: string, params?: GetChatMessagesParams) =>
-      this.#paginatedGet(`/api/v1/pleroma/chats/${chatId}/messages`, { params }, SCHEMAS.chatMessageSchema),
+      this.#paginatedGet(`/api/v1/pleroma/chats/${chatId}/messages`, { params }, chatMessageSchema),
 
     /**
      * Posting a chat message
@@ -4386,7 +4457,7 @@ class PlApiClient {
     createChatMessage: async (chatId: string, params: CreateChatMessageParams) => {
       const response = await this.request(`/api/v1/pleroma/chats/${chatId}/messages`, { method: 'POST', body: params });
 
-      return v.parse(SCHEMAS.chatMessageSchema, response.json);
+      return v.parse(chatMessageSchema, response.json);
     },
 
     /**
@@ -4397,7 +4468,7 @@ class PlApiClient {
     deleteChatMessage: async (chatId: string, messageId: string) => {
       const response = await this.request(`/api/v1/pleroma/chats/${chatId}/messages/${messageId}`, { method: 'DELETE' });
 
-      return v.parse(SCHEMAS.chatMessageSchema, response.json);
+      return v.parse(chatMessageSchema, response.json);
     },
 
     /**
@@ -4408,7 +4479,7 @@ class PlApiClient {
     deleteChat: async (chatId: string) => {
       const response = await this.request(`/api/v1/pleroma/chats/${chatId}`, { method: 'DELETE' });
 
-      return v.parse(SCHEMAS.chatSchema, response.json);
+      return v.parse(chatSchema, response.json);
     },
   };
 
@@ -4420,7 +4491,7 @@ class PlApiClient {
     createEvent: async (params: CreateEventParams) => {
       const response = await this.request('/api/v1/pleroma/events', { method: 'POST', body: params });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -4430,7 +4501,7 @@ class PlApiClient {
     editEvent: async (statusId: string, params: EditEventParams) => {
       const response = await this.request(`/api/v1/pleroma/events/${statusId}`, { method: 'PUT', body: params });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -4438,14 +4509,14 @@ class PlApiClient {
      * @see {@link https://github.com/mkljczk/pl/blob/fork/docs/development/API/pleroma_api.md#apiv1pleromaeventsjoined_events}
      */
     getJoinedEvents: async (state?: 'pending' | 'reject' | 'accept', params?: GetJoinedEventsParams) =>
-      this.#paginatedGet('/api/v1/pleroma/events/joined_events', { params: { ...params, state } }, SCHEMAS.statusSchema),
+      this.#paginatedGet('/api/v1/pleroma/events/joined_events', { params: { ...params, state } }, statusSchema),
 
     /**
      * Gets event participants
      * @see {@link https://github.com/mkljczk/pl/blob/fork/docs/development/API/pleroma_api.md#apiv1pleromaeventsidparticipations}
      */
     getEventParticipations: async (statusId: string, params?: GetEventParticipationsParams) =>
-      this.#paginatedGet(`/api/v1/pleroma/events/${statusId}/participations`, { params }, SCHEMAS.accountSchema),
+      this.#paginatedGet(`/api/v1/pleroma/events/${statusId}/participations`, { params }, accountSchema),
 
     /**
      * Gets event participation requests
@@ -4453,7 +4524,7 @@ class PlApiClient {
      */
     getEventParticipationRequests: async (statusId: string, params?: GetEventParticipationRequestsParams) =>
       this.#paginatedGet(`/api/v1/pleroma/events/${statusId}/participation_requests`, { params }, v.object({
-        account: SCHEMAS.accountSchema,
+        account: accountSchema,
         participation_message: v.fallback(v.string(), ''),
       })),
 
@@ -4464,7 +4535,7 @@ class PlApiClient {
     acceptEventParticipationRequest: async (statusId: string, accountId: string) => {
       const response = await this.request(`/api/v1/pleroma/events/${statusId}/participation_requests/${accountId}/authorize`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -4474,7 +4545,7 @@ class PlApiClient {
     rejectEventParticipationRequest: async (statusId: string, accountId: string) => {
       const response = await this.request(`/api/v1/pleroma/events/${statusId}/participation_requests/${accountId}/reject`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -4484,7 +4555,7 @@ class PlApiClient {
     joinEvent: async (statusId: string, participation_message?: string) => {
       const response = await this.request(`/api/v1/pleroma/events/${statusId}/join`, { method: 'POST', body: { participation_message } });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -4494,7 +4565,7 @@ class PlApiClient {
     leaveEvent: async (statusId: string) => {
       const response = await this.request(`/api/v1/pleroma/events/${statusId}/leave`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.statusSchema, response.json);
+      return v.parse(statusSchema, response.json);
     },
 
     /**
@@ -4515,7 +4586,7 @@ class PlApiClient {
      * Requires features{@link Features['interactionRequests']}.
      */
     getInteractionRequests: async (params?: GetInteractionRequestsParams) =>
-      this.#paginatedGet('/api/v1/interaction_requests', { params }, SCHEMAS.interactionRequestSchema),
+      this.#paginatedGet('/api/v1/interaction_requests', { params }, interactionRequestSchema),
 
     /**
      * Get interaction request with the given ID.
@@ -4525,7 +4596,7 @@ class PlApiClient {
     getInteractionRequest: async (interactionRequestId: string) => {
       const response = await this.request(`/api/v1/interaction_requests/${interactionRequestId}`);
 
-      return v.parse(SCHEMAS.interactionRequestSchema, response.json);
+      return v.parse(interactionRequestSchema, response.json);
     },
 
     /**
@@ -4536,7 +4607,7 @@ class PlApiClient {
     authorizeInteractionRequest: async (interactionRequestId: string) => {
       const response = await this.request(`/api/v1/interaction_requests/${interactionRequestId}/authorize`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.interactionRequestSchema, response.json);
+      return v.parse(interactionRequestSchema, response.json);
     },
 
     /**
@@ -4547,7 +4618,7 @@ class PlApiClient {
     rejectInteractionRequest: async (interactionRequestId: string) => {
       const response = await this.request(`/api/v1/interaction_requests/${interactionRequestId}/authorize`, { method: 'POST' });
 
-      return v.parse(SCHEMAS.interactionRequestSchema, response.json);
+      return v.parse(interactionRequestSchema, response.json);
     },
   };
 
@@ -4558,7 +4629,7 @@ class PlApiClient {
     fetchAntennas: async () => {
       const response = await this.request('/api/v1/antennas');
 
-      return v.parse(filteredArray(SCHEMAS.antennaSchema), response.json);
+      return v.parse(filteredArray(antennaSchema), response.json);
     },
 
     /**
@@ -4567,7 +4638,7 @@ class PlApiClient {
     getAntennas: async (antennaId: string) => {
       const response = await this.request(`/api/v1/antennas/${antennaId}`);
 
-      return v.parse(SCHEMAS.antennaSchema, response.json);
+      return v.parse(antennaSchema, response.json);
     },
 
     /**
@@ -4576,7 +4647,7 @@ class PlApiClient {
     createAntenna: async (params: CreateAntennaParams) => {
       const response = await this.request('/api/v1/antennas', { method: 'POST', body: params });
 
-      return v.parse(SCHEMAS.antennaSchema, response.json);
+      return v.parse(antennaSchema, response.json);
     },
 
     /**
@@ -4585,7 +4656,7 @@ class PlApiClient {
     updateAntenna: async (antennaId: string, params: UpdateAntennaParams) => {
       const response = await this.request(`/api/v1/antennas/${antennaId}`, { method: 'PUT', body: params });
 
-      return v.parse(SCHEMAS.antennaSchema, response.json);
+      return v.parse(antennaSchema, response.json);
     },
 
     /**
@@ -4603,7 +4674,7 @@ class PlApiClient {
     getAntennaAccounts: async (antennaId: string) => {
       const response = await this.request(`/api/v1/antennas/${antennaId}/accounts`);
 
-      return v.parse(filteredArray(SCHEMAS.accountSchema), response.json);
+      return v.parse(filteredArray(accountSchema), response.json);
     },
 
     /**
@@ -4636,7 +4707,7 @@ class PlApiClient {
     getAntennaExcludeAccounts: async (antennaId: string) => {
       const response = await this.request(`/api/v1/antennas/${antennaId}/exclude_accounts`);
 
-      return v.parse(filteredArray(SCHEMAS.accountSchema), response.json);
+      return v.parse(filteredArray(accountSchema), response.json);
     },
 
     /**
@@ -4851,7 +4922,7 @@ class PlApiClient {
     fetchCircles: async () => {
       const response = await this.request('/api/v1/circles');
 
-      return v.parse(filteredArray(SCHEMAS.circleSchema), response.json);
+      return v.parse(filteredArray(circleSchema), response.json);
     },
 
     /**
@@ -4860,7 +4931,7 @@ class PlApiClient {
     getCircles: async (circleId: string) => {
       const response = await this.request(`/api/v1/circles/${circleId}`);
 
-      return v.parse(SCHEMAS.circleSchema, response.json);
+      return v.parse(circleSchema, response.json);
     },
 
     /**
@@ -4869,7 +4940,7 @@ class PlApiClient {
     createCircle: async (title: string) => {
       const response = await this.request('/api/v1/circles', { method: 'POST', body: { title } });
 
-      return v.parse(SCHEMAS.circleSchema, response.json);
+      return v.parse(circleSchema, response.json);
     },
 
     /**
@@ -4878,7 +4949,7 @@ class PlApiClient {
     updateCircle: async (circleId: string, title: string) => {
       const response = await this.request(`/api/v1/circles/${circleId}`, { method: 'PUT', body: { title } });
 
-      return v.parse(SCHEMAS.circleSchema, response.json);
+      return v.parse(circleSchema, response.json);
     },
 
     /**
@@ -4891,7 +4962,7 @@ class PlApiClient {
     },
 
     getCircleStatuses: (circleId: string, params: GetCircleStatusesParams) =>
-      this.#paginatedGet(`/api/v1/circles/${circleId}/statuses`, { params }, SCHEMAS.statusSchema),
+      this.#paginatedGet(`/api/v1/circles/${circleId}/statuses`, { params }, statusSchema),
   };
 
   /** Routes that are not part of any stable release */
@@ -4903,35 +4974,35 @@ class PlApiClient {
         getGroups: async (params?: AdminGetGroupsParams) => {
           const response = await this.request('/api/v1/admin/groups', { params });
 
-          return v.parse(filteredArray(SCHEMAS.groupSchema), response.json);
+          return v.parse(filteredArray(groupSchema), response.json);
         },
 
         /** return basic group information */
         getGroup: async (groupId: string) => {
           const response = await this.request(`/api/v1/admin/groups/${groupId}`);
 
-          return v.parse(SCHEMAS.groupSchema, response.json);
+          return v.parse(groupSchema, response.json);
         },
 
         /** suspends a group */
         suspendGroup: async (groupId: string) => {
           const response = await this.request(`/api/v1/admin/groups/${groupId}/suspend`, { method: 'POST' });
 
-          return v.parse(SCHEMAS.groupSchema, response.json);
+          return v.parse(groupSchema, response.json);
         },
 
         /** lift a suspension */
         unsuspendGroup: async (groupId: string) => {
           const response = await this.request(`/api/v1/admin/groups/${groupId}/unsuspend`, { method: 'POST' });
 
-          return v.parse(SCHEMAS.groupSchema, response.json);
+          return v.parse(groupSchema, response.json);
         },
 
         /** deletes an already-suspended group */
         deleteGroup: async (groupId: string) => {
           const response = await this.request(`/api/v1/admin/groups/${groupId}`, { method: 'DELETE' });
 
-          return v.parse(SCHEMAS.groupSchema, response.json);
+          return v.parse(groupSchema, response.json);
         },
       },
     },
@@ -4947,7 +5018,7 @@ class PlApiClient {
           response = await this.request('/api/v1/groups');
         }
 
-        return v.parse(filteredArray(SCHEMAS.groupSchema), response.json);
+        return v.parse(filteredArray(groupSchema), response.json);
       },
 
       /** create a group with the given attributes (`display_name`, `note`, `avatar` and `header`). Sets the user who made the request as group administrator */
@@ -4972,7 +5043,7 @@ class PlApiClient {
           });
         }
 
-        return v.parse(SCHEMAS.groupSchema, response.json);
+        return v.parse(groupSchema, response.json);
       },
 
       /** returns the `Group` entity describing a given group */
@@ -4985,7 +5056,7 @@ class PlApiClient {
           response = await this.request(`/api/v1/groups/${groupId}`);
         }
 
-        return v.parse(SCHEMAS.groupSchema, response.json);
+        return v.parse(groupSchema, response.json);
       },
 
       /** update group attributes (`display_name`, `note`, `avatar` and `header`) */
@@ -4996,7 +5067,7 @@ class PlApiClient {
           contentType: params.avatar || params.header ? '' : undefined,
         });
 
-        return v.parse(SCHEMAS.groupSchema, response.json);
+        return v.parse(groupSchema, response.json);
       },
 
       /** irreversibly deletes the group */
@@ -5017,7 +5088,7 @@ class PlApiClient {
         this.#paginatedGet(
           this.features.version.software === PIXELFED ? `/api/v0/groups/members/list?gid=${groupId}` : `/api/v1/groups/${groupId}/memberships`,
           { params: { ...params, role } },
-          SCHEMAS.groupMemberSchema,
+          groupMemberSchema,
         ),
 
       /** returns an array of `Account` entities representing pending requests to join a group */
@@ -5025,7 +5096,7 @@ class PlApiClient {
         this.#paginatedGet(
           this.features.version.software === PIXELFED ? `/api/v0/groups/members/requests?gid=${groupId}` : `/api/v1/groups/${groupId}/membership_requests`,
           { params },
-          SCHEMAS.accountSchema,
+          accountSchema,
         ),
 
       /** accept a pending request to become a group member */
@@ -5051,7 +5122,7 @@ class PlApiClient {
 
       /** list accounts blocked from interacting with the group */
       getGroupBlocks: async (groupId: string, params?: GetGroupBlocksParams) =>
-        this.#paginatedGet(`/api/v1/groups/${groupId}/blocks`, { params }, SCHEMAS.accountSchema),
+        this.#paginatedGet(`/api/v1/groups/${groupId}/blocks`, { params }, accountSchema),
 
       /** block one or more users. If they were in the group, they are also kicked of it */
       blockGroupUsers: async (groupId: string, accountIds: string[]) => {
@@ -5071,14 +5142,14 @@ class PlApiClient {
       joinGroup: async (groupId: string) => {
         const response = await this.request(`/api/v1/groups/${groupId}/join`, { method: 'POST' });
 
-        return v.parse(SCHEMAS.groupRelationshipSchema, response.json);
+        return v.parse(groupRelationshipSchema, response.json);
       },
 
       /** leaves a given group */
       leaveGroup: async (groupId: string) => {
         const response = await this.request(`/api/v1/groups/${groupId}/leave`, { method: 'POST' });
 
-        return v.parse(SCHEMAS.groupRelationshipSchema, response.json);
+        return v.parse(groupRelationshipSchema, response.json);
       },
 
       /** kick one or more group members */
@@ -5092,20 +5163,20 @@ class PlApiClient {
       promoteGroupUsers: async (groupId: string, accountIds: string[], role: GroupRole) => {
         const response = await this.request(`/api/v1/groups/${groupId}/promote`, { method: 'POST', params: { account_ids: accountIds, role } });
 
-        return v.parse(filteredArray(SCHEMAS.groupMemberSchema), response.json);
+        return v.parse(filteredArray(groupMemberSchema), response.json);
       },
 
       /** demote one or more accounts to role `new_role`. Returns an error unless every of the target account has a strictly lower role than the user (you cannot demote someone with the same role as you), or if any target account already has a role lower than `new_role`. Valid roles are `admin`, `moderator` and `user`. */
       demoteGroupUsers: async (groupId: string, accountIds: string[], role: GroupRole) => {
         const response = await this.request(`/api/v1/groups/${groupId}/demote`, { method: 'POST', params: { account_ids: accountIds, role } });
 
-        return v.parse(filteredArray(SCHEMAS.groupMemberSchema), response.json);
+        return v.parse(filteredArray(groupMemberSchema), response.json);
       },
 
       getGroupRelationships: async (groupIds: string[]) => {
         const response = await this.request('/api/v1/groups/relationships', { params: { id: groupIds } });
 
-        return v.parse(filteredArray(SCHEMAS.groupRelationshipSchema), response.json);
+        return v.parse(filteredArray(groupRelationshipSchema), response.json);
       },
     },
   };

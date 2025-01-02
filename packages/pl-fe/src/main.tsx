@@ -1,4 +1,3 @@
-import './schemas';
 import './polyfills';
 
 import React from 'react';

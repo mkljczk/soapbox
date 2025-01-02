@@ -10,14 +10,7 @@ A JavaScript library for interacting with Mastodon API-compatible servers, focus
 
 Example:
 ```ts
-import {
-  ALL_SCHEMAS,
-  importSchemas,
-  PlApiClient,
-  type CreateApplicationParams,
-} from 'pl-api';
-
-importSchemas(ALL_SCHEMAS);
+import { PlApiClient, type CreateApplicationParams } from 'pl-api';
 
 const { ACCESS_TOKEN } = process.env;
 
