@@ -3,25 +3,26 @@ import omit from 'lodash.omit';
 import pick from 'lodash.pick';
 import * as v from 'valibot';
 
+import {
+  type Account,
+  type AdminAccount,
+  type AdminAnnouncement,
+  type AdminModerationLogEntry,
+  type AdminReport,
+  type GroupRole,
+  type Instance,
+  instanceSchema,
+  type Notification,
+  type PleromaConfig,
+  type Status,
+  type StreamingEvent,
+} from './entities';
 import { filteredArray } from './entities/utils';
 import { AKKOMA, type Features, getFeatures, GOTOSOCIAL, MITRA, PIXELFED } from './features';
 import request, { getNextLink, getPrevLink, type RequestBody, type RequestMeta } from './request';
 import { SCHEMAS } from './schemas';
 import { buildFullPath } from './utils/url';
 
-import type {
-  Account,
-  AdminAccount,
-  AdminAnnouncement,
-  AdminModerationLogEntry,
-  AdminReport,
-  GroupRole,
-  Instance,
-  Notification,
-  PleromaConfig,
-  Status,
-  StreamingEvent,
-} from './entities';
 import type { GroupedNotificationsResults, NotificationGroup } from './entities/grouped-notifications-results';
 import type { PlApiResponse } from './main';
 import type {
@@ -198,7 +199,7 @@ class PlApiClient {
 
   baseURL: string;
   #accessToken?: string;
-  #instance: Instance = v.parse(SCHEMAS.instanceSchema, {});
+  #instance: Instance = v.parse(instanceSchema, {});
   public request = request.bind(this) as typeof request;
   public features: Features = getFeatures(this.#instance);
   #socket?: {

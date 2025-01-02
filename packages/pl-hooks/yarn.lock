@@ -2158,10 +2158,10 @@ pkg-types@^1.0.3, pkg-types@^1.1.1:
     mlly "^1.7.1"
     pathe "^1.1.2"
 
-pl-api@^1.0.0-rc.11:
-  version "1.0.0-rc.11"
-  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-1.0.0-rc.11.tgz#57336fa1907ad62daf46c641e75bc32a93126554"
-  integrity sha512-7trd+istbYdDYC8lXE7soUVOJGBMlKdYM0RLuBSzdV6UnL8h0TOgJKQ6lD/hc8bFYKXbN0i/vJYW6GDgcuAEAQ==
+pl-api@^1.0.0-rc.15:
+  version "1.0.0-rc.15"
+  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-1.0.0-rc.15.tgz#fa9d0bbc940388f5a18914e2b7e0b04a540dcd04"
+  integrity sha512-TqKOJ0URSUOpUJMVyGeRGCNRMocCbSCwSHx4ZkJoC7s/pcbcFWFB0aKDER9LoEOGk3SvBBH7mBDc/4Bnviqd6g==
   dependencies:
     blurhash "^2.0.5"
     http-link-header "^1.1.3"

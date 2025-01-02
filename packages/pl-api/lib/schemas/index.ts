@@ -1,10 +1,14 @@
 import * as v from 'valibot';
 
+import { instanceSchema } from '../entities';
+
 import type { ALL_SCHEMAS } from './all-schemas';
 
 const nullSchema = v.fallback(v.null(), null);
 
-const IMPORTED_SCHEMAS = {} as typeof ALL_SCHEMAS;
+const IMPORTED_SCHEMAS = {
+  instanceSchema,
+} as typeof ALL_SCHEMAS;
 
 const SCHEMAS = new Proxy(IMPORTED_SCHEMAS, {
   get: (target, p: keyof typeof ALL_SCHEMAS) => p in target ? target[p] : nullSchema,

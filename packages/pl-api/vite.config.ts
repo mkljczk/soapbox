@@ -1,5 +1,6 @@
 import { resolve } from 'path';
 
+import treeShakeable from 'rollup-plugin-tree-shakeable';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
@@ -19,6 +20,7 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       external: Object.keys(pkg.dependencies),
+      plugins: [treeShakeable()],
     },
   },
 });
