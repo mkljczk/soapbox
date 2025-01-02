@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { create } from 'mutative';
 import { interactionPoliciesSchema } from 'pl-api';
 import React, { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -6,16 +7,18 @@ import * as v from 'valibot';
 
 import List, { ListItem } from 'pl-fe/components/list';
 import Button from 'pl-fe/components/ui/button';
-import { CardTitle } from 'pl-fe/components/ui/card';
 import Column from 'pl-fe/components/ui/column';
 import Form from 'pl-fe/components/ui/form';
 import FormActions from 'pl-fe/components/ui/form-actions';
 import { InlineMultiselect } from 'pl-fe/components/ui/inline-multiselect';
 import Tabs from 'pl-fe/components/ui/tabs';
+import Text from 'pl-fe/components/ui/text';
 import { interactionPoliciesQueryOptions, updateInteractionPoliciesMutationOptions } from 'pl-fe/queries/settings/interaction-policies';
 import toast from 'pl-fe/toast';
 
 import Warning from '../compose/components/warning';
+
+import type { InteractionPolicy } from 'pl-api';
 
 type Visibility = 'public' | 'unlisted' | 'private';
 type Policy = 'can_favourite' | 'can_reblog' | 'can_reply';
@@ -45,19 +48,24 @@ const scopeMessages = defineMessages({
 
 const titleMessages = {
   public: defineMessages({
-    can_favourite: { id: 'interaction_policies.title.public.can_favourite', defaultMessage: 'Who can like a public post?' },
-    can_reply: { id: 'interaction_policies.title.public.can_reply', defaultMessage: 'Who can reply to a public post?' },
-    can_reblog: { id: 'interaction_policies.title.public.can_reblog', defaultMessage: 'Who can repost a public post?' },
+    can_favourite: { id: 'interaction_policies.title.public.can_favourite', defaultMessage: 'Who can like your public posts?' },
+    can_reply: { id: 'interaction_policies.title.public.can_reply', defaultMessage: 'Who can reply to your public posts?' },
+    can_reblog: { id: 'interaction_policies.title.public.can_reblog', defaultMessage: 'Who can repost your public posts?' },
   }),
   unlisted: defineMessages({
-    can_favourite: { id: 'interaction_policies.title.unlisted.can_favourite', defaultMessage: 'Who can like an unlisted post?' },
-    can_reply: { id: 'interaction_policies.title.unlisted.can_reply', defaultMessage: 'Who can reply to an unlisted post?' },
-    can_reblog: { id: 'interaction_policies.title.unlisted.can_reblog', defaultMessage: 'Who can repost an unlisted post?' },
+    can_favourite: { id: 'interaction_policies.title.unlisted.can_favourite', defaultMessage: 'Who can like your unlisted posts?' },
+    can_reply: { id: 'interaction_policies.title.unlisted.can_reply', defaultMessage: 'Who can reply to your unlisted posts?' },
+    can_reblog: { id: 'interaction_policies.title.unlisted.can_reblog', defaultMessage: 'Who can repost your unlisted posts?' },
   }),
   private: defineMessages({
-    can_favourite: { id: 'interaction_policies.title.private.can_favourite', defaultMessage: 'Who can like a followers-only post?' },
-    can_reply: { id: 'interaction_policies.title.private.can_reply', defaultMessage: 'Who can reply to a followers-only post?' },
-    can_reblog: { id: 'interaction_policies.title.private.can_reblog', defaultMessage: 'Who can repost a followers-only post?' },
+    can_favourite: { id: 'interaction_policies.title.private.can_favourite', defaultMessage: 'Who can like your followers-only post?' },
+    can_reply: { id: 'interaction_policies.title.private.can_reply', defaultMessage: 'Who can reply to your followers-only post?' },
+    can_reblog: { id: 'interaction_policies.title.private.can_reblog', defaultMessage: 'Who can repost your followers-only post?' },
+  }),
+  single_post: defineMessages({
+    can_favourite: { id: 'interaction_policies.title.single_post.can_favourite', defaultMessage: 'Who can like this post?' },
+    can_reply: { id: 'interaction_policies.title.single_post.can_reply', defaultMessage: 'Who can reply to this post?' },
+    can_reblog: { id: 'interaction_policies.title.single_post.can_reblog', defaultMessage: 'Who can repost this post?' },
   }),
 };
 
@@ -80,6 +88,64 @@ const options: Record<Visibility, Record<Policy, Array<Scope>>> = {
 };
 
 const emptySchema = v.parse(interactionPoliciesSchema, {});
+interface IInteractionPolicyConfig {
+  interactionPolicy: InteractionPolicy;
+  visibility: Visibility;
+  onChange: (policy: Policy, rule: Rule, value: Scope[]) => void;
+  singlePost?: boolean;
+  disabled?: boolean;
+}
+
+const InteractionPolicyConfig: React.FC<IInteractionPolicyConfig> = ({ interactionPolicy, visibility, onChange, singlePost, disabled }) => {
+  const intl = useIntl();
+
+  const getItems = (policy: Policy) => Object.fromEntries(options[visibility][policy].map(scope => [scope, intl.formatMessage(scopeMessages[scope])])) as Record<Scope, string>;
+
+  const handleChange = (policy: Policy, rule: Rule) => (value: Scope[]) => {
+    onChange(policy, rule, value);
+  };
+
+  return (
+    <>
+      {policies.map((policy) => {
+        const items = getItems(policy);
+
+        if (!Object.keys(items).length) return null;
+
+        return (
+          <React.Fragment key={policy}>
+            <Text size='lg' weight='bold'>
+              {intl.formatMessage(titleMessages[singlePost ? 'single_post' : visibility][policy])}
+            </Text>
+
+            {policy === 'can_reply' && (
+              <Warning message={<FormattedMessage id='interaction_policies.mentioned_warning' defaultMessage='Mentioned users can always reply.' />} />
+            )}
+
+            <List>
+              <ListItem label={intl.formatMessage(messages.always)}>
+                <InlineMultiselect<Scope>
+                  items={items}
+                  value={interactionPolicy[policy].always as Array<Scope>}
+                  onChange={handleChange(policy, 'always')}
+                  disabled={disabled}
+                />
+              </ListItem>
+              <ListItem label={intl.formatMessage(messages.with_approval)}>
+                <InlineMultiselect
+                  items={items}
+                  value={interactionPolicy[policy].with_approval as Array<Scope>}
+                  onChange={handleChange(policy, 'with_approval')}
+                  disabled={disabled}
+                />
+              </ListItem>
+            </List>
+          </React.Fragment>
+        );
+      })}
+    </>
+  );
+};
 
 const InteractionPolicies = () => {
   const { data: initial = emptySchema } = useQuery(interactionPoliciesQueryOptions);
@@ -92,14 +158,11 @@ const InteractionPolicies = () => {
     setInteractionPolicies(initial);
   }, [initial]);
 
-  const getItems = (visibility: Visibility, policy: Policy) => Object.fromEntries(options[visibility][policy].map(scope => [scope, intl.formatMessage(scopeMessages[scope])])) as Record<Scope, string>;
-
-  const handleChange = (visibility: Visibility, policy: Policy, rule: Rule) => (value: Array<Scope>) => {
-    const newPolicies = { ...interactionPolicies };
-    newPolicies[visibility][policy][rule] = value;
-    newPolicies[visibility][policy][rule === 'always' ? 'with_approval' : 'always'] = newPolicies[visibility][policy][rule === 'always' ? 'with_approval' : 'always'].filter(rule => !value.includes(rule as any));
-
-    setInteractionPolicies(newPolicies);
+  const handleChange = (visibility: Visibility, policy: Policy, rule: Rule, value: Array<Scope>) => {
+    setInteractionPolicies((policies) => create(policies, (draft) => {
+      draft[visibility][policy][rule] = value;
+      draft[visibility][policy][rule === 'always' ? 'with_approval' : 'always'] = draft[visibility][policy][rule === 'always' ? 'with_approval' : 'always'].filter(rule => !value.includes(rule as any));
+    }));
   };
 
   const handleSubmit = () => {
@@ -108,47 +171,6 @@ const InteractionPolicies = () => {
       onError: () => toast.success(messages.fail),
     });
   };
-
-  const renderPolicy = (visibility: 'public' | 'unlisted' | 'private') => (
-    <>
-      {policies.map((policy) => {
-        const items = getItems(visibility, policy);
-
-        if (!Object.keys(items).length) return null;
-
-        return (
-          <React.Fragment key={policy}>
-            <CardTitle
-              title={intl.formatMessage(titleMessages[visibility][policy])}
-            />
-
-            {policy === 'can_reply' && (
-              <Warning message={<FormattedMessage id='interaction_policies.mentioned_warning' defaultMessage='Mentioned users can always reply.' />} />
-            )}
-
-            <List>
-              <ListItem label={intl.formatMessage(messages.always)}>
-                <InlineMultiselect<Scope>
-                  items={items}
-                  value={interactionPolicies[visibility][policy].always as Array<Scope>}
-                  onChange={handleChange(visibility, policy, 'always')}
-                  disabled={isUpdating}
-                />
-              </ListItem>
-              <ListItem label={intl.formatMessage(messages.with_approval)}>
-                <InlineMultiselect
-                  items={items}
-                  value={interactionPolicies[visibility][policy].with_approval as Array<Scope>}
-                  onChange={handleChange(visibility, policy, 'with_approval')}
-                  disabled={isUpdating}
-                />
-              </ListItem>
-            </List>
-          </React.Fragment>
-        );
-      })}
-    </>
-  );
 
   return (
     <Column label={intl.formatMessage(messages.heading)} backHref='/settings'>
@@ -173,7 +195,12 @@ const InteractionPolicies = () => {
           activeItem={visibility}
         />
 
-        {renderPolicy(visibility)}
+        <InteractionPolicyConfig
+          interactionPolicy={interactionPolicies[visibility]}
+          visibility={visibility}
+          onChange={(...props) => handleChange(visibility, ...props)}
+          disabled={isUpdating}
+        />
 
         <FormActions>
           <Button type='submit' theme='primary' disabled={isUpdating}>
@@ -185,4 +212,10 @@ const InteractionPolicies = () => {
   );
 };
 
-export { InteractionPolicies as default };
+export {
+  InteractionPolicies as default,
+  InteractionPolicyConfig,
+  type Policy,
+  type Rule,
+  type Scope,
+};

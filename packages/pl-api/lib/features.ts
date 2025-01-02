@@ -104,6 +104,15 @@ const TAKAHE = 'Takahe';
 const TOKI = 'Toki';
 
 /**
+ * WordPress, through the Enable Mastodon App plugin.
+ * I am not affiliated with WP Engine in any way, finanically or otherwise. ~mkljczk
+ *
+ * @category Software
+ * @see {@link https://github.com/akirk/enable-mastodon-apps}
+ */
+const WORDPRESS = 'WordPress';
+
+/**
  * Akkoma, a Pleroma fork.
  *
  * @category Software
@@ -225,6 +234,7 @@ const getFeatures = (instance: Instance) => {
       v.software === PLEROMA && gte(v.version, '2.5.0'),
       v.software === TAKAHE && gte(v.version, '0.6.1'),
       v.software === TOKI,
+      v.software === WORDPRESS,
     ]),
 
     /**
@@ -481,6 +491,7 @@ const getFeatures = (instance: Instance) => {
     editStatuses: any([
       v.software === FIREFISH,
       v.software === FRIENDICA && gte(v.version, '2022.12.0'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.4'),
       v.software === ICESHRIMP,
       v.software === ICESHRIMP_NET,
       v.software === MASTODON,
@@ -882,6 +893,7 @@ const getFeatures = (instance: Instance) => {
       v.software === PLEROMA,
       v.software === TAKAHE,
       v.software === TOKI,
+      v.software === WORDPRESS,
     ]),
 
     /**
@@ -1105,6 +1117,7 @@ const getFeatures = (instance: Instance) => {
       v.software === PLEROMA,
       v.software === TAKAHE,
       v.software === TOKI,
+      v.software === WORDPRESS,
     ]),
 
     /**
@@ -1398,10 +1411,12 @@ export {
   PLEROMA,
   TAKAHE,
   TOKI,
+  WORDPRESS,
   AKKOMA,
   GLITCH,
-  REBASED,
+  HOMETOWN,
   PL,
+  REBASED,
   UNRELEASED,
   type Features,
   type Backend as BackendVersion,

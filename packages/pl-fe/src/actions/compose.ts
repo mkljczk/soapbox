@@ -19,9 +19,10 @@ import { saveSettings } from './settings';
 import { createStatus } from './statuses';
 
 import type { EditorState } from 'lexical';
-import type { Account as BaseAccount, CreateStatusParams, CustomEmoji, Group, MediaAttachment, Status as BaseStatus, Tag, Poll, ScheduledStatus } from 'pl-api';
+import type { Account as BaseAccount, CreateStatusParams, CustomEmoji, Group, MediaAttachment, Status as BaseStatus, Tag, Poll, ScheduledStatus, InteractionPolicy } from 'pl-api';
 import type { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import type { Emoji } from 'pl-fe/features/emoji';
+import type { Policy, Rule, Scope } from 'pl-fe/features/interaction-policies';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -91,6 +92,8 @@ const COMPOSE_CHANGE_MEDIA_ORDER = 'COMPOSE_CHANGE_MEDIA_ORDER' as const;
 
 const COMPOSE_ADD_SUGGESTED_QUOTE = 'COMPOSE_ADD_SUGGESTED_QUOTE' as const;
 const COMPOSE_ADD_SUGGESTED_LANGUAGE = 'COMPOSE_ADD_SUGGESTED_LANGUAGE' as const;
+
+const COMPOSE_INTERACTION_POLICY_OPTION_CHANGE = 'COMPOSE_INTERACTION_POLICY_OPTION_CHANGE' as const;
 
 const getAccount = makeGetAccount();
 
@@ -400,6 +403,7 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
       language: compose.language || compose.suggested_language || undefined,
       to: explicitAddressing && to.length ? to : undefined,
       local_only: !compose.federated,
+      interaction_policy: ['public', 'unlisted', 'private'].includes(compose.privacy) && compose.interactionPolicy || undefined,
     };
 
     if (compose.poll) {
@@ -929,6 +933,15 @@ const changeComposeFederated = (composeId: string) => ({
   composeId,
 });
 
+const changeComposeInteractionPolicyOption = (composeId: string, policy: Policy, rule: Rule, value: Scope[], initial: InteractionPolicy) => ({
+  type: COMPOSE_INTERACTION_POLICY_OPTION_CHANGE,
+  composeId,
+  policy,
+  rule,
+  value,
+  initial,
+});
+
 type ComposeAction =
   ComposeSetStatusAction
   | ReturnType<typeof changeCompose>
@@ -980,7 +993,8 @@ type ComposeAction =
   | ReturnType<typeof changeMediaOrder>
   | ReturnType<typeof addSuggestedQuote>
   | ReturnType<typeof addSuggestedLanguage>
-  | ReturnType<typeof changeComposeFederated>;
+  | ReturnType<typeof changeComposeFederated>
+  | ReturnType<typeof changeComposeInteractionPolicyOption>;
 
 export {
   COMPOSE_CHANGE,
@@ -1034,6 +1048,7 @@ export {
   COMPOSE_ADD_SUGGESTED_QUOTE,
   COMPOSE_ADD_SUGGESTED_LANGUAGE,
   COMPOSE_FEDERATED_CHANGE,
+  COMPOSE_INTERACTION_POLICY_OPTION_CHANGE,
   setComposeToStatus,
   replyCompose,
   cancelReplyCompose,
@@ -1080,6 +1095,7 @@ export {
   addSuggestedQuote,
   addSuggestedLanguage,
   changeComposeFederated,
+  changeComposeInteractionPolicyOption,
   type ComposeReplyAction,
   type ComposeSuggestionSelectAction,
   type ComposeAction,
