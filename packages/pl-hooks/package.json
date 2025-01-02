@@ -1,6 +1,6 @@
 {
   "name": "pl-hooks",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "type": "module",
   "homepage": "https://github.com/mkljczk/pl-fe/tree/develop/packages/pl-hooks",
   "repository": {
@@ -35,7 +35,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.59.16",
     "lodash": "^4.17.21",
-    "pl-api": "^1.0.0-rc.14",
+    "pl-api": "^1.0.0-rc.15",
     "react": "^18.3.1",
     "valibot": "^1.0.0-beta.9"
   },
