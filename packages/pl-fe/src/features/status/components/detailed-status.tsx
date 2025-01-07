@@ -25,14 +25,12 @@ const messages = defineMessages({
 
 interface IDetailedStatus {
   status: SelectedStatus;
-  withMedia?: boolean;
   onOpenCompareHistoryModal: (status: Pick<SelectedStatus, 'id'>) => void;
 }
 
 const DetailedStatus: React.FC<IDetailedStatus> = ({
   status,
   onOpenCompareHistoryModal,
-  withMedia = true,
 }) => {
   const intl = useIntl();
 

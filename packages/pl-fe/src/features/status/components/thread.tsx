@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -302,13 +302,12 @@ const Thread: React.FC<IThread> = ({
     virtualizer.current?.scrollToIndex(ancestorsIds.length);
   }, [status.id, ancestorsIds.length]);
 
-  const handleOpenCompareHistoryModal = (status: Pick<Status, 'id'>) => {
+  const handleOpenCompareHistoryModal = useCallback((status: Pick<Status, 'id'>) => {
     openModal('COMPARE_HISTORY', {
       statusId: status.id,
     });
-  };
+  }, [status.id]);
 
-  const hasAncestors = ancestorsIds.length > 0;
   const hasDescendants = descendantsIds.length > 0;
 
   type HotkeyHandlers = { [key: string]: (keyEvent?: KeyboardEvent) => void };
@@ -342,7 +341,6 @@ const Thread: React.FC<IThread> = ({
 
             <DetailedStatus
               status={status}
-              withMedia={withMedia}
               onOpenCompareHistoryModal={handleOpenCompareHistoryModal}
             />
 
@@ -371,15 +369,10 @@ const Thread: React.FC<IThread> = ({
     children.push(<div key='padding' className='h-4' />);
   }
 
-  if (hasAncestors) {
-    children.push(...renderChildren(ancestorsIds));
-  }
+  const renderedAncestors = useMemo(() => renderChildren(ancestorsIds), [ancestorsIds]);
+  const renderedDescendants = useMemo(() => renderChildren(descendantsIds), [descendantsIds]);
 
-  children.push(focusedStatus);
-
-  if (hasDescendants) {
-    children.push(...renderChildren(descendantsIds));
-  }
+  children.push(...renderedAncestors, focusedStatus, ...renderedDescendants);
 
   return (
     <Stack

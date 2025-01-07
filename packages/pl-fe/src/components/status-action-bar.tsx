@@ -566,6 +566,7 @@ const ShareButton: React.FC<Pick<IActionButton, 'status' | 'statusActionButtonTh
 interface IMenuButton extends IActionButton {
   expandable?: boolean;
   fromBookmarks?: boolean;
+  publicStatus: boolean;
 }
 
 const MenuButton: React.FC<IMenuButton> = ({
@@ -574,6 +575,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   me,
   expandable,
   fromBookmarks,
+  publicStatus,
 }) => {
   const intl = useIntl();
   const history = useHistory();
@@ -1027,8 +1029,6 @@ const MenuButton: React.FC<IMenuButton> = ({
     return menu;
   };
 
-  const publicStatus = ['public', 'unlisted', 'group'].includes(status.visibility);
-
   const menu = _makeMenu(publicStatus);
 
   return (
@@ -1077,7 +1077,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
     });
   };
 
-  const publicStatus = ['public', 'unlisted', 'group'].includes(status.visibility);
+  const publicStatus = useMemo(() => ['public', 'unlisted', 'group'].includes(status.visibility), [status.visibility]);
 
   const spacing: {
     [key: string]: React.ComponentProps<typeof HStack>['space'];
@@ -1158,6 +1158,7 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
           onOpenUnauthorizedModal={onOpenUnauthorizedModal}
           expandable={expandable}
           fromBookmarks={fromBookmarks}
+          publicStatus={publicStatus}
         />
       </HStack>
     </HStack>
