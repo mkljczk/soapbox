@@ -7508,10 +7508,10 @@ pkg-dir@^4.1.0:
   dependencies:
     find-up "^4.0.0"
 
-pl-api@^1.0.0-rc.16:
-  version "1.0.0-rc.16"
-  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-1.0.0-rc.16.tgz#8eafdea0323ab2b76d9e3d133ea5d266d7fe9e0b"
-  integrity sha512-1Bu3/HFG3enhHCtzG9ZtEtgGa2x7/ZKVPToO3WsTkyqwSnshFbnAPypw3YeSwRHtYieyBSAugbI9Kngu4Rq5BQ==
+pl-api@^1.0.0-rc.17:
+  version "1.0.0-rc.17"
+  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-1.0.0-rc.17.tgz#734137137bcf21bd1dc20b39c7971e6c3546f048"
+  integrity sha512-2QKWWRXwa0JxNbJ2f7A3CDQ197dp9FcJ71FIkieFZ1AxyV6ZtLRdQudh/gJRU461MM2g/Pnsn5o0Ck1/mialnA==
   dependencies:
     blurhash "^2.0.5"
     http-link-header "^1.1.3"
@@ -7521,7 +7521,7 @@ pl-api@^1.0.0-rc.16:
     object-to-formdata "^4.5.1"
     query-string "^9.1.1"
     semver "^7.6.3"
-    valibot "^1.0.0-beta.9"
+    valibot "^1.0.0-beta.11"
 
 possible-typed-array-names@^1.0.0:
   version "1.0.0"
@@ -9709,10 +9709,10 @@ util@^0.12.5:
     is-typed-array "^1.1.3"
     which-typed-array "^1.1.2"
 
-valibot@^1.0.0-beta.10, valibot@^1.0.0-beta.9:
-  version "1.0.0-beta.10"
-  resolved "https://registry.yarnpkg.com/valibot/-/valibot-1.0.0-beta.10.tgz#b13514337640b83bac582bbe9d21b664f77ec6da"
-  integrity sha512-nmo3nxvXRrxwDYZznK3aTgYv7ZA/SUZJ/s+pLY4Tqsex/fgwZ9XrrQ14jjozjUaeduQ9PhXHE2Xx1uMb0HePYw==
+valibot@^1.0.0-beta.11:
+  version "1.0.0-beta.11"
+  resolved "https://registry.yarnpkg.com/valibot/-/valibot-1.0.0-beta.11.tgz#f08a12a2eea4b6b22b247fa77d7ec778b46dcc9c"
+  integrity sha512-Ztl5Iks1Ql7Z6CwkS5oyqguN3G8tmUiNlsHpqbDt6DLMpm+eu+n8Q7f921gI3uHvNZ8xDVkd4cEJP5t+lELOfw==
 
 value-equal@^1.0.1:
   version "1.0.1"

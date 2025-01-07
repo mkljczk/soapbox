@@ -14,7 +14,7 @@ const filteredArray = <T>(schema: v.BaseSchema<any, T, v.BaseIssue<unknown>>) =>
   v.pipe(
     v.fallback(v.array(v.any()), []),
     v.transform((arr) => (
-      arr.map((item) => {
+      (arr || []).map((item) => {
         const parsed = v.safeParse(schema, item);
         return parsed.success ? parsed.output : undefined;
       }).filter((item): item is T => Boolean(item))
