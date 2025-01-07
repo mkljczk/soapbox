@@ -122,7 +122,6 @@ const checkFiltered = (index: string, filters: Array<Filter>) =>
 type APIStatus = { id: string; username?: string };
 
 const makeGetStatus = () => {
-  console.log('making get status');
   return createSelector(
     [
       (state: RootState, { id }: APIStatus) => state.statuses[id],
