@@ -37,7 +37,7 @@ const messages = defineMessages({
 });
 
 /** Desktop sidebar with links to different views in the app. */
-const SidebarNavigation = () => {
+const SidebarNavigation = React.memo(() => {
   const intl = useIntl();
   const { unreadChatsCount } = useStatContext();
 
@@ -321,6 +321,6 @@ const SidebarNavigation = () => {
       )}
     </Stack>
   );
-};
+});
 
 export { SidebarNavigation as default };
