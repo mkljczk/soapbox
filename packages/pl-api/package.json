@@ -1,6 +1,6 @@
 {
   "name": "pl-api",
-  "version": "1.0.0-rc.16",
+  "version": "1.0.0-rc.17",
   "type": "module",
   "homepage": "https://github.com/mkljczk/pl-fe/tree/develop/packages/pl-api",
   "repository": {
@@ -49,7 +49,7 @@
     "object-to-formdata": "^4.5.1",
     "query-string": "^9.1.1",
     "semver": "^7.6.3",
-    "valibot": "^1.0.0-beta.10"
+    "valibot": "^1.0.0-beta.11"
   },
   "module": "./dist/main.es.js",
   "types": "dist/main.d.ts",
