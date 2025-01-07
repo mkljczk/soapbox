@@ -20,7 +20,7 @@ interface IStatusLanguagePicker {
   showLabel?: boolean;
 }
 
-const StatusLanguagePicker: React.FC<IStatusLanguagePicker> = ({ status, showLabel }) => {
+const StatusLanguagePicker: React.FC<IStatusLanguagePicker> = React.memo(({ status, showLabel }) => {
   const intl = useIntl();
 
   const { statuses, setStatusLanguage } = useStatusMetaStore();
@@ -55,7 +55,7 @@ const StatusLanguagePicker: React.FC<IStatusLanguagePicker> = ({ status, showLab
       </DropdownMenu>
     </>
   );
-};
+});
 
 export {
   StatusLanguagePicker as default,

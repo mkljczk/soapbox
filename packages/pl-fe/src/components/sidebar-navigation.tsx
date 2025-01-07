@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import Icon from 'pl-fe/components/ui/icon';
@@ -57,7 +57,7 @@ const SidebarNavigation = React.memo(() => {
 
   const restrictUnauth = instance.pleroma.metadata.restrict_unauthenticated;
 
-  const makeMenu = (): Menu => {
+  const menu = useMemo((): Menu => {
     const menu: Menu = [];
 
     if (account) {
@@ -155,9 +155,7 @@ const SidebarNavigation = React.memo(() => {
     }
 
     return menu;
-  };
-
-  const menu = makeMenu();
+  }, [!!account, features, isDeveloper, followRequestsCount, interactionRequestsCount, scheduledStatusCount, draftCount]);
 
   return (
     <Stack space={4}>

@@ -4,7 +4,6 @@ import { getClient } from '../api';
 
 import { importEntities } from './importer';
 
-import type { Status } from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const EMOJI_REACT_REQUEST = 'EMOJI_REACT_REQUEST' as const;
@@ -14,26 +13,26 @@ const UNEMOJI_REACT_REQUEST = 'UNEMOJI_REACT_REQUEST' as const;
 
 const noOp = () => () => new Promise(f => f(undefined));
 
-const emojiReact = (status: Pick<Status, 'id'>, emoji: string, custom?: string) =>
+const emojiReact = (statusId: string, emoji: string, custom?: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return dispatch(noOp());
 
-    dispatch(emojiReactRequest(status.id, emoji, custom));
+    dispatch(emojiReactRequest(statusId, emoji, custom));
 
-    return getClient(getState).statuses.createStatusReaction(status.id, emoji).then((response) => {
+    return getClient(getState).statuses.createStatusReaction(statusId, emoji).then((response) => {
       dispatch(importEntities({ statuses: [response] }));
     }).catch((error) => {
-      dispatch(emojiReactFail(status.id, emoji, error));
+      dispatch(emojiReactFail(statusId, emoji, error));
     });
   };
 
-const unEmojiReact = (status: Pick<Status, 'id'>, emoji: string) =>
+const unEmojiReact = (statusId: string, emoji: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     if (!isLoggedIn(getState)) return dispatch(noOp());
 
-    dispatch(unEmojiReactRequest(status.id, emoji));
+    dispatch(unEmojiReactRequest(statusId, emoji));
 
-    return getClient(getState).statuses.deleteStatusReaction(status.id, emoji).then(response => {
+    return getClient(getState).statuses.deleteStatusReaction(statusId, emoji).then(response => {
       dispatch(importEntities({ statuses: [response] }));
     });
   };

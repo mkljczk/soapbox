@@ -152,7 +152,7 @@ interface ISwitchingColumnsArea {
   children: React.ReactNode;
 }
 
-const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => {
+const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = React.memo(({ children }) => {
   const instance = useInstance();
   const features = useFeatures();
   const { search } = useLocation();
@@ -349,13 +349,13 @@ const SwitchingColumnsArea: React.FC<ISwitchingColumnsArea> = ({ children }) => 
       <WrappedRoute layout={EmptyLayout} component={GenericNotFound} content={children} />
     </Switch>
   );
-};
+});
 
 interface IUI {
   children?: React.ReactNode;
 }
 
-const UI: React.FC<IUI> = ({ children }) => {
+const UI: React.FC<IUI> = React.memo(({ children }) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const node = useRef<HTMLDivElement | null>(null);
@@ -507,6 +507,6 @@ const UI: React.FC<IUI> = ({ children }) => {
       </div>
     </GlobalHotkeys>
   );
-};
+});
 
 export { UI as default };

@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import debounce from 'lodash/debounce';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import LoadGap from 'pl-fe/components/load-gap';
@@ -128,45 +128,45 @@ const StatusList: React.FC<IStatusList> = ({
     );
   };
 
-  const renderFeaturedStatuses = (): React.ReactNode[] => {
-    if (!featuredStatusIds) return [];
-
-    return featuredStatusIds.map(statusId => (
-      <StatusContainer
-        key={`f-${statusId}`}
-        id={statusId}
-        featured
-        onMoveUp={handleMoveUp}
-        onMoveDown={handleMoveDown}
-        contextType={timelineId}
-        showGroup={showGroup}
-        variant={divideType === 'border' ? 'slim' : 'default'}
-      />
-    ));
-  };
-
-  const renderStatuses = (): React.ReactNode[] => {
-    if (isLoading || statusIds.length > 0) {
-      return statusIds.reduce((acc, statusId, index) => {
-        if (statusId === null) {
-          const gap = renderLoadGap(index);
-          if (gap) {
-            acc.push(gap);
+  const scrollableContent = useMemo(() => {
+    const renderFeaturedStatuses = (): React.ReactNode[] => {
+      if (!featuredStatusIds) return [];
+  
+      return featuredStatusIds.map(statusId => (
+        <StatusContainer
+          key={`f-${statusId}`}
+          id={statusId}
+          featured
+          onMoveUp={handleMoveUp}
+          onMoveDown={handleMoveDown}
+          contextType={timelineId}
+          showGroup={showGroup}
+          variant={divideType === 'border' ? 'slim' : 'default'}
+        />
+      ));
+    };
+  
+    const renderStatuses = (): React.ReactNode[] => {
+      if (isLoading || statusIds.length > 0) {
+        return statusIds.reduce((acc, statusId, index) => {
+          if (statusId === null) {
+            const gap = renderLoadGap(index);
+            if (gap) {
+              acc.push(gap);
+            }
+          } else if (statusId.startsWith('末pending-')) {
+            acc.push(renderPendingStatus(statusId));
+          } else {
+            acc.push(renderStatus(statusId));
           }
-        } else if (statusId.startsWith('末pending-')) {
-          acc.push(renderPendingStatus(statusId));
-        } else {
-          acc.push(renderStatus(statusId));
-        }
+  
+          return acc;
+        }, [] as React.ReactNode[]);
+      } else {
+        return [];
+      }
+    };
 
-        return acc;
-      }, [] as React.ReactNode[]);
-    } else {
-      return [];
-    }
-  };
-
-  const renderScrollableContent = () => {
     const featuredStatuses = renderFeaturedStatuses();
     const statuses = renderStatuses();
 
@@ -175,7 +175,7 @@ const StatusList: React.FC<IStatusList> = ({
     } else {
       return statuses;
     }
-  };
+  }, [featuredStatusIds, statusIds, isLoading, timelineId, showGroup, divideType]);
 
   if (isPartial) {
     return (
@@ -209,7 +209,7 @@ const StatusList: React.FC<IStatusList> = ({
       })}
       {...other}
     >
-      {renderScrollableContent()}
+      {scrollableContent}
     </ScrollableList>
   );
 };

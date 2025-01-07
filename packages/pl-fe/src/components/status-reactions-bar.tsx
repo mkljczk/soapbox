@@ -33,13 +33,13 @@ interface IStatusReactionsBar {
 }
 
 interface IStatusReaction {
-  status: Pick<SelectedStatus, 'id'>;
+  statusId: string;
   reaction: EmojiReaction;
   obfuscate?: boolean;
   unauthenticated?: boolean;
 }
 
-const StatusReaction: React.FC<IStatusReaction> = ({ reaction, status, obfuscate, unauthenticated }) => {
+const StatusReaction: React.FC<IStatusReaction> = ({ reaction, statusId, obfuscate, unauthenticated }) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
   const features = useFeatures();
@@ -51,7 +51,7 @@ const StatusReaction: React.FC<IStatusReaction> = ({ reaction, status, obfuscate
     e.stopPropagation();
 
     if ('vibrate' in navigator) navigator.vibrate(1);
-    openModal('REACTIONS', { statusId: status.id, reaction: reaction.name });
+    openModal('REACTIONS', { statusId: statusId, reaction: reaction.name });
   });
 
   if (!reaction.count) return null;
@@ -61,11 +61,11 @@ const StatusReaction: React.FC<IStatusReaction> = ({ reaction, status, obfuscate
 
     if (unauthenticated) {
       if (!features.emojiReactsList) return;
-      openModal('REACTIONS', { statusId: status.id, reaction: reaction.name });
+      openModal('REACTIONS', { statusId, reaction: reaction.name });
     } else if (reaction.me) {
-      dispatch(unEmojiReact(status, reaction.name));
+      dispatch(unEmojiReact(statusId, reaction.name));
     } else {
-      dispatch(emojiReact(status, reaction.name, reaction.url));
+      dispatch(emojiReact(statusId, reaction.name, reaction.url));
     }
   };
 
@@ -112,7 +112,7 @@ const StatusReactionsBar: React.FC<IStatusReactionsBar> = ({ status, collapsed }
   const features = useFeatures();
 
   const handlePickEmoji = (emoji: EmojiType) => {
-    dispatch(emojiReact(status, emoji.custom ? emoji.id : emoji.native, emoji.custom ? emoji.imageUrl : undefined));
+    dispatch(emojiReact(status.id, emoji.custom ? emoji.id : emoji.native, emoji.custom ? emoji.imageUrl : undefined));
   };
 
   if ((demetricator || status.emoji_reactions.length === 0) && collapsed) return null;
@@ -125,7 +125,7 @@ const StatusReactionsBar: React.FC<IStatusReactionsBar> = ({ status, collapsed }
       {sortedReactions.map((reaction) => reaction.count ? (
         <StatusReaction
           key={reaction.name}
-          status={status}
+          statusId={status.id}
           reaction={reaction}
           obfuscate={demetricator}
           unauthenticated={!me}

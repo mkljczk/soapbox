@@ -24,7 +24,7 @@ const messages = defineMessages({
   sidebar: { id: 'navigation.sidebar', defaultMessage: 'Open sidebar' },
 });
 
-const ThumbNavigation: React.FC = (): JSX.Element => {
+const ThumbNavigation: React.FC = React.memo((): JSX.Element => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const { account } = useOwnAccount();
@@ -132,6 +132,6 @@ const ThumbNavigation: React.FC = (): JSX.Element => {
       )}
     </div>
   );
-};
+});
 
 export { ThumbNavigation as default };

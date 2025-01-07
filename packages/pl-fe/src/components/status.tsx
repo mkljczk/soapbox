@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { defineMessages, useIntl, FormattedList, FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
@@ -83,7 +83,7 @@ const Status: React.FC<IStatus> = (props) => {
   const didShowCard = useRef(false);
   const node = useRef<HTMLDivElement>(null);
 
-  const getStatus = useCallback(makeGetStatus(), []);
+  const getStatus = useMemo(makeGetStatus, []);
   const actualStatus = useAppSelector(state => status.reblog_id && getStatus(state, { id: status.reblog_id }) || status)!;
 
   const isReblog = status.reblog_id;
@@ -185,7 +185,7 @@ const Status: React.FC<IStatus> = (props) => {
 
   const handleUnfilter = () => dispatch(unfilterStatus(status.filtered.length ? status.id : actualStatus.id));
 
-  const renderStatusInfo = () => {
+  const statusInfo = useMemo(() => {
     if (isReblog && showGroup && group) {
       return (
         <StatusInfo
@@ -294,7 +294,7 @@ const Status: React.FC<IStatus> = (props) => {
         />
       );
     }
-  };
+  }, [status.accounts, group?.id]);
 
   if (!status) return null;
 
@@ -366,7 +366,7 @@ const Status: React.FC<IStatus> = (props) => {
           })}
           data-id={status.id}
         >
-          {renderStatusInfo()}
+          {statusInfo}
 
           <AccountContainer
             key={actualStatus.account_id}
@@ -382,7 +382,7 @@ const Status: React.FC<IStatus> = (props) => {
             avatarSize={avatarSize}
             items={(
               <>
-                <StatusTypeIcon status={actualStatus} />
+                <StatusTypeIcon visibility={actualStatus.visibility} />
                 <StatusLanguagePicker status={actualStatus} />
               </>
             )}
