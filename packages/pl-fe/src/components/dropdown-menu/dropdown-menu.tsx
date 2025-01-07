@@ -317,7 +317,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
       onKeyPress: handleKeyPress,
       ref: refs.setReference,
     });
-  }, [children]);
+  }, [children, !!items?.length, component]);
 
   if (items?.length === 0 && !component) {
     return null;
@@ -343,7 +343,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
 
   return (
     <>
-      {children ? clonedChildren : (
+      {clonedChildren || (
         <IconButton
           disabled={disabled}
           className={clsx({
