@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { Link, NavLink } from 'react-router-dom';
 
@@ -59,7 +59,7 @@ interface ISidebarLink {
   onClick: React.EventHandler<React.MouseEvent>;
 }
 
-const SidebarLink: React.FC<ISidebarLink> = ({ href, to, icon, text, onClick }) => {
+const SidebarLink: React.FC<ISidebarLink> = React.memo(({ href, to, icon, text, onClick }) => {
   const body = (
     <HStack space={2} alignItems='center'>
       <div className='relative inline-flex rounded-full bg-primary-50 p-2 dark:bg-gray-800'>
@@ -83,9 +83,10 @@ const SidebarLink: React.FC<ISidebarLink> = ({ href, to, icon, text, onClick }) 
       {body}
     </a>
   );
-};
+});
 
-const SidebarMenu: React.FC = (): JSX.Element | null => {
+
+const SidebarMenu: React.FC = React.memo((): JSX.Element | null => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
@@ -493,6 +494,6 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
       </div>
     </div>
   );
-};
+});
 
 export { SidebarMenu as default };

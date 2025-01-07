@@ -211,7 +211,6 @@ const ReplyButton: React.FC<IReplyButton> = ({
 
   let replyTitle;
   let replyDisabled = false;
-  const replyCount = status.replies_count;
 
   if ((status.group as Group)?.membership_required && !groupRelationship?.member) {
     replyDisabled = true;
@@ -237,7 +236,7 @@ const ReplyButton: React.FC<IReplyButton> = ({
       title={replyTitle}
       icon={require('@tabler/icons/outline/message-circle.svg')}
       onClick={handleReplyClick}
-      count={replyCount}
+      count={status.replies_count}
       text={withLabels ? intl.formatMessage(messages.reply) : undefined}
       disabled={replyDisabled}
       theme={statusActionButtonTheme}
