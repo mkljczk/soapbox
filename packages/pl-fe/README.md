@@ -3,7 +3,6 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/mkljczk/pl-fe)](https://github.com/mkljczk/pl-fe)
 [![GitHub License](https://img.shields.io/github/license/mkljczk/pl-fe)](https://github.com/mkljczk/pl-fe?tab=AGPL-3.0-1-ov-file#readme)
 [![Weblate project translated](https://img.shields.io/weblate/progress/pl-fe)](https://hosted.weblate.org/engage/pl-fe/)
-[![Discord](https://img.shields.io/discord/1279834339470872598)](https://discord.gg/NCZZsqqgUH)
 
 ## Try it out
 
@@ -44,4 +43,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 ---
 
-Follow [my Pleroma account](https://pl.fediverse.pl/@mkljczk) to stay up to date on `pl-fe` development. You can also join the [project community on Discord](https://discord.gg/NCZZsqqgUH).
+Follow [my Pleroma account](https://pl.fediverse.pl/@mkljczk) to stay up to date on `pl-fe` development.
