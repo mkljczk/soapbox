@@ -20,6 +20,7 @@ Changes made since the project forked from Soapbox in April 2024.
 **Settings:**
 - You can add image description to your avatar/backend, if supported by backend.
 - GoToSocial users can manage post interaction policies.
+- Users caan set interface theme color.
 
 **Composing posts:**
 - WYSIWYG text formatting, available if Markdown is supported.
@@ -30,6 +31,7 @@ Changes made since the project forked from Soapbox in April 2024.
 - Draft posts. They are stored locally only and work with any backend.
 - New visibility scopes are supported – local-only and list-only for Pleroma. Local-only is a separate switch on GoToSocial.
 - On backends that support explicit mentioning, you can choose to include mentions in your replies body.
+- GoToSocial users can set per-post interaction policies.
 
 **Features:**
 - The most recent scrobble is displayed on user profile/card.
@@ -60,6 +62,7 @@ Changes made since the project forked from Soapbox in April 2024.
 **Settings:**
 - Moved missing description confirmation option back to Settings page.
 - Profile fields can be reordered on the Edit profile page.
+- Explicit addressing can be disabled on supported backends.
 
 **UI changes:**
 - Removed header. Search bar and profile dropdown are moved to the sidebar. Mobile sidebar button is moved to the thumb navigation.
@@ -74,11 +77,13 @@ Changes made since the project forked from Soapbox in April 2024.
 - Emojis are zoomed on hover.
 - Event create/edit form is now a page, instead of a modal.
 - A star is used for favorite icon, instead of a heart.
+- Account avatars are squared.
 
 **Internal:**
-- Migrated some local stores from Redux to Zustand. Other stores are being migrated away from `immutable`, before moving them either to Zustand or TanStack Query.
+- Migrated some local stores from Redux to Zustand. Other stores have been migrated away from `immutable`, before moving them either to Zustand or TanStack Query.
 - Posts are now emojified during render, instead of when inserting posts to the state.
 - Barrel exports are no longer used.
+- Search page uses URL params now.
 
 **Dependencies:**
 - `@tanstack/react-virtual` is used for list virtualization, instead of `react-virtuoso`. This improves compatibility with Ladybird browser.
@@ -89,7 +94,8 @@ Changes made since the project forked from Soapbox in April 2024.
 
 - Removed Truth Social-specific features.
 - Removed Nostr-specific stuff.
-- Removed option that disabled name editing for verified users.
+- Removed Rumble-specific embed handling.
+- Removed option that pretends to disable name editing for verified users.
 - Removed Call to Action banner.
 
 ### Fixed
