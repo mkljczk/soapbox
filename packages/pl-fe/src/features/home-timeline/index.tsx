@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-// import { Link } from 'react-router-dom';
 
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
@@ -33,38 +32,31 @@ const HomeTimeline: React.FC = () => {
 
   const isPartial = useAppSelector(state => state.timelines.home?.isPartial === true);
 
-  // const handleLoadMore = (maxId: string) => {
-  //   dispatch(fetchHomeTimeline(true));
-  // };
-
   // Mastodon generates the feed in Redis, and can return a partial timeline
   // (HTTP 206) for new users. Poll until we get a full page of results.
-  const checkIfReloadNeeded = () => {
+  const checkIfReloadNeeded = useCallback((isPartial: boolean) => {
     if (isPartial) {
       polling.current = setInterval(() => {
         dispatch(fetchHomeTimeline());
       }, 3000);
     } else {
-      stopPolling();
+      if (polling.current) {
+        clearInterval(polling.current);
+        polling.current = null;
+      }
     }
-  };
-
-  const stopPolling = () => {
-    if (polling.current) {
-      clearInterval(polling.current);
-      polling.current = null;
-    }
-  };
-
-  const handleRefresh = () => dispatch(fetchHomeTimeline(true));
-
-  useEffect(() => {
-    checkIfReloadNeeded();
 
     return () => {
-      stopPolling();
+      if (polling.current) {
+        clearInterval(polling.current);
+        polling.current = null;
+      }
     };
-  }, [isPartial]);
+  }, []);
+
+  const handleRefresh = useCallback(() => dispatch(fetchHomeTimeline(false)), []);
+
+  useEffect(() => checkIfReloadNeeded(isPartial), [isPartial]);
 
   return (
     <Column className='py-0' label={intl.formatMessage(messages.title)} transparent={!isMobile} withHeader={false}>

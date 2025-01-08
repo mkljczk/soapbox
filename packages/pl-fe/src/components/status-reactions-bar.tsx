@@ -33,13 +33,13 @@ interface IStatusReactionsBar {
 }
 
 interface IStatusReaction {
-  status: Pick<Status, 'id'>;
+  statusId: string;
   reaction: EmojiReaction;
   obfuscate?: boolean;
   unauthenticated?: boolean;
 }
 
-const StatusReaction: React.FC<IStatusReaction> = ({ reaction, status, obfuscate, unauthenticated }) => {
+const StatusReaction: React.FC<IStatusReaction> = ({ reaction, statusId, obfuscate, unauthenticated }) => {
   const intl = useIntl();
   const features = useFeatures();
   const { openModal } = useModalsStore();
@@ -53,7 +53,7 @@ const StatusReaction: React.FC<IStatusReaction> = ({ reaction, status, obfuscate
     e.stopPropagation();
 
     if ('vibrate' in navigator) navigator.vibrate(1);
-    openModal('REACTIONS', { statusId: status.id, reaction: reaction.name });
+    openModal('REACTIONS', { statusId: statusId, reaction: reaction.name });
   });
 
   if (!reaction.count) return null;
@@ -63,11 +63,11 @@ const StatusReaction: React.FC<IStatusReaction> = ({ reaction, status, obfuscate
 
     if (unauthenticated) {
       if (!features.emojiReactsList) return;
-      openModal('REACTIONS', { statusId: status.id, reaction: reaction.name });
+      openModal('REACTIONS', { statusId, reaction: reaction.name });
     } else if (reaction.me) {
-      deleteStatusReaction({ statusId: status.id, emoji: reaction.name });
+      deleteStatusReaction({ statusId, emoji: reaction.name });
     } else {
-      createStatusReaction({ statusId: status.id, emoji: reaction.name, custom: reaction.url });
+      createStatusReaction({ statusId, emoji: reaction.name, custom: reaction.url });
     }
   };
 
@@ -128,7 +128,7 @@ const StatusReactionsBar: React.FC<IStatusReactionsBar> = ({ status, collapsed }
       {sortedReactions.map((reaction) => reaction.count ? (
         <StatusReaction
           key={reaction.name}
-          status={status}
+          statusId={status.id}
           reaction={reaction}
           obfuscate={demetricator}
           unauthenticated={!me}

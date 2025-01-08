@@ -16,12 +16,12 @@ interface IStatusContainer extends Omit<IStatus, 'status'> {
  * @deprecated Use the Status component directly.
  */
 const StatusContainer: React.FC<IStatusContainer> = (props) => {
-  const { id, contextType, ...rest } = props;
+  const { id, contextType } = props;
 
   const { data: status } = useQuery(statusQueryOptions(id));
 
   if (status) {
-    return <Status status={status} {...rest} />;
+    return <Status {...props} status={status} />;
   } else {
     return null;
   }

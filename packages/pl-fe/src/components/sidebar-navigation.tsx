@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import Icon from 'pl-fe/components/ui/icon';
@@ -39,7 +39,7 @@ const messages = defineMessages({
 });
 
 /** Desktop sidebar with links to different views in the app. */
-const SidebarNavigation = () => {
+const SidebarNavigation = React.memo(() => {
   const intl = useIntl();
   const { unreadChatsCount } = useStatContext();
 
@@ -59,7 +59,7 @@ const SidebarNavigation = () => {
 
   const restrictUnauth = instance.pleroma.metadata.restrict_unauthenticated;
 
-  const makeMenu = (): Menu => {
+  const menu = useMemo((): Menu => {
     const menu: Menu = [];
 
     if (account) {
@@ -157,9 +157,7 @@ const SidebarNavigation = () => {
     }
 
     return menu;
-  };
-
-  const menu = makeMenu();
+  }, [!!account, features, isDeveloper, followRequestsCount, interactionRequestsCount, scheduledStatusCount, draftCount]);
 
   return (
     <Stack space={4}>
@@ -323,6 +321,6 @@ const SidebarNavigation = () => {
       )}
     </Stack>
   );
-};
+});
 
 export { SidebarNavigation as default };

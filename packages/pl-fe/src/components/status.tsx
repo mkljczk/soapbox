@@ -270,7 +270,7 @@ const Status: React.FC<IStatus> = (props) => {
 
   const handleUnfilter = () => showFilteredStatus(status.id);
 
-  const renderStatusInfo = () => {
+  const statusInfo = useMemo(() => {
     if (isReblog && showGroup && group) {
       return (
         <StatusInfo
@@ -372,7 +372,7 @@ const Status: React.FC<IStatus> = (props) => {
         />
       );
     }
-  };
+  }, [status.accounts, group?.id]);
 
   if (!status) return null;
 
@@ -444,7 +444,7 @@ const Status: React.FC<IStatus> = (props) => {
           })}
           data-id={status.id}
         >
-          {renderStatusInfo()}
+          {statusInfo}
 
           <AccountContainer
             key={status.account_id}
@@ -460,7 +460,7 @@ const Status: React.FC<IStatus> = (props) => {
             avatarSize={avatarSize}
             items={(
               <>
-                <StatusTypeIcon status={status} />
+                <StatusTypeIcon visibility={status.visibility} />
                 <StatusLanguagePicker status={status} />
               </>
             )}

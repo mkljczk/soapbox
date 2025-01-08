@@ -113,8 +113,8 @@ const Notifications = () => {
     dispatch(scrollTopNotifications(true));
 
     return () => {
-      handleLoadOlder.cancel();
-      handleScroll.cancel();
+      handleLoadOlder.cancel?.();
+      handleScroll.cancel?.();
       dispatch(scrollTopNotifications(false));
     };
   }, []);

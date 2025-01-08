@@ -25,7 +25,7 @@ const redirectToAccount = (accountId: string, routerHistory: History) =>
     }
   };
 
-const SearchInput = () => {
+const SearchInput = React.memo(() => {
   const [value, setValue] = useState('');
 
   const dispatch = useAppDispatch();
@@ -110,6 +110,6 @@ const SearchInput = () => {
       </div>
     </div>
   );
-};
+});
 
 export { SearchInput as default };

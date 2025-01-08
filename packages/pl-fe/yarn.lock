@@ -7508,10 +7508,10 @@ pkg-dir@^4.1.0:
   dependencies:
     find-up "^4.0.0"
 
-pl-api@^1.0.0-rc.16:
-  version "1.0.0-rc.16"
-  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-1.0.0-rc.16.tgz#8eafdea0323ab2b76d9e3d133ea5d266d7fe9e0b"
-  integrity sha512-1Bu3/HFG3enhHCtzG9ZtEtgGa2x7/ZKVPToO3WsTkyqwSnshFbnAPypw3YeSwRHtYieyBSAugbI9Kngu4Rq5BQ==
+pl-api@^1.0.0-rc.17:
+  version "1.0.0-rc.17"
+  resolved "https://registry.yarnpkg.com/pl-api/-/pl-api-1.0.0-rc.17.tgz#734137137bcf21bd1dc20b39c7971e6c3546f048"
+  integrity sha512-2QKWWRXwa0JxNbJ2f7A3CDQ197dp9FcJ71FIkieFZ1AxyV6ZtLRdQudh/gJRU461MM2g/Pnsn5o0Ck1/mialnA==
   dependencies:
     blurhash "^2.0.5"
     http-link-header "^1.1.3"
@@ -7521,7 +7521,7 @@ pl-api@^1.0.0-rc.16:
     object-to-formdata "^4.5.1"
     query-string "^9.1.1"
     semver "^7.6.3"
-    valibot "^1.0.0-beta.9"
+    valibot "^1.0.0-beta.11"
 
 possible-typed-array-names@^1.0.0:
   version "1.0.0"
@@ -9709,10 +9709,10 @@ util@^0.12.5:
     is-typed-array "^1.1.3"
     which-typed-array "^1.1.2"
 
-valibot@^1.0.0-beta.9:
-  version "1.0.0-beta.9"
-  resolved "https://registry.yarnpkg.com/valibot/-/valibot-1.0.0-beta.9.tgz#8ae38ca53429a5c4c4cce4378e3c87cca708a287"
-  integrity sha512-yEX8gMAZ2R1yI2uwOO4NCtVnJQx36zn3vD0omzzj9FhcoblvPukENIiRZXKZwCnqSeV80bMm8wNiGhQ0S8fiww==
+valibot@^1.0.0-beta.11:
+  version "1.0.0-beta.11"
+  resolved "https://registry.yarnpkg.com/valibot/-/valibot-1.0.0-beta.11.tgz#f08a12a2eea4b6b22b247fa77d7ec778b46dcc9c"
+  integrity sha512-Ztl5Iks1Ql7Z6CwkS5oyqguN3G8tmUiNlsHpqbDt6DLMpm+eu+n8Q7f921gI3uHvNZ8xDVkd4cEJP5t+lELOfw==
 
 value-equal@^1.0.1:
   version "1.0.1"
@@ -9839,10 +9839,10 @@ vite@^5.0.0:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vite@^6.0.6:
-  version "6.0.6"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-6.0.6.tgz#a851674fcff55b0c1962f72082354b8802e48505"
-  integrity sha512-NSjmUuckPmDU18bHz7QZ+bTYhRR0iA72cs2QAxCqDpafJ0S6qetco0LB3WW2OxlMHS0JmAv+yZ/R3uPmMyGTjQ==
+vite@^6.0.7:
+  version "6.0.7"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-6.0.7.tgz#f0f8c120733b04af52b4a1e3e7cb54eb851a799b"
+  integrity sha512-RDt8r/7qx9940f8FcOIAH9PTViRrghKaK2K1jY3RaAURrEUbm9Du1mJ72G+jlhtG3WwodnfzY8ORQZbBavZEAQ==
   dependencies:
     esbuild "^0.24.2"
     postcss "^8.4.49"

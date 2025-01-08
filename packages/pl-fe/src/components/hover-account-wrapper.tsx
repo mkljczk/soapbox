@@ -19,7 +19,7 @@ interface IHoverAccountWrapper {
 }
 
 /** Makes a profile hover card appear when the wrapped element is hovered. */
-const HoverAccountWrapper: React.FC<IHoverAccountWrapper> = ({ accountId, children, element: Elem = 'div', className }) => {
+const HoverAccountWrapper: React.FC<IHoverAccountWrapper> = React.memo(({ accountId, children, element: Elem = 'div', className }) => {
   const dispatch = useAppDispatch();
 
   const { openAccountHoverCard, closeAccountHoverCard } = useAccountHoverCardStore();
@@ -54,6 +54,6 @@ const HoverAccountWrapper: React.FC<IHoverAccountWrapper> = ({ accountId, childr
       {children}
     </Elem>
   );
-};
+});
 
 export { HoverAccountWrapper as default, showAccountHoverCard };

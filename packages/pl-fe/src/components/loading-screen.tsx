@@ -4,7 +4,7 @@ import LandingGradient from 'pl-fe/components/landing-gradient';
 import Spinner from 'pl-fe/components/ui/spinner';
 
 /** Fullscreen loading indicator. */
-const LoadingScreen: React.FC = () => (
+const LoadingScreen: React.FC = React.memo(() => (
   <div className='fixed h-screen w-screen'>
     <LandingGradient />
 
@@ -14,6 +14,6 @@ const LoadingScreen: React.FC = () => (
       </div>
     </div>
   </div>
-);
+));
 
 export { LoadingScreen as default };

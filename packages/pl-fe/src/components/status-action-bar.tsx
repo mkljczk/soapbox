@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { type CustomEmoji, GroupRoles } from 'pl-api';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
@@ -232,7 +232,6 @@ const ReplyButton: React.FC<IReplyButton> = ({
 
   let replyTitle;
   let replyDisabled = false;
-  const replyCount = status.replies_count;
 
   if (group?.membership_required && !group.relationship?.member) {
     replyDisabled = true;
@@ -258,7 +257,7 @@ const ReplyButton: React.FC<IReplyButton> = ({
       title={replyTitle}
       icon={require('@tabler/icons/outline/message-circle.svg')}
       onClick={handleReplyClick}
-      count={replyCount}
+      count={status.replies_count}
       text={withLabels ? intl.formatMessage(messages.reply) : undefined}
       disabled={replyDisabled}
       theme={statusActionButtonTheme}
@@ -608,6 +607,7 @@ const ShareButton: React.FC<Pick<IActionButton, 'status' | 'statusActionButtonTh
 interface IMenuButton extends IActionButton {
   expandable?: boolean;
   fromBookmarks?: boolean;
+  publicStatus: boolean;
 }
 
 const MenuButton: React.FC<IMenuButton> = ({
@@ -616,6 +616,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   me,
   expandable,
   fromBookmarks,
+  publicStatus,
 }) => {
   const intl = useIntl();
   const history = useHistory();
@@ -663,207 +664,206 @@ const MenuButton: React.FC<IMenuButton> = ({
   const isStaff = account ? account.is_admin || account.is_moderator : false;
   const isAdmin = account ? account.is_admin : false;
 
-  const handleBookmarkClick: React.EventHandler<React.MouseEvent> = (e) => {
-    if (status.bookmarked) unbookmarkStatus(status.id, {
-      onSuccess: () => toast.success(messages.bookmarkRemoved),
-    });
-    else bookmarkStatus({ statusId: status.id }, {
-      onSuccess: () => {
-        let opts: IToastOptions = {
-          actionLabel: messages.view,
-          actionLink: '/bookmarks/all',
-        };
-
-        if (features.bookmarkFolders) {
-          opts = {
-            actionLabel: messages.selectFolder,
-            action: () => useModalsStore.getState().openModal('SELECT_BOOKMARK_FOLDER', {
-              statusId: status.id,
-            }),
-          };
-        }
-
-        toast.success(messages.bookmarkAdded, opts);
-      },
-    });
-  };
-
-  const handleBookmarkFolderClick = () => {
-    openModal('SELECT_BOOKMARK_FOLDER', {
-      statusId: status.id,
-    });
-  };
-
-  const doDeleteStatus = (withRedraft = false) => {
-    const deleteAction = () => deleteStatus(status.id, {
-      onSuccess: (response) => {
-        dispatch(setComposeToStatus(status, status.poll, response.text || '', response.spoiler_text, response.content_type, withRedraft));
-        openModal('COMPOSE');
-      },
-    });
-    if (!deleteModal) {
-      deleteAction();
-    } else {
-      openModal('CONFIRM', {
-        heading: intl.formatMessage(withRedraft ? messages.redraftHeading : messages.deleteHeading),
-        message: intl.formatMessage(withRedraft ? messages.redraftMessage : messages.deleteMessage),
-        confirm: intl.formatMessage(withRedraft ? messages.redraftConfirm : messages.deleteConfirm),
-        onConfirm: deleteAction,
-      });
-    }
-  };
-
-  const handleDeleteClick: React.EventHandler<React.MouseEvent> = (e) => {
-    doDeleteStatus();
-  };
-
-  const handleRedraftClick: React.EventHandler<React.MouseEvent> = (e) => {
-    doDeleteStatus(true);
-  };
-
-  const handleEditClick: React.EventHandler<React.MouseEvent> = () => {
-    if (status.event) history.push(`/@${status.account.acct}/events/${status.id}/edit`);
-    else dispatch(editStatus(status.id));
-  };
-
-  const handlePinClick: React.EventHandler<React.MouseEvent> = (e) => {
-    if (status.pinned) unpinStatus(status.id);
-    else pinStatus(status.id);
-  };
-
-  const handleReblogClick: React.EventHandler<React.MouseEvent> = (e) => {
-    const modalReblog = () => status.reblogged ? unreblogStatus(status.id) : reblogStatus({ statusId: status.id });
-    if ((e && e.shiftKey) || !boostModal) {
-      modalReblog();
-    } else {
-      openModal('BOOST', { statusId: status.id, onReblog: modalReblog });
-    }
-  };
-
-  const handleMentionClick: React.EventHandler<React.MouseEvent> = (e) => {
-    dispatch(mentionCompose(status.account));
-  };
-
-  const handleDirectClick: React.EventHandler<React.MouseEvent> = (e) => {
-    dispatch(directCompose(status.account));
-  };
-
-  const handleChatClick: React.EventHandler<React.MouseEvent> = (e) => {
-    const account = status.account;
-
-    getOrCreateChatByAccountId(account.id)
-      .then((chat) => history.push(`/chats/${chat.id}`))
-      .catch(() => {});
-  };
-
-  const handleMuteClick: React.EventHandler<React.MouseEvent> = (e) => {
-    openModal('MUTE', { accountId: status.account.id });
-  };
-
-  const handleBlockClick: React.EventHandler<React.MouseEvent> = (e) => {
-    const account = status.account;
-
-    openModal('CONFIRM', {
-      heading: <FormattedMessage id='confirmations.block.heading' defaultMessage='Block @{name}' values={{ name: account.acct }} />,
-      message: <FormattedMessage id='confirmations.block.message' defaultMessage='Are you sure you want to block {name}?' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
-      confirm: intl.formatMessage(messages.blockConfirm),
-      onConfirm: () => dispatch(blockAccount(account.id)),
-      secondary: intl.formatMessage(messages.blockAndReport),
-      onSecondary: () => {
-        dispatch(blockAccount(account.id));
-        dispatch(initReport(ReportableEntities.STATUS, account, { status }));
-      },
-    });
-  };
-
-  const handleEmbed = () => {
-    openModal('EMBED', {
-      url: status.url,
-      onError: (error: any) => toast.showAlertForError(error),
-    });
-  };
-
-  const handleOpenReactionsModal = () => {
-    openModal('REACTIONS', { statusId: status.id });
-  };
-
-  const handleReport: React.EventHandler<React.MouseEvent> = (e) => {
-    dispatch(initReport(ReportableEntities.STATUS, status.account, { status }));
-  };
-
-  const handleConversationMuteClick: React.EventHandler<React.MouseEvent> = (e) => {
-    if (status.muted) unmuteStatus(status.id);
-    else muteStatus(status.id);
-  };
-
-  const handleCopy: React.EventHandler<React.MouseEvent> = (e) => {
-    const { uri } = status;
-
-    copy(uri);
-  };
-
-  const onModerate: React.MouseEventHandler = (e) => {
-    const account = status.account;
-    openModal('ACCOUNT_MODERATION', { accountId: account.id });
-  };
-
-  const handleDeleteStatus: React.EventHandler<React.MouseEvent> = (e) => {
-    dispatch(deleteStatusModal(intl, status.id));
-  };
-
-  const handleToggleStatusSensitivity: React.EventHandler<React.MouseEvent> = (e) => {
-    dispatch(toggleStatusSensitivityModal(intl, status.id, status.sensitive));
-  };
-
-  const handleDeleteFromGroup: React.EventHandler<React.MouseEvent> = () => {
-    const account = status.account;
-
-    openModal('CONFIRM', {
-      heading: intl.formatMessage(messages.deleteHeading),
-      message: intl.formatMessage(messages.deleteFromGroupMessage, { name: <strong className='break-words'>{account.username}</strong> }),
-      confirm: intl.formatMessage(messages.deleteConfirm),
-      onConfirm: () => {
-        deleteGroupStatus.mutate(status.id, {
-          onSuccess() {
-            dispatch(deleteFromTimelines(status.id));
-          },
-        });
-      },
-    });
-  };
-
-  const handleBlockFromGroup = () => {
-    openModal('CONFIRM', {
-      heading: intl.formatMessage(messages.groupBlockFromGroupHeading),
-      message: intl.formatMessage(messages.groupBlockFromGroupMessage, { name: status.account.username }),
-      confirm: intl.formatMessage(messages.groupBlockConfirm),
-      onConfirm: () => {
-        blockGroupMember(undefined, {
-          onSuccess: () => {
-            toast.success(intl.formatMessage(messages.blocked, { name: account?.acct }));
-          },
-        });
-      },
-    });
-  };
-
-  const handleIgnoreLanguage = () => {
-    dispatch(changeSetting(['autoTranslate'], [...knownLanguages, status.language], { showAlert: true }));
-  };
-
-  const handleTranslate = () => {
-    if (targetLanguage) {
-      hideTranslation(status.id);
-    } else {
-      fetchTranslation(status.id, intl.locale);
-    }
-  };
-
-  const _makeMenu = (publicStatus: boolean) => {
+  const menu = useMemo(() => {
     const mutingConversation = status.muted;
     const ownAccount = status.account_id === me;
-    const username = status.account.username;
-    const account = status.account;
+    const { username, local: localAccount } = status.account;
+
+    const handleBookmarkClick: React.EventHandler<React.MouseEvent> = (e) => {
+      if (status.bookmarked) unbookmarkStatus(status.id, {
+        onSuccess: () => toast.success(messages.bookmarkRemoved),
+      });
+      else bookmarkStatus({ statusId: status.id }, {
+        onSuccess: () => {
+          let opts: IToastOptions = {
+            actionLabel: messages.view,
+            actionLink: '/bookmarks/all',
+          };
+  
+          if (features.bookmarkFolders) {
+            opts = {
+              actionLabel: messages.selectFolder,
+              action: () => useModalsStore.getState().openModal('SELECT_BOOKMARK_FOLDER', {
+                statusId: status.id,
+              }),
+            };
+          }
+  
+          toast.success(messages.bookmarkAdded, opts);
+        },
+      });
+    };
+  
+    const handleBookmarkFolderClick = () => {
+      openModal('SELECT_BOOKMARK_FOLDER', {
+        statusId: status.id,
+      });
+    };
+  
+    const doDeleteStatus = (withRedraft = false) => {
+      const deleteAction = () => deleteStatus(status.id, {
+        onSuccess: (response) => {
+          dispatch(setComposeToStatus(status, status.poll, response.text || '', response.spoiler_text, response.content_type, withRedraft));
+          openModal('COMPOSE');
+        },
+      });
+      if (!deleteModal) {
+        deleteAction();
+      } else {
+        openModal('CONFIRM', {
+          heading: intl.formatMessage(withRedraft ? messages.redraftHeading : messages.deleteHeading),
+          message: intl.formatMessage(withRedraft ? messages.redraftMessage : messages.deleteMessage),
+          confirm: intl.formatMessage(withRedraft ? messages.redraftConfirm : messages.deleteConfirm),
+          onConfirm: deleteAction,
+        });
+      }
+    };
+  
+    const handleDeleteClick: React.EventHandler<React.MouseEvent> = (e) => {
+      doDeleteStatus();
+    };
+  
+    const handleRedraftClick: React.EventHandler<React.MouseEvent> = (e) => {
+      doDeleteStatus(true);
+    };
+  
+    const handleEditClick: React.EventHandler<React.MouseEvent> = () => {
+      if (status.event) history.push(`/@${status.account.acct}/events/${status.id}/edit`);
+      else dispatch(editStatus(status.id));
+    };
+  
+    const handlePinClick: React.EventHandler<React.MouseEvent> = (e) => {
+      if (status.pinned) unpinStatus(status.id);
+      else pinStatus(status.id);
+    };
+  
+    const handleReblogClick: React.EventHandler<React.MouseEvent> = (e) => {
+      const modalReblog = () => status.reblogged ? unreblogStatus(status.id) : reblogStatus({ statusId: status.id });
+      if ((e && e.shiftKey) || !boostModal) {
+        modalReblog();
+      } else {
+        openModal('BOOST', { statusId: status.id, onReblog: modalReblog });
+      }
+    };
+  
+    const handleMentionClick: React.EventHandler<React.MouseEvent> = (e) => {
+      dispatch(mentionCompose(status.account));
+    };
+  
+    const handleDirectClick: React.EventHandler<React.MouseEvent> = (e) => {
+      dispatch(directCompose(status.account));
+    };
+  
+    const handleChatClick: React.EventHandler<React.MouseEvent> = (e) => {
+      const account = status.account;
+  
+      getOrCreateChatByAccountId(account.id)
+        .then((chat) => history.push(`/chats/${chat.id}`))
+        .catch(() => {});
+    };
+  
+    const handleMuteClick: React.EventHandler<React.MouseEvent> = (e) => {
+      openModal('MUTE', { accountId: status.account.id });
+    };
+  
+    const handleBlockClick: React.EventHandler<React.MouseEvent> = (e) => {
+      const account = status.account;
+  
+      openModal('CONFIRM', {
+        heading: <FormattedMessage id='confirmations.block.heading' defaultMessage='Block @{name}' values={{ name: account.acct }} />,
+        message: <FormattedMessage id='confirmations.block.message' defaultMessage='Are you sure you want to block {name}?' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
+        confirm: intl.formatMessage(messages.blockConfirm),
+        onConfirm: () => dispatch(blockAccount(account.id)),
+        secondary: intl.formatMessage(messages.blockAndReport),
+        onSecondary: () => {
+          dispatch(blockAccount(account.id));
+          dispatch(initReport(ReportableEntities.STATUS, account, { status }));
+        },
+      });
+    };
+  
+    const handleEmbed = () => {
+      openModal('EMBED', {
+        url: status.url,
+        onError: (error: any) => toast.showAlertForError(error),
+      });
+    };
+  
+    const handleOpenReactionsModal = () => {
+      openModal('REACTIONS', { statusId: status.id });
+    };
+  
+    const handleReport: React.EventHandler<React.MouseEvent> = (e) => {
+      dispatch(initReport(ReportableEntities.STATUS, status.account, { status }));
+    };
+  
+    const handleConversationMuteClick: React.EventHandler<React.MouseEvent> = (e) => {
+      if (status.muted) unmuteStatus(status.id);
+      else muteStatus(status.id);
+    };
+  
+    const handleCopy: React.EventHandler<React.MouseEvent> = (e) => {
+      const { uri } = status;
+  
+      copy(uri);
+    };
+  
+    const onModerate: React.MouseEventHandler = (e) => {
+      const account = status.account;
+      openModal('ACCOUNT_MODERATION', { accountId: account.id });
+    };
+  
+    const handleDeleteStatus: React.EventHandler<React.MouseEvent> = (e) => {
+      dispatch(deleteStatusModal(intl, status.id));
+    };
+  
+    const handleToggleStatusSensitivity: React.EventHandler<React.MouseEvent> = (e) => {
+      dispatch(toggleStatusSensitivityModal(intl, status.id, status.sensitive));
+    };
+  
+    const handleDeleteFromGroup: React.EventHandler<React.MouseEvent> = () => {
+      const account = status.account;
+  
+      openModal('CONFIRM', {
+        heading: intl.formatMessage(messages.deleteHeading),
+        message: intl.formatMessage(messages.deleteFromGroupMessage, { name: <strong className='break-words'>{account.username}</strong> }),
+        confirm: intl.formatMessage(messages.deleteConfirm),
+        onConfirm: () => {
+          deleteGroupStatus.mutate(status.id, {
+            onSuccess() {
+              dispatch(deleteFromTimelines(status.id));
+            },
+          });
+        },
+      });
+    };
+  
+    const handleBlockFromGroup = () => {
+      openModal('CONFIRM', {
+        heading: intl.formatMessage(messages.groupBlockFromGroupHeading),
+        message: intl.formatMessage(messages.groupBlockFromGroupMessage, { name: status.account.username }),
+        confirm: intl.formatMessage(messages.groupBlockConfirm),
+        onConfirm: () => {
+          blockGroupMember(undefined, {
+            onSuccess: () => {
+              toast.success(intl.formatMessage(messages.blocked, { name: account?.acct }));
+            },
+          });
+        },
+      });
+    };
+  
+    const handleIgnoreLanguage = () => {
+      dispatch(changeSetting(['autoTranslate'], [...knownLanguages, status.language], { showAlert: true }));
+    };
+  
+    const handleTranslate = () => {
+      if (targetLanguage) {
+        hideTranslation(status.id);
+      } else {
+        fetchTranslation(status.id, intl.locale);
+      }
+    };
 
     const menu: Menu = [];
 
@@ -882,7 +882,7 @@ const MenuButton: React.FC<IMenuButton> = ({
         icon: require('@tabler/icons/outline/clipboard-copy.svg'),
       });
 
-      if (features.embeds && account.local) {
+      if (features.embeds && localAccount) {
         menu.push({
           text: intl.formatMessage(messages.embed),
           action: handleEmbed,
@@ -921,7 +921,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       });
     }
 
-    if (features.federating && !account.local) {
+    if (features.federating && !localAccount) {
       const { hostname: domain } = new URL(status.uri);
       menu.push({
         text: intl.formatMessage(messages.external, { domain }),
@@ -1105,13 +1105,9 @@ const MenuButton: React.FC<IMenuButton> = ({
     }
 
     return menu;
-  };
+  }, [me, targetLanguage, status.muted, status.emoji_reactions.length > 0, status.pinned, status.reblogged]);
 
-  const publicStatus = ['public', 'unlisted', 'group'].includes(status.visibility);
-
-  const menu = _makeMenu(publicStatus);
-
-  return (
+  return useMemo(() => (
     <DropdownMenu items={menu}>
       <StatusActionButton
         title={intl.formatMessage(messages.more)}
@@ -1119,7 +1115,7 @@ const MenuButton: React.FC<IMenuButton> = ({
         theme={statusActionButtonTheme}
       />
     </DropdownMenu>
-  );
+  ), [menu, statusActionButtonTheme]);
 };
 
 interface IStatusActionBar {
@@ -1146,18 +1142,20 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
 
   const me = useAppSelector(state => state.me);
 
-  if (!status) {
-    return null;
-  }
+  const publicStatus = useMemo(() => status ? ['public', 'unlisted', 'group'].includes(status.visibility) : false, [status.visibility]);
 
-  const onOpenUnauthorizedModal = (action?: UnauthorizedModalAction) => {
+  const onContainerClick: React.MouseEventHandler<HTMLDivElement> = useCallback((e) => e.stopPropagation(), []);
+
+  const onOpenUnauthorizedModal = useCallback((action?: UnauthorizedModalAction) => {
     openModal('UNAUTHORIZED', {
       action,
       ap_id: status.url,
     });
-  };
+  }, []);
 
-  const publicStatus = ['public', 'unlisted', 'group'].includes(status.visibility);
+  if (!status) {
+    return null;
+  }
 
   const spacing: {
     [key: string]: React.ComponentProps<typeof HStack>['space'];
@@ -1168,78 +1166,77 @@ const StatusActionBar: React.FC<IStatusActionBar> = ({
   };
 
   return (
-    <HStack data-testid='status-action-bar'>
-      <HStack
-        justifyContent={space === 'lg' ? 'between' : undefined}
-        space={spacing[space]}
-        grow={space === 'lg'}
-        onClick={e => e.stopPropagation()}
-        alignItems='center'
-      >
-        <ReplyButton
-          status={status}
-          statusActionButtonTheme={statusActionButtonTheme}
-          withLabels={withLabels}
-          me={me}
-          onOpenUnauthorizedModal={onOpenUnauthorizedModal}
-          rebloggedBy={rebloggedBy}
-        />
+    <HStack
+      justifyContent={space === 'lg' ? 'between' : undefined}
+      space={spacing[space]}
+      grow={space === 'lg'}
+      onClick={onContainerClick}
+      alignItems='center'
+    >
+      <ReplyButton
+        status={status}
+        statusActionButtonTheme={statusActionButtonTheme}
+        withLabels={withLabels}
+        me={me}
+        onOpenUnauthorizedModal={onOpenUnauthorizedModal}
+        rebloggedBy={rebloggedBy}
+      />
 
-        <ReblogButton
-          status={status}
-          statusActionButtonTheme={statusActionButtonTheme}
-          withLabels={withLabels}
-          me={me}
-          onOpenUnauthorizedModal={onOpenUnauthorizedModal}
-          publicStatus={publicStatus}
-        />
+      <ReblogButton
+        status={status}
+        statusActionButtonTheme={statusActionButtonTheme}
+        withLabels={withLabels}
+        me={me}
+        onOpenUnauthorizedModal={onOpenUnauthorizedModal}
+        publicStatus={publicStatus}
+      />
 
-        <FavouriteButton
-          status={status}
-          statusActionButtonTheme={statusActionButtonTheme}
-          withLabels={withLabels}
-          me={me}
-          onOpenUnauthorizedModal={onOpenUnauthorizedModal}
-        />
+      <FavouriteButton
+        status={status}
+        statusActionButtonTheme={statusActionButtonTheme}
+        withLabels={withLabels}
+        me={me}
+        onOpenUnauthorizedModal={onOpenUnauthorizedModal}
+      />
 
-        <DislikeButton
-          status={status}
-          statusActionButtonTheme={statusActionButtonTheme}
-          withLabels={withLabels}
-          me={me}
-          onOpenUnauthorizedModal={onOpenUnauthorizedModal}
-        />
+      <DislikeButton
+        status={status}
+        statusActionButtonTheme={statusActionButtonTheme}
+        withLabels={withLabels}
+        me={me}
+        onOpenUnauthorizedModal={onOpenUnauthorizedModal}
+      />
 
-        <WrenchButton
-          status={status}
-          statusActionButtonTheme={statusActionButtonTheme}
-          withLabels={withLabels}
-          me={me}
-          onOpenUnauthorizedModal={onOpenUnauthorizedModal}
-        />
+      <WrenchButton
+        status={status}
+        statusActionButtonTheme={statusActionButtonTheme}
+        withLabels={withLabels}
+        me={me}
+        onOpenUnauthorizedModal={onOpenUnauthorizedModal}
+      />
 
-        <EmojiPickerButton
-          status={status}
-          statusActionButtonTheme={statusActionButtonTheme}
-          withLabels={withLabels}
-          me={me}
-        />
+      <EmojiPickerButton
+        status={status}
+        statusActionButtonTheme={statusActionButtonTheme}
+        withLabels={withLabels}
+        me={me}
+      />
 
-        <ShareButton
-          status={status}
-          statusActionButtonTheme={statusActionButtonTheme}
-        />
+      <ShareButton
+        status={status}
+        statusActionButtonTheme={statusActionButtonTheme}
+      />
 
-        <MenuButton
-          status={status}
-          statusActionButtonTheme={statusActionButtonTheme}
-          withLabels={withLabels}
-          me={me}
-          onOpenUnauthorizedModal={onOpenUnauthorizedModal}
-          expandable={expandable}
-          fromBookmarks={fromBookmarks}
-        />
-      </HStack>
+      <MenuButton
+        status={status}
+        statusActionButtonTheme={statusActionButtonTheme}
+        withLabels={withLabels}
+        me={me}
+        onOpenUnauthorizedModal={onOpenUnauthorizedModal}
+        expandable={expandable}
+        fromBookmarks={fromBookmarks}
+        publicStatus={publicStatus}
+      />
     </HStack>
   );
 };
