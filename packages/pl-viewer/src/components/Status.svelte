@@ -1,0 +1,82 @@
+<script lang="ts">
+  import icons from "../icons";
+
+  import type { Activity } from "../types";
+
+  export let activity: Activity;
+</script>
+
+<div class="status status-public">
+  <div class="status__info">
+    <span class="status__relative-time"
+      ><span class="status__visibility-icon"><icons.PublicIcon /></span><time
+        datetime={activity.published}>{activity.published}</time
+      ></span
+    >
+  </div>
+  {#if activity.object.summary}
+    <label class="content-warning"
+      ><p>
+        {activity.object.summary}
+      </p></label
+    >
+  {/if}
+  <div class="status__content">
+    <div
+      class="status__content__text"
+      lang={Object.keys(activity.object.contentMap || {})?.[0]}
+    >
+      {@html activity.object.content}
+    </div>
+  </div>
+  {#if activity.object.attachment?.length > 0}
+    <div class="media-gallery">
+      <div class="media-gallery__item">
+        {#each activity.object.attachment as attachment}
+          {#if attachment.mediaType.startsWith("image")}
+            <img
+              src={attachment.url}
+              height={attachment.height}
+              width={attachment.width}
+              alt={attachment.name}
+            />
+          {:else if attachment.mediaType.startsWith("video")}
+            <video controls>
+              <source src={attachment.url} type={attachment.mediaType} />
+            </video>
+          {:else if attachment.mediaType.startsWith("audio")}
+            <audio controls>
+              <source src={attachment.url} type={attachment.mediaType} />
+            </audio>
+          {:else}
+            <a href={attachment.url} target="_blank" rel="noopener">
+              {attachment.name}
+            </a>
+          {/if}
+        {/each}
+      </div>
+      <!-- <div class="media-gallery__actions">
+      <button class="media-gallery__actions__pill"
+        ><span>Hide</span></button
+      >
+    </div> -->
+    </div>
+  {/if}
+  <div class="status__action-bar">
+    <div title="Boosts" class="status__action-bar__button icon-button">
+      <icons.BoostIcon height="24" width="24" />
+      <span class="icon-button__counter">
+        {activity.object.shares?.totalItems}
+      </span>
+    </div>
+    <div
+      title="Favorites"
+      class="status__action-bar__button star-icon icon-button"
+    >
+      <icons.FavouriteIcon height="24" width="24" />
+      <span class="icon-button__counter">
+        {activity.object.likes?.totalItems}
+      </span>
+    </div>
+  </div>
+</div>
