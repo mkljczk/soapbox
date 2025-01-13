@@ -25,5 +25,5 @@
     {/each}
   </ul>
 {:else}
-  <p>Loading...</p>
+  <p>Loading…</p>
 {/if}

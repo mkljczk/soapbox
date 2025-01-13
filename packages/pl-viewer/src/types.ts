@@ -25,13 +25,17 @@ type Tag = {
 
 type Activity = {
   id: string;
-  type: 'Create' | 'Announce';
   actor: string;
   published: string;
   to: Array<string>;
   cc: Array<string>;
+} & ({
+  type: 'Create';
   object: Object;
-}
+} | {
+  type: 'Announce';
+  object: string;
+});
 
 type Object = {
   id: string;

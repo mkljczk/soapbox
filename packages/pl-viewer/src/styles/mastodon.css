@@ -118,6 +118,37 @@ main {
   padding-bottom: 10px;
 }
 
+.status__prepend {
+  align-items: center;
+  color: #606085;
+  font-size: 15px;
+  font-weight: 500;
+  gap: 8px;
+  line-height: 22px;
+
+  > span {
+    display: inline;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  a {
+    color: inherit;
+  }
+}
+
+.status__prepend__icon {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: center;
+
+  svg {
+    height: 16px;
+    width: 16px;
+  }
+}
+
 .status__visibility-icon {
   padding: 0 4px;
 
