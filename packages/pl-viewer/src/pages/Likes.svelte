@@ -2,6 +2,7 @@
   import type { OrderedColllection } from "../types";
   import Link from "../components/Link.svelte";
   import icons from "../icons";
+  import Spinner from "../components/Spinner.svelte";
 
   let likes: OrderedColllection<string> | null = $state(null);
 
@@ -25,5 +26,5 @@
     {/each}
   </ul>
 {:else}
-  <p>Loading…</p>
+  <Spinner />
 {/if}

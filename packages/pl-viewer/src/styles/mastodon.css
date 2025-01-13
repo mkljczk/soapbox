@@ -73,6 +73,8 @@ nav {
 }
 
 main {
+  display: flex;
+  flex-direction: column;
   border: 1px solid #313144;
   border-radius: 4px;
   height: fit-content;
@@ -85,7 +87,7 @@ main {
     display: flex;
     font-size: 16px;
     align-items: center;
-    flex: 1;
+    flex: 0;
     font: inherit;
     gap: 5px;
     margin: 0;
@@ -258,6 +260,52 @@ main {
     border-radius: 8px;
     max-width: 100%;
     height: auto;
+  }
+}
+
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.circular-progress {
+  color: #606085;
+  animation: 1.4s linear 0s infinite normal none running simple-rotate;
+
+  circle {
+    stroke: currentColor;
+    stroke-dasharray: 80px, 200px;
+    stroke-dashoffset: 0;
+    animation: circular-progress 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes circular-progress {
+  0% {
+    stroke-dasharray: 1px, 200px;
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    stroke-dasharray: 100px, 200px;
+    stroke-dashoffset: -15px;
+  }
+
+  100% {
+    stroke-dasharray: 100px, 200px;
+    stroke-dashoffset: -125px;
+  }
+}
+
+@keyframes simple-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
   }
 }
 

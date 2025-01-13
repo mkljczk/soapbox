@@ -2,6 +2,7 @@
   import type { Activity, OrderedColllection } from "../types";
   import Status from "../components/Status.svelte";
   import icons from "../icons";
+  import Spinner from "../components/Spinner.svelte";
 
   let outbox: OrderedColllection<Activity> | null = $state(null);
 
@@ -25,5 +26,5 @@
     {/each}
   </ul>
 {:else}
-  <p>Loading…</p>
+  <Spinner />
 {/if}
