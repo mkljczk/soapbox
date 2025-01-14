@@ -11,4 +11,7 @@ export default defineConfig({
       requireSuffix: true, // Set false to accept '.svg' without the '?component'
     }),
   ],
+  server: {
+    port: 3038,
+  },
 })
