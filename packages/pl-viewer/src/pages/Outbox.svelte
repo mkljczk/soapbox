@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Activity, OrderedColllection } from "../types";
+  import type { Activity, Actor, OrderedColllection } from "../types";
   import Status from "../components/Status.svelte";
   import icons from "../icons";
   import Spinner from "../components/Spinner.svelte";
@@ -11,6 +11,8 @@
     .then((data) => {
       outbox = data;
     });
+
+  let { actor }: { actor: Actor } = $props();
 </script>
 
 <h1>

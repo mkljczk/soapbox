@@ -1,5 +1,7 @@
+type Context = Array<string | Record<string, unknown>> | string;
+
 type OrderedColllection<T> = {
-  '@context': Array<string | Record<string, unknown>> | string;
+  '@context': Context;
   id: string;
   type: 'OrderedCollection';
   totalItems: number;
@@ -68,8 +70,44 @@ type Object = {
   };
 }
 
+type Actor = {
+  '@context': Context;
+  id: string;
+  type: string;
+
+  preferredUsername: string;
+  name: string;
+  summary: string;
+  url: string;
+  manuallyApprovesFollowers: boolean;
+  discoverable: boolean;
+  indexable: boolean;
+  published: string;
+  memorial: boolean;
+  alsoKnownAs: Array<string>;
+  publicKey: {
+    id: string;
+    owner: string;
+    publicKeyPem: string;
+  }
+  // tag: Array<Tag>;
+  // attachment: Array<Attachment>;
+  endpoints: {
+    sharedInbox: string;
+  }
+
+  following?: string;
+  followers?: string;
+  bookmarks?: string;
+  likes?: string;
+  outbox?: string;
+  featured?: string;
+  featuredTags?: string;
+}
+
 export type {
   OrderedColllection,
   Activity,
   Object,
+  Actor,
 }

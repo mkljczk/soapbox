@@ -8,6 +8,14 @@
   let activePage = $state(location.hash.slice(1) || "actor");
   let PageComponent = $state(Outbox);
 
+  let actor: Actor | null = $state(null);
+
+  fetch("./actor.json")
+    .then((response) => response.json())
+    .then((data) => {
+      actor = data;
+    });
+
   const pages = {
     actor: Actor,
     outbox: Outbox,
@@ -27,5 +35,5 @@
 <Nav {activePage} />
 
 <main>
-  <PageComponent />
+  <PageComponent {actor} />
 </main>
