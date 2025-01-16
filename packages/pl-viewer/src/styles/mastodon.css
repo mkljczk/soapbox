@@ -263,6 +263,145 @@ main {
   }
 }
 
+.account__header__image {
+  background: #20202c;
+  border-bottom: 1px solid #313144;
+  height: 145px;
+  overflow: hidden;
+  position: relative;
+
+  img {
+    display: block;
+    height: 100%;
+    margin: 0;
+    object-fit: cover;
+    width: 100%;
+  }
+}
+
+.account__header__bar {
+  border-bottom: 1px solid #313144;
+  padding: 0 20px;
+  position: relative;
+
+  .avatar {
+    display: block;
+    flex: 0 0 auto;
+    width: 94px;
+  }
+}
+
+.account__header__tabs {
+  align-items: flex-start;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  margin-top: -55px;
+  margin-inline-start: -2px;
+  overflow: hidden;
+  padding-top: 10px;
+}
+
+.account__avatar {
+  size: 90px;
+  border-radius: 8px;
+  background: #181821;
+  border: 1px solid #313144;
+
+  img {
+    display: inline-block;
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+    border-radius: 8px;
+  }
+}
+
+.account__header__tabs__name {
+  margin-bottom: 16px;
+  margin-top: 16px;
+
+  h1 {
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 22px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    small {
+      align-items: center;
+      color: #9c9cc9;
+      display: flex;
+      font-size: 14px;
+      font-weight: 400;
+      gap: 4px;
+      line-height: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.account__header__extra {
+  margin-top: 16px;
+}
+
+.account__header__bio .account__header__content {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 400;
+  overflow: hidden;
+  word-break: normal;
+  word-wrap: break-word;
+}
+
+.account__header__bio .account__header__fields {
+  border: 1px solid #313144;
+  border-radius: 4px;
+  margin: 16px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  max-width: 100vw;
+  padding: 0;
+
+  dl {
+    border-bottom: 1px solid #313144;
+    display: block;
+    padding: 11px 16px;
+
+    :last-child {
+      border-bottom: 0;
+    }
+  }
+
+  dd,
+  dt {
+    box-sizing: border-box;
+    max-height: 48px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    line-height: 18px;
+    padding: 0;
+    text-align: initial;
+  }
+
+  dt {
+    font-weight: 500;
+    background: transparent;
+    color: #606085;
+    text-transform: uppercase;
+    width: auto;
+  }
+
+  dd {
+    color: #9c9cc9;
+  }
+}
+
 .loading-indicator {
   display: flex;
   align-items: center;

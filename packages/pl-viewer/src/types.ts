@@ -84,17 +84,32 @@ type Actor = {
   indexable: boolean;
   published: string;
   memorial: boolean;
+  attributionDomains: Array<string>;
   alsoKnownAs: Array<string>;
   publicKey: {
     id: string;
     owner: string;
     publicKeyPem: string;
-  }
+  };
   // tag: Array<Tag>;
-  // attachment: Array<Attachment>;
+  attachment: Array<{
+    type: 'PropertyValue';
+    name: string;
+    value: string;
+  }>;
   endpoints: {
     sharedInbox: string;
-  }
+  };
+  icon?: {
+    type: string;
+    mediaType: string;
+    url: string;
+  };
+  image?: {
+    type: string;
+    mediaType: string;
+    url: string;
+  };
 
   following?: string;
   followers?: string;
