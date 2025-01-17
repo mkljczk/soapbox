@@ -2,6 +2,8 @@
   import Nav from "./components/Nav.svelte";
   import Actor from "./pages/Actor.svelte";
   import Bookmarks from "./pages/Bookmarks.svelte";
+  import Followers from "./pages/Followers.svelte";
+  import Following from "./pages/Following.svelte";
   import Likes from "./pages/Likes.svelte";
   import Outbox from "./pages/Outbox.svelte";
 
@@ -20,6 +22,8 @@
     actor: Actor,
     outbox: Outbox,
     bookmarks: Bookmarks,
+    followers: Followers,
+    following: Following,
     likes: Likes,
   };
 

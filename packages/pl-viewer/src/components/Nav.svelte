@@ -37,4 +37,20 @@
     {/if}
     <span>Favourites</span>
   </a>
+  <a href='/#followers' class:active={activePage === 'followers'}>
+    {#if activePage === 'followers'}
+      <icons.PeopleActiveIcon />
+    {:else}
+      <icons.PeopleIcon />
+    {/if}
+    <span>Followers</span>
+  </a>
+  <a href='/#following' class:active={activePage === 'following'}>
+    {#if activePage === 'following'}
+      <icons.PeopleActiveIcon />
+    {:else}
+      <icons.PeopleIcon />
+    {/if}
+    <span>Following</span>
+  </a>
 </nav>

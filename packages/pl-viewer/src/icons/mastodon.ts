@@ -11,6 +11,8 @@ import LikesActiveIcon from '@material-symbols/svg-400/outlined/star-fill.svg?co
 import LinkIcon from "@material-symbols/svg-400/outlined/link.svg?component";
 import OutboxIcon from '@material-symbols/svg-400/outlined/post.svg?component';
 import OutboxActiveIcon from '@material-symbols/svg-400/outlined/post-fill.svg?component';
+import PeopleIcon from "@material-symbols/svg-400/outlined/groups.svg?component";
+import PeopleActiveIcon from "@material-symbols/svg-400/outlined/groups-fill.svg?component";
 import PublicIcon from "@material-symbols/svg-400/outlined/globe.svg?component";
 import ReplyIcon from "@material-symbols/svg-400/outlined/reply.svg?component";
 import QuoteIcon from "@material-symbols/svg-400/outlined/format_quote.svg?component";
@@ -30,6 +32,8 @@ export default {
   LinkIcon,
   OutboxIcon,
   OutboxActiveIcon,
+  PeopleIcon,
+  PeopleActiveIcon,
   PublicIcon,
   ReplyIcon,
   QuoteIcon,
