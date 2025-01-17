@@ -12,6 +12,8 @@ import LinkIcon from "@material-symbols/svg-400/outlined/link.svg?component";
 import OutboxIcon from '@material-symbols/svg-400/outlined/post.svg?component';
 import OutboxActiveIcon from '@material-symbols/svg-400/outlined/post-fill.svg?component';
 import PublicIcon from "@material-symbols/svg-400/outlined/globe.svg?component";
+import ReplyIcon from "@material-symbols/svg-400/outlined/reply.svg?component";
+import QuoteIcon from "@material-symbols/svg-400/outlined/format_quote.svg?component";
 import UnlistedIcon from "@material-symbols/svg-400/outlined/nightlight.svg?component";
 
 export default {
@@ -29,5 +31,7 @@ export default {
   OutboxIcon,
   OutboxActiveIcon,
   PublicIcon,
+  ReplyIcon,
+  QuoteIcon,
   UnlistedIcon,
 };

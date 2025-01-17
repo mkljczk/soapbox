@@ -58,6 +58,7 @@ type Object = {
   attachment: Array<Attachment>;
   tag: Array<Tag>;
   // replies: TODO;
+  repliesCount?: number;
   likes: {
     id: string;
     type: 'Collection';
@@ -68,6 +69,8 @@ type Object = {
     type: 'Collection';
     totalItems: number;
   };
+
+  quoteUrl?: string;
 }
 
 type Actor = {

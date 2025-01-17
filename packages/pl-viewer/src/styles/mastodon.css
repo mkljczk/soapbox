@@ -159,6 +159,10 @@ main {
     margin-bottom: -2px;
     width: 1em;
   }
+
+  &:last-child {
+    padding-right: 0;
+  }
 }
 
 .status__relative-time {
@@ -169,6 +173,14 @@ main {
   line-height: 22px;
   order: 2;
   text-decoration: none;
+
+  a {
+    color: inherit;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .status__content {
@@ -260,7 +272,8 @@ main {
   margin-top: 8px;
   width: 100%;
 
-  img {
+  img,
+  video {
     border-radius: 8px;
     max-width: 100%;
     height: auto;

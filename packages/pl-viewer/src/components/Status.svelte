@@ -14,6 +14,9 @@
       <span class="status__relative-time">
         <StatusVisibility {activity} />
         <time datetime={activity.published}>{activity.published}</time>
+        <a href={activity.id} target="_blank"
+          ><span class="status__visibility-icon"><icons.LinkIcon /></span></a
+        >
       </span>
     </div>
     {#if activity.object.summary}
@@ -64,7 +67,19 @@
       </div> -->
       </div>
     {/if}
-    {#if activity.object.shares || activity.object.likes}
+    {#if activity.object.quoteUrl}
+      <div class="status__prepend">
+        <span class="status__prepend__icon">
+          <icons.QuoteIcon />
+        </span>
+        <span>
+          <a href={activity.object.quoteUrl} target="_blank"
+            >{activity.object.quoteUrl}</a
+          >
+        </span>
+      </div>
+    {/if}
+    {#if activity.object.shares || activity.object.likes || activity.object.repliesCount !== undefined}
       <div class="status__action-bar">
         {#if activity.object.shares !== undefined}
           <div title="Boosts" class="status__action-bar__button icon-button">
@@ -82,6 +97,17 @@
             <icons.FavouriteIcon height="24" width="24" />
             <span class="icon-button__counter">
               {activity.object.likes?.totalItems}
+            </span>
+          </div>
+        {/if}
+        {#if activity.object.repliesCount !== undefined}
+          <div
+            title="Replies"
+            class="status__action-bar__button comment-icon icon-button"
+          >
+            <icons.ReplyIcon height="24" width="24" />
+            <span class="icon-button__counter">
+              {activity.object.repliesCount}
             </span>
           </div>
         {/if}
