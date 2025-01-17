@@ -64,23 +64,29 @@
       </div> -->
       </div>
     {/if}
-    <div class="status__action-bar">
-      <div title="Boosts" class="status__action-bar__button icon-button">
-        <icons.BoostIcon height="24" width="24" />
-        <span class="icon-button__counter">
-          {activity.object.shares?.totalItems}
-        </span>
+    {#if activity.object.shares || activity.object.likes}
+      <div class="status__action-bar">
+        {#if activity.object.shares !== undefined}
+          <div title="Boosts" class="status__action-bar__button icon-button">
+            <icons.BoostIcon height="24" width="24" />
+            <span class="icon-button__counter">
+              {activity.object.shares?.totalItems}
+            </span>
+          </div>
+        {/if}
+        {#if activity.object.likes !== undefined}
+          <div
+            title="Favorites"
+            class="status__action-bar__button star-icon icon-button"
+          >
+            <icons.FavouriteIcon height="24" width="24" />
+            <span class="icon-button__counter">
+              {activity.object.likes?.totalItems}
+            </span>
+          </div>
+        {/if}
       </div>
-      <div
-        title="Favorites"
-        class="status__action-bar__button star-icon icon-button"
-      >
-        <icons.FavouriteIcon height="24" width="24" />
-        <span class="icon-button__counter">
-          {activity.object.likes?.totalItems}
-        </span>
-      </div>
-    </div>
+    {/if}
   {:else}
     <div class="status__prepend">
       <span class="status__prepend__icon">

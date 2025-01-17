@@ -196,6 +196,10 @@ main {
     color: #8c8dff;
     text-decoration: none;
     unicode-bidi: isolate;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
