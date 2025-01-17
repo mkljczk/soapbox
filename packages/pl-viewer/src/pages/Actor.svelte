@@ -41,6 +41,9 @@
       </div>
       <div class="account__header__extra">
         <div class="account__header__bio">
+          <div class="account__header__content">
+            {@html actor.summary}
+          </div>
           <div class="account__header__fields">
             <dl>
               <dt><span>Joined</span></dt>
@@ -49,7 +52,7 @@
             {#each actor.attachment as field}
               <dl>
                 <dt><span>{field.name}</span></dt>
-                <dd>{field.value}</dd>
+                <dd>{@html field.value}</dd>
               </dl>
             {/each}
           </div>
