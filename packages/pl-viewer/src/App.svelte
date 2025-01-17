@@ -6,7 +6,7 @@
   import Outbox from "./pages/Outbox.svelte";
 
   let activePage = $state(location.hash.slice(1) || "actor");
-  let PageComponent = $state(Outbox);
+  let PageComponent = $state(Actor);
 
   let actor: Actor | null = $state(null);
 

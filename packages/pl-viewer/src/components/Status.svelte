@@ -119,7 +119,7 @@
         <icons.BoostIcon />
       </span>
       <span>
-        Boosted <a href={activity.object} target="_blank">{activity.object}</a>
+        Boosted <a href={typeof activity.object === 'string' ? activity.object : activity.object.id} target="_blank">{activity.object}</a>
       </span>
     </div>
   {/if}

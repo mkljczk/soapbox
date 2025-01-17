@@ -36,7 +36,7 @@ type Activity = {
   object: Object;
 } | {
   type: 'Announce';
-  object: string;
+  object: string | Object;
 });
 
 type Object = {
