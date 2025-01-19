@@ -1,56 +1,65 @@
 <script lang="ts">
-  import icons from '../icons';
-  
-  export let activePage: string;
+  import icons from "../icons";
+
+  import type { Actor } from "../types";
+
+  let { activePage, actor }: { activePage: string; actor: Actor } = $props();
+
+  const items = $derived([
+    {
+      id: "actor",
+      icon: icons.ActorIcon,
+      activeIcon: icons.ActorActiveIcon,
+      label: "User",
+      enabled: true,
+    },
+    {
+      id: "outbox",
+      icon: icons.OutboxIcon,
+      activeIcon: icons.OutboxActiveIcon,
+      label: "Posts",
+      enabled: actor?.outbox === 'outbox.json',
+    },
+    {
+      id: "bookmarks",
+      icon: icons.BookmarksIcon,
+      activeIcon: icons.BookmarksActiveIcon,
+      label: "Bookmarks",
+      enabled: actor?.bookmarks === 'bookmarks.json',
+    },
+    {
+      id: "likes",
+      icon: icons.LikesIcon,
+      activeIcon: icons.LikesActiveIcon,
+      label: "Favourites",
+      enabled: actor?.likes === 'likes.json',
+    },
+    {
+      id: "followers",
+      icon: icons.PeopleIcon,
+      activeIcon: icons.PeopleActiveIcon,
+      label: "Followers",
+      enabled: actor?.followers === 'followers.json',
+    },
+    {
+      id: "following",
+      icon: icons.PeopleIcon,
+      activeIcon: icons.PeopleActiveIcon,
+      label: "Following",
+      enabled: actor?.following === 'following.json',
+    },
+  ]);
 </script>
 
 <nav>
-  <a href='/#actor' class:active={activePage === 'actor'}>
-    {#if activePage === 'actor'}
-      <icons.ActorActiveIcon />
-    {:else}
-      <icons.ActorIcon />
-    {/if}
-    <span>User</span>
-  </a>
-  <a href='/#outbox' class:active={activePage === 'outbox'}>
-    {#if activePage === 'outbox'}
-      <icons.OutboxActiveIcon />
-    {:else}
-      <icons.OutboxIcon />
-    {/if}
-    <span>Posts</span>
-  </a>
-  <a href='/#bookmarks' class:active={activePage === 'bookmarks'}>
-    {#if activePage === 'bookmarks'}
-      <icons.BookmarksActiveIcon />
-    {:else}
-      <icons.BookmarksIcon />
-    {/if}
-    <span>Bookmarks</span>
-  </a>
-  <a href='/#likes' class:active={activePage === 'likes'}>
-    {#if activePage === 'likes'}
-      <icons.LikesActiveIcon />
-    {:else}
-      <icons.LikesIcon />
-    {/if}
-    <span>Favourites</span>
-  </a>
-  <a href='/#followers' class:active={activePage === 'followers'}>
-    {#if activePage === 'followers'}
-      <icons.PeopleActiveIcon />
-    {:else}
-      <icons.PeopleIcon />
-    {/if}
-    <span>Followers</span>
-  </a>
-  <a href='/#following' class:active={activePage === 'following'}>
-    {#if activePage === 'following'}
-      <icons.PeopleActiveIcon />
-    {:else}
-      <icons.PeopleIcon />
-    {/if}
-    <span>Following</span>
-  </a>
+  {#each items.filter(({ enabled}) => enabled) as { id, icon: Icon, activeIcon: ActiveIcon, label }}
+    <a href="/#{id}" class:active={activePage === id}>
+      {#if activePage === id}
+        <ActiveIcon />
+      {:else}
+        <Icon />
+      {/if}
+      <span>{label}</span>
+    </a>
+  {/each}
 </nav>

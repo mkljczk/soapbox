@@ -36,7 +36,7 @@
 
 <svelte:window on:hashchange={onHashChange} />
 
-<Nav {activePage} />
+<Nav {activePage} {actor} />
 
 <main>
   <PageComponent {actor} />
