@@ -5,12 +5,15 @@
   import Followers from "./pages/Followers.svelte";
   import Following from "./pages/Following.svelte";
   import Likes from "./pages/Likes.svelte";
+  import NotFound from "./pages/NotFound.svelte";
   import Outbox from "./pages/Outbox.svelte";
+
+  import type { Actor as ActorType } from "./types";
 
   let activePage = $state(location.hash.slice(1) || "actor");
   let PageComponent = $state(Actor);
 
-  let actor: Actor | null = $state(null);
+  let actor: ActorType | null = $state(null);
 
   fetch("./actor.json")
     .then((response) => response.json())
@@ -19,6 +22,7 @@
     });
 
   const pages = {
+    "": Actor,
     actor: Actor,
     outbox: Outbox,
     bookmarks: Bookmarks,
@@ -30,7 +34,7 @@
   const onHashChange = () => {
     activePage = location.hash.slice(1);
 
-    PageComponent = pages[activePage] || Actor;
+    PageComponent = pages[activePage] || NotFound;
   };
 </script>
 

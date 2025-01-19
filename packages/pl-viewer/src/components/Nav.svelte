@@ -3,7 +3,7 @@
 
   import type { Actor } from "../types";
 
-  let { activePage, actor }: { activePage: string; actor: Actor } = $props();
+  let { activePage, actor }: { activePage: string; actor: Actor | null } = $props();
 
   const items = $derived([
     {

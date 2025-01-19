@@ -3,7 +3,7 @@
   import icons from "../icons";
   import type { Actor } from "../types";
 
-  let { actor }: { actor: Actor } = $props();
+  let { actor }: { actor: Actor | null } = $props();
 </script>
 
 <h1>
