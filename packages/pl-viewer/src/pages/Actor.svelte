@@ -45,10 +45,12 @@
             {@html actor.summary}
           </div>
           <div class="account__header__fields">
-            <dl>
-              <dt><span>Joined</span></dt>
-              <dd>{actor.published}</dd>
-            </dl>
+            {#if actor.published}
+              <dl>
+                <dt><span>Joined</span></dt>
+                <dd>{actor.published}</dd>
+              </dl>
+            {/if}
             {#each actor.attachment as field}
               <dl>
                 <dt><span>{field.name}</span></dt>

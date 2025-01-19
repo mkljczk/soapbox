@@ -11,7 +11,7 @@
     <icons.PublicIcon />
   {:else if activity.cc.includes("https://www.w3.org/ns/activitystreams#Public")}
     <icons.UnlistedIcon />
-  {:else if activity.to.some((to) => to.endsWith('/followers'))}
+  {:else if activity.to.some((to) => to.endsWith("/followers"))}
     <icons.FollowersIcon />
   {:else}
     <icons.DirectIcon />
