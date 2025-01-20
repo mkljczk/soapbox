@@ -1,6 +1,6 @@
 {
   "name": "pl-api",
-  "version": "1.0.0-rc.17",
+  "version": "1.0.0-rc.18",
   "type": "module",
   "homepage": "https://github.com/mkljczk/pl-fe/tree/develop/packages/pl-api",
   "repository": {
@@ -22,10 +22,10 @@
     "@types/http-link-header": "^1.0.7",
     "@types/lodash.omit": "^4.5.9",
     "@types/lodash.pick": "^4.4.9",
-    "@types/node": "^22.10.5",
+    "@types/node": "^22.10.7",
     "@types/semver": "^7.5.8",
-    "@typescript-eslint/eslint-plugin": "^8.19.0",
-    "@typescript-eslint/parser": "^8.19.0",
+    "@typescript-eslint/eslint-plugin": "^8.20.0",
+    "@typescript-eslint/parser": "^8.20.0",
     "eslint": "8.57.1",
     "eslint-import-resolver-typescript": "^3.7.0",
     "eslint-plugin-compat": "6.0.2",
@@ -34,9 +34,9 @@
     "typedoc": "^0.27.6",
     "typedoc-material-theme": "^1.2.0",
     "typedoc-plugin-valibot": "^1.0.0",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "vite": "^6.0.7",
-    "vite-plugin-dts": "^4.4.0",
+    "vite-plugin-dts": "^4.5.0",
     "ws": "^8.18.0"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
@@ -49,7 +49,7 @@
     "object-to-formdata": "^4.5.1",
     "query-string": "^9.1.1",
     "semver": "^7.6.3",
-    "valibot": "^1.0.0-beta.11"
+    "valibot": "^1.0.0-beta.12"
   },
   "module": "./dist/main.es.js",
   "types": "dist/main.d.ts",

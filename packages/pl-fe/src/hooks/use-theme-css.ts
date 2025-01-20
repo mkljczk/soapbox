@@ -38,7 +38,7 @@ const DEFAULT_COLORS = {
 
 const normalizeColors = (theme: Partial<Pick<PlFeConfig, 'brandColor' | 'accentColor' | 'colors'>>) => {
   const brandColor: string = theme.brandColor || theme.colors?.primary?.['500'] || '#d80482';
-  const accentColor: string = theme.accentColor || theme.colors?.accent?.['500'] || '' || generateAccent(brandColor);
+  const accentColor: string = theme.accentColor || theme.colors?.accent?.['500'] || generateAccent(brandColor) || '';
 
   const colors = {
     ...theme.colors,
@@ -48,6 +48,7 @@ const normalizeColors = (theme: Partial<Pick<PlFeConfig, 'brandColor' | 'accentC
   const normalizedColors = toTailwind({
     brandColor,
     accentColor,
+    // @ts-ignore
     colors,
   });
 
@@ -82,4 +83,4 @@ const useThemeCss = (overwriteConfig?: PlFeConfig) => {
   }, [demo, plFeConfig, theme]);
 };
 
-export { useThemeCss };
+export { normalizeColors, useThemeCss };

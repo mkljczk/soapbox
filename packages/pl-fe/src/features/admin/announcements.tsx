@@ -97,7 +97,7 @@ const Announcements: React.FC = () => {
   const intl = useIntl();
   const { openModal } = useModalsStore();
 
-  const { data: announcements, isLoading, isPending } = useInfiniteQuery(announcementsQueryOptions);
+  const { data: announcements = [], isLoading, isPending } = useInfiniteQuery(announcementsQueryOptions);
 
   const handleCreateAnnouncement = () => {
     openModal('EDIT_ANNOUNCEMENT');
@@ -123,7 +123,7 @@ const Announcements: React.FC = () => {
           isLoading={isLoading}
           showLoading={isLoading && isPending}
         >
-          {announcements!.map((announcement) => (
+          {announcements.map((announcement) => (
             <Announcement key={announcement.id} announcement={announcement} />
           ))}
         </ScrollableList>

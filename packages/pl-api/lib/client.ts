@@ -1218,7 +1218,7 @@ class PlApiClient {
      * @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#get-aliases-of-the-current-account}
      */
     getAccountAliases: async () => {
-      const response = await this.request('/api/v1/pleroma/aliases');
+      const response = await this.request('/api/pleroma/aliases');
 
       return v.parse(v.object({ aliases: filteredArray(v.string()) }), response.json);
     },
@@ -1231,7 +1231,7 @@ class PlApiClient {
      * @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#add-alias-to-the-current-account}
      */
     addAccountAlias: async (alias: string) => {
-      const response = await this.request('/api/v1/pleroma/aliases', { method: 'PUT', body: { alias } });
+      const response = await this.request('/api/pleroma/aliases', { method: 'PUT', body: { alias } });
 
       return v.parse(v.object({ status: v.literal('success') }), response.json);
     },
@@ -1244,7 +1244,7 @@ class PlApiClient {
      * @see {@link https://docs.pleroma.social/backend/development/API/pleroma_api/#delete-alias-from-the-current-account}
      */
     deleteAccountAlias: async (alias: string) => {
-      const response = await this.request('/api/v1/pleroma/aliases', { method: 'DELETE', body: { alias } });
+      const response = await this.request('/api/pleroma/aliases', { method: 'DELETE', body: { alias } });
 
       return v.parse(v.object({ status: v.literal('success') }), response.json);
     },

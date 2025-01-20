@@ -43,7 +43,15 @@ const plFeConfigSchema = coerceObject({
   logoDarkMode: v.fallback(v.nullable(v.string()), null),
   brandColor: v.fallback(v.string(), ''),
   accentColor: v.fallback(v.string(), ''),
-  colors: v.any(),
+  colors: v.fallback(v.nullable(v.objectWithRest(
+    {
+      'accent-blue': v.string(),
+      'gradient-end': v.string(),
+      'gradient-start': v.string(),
+      greentext: v.string(),
+    },
+    v.record(v.string(), v.string()),
+  )), null),
   copyright: v.fallback(v.string(), `♥${new Date().getFullYear()}. Copying is an act of love. Please copy and share.`),
   defaultSettings: v.fallback(v.record(v.string(), v.any()), {}),
   gdpr: v.fallback(v.boolean(), false),
