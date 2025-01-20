@@ -1,6 +1,7 @@
+import { Link } from '@tanstack/react-router';
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { changeSetting } from 'pl-fe/actions/settings';
 import Column from 'pl-fe/components/ui/column';

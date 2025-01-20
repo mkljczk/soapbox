@@ -1,3 +1,4 @@
+import { Outlet } from '@tanstack/react-router';
 import React, { useMemo } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
@@ -28,7 +29,6 @@ interface IGroupLayout {
   params?: {
     groupId?: string;
   };
-  children: React.ReactNode;
 }
 
 const PrivacyBlankslate = () => (
@@ -50,7 +50,7 @@ const PrivacyBlankslate = () => (
 );
 
 /** Layout to display a group. */
-const GroupLayout: React.FC<IGroupLayout> = ({ params, children }) => {
+const GroupLayout: React.FC<IGroupLayout> = ({ params }) => {
   const intl = useIntl();
   const match = useRouteMatch();
   const { account: me } = useOwnAccount();
@@ -92,7 +92,7 @@ const GroupLayout: React.FC<IGroupLayout> = ({ params, children }) => {
     if (!isMember && isPrivate) {
       return <PrivacyBlankslate />;
     } else {
-      return children;
+      return <Outlet />;
     }
   };
 

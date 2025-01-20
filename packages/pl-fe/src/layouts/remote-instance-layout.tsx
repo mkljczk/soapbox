@@ -1,7 +1,9 @@
+import { Outlet } from '@tanstack/react-router';
 import React from 'react';
 
 import Layout from 'pl-fe/components/ui/layout';
 import LinkFooter from 'pl-fe/features/ui/components/link-footer';
+import { remoteTimelineRoute } from 'pl-fe/features/ui/routes';
 import {
   PromoPanel,
   InstanceInfoPanel,
@@ -11,16 +13,9 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { federationRestrictionsDisclosed } from 'pl-fe/utils/state';
 
-interface IRemoteInstanceLayout {
-  params?: {
-    instance?: string;
-  };
-  children: React.ReactNode;
-}
-
 /** Layout for viewing a remote instance timeline. */
-const RemoteInstanceLayout: React.FC<IRemoteInstanceLayout> = ({ children, params }) => {
-  const host = params!.instance!;
+const RemoteInstanceLayout = () => {
+  const { instance } = remoteTimelineRoute.route.useParams();
 
   const { account } = useOwnAccount();
   const disclosed = useAppSelector(federationRestrictionsDisclosed);
@@ -28,14 +23,14 @@ const RemoteInstanceLayout: React.FC<IRemoteInstanceLayout> = ({ children, param
   return (
     <>
       <Layout.Main>
-        {children}
+        <Outlet />
       </Layout.Main>
 
       <Layout.Aside>
         <PromoPanel />
-        <InstanceInfoPanel host={host} />
+        <InstanceInfoPanel host={instance} />
         {(disclosed || account?.is_admin) && (
-          <InstanceModerationPanel host={host} />
+          <InstanceModerationPanel host={instance} />
         )}
         <LinkFooter />
       </Layout.Aside>

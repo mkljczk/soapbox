@@ -1,7 +1,8 @@
+import { Link } from '@tanstack/react-router';
 import debounce from 'lodash/debounce';
 import React, { useState, useRef, useCallback } from 'react';
 import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { accountLookup } from 'pl-fe/actions/accounts';
 import { register, verifyCredentials } from 'pl-fe/actions/auth';

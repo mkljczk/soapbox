@@ -1,7 +1,7 @@
 // Adapted from Mastodon https://github.com/mastodon/mastodon/blob/main/app/javascript/mastodon/components/hashtag_bar.tsx
+import { Link } from '@tanstack/react-router';
 import React, { useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
 
 import HStack from './ui/hstack';
 import Text from './ui/text';

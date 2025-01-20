@@ -1,3 +1,4 @@
+import { Outlet } from '@tanstack/react-router';
 import React from 'react';
 
 import Layout from 'pl-fe/components/ui/layout';
@@ -6,18 +7,14 @@ import { WhoToFollowPanel, TrendsPanel, SignUpPanel } from 'pl-fe/features/ui/ut
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 
-interface IStatusLayout {
-  children: React.ReactNode;
-}
-
-const StatusLayout: React.FC<IStatusLayout> = ({ children }) => {
+const StatusLayout = () => {
   const me = useAppSelector(state => state.me);
   const features = useFeatures();
 
   return (
     <>
       <Layout.Main>
-        {children}
+        <Outlet />
       </Layout.Main>
 
       <Layout.Aside>

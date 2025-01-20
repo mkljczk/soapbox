@@ -1,8 +1,8 @@
+import { Link } from '@tanstack/react-router';
 import clsx from 'clsx';
 import React from 'react';
 import toast, { Toast as RHToast } from 'react-hot-toast';
 import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
 
 import { ToastText, ToastType } from 'pl-fe/toast';
 

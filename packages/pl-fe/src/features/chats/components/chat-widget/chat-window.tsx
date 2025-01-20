@@ -1,5 +1,5 @@
+import { Link } from '@tanstack/react-router';
 import React, { useRef } from 'react';
-import { Link } from 'react-router-dom';
 
 import Avatar from 'pl-fe/components/ui/avatar';
 import HStack from 'pl-fe/components/ui/hstack';

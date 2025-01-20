@@ -1,6 +1,6 @@
+import { Link } from '@tanstack/react-router';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
 import { Sparklines, SparklinesCurve } from 'react-sparklines';
 
 import HStack from 'pl-fe/components/ui/hstack';

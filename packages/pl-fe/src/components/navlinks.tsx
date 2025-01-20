@@ -1,5 +1,5 @@
+import { Link } from '@tanstack/react-router';
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 import Text from 'pl-fe/components/ui/text';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';

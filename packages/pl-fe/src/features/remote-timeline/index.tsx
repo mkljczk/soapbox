@@ -14,22 +14,17 @@ import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useTheme } from 'pl-fe/hooks/use-theme';
 
 import Timeline from '../ui/components/timeline';
+import { remoteTimelineRoute } from '../ui/routes';
 
 import PinnedHostsPicker from './components/pinned-hosts-picker';
 
-interface IRemoteTimeline {
-  params?: {
-    instance?: string;
-  };
-}
-
 /** View statuses from a remote instance. */
-const RemoteTimeline: React.FC<IRemoteTimeline> = ({ params }) => {
+const RemoteTimeline = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const theme = useTheme();
 
-  const instance = params?.instance as string;
+  const { instance } = remoteTimelineRoute.route.useParams();
   const settings = useSettings();
 
   const timelineId = 'remote';

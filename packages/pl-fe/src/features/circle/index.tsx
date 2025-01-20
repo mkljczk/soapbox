@@ -1,6 +1,6 @@
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
 
 import { processCircle } from 'pl-fe/actions/circle';
 import { resetCompose, uploadComposeSuccess, uploadFile } from 'pl-fe/actions/compose';

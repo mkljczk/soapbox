@@ -1,6 +1,3 @@
-import { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-
 import { Entities } from 'pl-fe/entity-store/entities';
 import { useEntity } from 'pl-fe/entity-store/hooks/use-entity';
 import { useClient } from 'pl-fe/hooks/use-client';
@@ -12,7 +9,6 @@ import type { Group as BaseGroup } from 'pl-api';
 
 const useGroup = (groupId: string, refetch = true) => {
   const client = useClient();
-  const history = useHistory();
 
   const { entity: group, isUnauthorized, ...result } = useEntity<BaseGroup, Group>(
     [Entities.GROUPS, groupId],
@@ -24,12 +20,6 @@ const useGroup = (groupId: string, refetch = true) => {
     },
   );
   const { groupRelationship: relationship } = useGroupRelationship(groupId);
-
-  useEffect(() => {
-    if (isUnauthorized) {
-      history.push('/login');
-    }
-  }, [isUnauthorized]);
 
   return {
     ...result,

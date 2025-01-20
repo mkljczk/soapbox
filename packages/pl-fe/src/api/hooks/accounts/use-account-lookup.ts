@@ -1,6 +1,3 @@
-import { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-
 import { Entities } from 'pl-fe/entity-store/entities';
 import { useEntityLookup } from 'pl-fe/entity-store/hooks/use-entity-lookup';
 import { useClient } from 'pl-fe/hooks/use-client';
@@ -22,7 +19,6 @@ interface UseAccountLookupOpts {
 const useAccountLookup = (acct: string | undefined, opts: UseAccountLookupOpts = {}) => {
   const client = useClient();
   const features = useFeatures();
-  const history = useHistory();
   const { me } = useLoggedIn();
   const { withRelationship, withScrobble } = opts;
 
@@ -45,12 +41,6 @@ const useAccountLookup = (acct: string | undefined, opts: UseAccountLookupOpts =
 
   const isBlocked = account?.relationship?.blocked_by === true;
   const isUnavailable = (me === account?.id) ? false : (isBlocked && !features.blockersVisible);
-
-  useEffect(() => {
-    if (isUnauthorized) {
-      history.push('/login');
-    }
-  }, [isUnauthorized]);
 
   return {
     ...result,

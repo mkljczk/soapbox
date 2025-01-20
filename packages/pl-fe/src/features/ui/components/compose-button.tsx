@@ -1,6 +1,6 @@
+import { useLocation, useMatch } from '@tanstack/react-router';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useLocation, useRouteMatch } from 'react-router-dom';
 
 import { groupComposeModal } from 'pl-fe/actions/compose';
 import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
@@ -13,7 +13,7 @@ import { useModalsStore } from 'pl-fe/stores/modals';
 const ComposeButton = () => {
   const location = useLocation();
   const isOnGroupPage = location.pathname.startsWith('/group/');
-  const match = useRouteMatch<{ groupId: string }>('/groups/:groupId');
+  const match = useMatch({ from: '/groups/$groupId', shouldThrow: false });
   const { group } = useGroup(match?.params.groupId || '');
   const isGroupMember = !!group?.relationship?.member;
 
@@ -42,7 +42,7 @@ const HomeComposeButton = () => {
 
 const GroupComposeButton = () => {
   const dispatch = useAppDispatch();
-  const match = useRouteMatch<{ groupId: string }>('/groups/:groupId');
+  const match = useMatch({ from: '/groups/$groupId', shouldThrow: false });
   const { group } = useGroup(match?.params.groupId || '');
 
   if (!group) return null;

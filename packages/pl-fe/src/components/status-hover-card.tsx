@@ -1,8 +1,8 @@
 import { autoUpdate, shift, useFloating, useTransitionStyles } from '@floating-ui/react';
+import { useRouter } from '@tanstack/react-router';
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import { useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
 
 import { fetchStatus } from 'pl-fe/actions/statuses';
 import { showStatusHoverCard } from 'pl-fe/components/hover-status-wrapper';
@@ -20,7 +20,7 @@ interface IStatusHoverCard {
 const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
-  const history = useHistory();
+  const router = useRouter();
 
   const { statusId, ref, closeStatusHoverCard, updateStatusHoverCard } = useStatusHoverCardStore();
 
@@ -32,16 +32,12 @@ const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
     }
   }, [statusId, status]);
 
-  useEffect(() => {
-    const unlisten = history.listen(() => {
+  useEffect(() => router.subscribe('onBeforeNavigate', ({ pathChanged }) => {
+    if (pathChanged) {
       showStatusHoverCard.cancel();
       closeStatusHoverCard(true);
-    });
-
-    return () => {
-      unlisten();
-    };
-  }, []);
+    }
+  }), []);
 
   const { x, y, strategy, refs, context, placement } = useFloating({
     open: !!statusId,

@@ -1,13 +1,10 @@
+import { RouterProvider } from '@tanstack/react-router';
 import React, { Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom';
-import { CompatRouter } from 'react-router-dom-v5-compat';
-// @ts-ignore: it doesn't have types
-import { ScrollContext } from 'react-router-scroll-4';
 
-import * as BuildConfig from 'pl-fe/build-config';
 import LoadingScreen from 'pl-fe/components/loading-screen';
 import SiteErrorBoundary from 'pl-fe/components/site-error-boundary';
+import { useRouter } from 'pl-fe/features/ui/routes';
 import { ModalRoot, OnboardingWizard } from 'pl-fe/features/ui/util/async-components';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
@@ -16,8 +13,7 @@ import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { useCachedLocationHandler } from 'pl-fe/utils/redirect';
 
 const GdprBanner = React.lazy(() => import('pl-fe/components/gdpr-banner'));
-const EmbeddedStatus = React.lazy(() => import('pl-fe/features/embedded-status'));
-const UI = React.lazy(() => import('pl-fe/features/ui'));
+// const EmbeddedStatus = React.lazy(() => import('pl-fe/features/embedded-status'));
 
 /** Highest level node with the Redux store. */
 const PlFeMount = () => {
@@ -26,66 +22,41 @@ const PlFeMount = () => {
   const { isLoggedIn } = useLoggedIn();
   const { account } = useOwnAccount();
   const plFeConfig = usePlFeConfig();
+  const router = useRouter();
 
   const needsOnboarding = useAppSelector(state => state.onboarding.needsOnboarding);
   const showOnboarding = account && needsOnboarding;
-  const { redirectRootNoLogin, gdpr } = plFeConfig;
-
-  // @ts-ignore: I don't actually know what these should be, lol
-  const shouldUpdateScroll = (prevRouterProps, { location }) =>
-    !(location.state?.plFeModalKey && location.state?.plFeModalKey !== prevRouterProps?.location?.state?.plFeModalKey)
-    && !(location.state?.plFeDropdownKey && location.state?.plFeDropdownKey !== prevRouterProps?.location?.state?.plFeDropdownKey);
+  const { gdpr } = plFeConfig;
 
   return (
     <SiteErrorBoundary>
-      <BrowserRouter basename={BuildConfig.FE_SUBDIRECTORY}>
-        <CompatRouter>
-          <ScrollContext shouldUpdateScroll={shouldUpdateScroll}>
-            <Switch>
-              {(!isLoggedIn && redirectRootNoLogin) && (
-                <Redirect exact from='/' to={redirectRootNoLogin} />
-              )}
+      {/* <BrowserRouter basename={BuildConfig.FE_SUBDIRECTORY}> */}
+      <>
+        <Suspense fallback={<LoadingScreen />}>
+          {showOnboarding
+            ? <OnboardingWizard />
+            : <RouterProvider router={router} />
+          }
+        </Suspense>
 
-              <Route
-                path='/embed/:statusId'
-                render={(props) => (
-                  <Suspense>
-                    <EmbeddedStatus params={props.match.params} />
-                  </Suspense>
-                )}
-              />
+        <Suspense>
+          <ModalRoot />
+        </Suspense>
 
-              <Redirect from='/@:username/:statusId/embed' to='/embed/:statusId' />
+        {(gdpr && !isLoggedIn) && (
+          <Suspense>
+            <GdprBanner />
+          </Suspense>
+        )}
 
-              <Route>
-                <Suspense fallback={<LoadingScreen />}>
-                  {showOnboarding
-                    ? <OnboardingWizard />
-                    : <UI />
-                  }
-                </Suspense>
-
-                <Suspense>
-                  <ModalRoot />
-                </Suspense>
-
-                {(gdpr && !isLoggedIn) && (
-                  <Suspense>
-                    <GdprBanner />
-                  </Suspense>
-                )}
-
-                <div id='toaster'>
-                  <Toaster
-                    position='top-right'
-                    containerClassName='top-4'
-                  />
-                </div>
-              </Route>
-            </Switch>
-          </ScrollContext>
-        </CompatRouter>
-      </BrowserRouter>
+        <div id='toaster'>
+          <Toaster
+            position='top-right'
+            containerClassName='top-4'
+          />
+        </div>
+      </>
+      {/* </BrowserRouter> */}
     </SiteErrorBoundary>
   );
 };

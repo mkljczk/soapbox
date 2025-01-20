@@ -1,6 +1,7 @@
+import { Link } from '@tanstack/react-router';
 import React, { useRef } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { Link, useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { blockAccount, unblockAccount } from 'pl-fe/actions/accounts';
 import DropdownMenu, { type Menu } from 'pl-fe/components/dropdown-menu';

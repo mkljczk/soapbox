@@ -1,8 +1,8 @@
+import { Link } from '@tanstack/react-router';
 import clsx from 'clsx';
 import throttle from 'lodash/throttle';
 import React, { useEffect, useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
 import { createSelector } from 'reselect';
 
 import { fetchOwnAccounts, logOut, switchAccount } from 'pl-fe/actions/auth';

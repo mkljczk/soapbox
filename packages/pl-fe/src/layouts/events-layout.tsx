@@ -1,3 +1,4 @@
+import { Outlet } from '@tanstack/react-router';
 import React from 'react';
 
 import Layout from 'pl-fe/components/ui/layout';
@@ -9,18 +10,14 @@ import {
 } from 'pl-fe/features/ui/util/async-components';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 
-interface IEventsLayout {
-  children: React.ReactNode;
-}
-
 /** Layout to display events list. */
-const EventsLayout: React.FC<IEventsLayout> = ({ children }) => {
+const EventsLayout = () => {
   const features = useFeatures();
 
   return (
     <>
       <Layout.Main>
-        {children}
+        <Outlet />
       </Layout.Main>
 
       <Layout.Aside>

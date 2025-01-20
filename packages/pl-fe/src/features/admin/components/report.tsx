@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
-import { Link } from 'react-router-dom';
 
 import { closeReport } from 'pl-fe/actions/admin';
 import { deactivateUserModal, deleteUserModal } from 'pl-fe/actions/moderation';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
+import Link from 'pl-fe/components/link';
 import Accordion from 'pl-fe/components/ui/accordion';
 import Avatar from 'pl-fe/components/ui/avatar';
 import Button from 'pl-fe/components/ui/button';
@@ -137,11 +137,7 @@ const Report: React.FC<IReport> = ({ id }) => {
               <Text theme='muted' tag='span'>&mdash;</Text>
 
               <HoverAccountWrapper accountId={account.id} element='span'>
-                <Link
-                  to={`/@${reporterAcct}`}
-                  title={reporterAcct}
-                  className='text-primary-600 hover:underline dark:text-accent-blue'
-                >
+                <Link to={`/@${reporterAcct}`} title={reporterAcct}>
                   @{reporterAcct}
                 </Link>
               </HoverAccountWrapper>

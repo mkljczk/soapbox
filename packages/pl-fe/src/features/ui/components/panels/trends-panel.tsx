@@ -1,6 +1,6 @@
+import { Link } from '@tanstack/react-router';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
 
 import Hashtag from 'pl-fe/components/hashtag';
 import Text from 'pl-fe/components/ui/text';

@@ -1,6 +1,6 @@
+import { useNavigate } from '@tanstack/react-router';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect } from 'react-router-dom';
 
 import { logIn, switchAccount, verifyCredentials } from 'pl-fe/actions/auth';
 import { fetchInstance } from 'pl-fe/actions/instance';
@@ -25,6 +25,8 @@ const SignUpPanel = () => {
   const { isOpen } = useRegistrationStatus();
   const me = useAppSelector((state) => state.me);
   const standalone = useAppSelector(isStandalone);
+
+  const navigate = useNavigate();
 
   const token = new URLSearchParams(window.location.search).get('token');
 
@@ -67,7 +69,9 @@ const SignUpPanel = () => {
 
   if (shouldRedirect) {
     const redirectUri = getRedirectUrl();
-    return <Redirect to={redirectUri} />;
+    navigate({ to: redirectUri });
+    return null;
+    // return <Redirect to={redirectUri} />;
   }
 
   if (mfaAuthNeeded) return <OtpAuthForm mfa_token={mfaToken} small />;

@@ -71,7 +71,7 @@ const EnableOtpForm: React.FC<IEnableOtpForm> = ({ displayOtpForm, handleSetupPr
           <Button
             theme='tertiary'
             text={intl.formatMessage(messages.mfaCancelButton)}
-            onClick={() => history.push('../auth/edit')}
+            onClick={() => history.push('/auth/edit')}
           />
 
           {backupCodes.length > 0 && (

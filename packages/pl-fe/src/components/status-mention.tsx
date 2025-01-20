@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
+import Link from 'pl-fe/components/link';
 
 import HoverAccountWrapper from './hover-account-wrapper';
 
@@ -23,7 +23,6 @@ const StatusMention: React.FC<IStatusMention> = ({ accountId, fallback }) => {
     <HoverAccountWrapper accountId={accountId} element='span'>
       <Link
         to={`/@${account.acct}`}
-        className='text-primary-600 hover:underline dark:text-accent-blue'
         dir='ltr'
         onClick={(e) => e.stopPropagation()}
       >

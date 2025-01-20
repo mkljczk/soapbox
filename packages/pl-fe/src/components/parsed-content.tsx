@@ -4,8 +4,8 @@ import DOMPurify from 'isomorphic-dompurify';
 import groupBy from 'lodash/groupBy';
 import minBy from 'lodash/minBy';
 import React from 'react';
-import { Link } from 'react-router-dom';
 
+import Link from 'pl-fe/components/link';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { makeEmojiMap } from 'pl-fe/utils/normalizers';
 
@@ -122,7 +122,6 @@ function parseContent({ html, mentions, hasQuote, emojis }: IParsedContent, extr
                 <HoverAccountWrapper accountId={mention.id} element='span'>
                   <Link
                     to={`/@${mention.acct}`}
-                    className='text-primary-600 hover:underline dark:text-accent-blue'
                     dir='ltr'
                     onClick={(e) => e.stopPropagation()}
                   >

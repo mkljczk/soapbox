@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
+import { Link } from '@tanstack/react-router';
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
-import { Link, NavLink } from 'react-router-dom';
 
 import { fetchOwnAccounts, logOut, switchAccount } from 'pl-fe/actions/auth';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
@@ -72,9 +72,9 @@ const SidebarLink: React.FC<ISidebarLink> = React.memo(({ href, to, icon, text, 
 
   if (to) {
     return (
-      <NavLink className='group rounded-full text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800' to={to} onClick={onClick}>
+      <Link className='group rounded-full text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800' to={to} onClick={onClick}>
         {body}
-      </NavLink>
+      </Link>
     );
   }
 
@@ -423,10 +423,10 @@ const SidebarMenu: React.FC = React.memo((): JSX.Element | null => {
                       <div className='border-t-2 border-solid border-gray-100 black:border-t dark:border-gray-800'>
                         {otherAccounts.map(account => renderAccount(account))}
 
-                        <NavLink className='flex items-center space-x-1 py-2' to='/login/add' onClick={handleClose}>
+                        <Link className='flex items-center space-x-1 py-2' to='/login/add' onClick={handleClose}>
                           <Icon className='size-4 text-primary-500' src={require('@tabler/icons/outline/plus.svg')} />
                           <Text size='sm' weight='medium'>{intl.formatMessage(messages.addAccount)}</Text>
-                        </NavLink>
+                        </Link>
                       </div>
                     )}
                   </Stack>

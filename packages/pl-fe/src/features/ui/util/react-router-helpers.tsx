@@ -1,6 +1,7 @@
+import { useLocation } from '@tanstack/react-router';
 import React, { Suspense, useEffect, useRef } from 'react';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
-import { Redirect, Route, useHistory, RouteProps, RouteComponentProps, match as MatchType, useLocation } from 'react-router-dom';
+import { Redirect, Route, useHistory, RouteProps, RouteComponentProps, match as MatchType } from 'react-router-dom';
 
 import Layout from 'pl-fe/components/ui/layout';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
