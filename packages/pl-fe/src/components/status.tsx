@@ -1,11 +1,12 @@
+import { useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
+import { Filter } from 'pl-api';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { defineMessages, useIntl, FormattedList, FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
 import { mentionCompose, replyCompose } from 'pl-fe/actions/compose';
-import { toggleFavourite, toggleReblog } from 'pl-fe/actions/interactions';
-import { unfilterStatus } from 'pl-fe/actions/statuses';
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import Card from 'pl-fe/components/ui/card';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
@@ -16,8 +17,10 @@ import StatusTypeIcon from 'pl-fe/features/status/components/status-type-icon';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useSettings } from 'pl-fe/hooks/use-settings';
-import { makeGetStatus, type SelectedStatus } from 'pl-fe/selectors';
+import { favouriteStatusMutationOptions, reblogStatusMutationOptions, unfavouriteStatusMutationOptions, unreblogStatusMutationOptions } from 'pl-fe/queries/statuses/status-interactions';
+import { escapeRegExp, getFilters, selectAccounts } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { textForScreenReader } from 'pl-fe/utils/status';
@@ -31,14 +34,91 @@ import StatusReplyMentions from './status-reply-mentions';
 import StatusInfo from './statuses/status-info';
 import Tombstone from './tombstone';
 
+import type { Status as NormalizedStatus } from 'pl-fe/normalizers/status';
+
 const messages = defineMessages({
   reblogged_by: { id: 'status.reblogged_by', defaultMessage: '{name} reposted' },
 });
 
+interface IRebloggedBy {
+  rebloggedBy: Array<string>;
+}
+
+const RebloggedBy: React.FC<IRebloggedBy> = ({ rebloggedBy }) => {
+  const accounts = useAppSelector((state) => selectAccounts(state, rebloggedBy));
+
+  const renderedAccounts = accounts.slice(0, 2).map((account) =>(
+    <Link key={account.acct} to={`/@${account.acct}`} className='hover:underline'>
+      <bdi className='truncate'>
+        <strong className='text-gray-800 dark:text-gray-200'>
+          <Emojify text={account.display_name} emojis={account.emojis} />
+        </strong>
+      </bdi>
+    </Link>
+  ));
+
+  if (accounts.length > 2) {
+    renderedAccounts.push(
+      <FormattedMessage
+        id='notification.more'
+        defaultMessage='{count, plural, one {# other} other {# others}}'
+        values={{ count: accounts.length - renderedAccounts.length }}
+      />,
+    );
+  }
+
+  return (
+    <FormattedMessage
+      id='status.reblogged_by'
+      defaultMessage='{name} reposted'
+      values={{
+        name: <FormattedList type='conjunction' value={renderedAccounts} />,
+        count: accounts.length,
+      }}
+    />
+  );
+};
+
+const checkFiltered = (index: string, filters: Array<Filter>) =>
+  filters.reduce((result: Array<string>, filter) =>
+    result.concat(filter.keywords.reduce((result: Array<string>, keyword) => {
+      let expr = escapeRegExp(keyword.keyword);
+
+      if (keyword.whole_word) {
+        if (/^[\w]/.test(expr)) {
+          expr = `\\b${expr}`;
+        }
+
+        if (/[\w]$/.test(expr)) {
+          expr = `${expr}\\b`;
+        }
+      }
+
+      const regex = new RegExp(expr);
+
+      if (regex.test(index)) return result.concat(filter.title);
+      return result;
+    }, [])), []);
+
+const useFiltered = (status: NormalizedStatus) => {
+  const features = useFeatures();
+  const me = useAppSelector((state) => state.me);
+  const filters = useAppSelector((state) => getFilters(state, {}));
+
+  return useMemo(
+    () => features.filtersV2
+      ? status.filtered
+      : features.filters && status.account_id !== me && checkFiltered(status.search_index || '', filters) || [],
+    [status.filtered, status.search_index, filters],
+  );
+
+};
+
 interface IStatus {
   id?: string;
   avatarSize?: number;
-  status: SelectedStatus;
+  status: NormalizedStatus;
+  rebloggedBy?: Array<string>;
   onClick?: () => void;
   muted?: boolean;
   unread?: boolean;
@@ -57,6 +137,7 @@ interface IStatus {
 const Status: React.FC<IStatus> = (props) => {
   const {
     status,
+    rebloggedBy,
     accountAction,
     avatarSize = 42,
     focusable = true,
@@ -77,20 +158,24 @@ const Status: React.FC<IStatus> = (props) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
 
-  const { toggleStatusMediaHidden } = useStatusMetaStore();
+  const { mutate: favouriteStatus } = useMutation(favouriteStatusMutationOptions);
+  const { mutate: unfavouriteStatus } = useMutation(unfavouriteStatusMutationOptions);
+  const { mutate: reblogStatus } = useMutation(reblogStatusMutationOptions);
+  const { mutate: unreblogStatus } = useMutation(unreblogStatusMutationOptions);
+
+  const { toggleStatusMediaHidden, showFilteredStatus, statuses } = useStatusMetaStore();
+  const statusMeta = statuses[status.id];
   const { openModal } = useModalsStore();
   const { boostModal } = useSettings();
   const didShowCard = useRef(false);
   const node = useRef<HTMLDivElement>(null);
 
-  const getStatus = useMemo(makeGetStatus, []);
-  const actualStatus = useAppSelector(state => status.reblog_id && getStatus(state, { id: status.reblog_id }) || status)!;
-
   const isReblog = status.reblog_id;
-  const statusUrl = `/@${actualStatus.account.acct}/posts/${actualStatus.id}`;
-  const group = actualStatus.group;
+  const statusUrl = `/@${status.account.acct}/posts/${status.id}`;
+  const { group } = useGroup(status.group_id);
 
-  const filtered = (status.filtered?.length || actualStatus.filtered?.length) > 0;
+  const filtered = useFiltered(status);
+  //  (status.filtered?.length || status.filtered?.length) > 0;
 
   // Track height changes we know about to compensate scrolling.
   useEffect(() => {
@@ -117,7 +202,6 @@ const Status: React.FC<IStatus> = (props) => {
   };
 
   const handleHotkeyOpenMedia = (e?: KeyboardEvent) => {
-    const status = actualStatus;
     const firstAttachment = status.media_attachments[0];
 
     e?.preventDefault();
@@ -133,26 +217,27 @@ const Status: React.FC<IStatus> = (props) => {
 
   const handleHotkeyReply = (e?: KeyboardEvent) => {
     e?.preventDefault();
-    dispatch(replyCompose(actualStatus, status.reblog_id ? status.account : undefined));
+    dispatch(replyCompose(status, status.reblog_id ? status.account : undefined));
   };
 
   const handleHotkeyFavourite = (e?: KeyboardEvent) => {
     e?.preventDefault();
-    dispatch(toggleFavourite(actualStatus));
+    if (status.favourited) unfavouriteStatus(status.id);
+    else favouriteStatus(status.id);
   };
 
   const handleHotkeyBoost = (e?: KeyboardEvent) => {
-    const modalReblog = () => dispatch(toggleReblog(actualStatus));
+    const modalReblog = () => status.reblogged ? unreblogStatus(status.id) : reblogStatus({ statusId: status.id });
     if ((e && e.shiftKey) || !boostModal) {
       modalReblog();
     } else {
-      openModal('BOOST', { statusId: actualStatus.id, onReblog: modalReblog });
+      openModal('BOOST', { statusId: status.id, onReblog: modalReblog });
     }
   };
 
   const handleHotkeyMention = (e?: KeyboardEvent) => {
     e?.preventDefault();
-    dispatch(mentionCompose(actualStatus.account));
+    dispatch(mentionCompose(status.account));
   };
 
   const handleHotkeyOpen = () => {
@@ -160,7 +245,7 @@ const Status: React.FC<IStatus> = (props) => {
   };
 
   const handleHotkeyOpenProfile = () => {
-    history.push(`/@${actualStatus.account.acct}`);
+    history.push(`/@${status.account.acct}`);
   };
 
   const handleHotkeyMoveUp = (e?: KeyboardEvent) => {
@@ -176,14 +261,14 @@ const Status: React.FC<IStatus> = (props) => {
   };
 
   const handleHotkeyToggleSensitive = () => {
-    toggleStatusMediaHidden(actualStatus.id);
+    toggleStatusMediaHidden(status.id);
   };
 
   const handleHotkeyReact = () => {
     (node.current?.querySelector('.emoji-picker-dropdown') as HTMLButtonElement)?.click();
   };
 
-  const handleUnfilter = () => dispatch(unfilterStatus(status.filtered.length ? status.id : actualStatus.id));
+  const handleUnfilter = () => showFilteredStatus(status.id);
 
   const statusInfo = useMemo(() => {
     if (isReblog && showGroup && group) {
@@ -220,7 +305,7 @@ const Status: React.FC<IStatus> = (props) => {
           }
         />
       );
-    } else if (isReblog) {
+    } else if (rebloggedBy?.length) {
       const accounts = status.accounts || [status.account];
 
       const renderedAccounts = accounts.slice(0, 2).map(account => !!account && (
@@ -248,14 +333,7 @@ const Status: React.FC<IStatus> = (props) => {
           avatarSize={avatarSize}
           icon={<Icon src={require('@tabler/icons/outline/repeat.svg')} className='size-4 text-green-600' />}
           text={
-            <FormattedMessage
-              id='status.reblogged_by'
-              defaultMessage='{name} reposted'
-              values={{
-                name: <FormattedList type='conjunction' value={renderedAccounts} />,
-                count: accounts.length,
-              }}
-            />
+            <RebloggedBy rebloggedBy={rebloggedBy} />
           }
         />
       );
@@ -302,7 +380,7 @@ const Status: React.FC<IStatus> = (props) => {
     <Tombstone id={status.id} onMoveUp={onMoveUp} onMoveDown={onMoveDown} deleted />
   );
 
-  if (filtered && actualStatus.showFiltered !== true) {
+  if (filtered.length && statusMeta?.showFiltered !== true) {
     const minHandlers = muted ? undefined : {
       moveUp: handleHotkeyMoveUp,
       moveDown: handleHotkeyMoveDown,
@@ -312,7 +390,7 @@ const Status: React.FC<IStatus> = (props) => {
       <HotKeys handlers={minHandlers}>
         <div className={clsx('status__wrapper text-center', { focusable })} tabIndex={focusable ? 0 : undefined} ref={node}>
           <Text theme='muted'>
-            <FormattedMessage id='status.filtered' defaultMessage='Filtered' />: {status.filtered.join(', ')}.
+            <FormattedMessage id='status.filtered' defaultMessage='Filtered' />: {filtered.join(', ')}.
             {' '}
             <button className='text-primary-600 hover:underline dark:text-accent-blue' onClick={handleUnfilter}>
               <FormattedMessage id='status.show_filter_reason' defaultMessage='Show anyway' />
@@ -351,14 +429,14 @@ const Status: React.FC<IStatus> = (props) => {
         className={clsx('status cursor-pointer', { focusable })}
         tabIndex={focusable && !muted ? 0 : undefined}
         data-featured={featured ? 'true' : null}
-        aria-label={textForScreenReader(intl, actualStatus, rebloggedByText)}
+        aria-label={textForScreenReader(intl, status, rebloggedByText)}
         ref={node}
         onClick={handleClick}
         role='link'
       >
         <Card
           variant={variant}
-          className={clsx('status__wrapper space-y-4', `status-${actualStatus.visibility}`, {
+          className={clsx('status__wrapper space-y-4', `status-${status.visibility}`, {
             'py-6 sm:p-5': variant === 'rounded',
             'status-reply': !!status.in_reply_to_id,
             muted,
@@ -369,32 +447,32 @@ const Status: React.FC<IStatus> = (props) => {
           {statusInfo}
 
           <AccountContainer
-            key={actualStatus.account_id}
-            id={actualStatus.account_id}
-            timestamp={actualStatus.created_at}
+            key={status.account_id}
+            id={status.account_id}
+            timestamp={status.created_at}
             timestampUrl={statusUrl}
             action={accountAction}
             hideActions={!accountAction}
-            showEdit={!!actualStatus.edited_at}
+            showEdit={!!status.edited_at}
             showAccountHoverCard={hoverable}
             withLinkToProfile={hoverable}
-            approvalStatus={actualStatus.approval_status}
+            approvalStatus={status.approval_status}
             avatarSize={avatarSize}
             items={(
               <>
-                <StatusTypeIcon visibility={actualStatus.visibility} />
-                <StatusLanguagePicker status={actualStatus} />
+                <StatusTypeIcon visibility={status.visibility} />
+                <StatusLanguagePicker status={status} />
               </>
             )}
           />
 
           <div className='status__content-wrapper'>
-            <StatusReplyMentions status={actualStatus} hoverable={hoverable} />
+            <StatusReplyMentions status={status} hoverable={hoverable} />
 
             <Stack className='relative z-0'>
-              {actualStatus.event ? <EventPreview className='shadow-xl' status={actualStatus} /> : (
+              {status.event ? <EventPreview className='shadow-xl' status={status} /> : (
                 <StatusContent
-                  status={actualStatus}
+                  status={status}
                   onClick={handleClick}
                   collapsable
                   translatable
@@ -403,17 +481,17 @@ const Status: React.FC<IStatus> = (props) => {
               )}
             </Stack>
 
-            <StatusReactionsBar status={actualStatus} collapsed />
+            <StatusReactionsBar status={status} collapsed />
 
             {!hideActionBar && (
               <div
                 className={clsx({
-                  'pt-2': actualStatus.emoji_reactions.length,
-                  'pt-4': !actualStatus.emoji_reactions.length,
+                  'pt-2': status.emoji_reactions.length,
+                  'pt-4': !status.emoji_reactions.length,
                 })}
               >
                 <StatusActionBar
-                  status={actualStatus}
+                  status={status}
                   rebloggedBy={isReblog ? status.account : undefined}
                   fromBookmarks={fromBookmarks}
                   expandable

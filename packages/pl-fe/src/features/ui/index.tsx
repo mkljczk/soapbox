@@ -8,7 +8,6 @@ import { fetchFilters } from 'pl-fe/actions/filters';
 import { fetchMarker } from 'pl-fe/actions/markers';
 import { expandNotifications } from 'pl-fe/actions/notifications';
 import { register as registerPushNotifications } from 'pl-fe/actions/push-notifications/registerer';
-import { fetchScheduledStatuses } from 'pl-fe/actions/scheduled-statuses';
 import { fetchHomeTimeline } from 'pl-fe/actions/timelines';
 import { useUserStream } from 'pl-fe/api/hooks/streaming/use-user-stream';
 import SidebarNavigation from 'pl-fe/components/sidebar-navigation';
@@ -39,8 +38,10 @@ import ProfileLayout from 'pl-fe/layouts/profile-layout';
 import RemoteInstanceLayout from 'pl-fe/layouts/remote-instance-layout';
 import SearchLayout from 'pl-fe/layouts/search-layout';
 import StatusLayout from 'pl-fe/layouts/status-layout';
-import { prefetchFollowRequests } from 'pl-fe/queries/accounts/use-follow-requests';
-import { prefetchCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
+import { prefetchFollowRequests } from 'pl-fe/queries/accounts/follow-requests';
+import { queryClient } from 'pl-fe/queries/client';
+import { prefetchCustomEmojis } from 'pl-fe/queries/instance/custom-emojis';
+import { scheduledStatusesQueryOptions } from 'pl-fe/queries/statuses/scheduled-statuses';
 import { useUiStore } from 'pl-fe/stores/ui';
 import { getVapidKey } from 'pl-fe/utils/auth';
 import { isStandalone } from 'pl-fe/utils/state';
@@ -413,10 +414,10 @@ const UI: React.FC<IUI> = React.memo(({ children }) => {
     setTimeout(() => dispatch(fetchFilters()), 500);
 
     if (account.locked) {
-      setTimeout(() => prefetchFollowRequests(client), 700);
+      setTimeout(() => prefetchFollowRequests(), 700);
     }
 
-    setTimeout(() => dispatch(fetchScheduledStatuses()), 900);
+    setTimeout(() => queryClient.prefetchInfiniteQuery(scheduledStatusesQueryOptions), 900);
   };
 
   useEffect(() => {

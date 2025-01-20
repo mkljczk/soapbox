@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -5,6 +6,8 @@ import Tombstone from 'pl-fe/components/tombstone';
 import StatusContainer from 'pl-fe/containers/status-container';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
 interface IThreadStatus {
   id: string;
@@ -20,8 +23,8 @@ const ThreadStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
 
   const replyToId = useAppSelector(state => state.contexts.inReplyTos[id]);
   const replyCount = useAppSelector(state => (state.contexts.replies[id] || []).length);
-  const isLoaded = useAppSelector(state => Boolean(state.statuses[id]));
-  const isDeleted = useAppSelector(state => Boolean(state.statuses[id]?.deleted));
+  const { isFetched } = useQuery(statusQueryOptions(id));
+  const isDeleted = useStatusMetaStore().statuses[id]?.deleted;
 
   if (isDeleted) {
     return (
@@ -50,7 +53,7 @@ const ThreadStatus: React.FC<IThreadStatus> = (props): JSX.Element => {
   return (
     <div className='thread__status relative pb-4'>
       {renderConnector()}
-      {isLoaded ? (
+      {isFetched ? (
         // @ts-ignore FIXME
         <StatusContainer {...props} showGroup={false} />
       ) : (

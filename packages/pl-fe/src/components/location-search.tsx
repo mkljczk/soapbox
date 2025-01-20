@@ -1,11 +1,12 @@
+import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import AutosuggestInput, { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
+import AutosuggestInput, { type AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import Icon from 'pl-fe/components/icon';
-import { useSearchLocation } from 'pl-fe/queries/search/use-search-location';
+import { searchLocationQueryOptions } from 'pl-fe/queries/search/search-location';
 
 import type { Location } from 'pl-api';
 
@@ -24,7 +25,7 @@ const LocationSearch: React.FC<ILocationSearch> = ({ onSelected }) => {
 
   const [value, setValue] = useState('');
   const debouncedValue = useDebounce(value, 400);
-  const locationsQuery = useSearchLocation(debouncedValue);
+  const locationsQuery = useQuery(searchLocationQueryOptions(debouncedValue));
 
   const empty = !(value.length > 0);
 

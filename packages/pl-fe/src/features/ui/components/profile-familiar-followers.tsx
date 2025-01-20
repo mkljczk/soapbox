@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { FormattedList, FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -9,7 +10,7 @@ import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useFamiliarFollowers } from 'pl-fe/queries/accounts/use-familiar-followers';
+import { familiarFollowersQueryOptions } from 'pl-fe/queries/accounts/familiar-followers';
 import { makeGetAccount } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
@@ -23,7 +24,7 @@ interface IProfileFamiliarFollowers {
 
 const ProfileFamiliarFollowers: React.FC<IProfileFamiliarFollowers> = ({ account }) => {
   const { openModal } = useModalsStore();
-  const { data: familiarFollowerIds = [] } = useFamiliarFollowers(account.id);
+  const { data: familiarFollowerIds = [] } = useQuery(familiarFollowersQueryOptions(account.id));
   const familiarFollowers = useAppSelector(state => familiarFollowerIds.slice(0, 2).map(accountId => getAccount(state, accountId)));
 
   const openFamiliarFollowersModal = () => {

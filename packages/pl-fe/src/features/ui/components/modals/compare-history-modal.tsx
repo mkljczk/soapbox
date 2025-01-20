@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { FormattedDate, FormattedMessage } from 'react-intl';
 
@@ -9,8 +10,8 @@ import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useStatusHistory } from 'pl-fe/queries/statuses/use-status-history';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
+import { statusHistoryQueryOptions } from 'pl-fe/queries/statuses/status-history';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -19,9 +20,9 @@ interface CompareHistoryModalProps {
 }
 
 const CompareHistoryModal: React.FC<BaseModalProps & CompareHistoryModalProps> = ({ onClose, statusId }) => {
-  const { data: versions, isLoading } = useStatusHistory(statusId);
+  const { data: versions, isLoading } = useQuery(statusHistoryQueryOptions(statusId));
 
-  const status = useAppSelector(state => state.statuses[statusId]);
+  const { data: status } = useQuery(statusQueryOptions(statusId));
 
   const onClickClose = () => {
     onClose('COMPARE_HISTORY');

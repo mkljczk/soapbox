@@ -5,9 +5,8 @@ import { fetchGroupTimeline } from 'pl-fe/actions/timelines';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Text from 'pl-fe/components/ui/text';
 import Widget from 'pl-fe/components/ui/widget';
+import { useGroupGallery, type AccountGalleryAttachment } from 'pl-fe/hooks/use-account-gallery';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { type AccountGalleryAttachment, getGroupGallery } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import MediaItem from '../../../account-gallery/components/media-item';
@@ -27,7 +26,7 @@ const GroupMediaPanel: React.FC<IGroupMediaPanel> = ({ group }) => {
   const isMember = !!group?.relationship?.member;
   const isPrivate = group?.locked;
 
-  const attachments: Array<AccountGalleryAttachment> = useAppSelector((state) => group ? getGroupGallery(state, group?.id) : []);
+  const attachments = useGroupGallery(group?.id);
 
   const handleOpenMedia = (attachment: AccountGalleryAttachment): void => {
     if (attachment.type === 'video') {

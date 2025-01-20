@@ -1,8 +1,8 @@
-import React, { useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 
 import QuotedStatus from 'pl-fe/components/quoted-status';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 interface IQuotedStatusContainer {
   /** Status ID to the quoted status. */
@@ -10,9 +10,7 @@ interface IQuotedStatusContainer {
 }
 
 const QuotedStatusContainer: React.FC<IQuotedStatusContainer> = ({ statusId }) => {
-  const getStatus = useCallback(makeGetStatus(), []);
-
-  const status = useAppSelector(state => getStatus(state, { id: statusId }));
+  const { data: status } = useQuery(statusQueryOptions(statusId));
 
   if (!status) {
     return null;

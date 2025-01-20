@@ -19,7 +19,7 @@ import { useSettingsStore } from 'pl-fe/stores/settings';
 import { getUnreadChatsCount, updateChatListItem } from 'pl-fe/utils/chats';
 import { play, soundCache } from 'pl-fe/utils/sounds';
 
-import { updateReactions } from '../../../queries/announcements/use-announcements';
+import { updateReactions } from '../../../queries/announcements/announcements';
 
 import { useTimelineStream } from './use-timeline-stream';
 

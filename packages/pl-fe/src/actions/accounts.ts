@@ -14,7 +14,7 @@ import { getClient, type PlfeResponse } from '../api';
 
 import { importEntities } from './importer';
 
-import type { MinifiedSuggestion } from 'pl-fe/queries/trends/use-suggested-accounts';
+import type { MinifiedSuggestion } from 'pl-fe/queries/trends/suggested-accounts';
 import type { MinifiedStatus } from 'pl-fe/reducers/statuses';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 import type { History } from 'pl-fe/types/history';

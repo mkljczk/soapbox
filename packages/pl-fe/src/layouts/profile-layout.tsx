@@ -35,7 +35,7 @@ const ProfileLayout: React.FC<IProfileLayout> = ({ params, children }) => {
   const history = useHistory();
   const username = params?.username || '';
 
-  const { account } = useAccountLookup(username, { withRelationship: true, withScrobble: true });
+  const { account } = useAccountLookup(username, { withRelationship: true });
 
   const me = useAppSelector(state => state.me);
   const features = useFeatures();

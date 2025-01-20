@@ -1,9 +1,10 @@
+import { useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 
 import AnimatedNumber from 'pl-fe/components/animated-number';
 import unicodeMapping from 'pl-fe/features/emoji/mapping';
-import { useAnnouncements } from 'pl-fe/queries/announcements/use-announcements';
+import { addAnnouncementReactionMutationOptions, removeAnnouncementReactionMutationOptions } from 'pl-fe/queries/announcements/announcements';
 
 import Emoji from './emoji';
 
@@ -19,7 +20,8 @@ interface IReaction {
 const Reaction: React.FC<IReaction> = ({ announcementId, reaction, emojiMap, style }) => {
   const [hovered, setHovered] = useState(false);
 
-  const { addReaction, removeReaction } = useAnnouncements();
+  const { mutate: addReaction } = useMutation(addAnnouncementReactionMutationOptions);
+  const { mutate: removeReaction } = useMutation(removeAnnouncementReactionMutationOptions);
 
   const handleClick = () => {
     if (reaction.me) {

@@ -6,9 +6,10 @@ import { useCallback, useEffect } from 'react';
 import { useIntl } from 'react-intl';
 
 import { addSuggestedLanguage, addSuggestedQuote, setEditorState } from 'pl-fe/actions/compose';
-import { fetchStatus } from 'pl-fe/actions/statuses';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useFeatures } from 'pl-fe/hooks/use-features';
+import { queryClient } from 'pl-fe/queries/client';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import { getStatusIdsFromLinksInContent } from 'pl-fe/utils/status';
 
 import type { LanguageIdentificationModel } from 'fasttext.wasm.js/dist/models/language-identification/common.js';
@@ -40,16 +41,15 @@ const StatePlugin: React.FC<IStatePlugin> = ({ composeId, isWysiwyg }) => {
       for (const id of ids) {
         if (compose?.dismissed_quotes.includes(id)) continue;
 
-        if (state.statuses[id]) {
-          quoteId = id;
-          break;
-        }
+        try {
+          const status = await queryClient.ensureQueryData(statusQueryOptions(id, intl.locale));
 
-        const status = await dispatch(fetchStatus(id, intl));
-
-        if (status) {
-          quoteId = status.id;
-          break;
+          if (status) {
+            quoteId = status.id;
+            break;
+          }
+        } catch (e) {
+          //
         }
       }
 

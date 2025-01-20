@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
@@ -14,7 +15,7 @@ import HStack from 'pl-fe/components/ui/hstack';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
-import { useAcceptFollowRequestMutation, useRejectFollowRequestMutation } from 'pl-fe/queries/accounts/use-follow-requests';
+import { acceptFollowRequestMutationOptions, rejectFollowRequestMutationOptions } from 'pl-fe/queries/accounts/follow-requests';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
@@ -62,8 +63,8 @@ const ActionButton: React.FC<IActionButton> = ({ account, actionType, small }) =
   const { isLoggedIn, me } = useLoggedIn();
   const { follow, unfollow } = useFollow();
 
-  const { mutate: authorizeFollowRequest } = useAcceptFollowRequestMutation(account.id);
-  const { mutate: rejectFollowRequest } = useRejectFollowRequestMutation(account.id);
+  const { mutate: authorizeFollowRequest } = useMutation(acceptFollowRequestMutationOptions(account.id));
+  const { mutate: rejectFollowRequest } = useMutation(rejectFollowRequestMutationOptions(account.id));
 
   const handleFollow = () => {
     if (account.relationship?.following || account.relationship?.requested) {

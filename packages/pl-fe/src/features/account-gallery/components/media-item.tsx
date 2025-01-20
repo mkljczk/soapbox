@@ -8,7 +8,7 @@ import StillImage from 'pl-fe/components/still-image';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { isIOS } from 'pl-fe/is-mobile';
 
-import type { AccountGalleryAttachment } from 'pl-fe/selectors';
+import type { AccountGalleryAttachment } from 'pl-fe/hooks/use-account-gallery';
 
 interface IMediaItem {
   attachment: AccountGalleryAttachment;

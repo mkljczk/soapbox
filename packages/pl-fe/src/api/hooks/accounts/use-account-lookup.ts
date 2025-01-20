@@ -8,15 +8,12 @@ import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { type Account, normalizeAccount } from 'pl-fe/normalizers/account';
 
-import { useAccountScrobble } from '../../../queries/accounts/use-account-scrobble';
-
 import { useRelationship } from './use-relationship';
 
 import type { Account as BaseAccount } from 'pl-api';
 
 interface UseAccountLookupOpts {
   withRelationship?: boolean;
-  withScrobble?: boolean;
 }
 
 const useAccountLookup = (acct: string | undefined, opts: UseAccountLookupOpts = {}) => {
@@ -24,7 +21,7 @@ const useAccountLookup = (acct: string | undefined, opts: UseAccountLookupOpts =
   const features = useFeatures();
   const history = useHistory();
   const { me } = useLoggedIn();
-  const { withRelationship, withScrobble } = opts;
+  const { withRelationship } = opts;
 
   const { entity: account, isUnauthorized, ...result } = useEntityLookup<BaseAccount, Account>(
     Entities.ACCOUNTS,
@@ -37,11 +34,6 @@ const useAccountLookup = (acct: string | undefined, opts: UseAccountLookupOpts =
     relationship,
     isLoading: isRelationshipLoading,
   } = useRelationship(account?.id, { enabled: withRelationship });
-
-  const {
-    scrobble,
-    isLoading: isScrobbleLoading,
-  } = useAccountScrobble(account?.id, { enabled: withScrobble });
 
   const isBlocked = account?.relationship?.blocked_by === true;
   const isUnavailable = (me === account?.id) ? false : (isBlocked && !features.blockersVisible);
@@ -56,10 +48,9 @@ const useAccountLookup = (acct: string | undefined, opts: UseAccountLookupOpts =
     ...result,
     isLoading: result.isLoading,
     isRelationshipLoading,
-    isScrobbleLoading,
     isUnauthorized,
     isUnavailable,
-    account: account ? { ...account, relationship, scrobble } : undefined,
+    account: account ? { ...account, relationship } : undefined,
   };
 };
 

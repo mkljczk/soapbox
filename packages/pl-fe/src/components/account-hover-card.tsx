@@ -1,4 +1,5 @@
 import { autoUpdate, shift, useFloating, useTransitionStyles } from '@floating-ui/react';
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
@@ -16,6 +17,7 @@ import ActionButton from 'pl-fe/features/ui/components/action-button';
 import { UserPanel } from 'pl-fe/features/ui/util/async-components';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { accountScrobbleQueryOptions } from 'pl-fe/queries/accounts/account-scrobble';
 import { useAccountHoverCardStore } from 'pl-fe/stores/account-hover-card';
 
 import { showAccountHoverCard } from './hover-account-wrapper';
@@ -52,7 +54,11 @@ const AccountHoverCard: React.FC<IAccountHoverCard> = ({ visible = true }) => {
   const { accountId, ref, updateAccountHoverCard, closeAccountHoverCard } = useAccountHoverCardStore();
 
   const me = useAppSelector(state => state.me);
-  const { account } = useAccount(accountId || undefined, { withRelationship: true, withScrobble: true });
+  const { account } = useAccount(accountId || undefined, { withRelationship: true });
+  const { data: scrobble } = useQuery({
+    ...accountScrobbleQueryOptions(accountId || undefined),
+    enabled: !!accountId,
+  });
   const badges = getBadges(account);
 
   useEffect(() => {
@@ -150,8 +156,8 @@ const AccountHoverCard: React.FC<IAccountHoverCard> = ({ visible = true }) => {
               </HStack>
             ) : null}
 
-            {!!account.scrobble && (
-              <Scrobble scrobble={account.scrobble} />
+            {!!scrobble && (
+              <Scrobble scrobble={scrobble} />
             )}
 
             {account.note.length > 0 && (

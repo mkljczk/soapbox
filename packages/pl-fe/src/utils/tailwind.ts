@@ -59,7 +59,5 @@ const toTailwind = (config: {
 };
 
 export {
-  expandPalette,
-  fromBasicColors,
   toTailwind,
 };

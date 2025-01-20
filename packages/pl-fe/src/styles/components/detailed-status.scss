@@ -7,3 +7,10 @@
     @apply pl-[54px] rtl:pl-0 rtl:pr-[calc(54px)];
   }
 }
+
+.timeline-status-connected {
+  .status__content-wrapper {
+    @apply pl-[54px] rtl:pl-0 rtl:pr-[calc(54px)];
+  }
+}
+

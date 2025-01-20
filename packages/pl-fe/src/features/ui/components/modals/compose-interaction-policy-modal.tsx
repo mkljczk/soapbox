@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -7,7 +8,7 @@ import Stack from 'pl-fe/components/ui/stack';
 import { InteractionPolicyConfig, type Policy, type Rule, type Scope } from 'pl-fe/features/interaction-policies';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useCompose } from 'pl-fe/hooks/use-compose';
-import { useInteractionPolicies } from 'pl-fe/queries/settings/use-interaction-policies';
+import { interactionPoliciesQueryOptions } from 'pl-fe/queries/settings/interaction-policies';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -17,7 +18,7 @@ interface ComposeInteractionPolicyModalProps {
 
 const ComposeInteractionPolicyModal: React.FC<BaseModalProps & ComposeInteractionPolicyModalProps> = ({ composeId, onClose }) => {
   const dispatch = useAppDispatch();
-  const { interactionPolicies: initial } = useInteractionPolicies();
+  const { data: initial } = useQuery(interactionPoliciesQueryOptions);
   const compose = useCompose(composeId);
 
   const canManageInteractionPolicies = compose.privacy === 'public' || compose.privacy === 'unlisted' || compose.privacy === 'private';
@@ -33,7 +34,7 @@ const ComposeInteractionPolicyModal: React.FC<BaseModalProps & ComposeInteractio
     return null;
   }
 
-  const interactionPolicy = (compose.interactionPolicy || initial[compose.privacy as 'public']);
+  const interactionPolicy = (compose.interactionPolicy || initial![compose.privacy as 'public']);
 
   const onClickClose = () => {
     onClose('COMPOSE_INTERACTION_POLICY');

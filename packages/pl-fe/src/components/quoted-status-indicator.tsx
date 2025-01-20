@@ -1,10 +1,10 @@
-import React, { useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import Text from 'pl-fe/components/ui/text';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 interface IQuotedStatusIndicator {
   /** The quoted status id. */
@@ -12,9 +12,7 @@ interface IQuotedStatusIndicator {
 }
 
 const QuotedStatusIndicator: React.FC<IQuotedStatusIndicator> = ({ statusId }) => {
-  const getStatus = useCallback(makeGetStatus(), []);
-
-  const status = useAppSelector(state => getStatus(state, { id: statusId }));
+  const { data: status } = useQuery(statusQueryOptions(statusId));
 
   if (!status) return null;
 

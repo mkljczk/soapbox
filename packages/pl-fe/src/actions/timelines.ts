@@ -1,4 +1,6 @@
 import { getLocale } from 'pl-fe/actions/settings';
+import { queryClient } from 'pl-fe/queries/client';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { shouldFilter } from 'pl-fe/utils/timelines';
 
@@ -118,11 +120,12 @@ interface TimelineDeleteAction {
 
 const deleteFromTimelines = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const accountId = getState().statuses[statusId]?.account?.id!;
+    const status = queryClient.getQueryData(statusQueryOptions(statusId).queryKey);
+    const accountId = status?.account_id!;
     const references: Array<[string, string]> = Object.entries(getState().statuses)
       .filter(([key, status]) => [key, status.reblog_id === statusId])
       .map(([key, status]) => [key, status.account_id]);
-    const reblogOf = getState().statuses[statusId]?.reblog_id || null;
+    const reblogOf = status?.reblog_id || null;
 
     dispatch<TimelineDeleteAction>({
       type: TIMELINE_DELETE,

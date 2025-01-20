@@ -1,13 +1,5 @@
-import { isIntegerId } from 'pl-fe/utils/numbers';
-
 import type { Status } from 'pl-fe/normalizers/status';
 import type { IntlShape } from 'react-intl';
-
-/** Get the initial visibility of media attachments from user settings. */
-const defaultMediaVisibility = (
-  status: Pick<Status, 'sensitive'>,
-  displayMedia: string,
-): boolean => (displayMedia !== 'hide_all' && !status.sensitive || displayMedia === 'show_all');
 
 /** Grab the first external link from a status. */
 const getFirstExternalLink = (status: Pick<Status, 'content'>): HTMLAnchorElement | null => {
@@ -25,11 +17,6 @@ const getFirstExternalLink = (status: Pick<Status, 'content'>): HTMLAnchorElemen
 /** Whether the status is expected to have a Card after it loads. */
 const shouldHaveCard = (status: Pick<Status, 'content'>): boolean =>
   Boolean(getFirstExternalLink(status));
-
-/** Whether the media IDs on this status have integer IDs (opposed to FlakeIds). */
-// https://gitlab.com/soapbox-pub/soapbox/-/merge_requests/1087
-const hasIntegerMediaIds = (status: Pick<Status, 'media_attachments'>): boolean =>
-  status.media_attachments.some(({ id }) => isIntegerId(id));
 
 /** Sanitize status text for use with screen readers. */
 const textForScreenReader = (
@@ -67,9 +54,7 @@ const getStatusIdsFromLinksInContent = (content: string): string[] => {
 };
 
 export {
-  defaultMediaVisibility,
   shouldHaveCard,
-  hasIntegerMediaIds,
   textForScreenReader,
   getStatusIdsFromLinksInContent,
 };

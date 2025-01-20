@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import React, { useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -10,7 +10,7 @@ import { ChatWidgetScreens, useChatContext } from 'pl-fe/contexts/chat-context';
 import { useDebounce } from 'pl-fe/hooks/use-debounce';
 import { useChats } from 'pl-fe/queries/chats';
 import { queryClient } from 'pl-fe/queries/client';
-import { useAccountSearch } from 'pl-fe/queries/search/use-search-accounts';
+import { accountSearchQueryOptions } from 'pl-fe/queries/search/search-accounts';
 import toast from 'pl-fe/toast';
 
 import Blankslate from './blankslate';
@@ -40,7 +40,7 @@ const ChatSearch: React.FC<IChatSearch> = ({ isMainPage = false }) => {
   const [value, setValue] = useState<string>('');
   const debouncedValue = debounce(value as string, 300);
 
-  const accountSearchResult = useAccountSearch(debouncedValue);
+  const accountSearchResult = useInfiniteQuery(accountSearchQueryOptions(debouncedValue));
   const { data: accounts, isFetching } = accountSearchResult;
 
   const hasSearchValue = debouncedValue && debouncedValue.length > 0;

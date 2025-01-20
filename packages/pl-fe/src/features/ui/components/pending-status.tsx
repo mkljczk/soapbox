@@ -38,7 +38,7 @@ const PendingStatusMedia: React.FC<IPendingStatusMedia> = ({ status }) => {
         media={status.media_attachments}
       />
     );
-  } else if (!status.quote && shouldHaveCard(status)) {
+  } else if (!status.quote_id && shouldHaveCard(status)) {
     return <PlaceholderCard />;
   } else {
     return null;

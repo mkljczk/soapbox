@@ -1,3 +1,4 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -7,7 +8,7 @@ import Widget from 'pl-fe/components/ui/widget';
 import AccountContainer from 'pl-fe/containers/account-container';
 import PlaceholderSidebarSuggestions from 'pl-fe/features/placeholder/components/placeholder-sidebar-suggestions';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { useDismissSuggestion, useSuggestions } from 'pl-fe/queries/suggestions';
+import { suggestionsQueryOptions, dismissSuggestionMutationOptions } from 'pl-fe/queries/suggestions';
 
 import type { Account as AccountEntity } from 'pl-fe/normalizers/account';
 
@@ -23,8 +24,8 @@ const WhoToFollowPanel = ({ limit }: IWhoToFollowPanel) => {
   const features = useFeatures();
   const intl = useIntl();
 
-  const { data: suggestions, isFetching } = useSuggestions();
-  const dismissSuggestion = useDismissSuggestion();
+  const { data: suggestions = [], isFetching } = useQuery(suggestionsQueryOptions);
+  const dismissSuggestion = useMutation(dismissSuggestionMutationOptions);
 
   const suggestionsToRender = suggestions.slice(0, limit);
 

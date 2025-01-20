@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { FormattedMessage } from 'react-intl';
@@ -16,9 +17,7 @@ import {
 } from 'pl-fe/features/ui/util/async-components';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
-import { makeGetStatus } from 'pl-fe/selectors';
-
-const getStatus = makeGetStatus();
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 interface IEventLayout {
   params?: {
@@ -34,7 +33,7 @@ const EventLayout: React.FC<IEventLayout> = ({ params, children }) => {
   const history = useHistory();
   const statusId = params?.statusId!;
 
-  const status = useAppSelector(state => getStatus(state, { id: statusId }) || undefined);
+  const { data: status } = useQuery(statusQueryOptions(statusId));
 
   const event = status?.event;
 

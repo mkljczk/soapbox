@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 
 import Status, { IStatus } from 'pl-fe/components/status';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 interface IStatusContainer extends Omit<IStatus, 'status'> {
   id: string;
@@ -18,8 +18,7 @@ interface IStatusContainer extends Omit<IStatus, 'status'> {
 const StatusContainer: React.FC<IStatusContainer> = (props) => {
   const { id, contextType } = props;
 
-  const getStatus = useMemo(makeGetStatus, []);
-  const status = useAppSelector(state => getStatus(state, { id, contextType }));
+  const { data: status } = useQuery(statusQueryOptions(id));
 
   if (status) {
     return <Status {...props} status={status} />;

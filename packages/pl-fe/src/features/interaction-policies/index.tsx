@@ -1,6 +1,9 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { create } from 'mutative';
+import { interactionPoliciesSchema } from 'pl-api';
 import React, { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import * as v from 'valibot';
 
 import List, { ListItem } from 'pl-fe/components/list';
 import Button from 'pl-fe/components/ui/button';
@@ -10,7 +13,7 @@ import FormActions from 'pl-fe/components/ui/form-actions';
 import { InlineMultiselect } from 'pl-fe/components/ui/inline-multiselect';
 import Tabs from 'pl-fe/components/ui/tabs';
 import Text from 'pl-fe/components/ui/text';
-import { useInteractionPolicies } from 'pl-fe/queries/settings/use-interaction-policies';
+import { interactionPoliciesQueryOptions, updateInteractionPoliciesMutationOptions } from 'pl-fe/queries/settings/interaction-policies';
 import toast from 'pl-fe/toast';
 
 import Warning from '../compose/components/warning';
@@ -84,6 +87,7 @@ const options: Record<Visibility, Record<Policy, Array<Scope>>> = {
   },
 };
 
+const emptySchema = v.parse(interactionPoliciesSchema, {});
 interface IInteractionPolicyConfig {
   interactionPolicy: InteractionPolicy;
   visibility: Visibility;
@@ -144,7 +148,8 @@ const InteractionPolicyConfig: React.FC<IInteractionPolicyConfig> = ({ interacti
 };
 
 const InteractionPolicies = () => {
-  const { interactionPolicies: initial, updateInteractionPolicies, isUpdating } = useInteractionPolicies();
+  const { data: initial = emptySchema } = useQuery(interactionPoliciesQueryOptions);
+  const { mutate: updateInteractionPolicies, isPending: isUpdating } = useMutation(updateInteractionPoliciesMutationOptions);
   const intl = useIntl();
   const [interactionPolicies, setInteractionPolicies] = useState(initial);
   const [visibility, setVisibility] = useState<Visibility>('public');

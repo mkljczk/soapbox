@@ -1,3 +1,4 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -5,7 +6,7 @@ import ScrollableList from 'pl-fe/components/scrollable-list';
 import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useEventParticipations } from 'pl-fe/queries/events/use-event-participations';
+import { eventParticipationsQueryOptions } from 'pl-fe/queries/events/event-participations';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -14,7 +15,7 @@ interface EventParticipantsModalProps {
 }
 
 const EventParticipantsModal: React.FC<BaseModalProps & EventParticipantsModalProps> = ({ onClose, statusId }) => {
-  const { data: accountIds, isLoading, hasNextPage, fetchNextPage } = useEventParticipations(statusId);
+  const { data: accountIds, isLoading, hasNextPage, fetchNextPage } = useInfiniteQuery(eventParticipationsQueryOptions(statusId));
 
   const onClickClose = () => {
     onClose('EVENT_PARTICIPANTS');

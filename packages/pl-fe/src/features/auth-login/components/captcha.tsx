@@ -127,7 +127,4 @@ const NativeCaptchaField: React.FC<INativeCaptchaField> = ({ captcha, onChange, 
   );
 };
 
-export {
-  CaptchaField as default,
-  NativeCaptchaField,
-};
+export { CaptchaField as default };

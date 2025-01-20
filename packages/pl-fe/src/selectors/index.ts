@@ -8,10 +8,9 @@ import { validId } from 'pl-fe/utils/auth';
 import ConfigDB from 'pl-fe/utils/config-db';
 import { shouldFilter } from 'pl-fe/utils/timelines';
 
-import type { Account as BaseAccount, Filter, MediaAttachment, NotificationGroup, Relationship } from 'pl-api';
+import type { Filter, NotificationGroup, Relationship } from 'pl-api';
 import type { EntityStore } from 'pl-fe/entity-store/types';
 import type { Account } from 'pl-fe/normalizers/account';
-import type { Group } from 'pl-fe/normalizers/group';
 import type { MinifiedStatus } from 'pl-fe/reducers/statuses';
 import type { MRFSimple } from 'pl-fe/schemas/pleroma';
 import type { RootState } from 'pl-fe/store';
@@ -98,76 +97,16 @@ const regexFromFilters = (filters: Array<Filter>) => {
   ).join('|'), 'i');
 };
 
-const checkFiltered = (index: string, filters: Array<Filter>) =>
-  filters.reduce((result: Array<string>, filter) =>
-    result.concat(filter.keywords.reduce((result: Array<string>, keyword) => {
-      let expr = escapeRegExp(keyword.keyword);
+// const makeGetStatus = () => createSelector(
+//   (statusBase, statusReblog, statusQuote, statusGroup, poll, username, filters, me, features) => {
 
-      if (keyword.whole_word) {
-        if (/^[\w]/.test(expr)) {
-          expr = `\\b${expr}`;
-        }
-
-        if (/[\w]$/.test(expr)) {
-          expr = `${expr}\\b`;
-        }
-      }
-
-      const regex = new RegExp(expr);
-
-      if (regex.test(index)) return result.concat(filter.title);
-      return result;
-    }, [])), []);
-
-type APIStatus = { id: string; username?: string };
-
-const makeGetStatus = () => {
-  return createSelector(
-    [
-      (state: RootState, { id }: APIStatus) => state.statuses[id],
-      (state: RootState, { id }: APIStatus) => state.statuses[state.statuses[id]?.reblog_id || ''] || null,
-      (state: RootState, { id }: APIStatus) => state.statuses[state.statuses[id]?.quote_id || ''] || null,
-      (state: RootState, { id }: APIStatus) => {
-        const group = state.statuses[id]?.group_id;
-        if (group) return state.entities[Entities.GROUPS]?.store[group] as Group;
-        return undefined;
-      },
-      (state: RootState, { id }: APIStatus) => state.polls[id] || null,
-      (_state: RootState, { username }: APIStatus) => username,
-      getFilters,
-      (state: RootState) => state.me,
-      (state: RootState) => state.auth.client.features,
-    ],
-
-    (statusBase, statusReblog, statusQuote, statusGroup, poll, username, filters, me, features) => {
-    // const locale = getLocale('en');
-
-      if (!statusBase) return null;
-      const { account } = statusBase;
-      const accountUsername = account.acct;
-
-      // Must be owner of status if username exists.
-      if (accountUsername !== username && username !== undefined) {
-        return null;
-      }
-
-      const filtered = features.filtersV2
-        ? statusBase.filtered
-        : features.filters && account.id !== me && checkFiltered(statusReblog?.search_index || statusBase.search_index || '', filters) || [];
-
-      return {
-        ...statusBase,
-        reblog: statusReblog || null,
-        quote: statusQuote || null,
-        group: statusGroup || null,
-        poll,
-        filtered,
-      };
-    },
-  );
-};
-
-type SelectedStatus = Exclude<ReturnType<ReturnType<typeof makeGetStatus>>, null>;
+//     return {
+//       ...statusBase,
+//       poll,
+//       filtered,
+//     };
+//   },
+// );
 
 const makeGetNotification = () => createSelector([
   (_state: RootState, notification: NotificationGroup) => notification,
@@ -197,62 +136,21 @@ type SelectedNotification = NotificationGroup & {
   target: Account;
 })
 
-type AccountGalleryAttachment = MediaAttachment & {
-  status: MinifiedStatus;
-  account: BaseAccount;
-}
-
-const getAccountGallery = createSelector([
-  (state: RootState, id: string) => state.timelines[`account:${id}:with_replies:media`]?.items || [],
-  (state: RootState) => state.statuses,
-], (statusIds, statuses) =>
-  statusIds.reduce((medias: Array<AccountGalleryAttachment>, statusId: string) => {
-    const status = statuses[statusId];
-    if (!status) return medias;
-    if (status.reblog_id) return medias;
-
-    return medias.concat(
-      status.media_attachments.map(media => ({ ...media, status, account: status.account })));
-  }, []),
+const makeGetReport = () => createSelector(
+  [
+    (state: RootState, reportId: string) => state.admin.reports[reportId],
+    (state: RootState, reportId: string) => selectAccount(state, state.admin.reports[reportId]?.account_id || ''),
+    (state: RootState, reportId: string) => selectAccount(state, state.admin.reports[reportId]?.target_account_id || ''),
+  ],
+  (report, account, target_account) => {
+    if (!report) return null;
+    return {
+      ...report,
+      account,
+      target_account,
+    };
+  },
 );
-
-const getGroupGallery = createSelector([
-  (state: RootState, id: string) => state.timelines[`group:${id}:media`]?.items || [],
-  (state: RootState) => state.statuses,
-], (statusIds, statuses) =>
-  statusIds.reduce((medias: Array<AccountGalleryAttachment>, statusId: string) => {
-    const status = statuses[statusId];
-    if (!status) return medias;
-    if (status.reblog_id) return medias;
-
-    return medias.concat(
-      status.media_attachments.map(media => ({ ...media, status, account: status.account })));
-  }, []),
-);
-
-const makeGetReport = () => {
-  const getStatus = makeGetStatus();
-
-  return createSelector(
-    [
-      (state: RootState, reportId: string) => state.admin.reports[reportId],
-      (state: RootState, reportId: string) => selectAccount(state, state.admin.reports[reportId]?.account_id || ''),
-      (state: RootState, reportId: string) => selectAccount(state, state.admin.reports[reportId]?.target_account_id || ''),
-      (state: RootState, reportId: string) => state.admin.reports[reportId]!.status_ids
-        .map((statusId) => getStatus(state, { id: statusId }))
-        .filter((status): status is SelectedStatus => status !== null),
-    ],
-    (report, account, target_account, statuses) => {
-      if (!report) return null;
-      return {
-        ...report,
-        account,
-        target_account,
-        statuses,
-      };
-    },
-  );
-};
 
 const getAuthUserIds = createSelector(
   [(state: RootState) => state.auth.users],
@@ -347,14 +245,10 @@ export {
   makeGetAccount,
   type SelectedAccount,
   getFilters,
+  escapeRegExp,
   regexFromFilters,
-  makeGetStatus,
-  type SelectedStatus,
   makeGetNotification,
   type SelectedNotification,
-  type AccountGalleryAttachment,
-  getAccountGallery,
-  getGroupGallery,
   makeGetReport,
   makeGetOtherAccounts,
   makeGetHosts,

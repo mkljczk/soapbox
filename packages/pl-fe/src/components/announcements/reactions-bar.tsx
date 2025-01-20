@@ -1,9 +1,10 @@
+import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 import { TransitionMotion, spring } from 'react-motion';
 
 import EmojiPickerDropdown from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
 import { useSettings } from 'pl-fe/hooks/use-settings';
-import { useAnnouncements } from 'pl-fe/queries/announcements/use-announcements';
+import { addAnnouncementReactionMutationOptions } from 'pl-fe/queries/announcements/announcements';
 
 import Reaction from './reaction';
 
@@ -18,7 +19,7 @@ interface IReactionsBar {
 
 const ReactionsBar: React.FC<IReactionsBar> = ({ announcementId, reactions, emojiMap }) => {
   const { reduceMotion } = useSettings();
-  const { addReaction } = useAnnouncements();
+  const { mutate: addReaction } = useMutation(addAnnouncementReactionMutationOptions);
 
   const handleEmojiPick = (data: Emoji) => {
     addReaction({ announcementId, name: (data as NativeEmoji).native.replace(/:/g, '') });

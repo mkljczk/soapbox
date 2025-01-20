@@ -14,7 +14,7 @@ import StatusContent from './status-content';
 import StatusReplyMentions from './status-reply-mentions';
 import SensitiveContentOverlay from './statuses/sensitive-content-overlay';
 
-import type { SelectedStatus } from 'pl-fe/selectors';
+import type { Status } from 'pl-fe/normalizers/status';
 
 const messages = defineMessages({
   cancel: { id: 'reply_indicator.cancel', defaultMessage: 'Cancel' },
@@ -22,7 +22,7 @@ const messages = defineMessages({
 
 interface IQuotedStatus {
   /** The quoted status entity. */
-  status?: SelectedStatus;
+  status?: Status;
   /** Callback when cancelled (during compose). */
   onCancel?: Function;
   /** Whether the status is shown in the post composer. */

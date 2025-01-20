@@ -77,8 +77,7 @@ const Report: React.FC<IReport> = ({ id }) => {
   };
 
   const menu = makeMenu();
-  const statuses = report.statuses;
-  const statusCount = statuses.length;
+  const statusCount = report.status_ids.length;
   const acct = targetAccount.acct;
   const reporterAcct = account?.acct;
 
@@ -115,10 +114,10 @@ const Report: React.FC<IReport> = ({ id }) => {
             onToggle={handleAccordionToggle}
           >
             <Stack space={4}>
-              {statuses.map(status => (
+              {report.status_ids.map((statusId) => (
                 <ReportStatus
-                  key={status.id}
-                  status={status}
+                  key={statusId}
+                  statusId={statusId}
                 />
               ))}
             </Stack>

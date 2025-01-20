@@ -8,7 +8,6 @@ import {
   ENTITIES_FETCH_SUCCESS,
   ENTITIES_FETCH_FAIL,
   ENTITIES_INVALIDATE_LIST,
-  ENTITIES_INCREMENT,
   ENTITIES_TRANSACTION,
   type EntityAction,
   type DeleteEntitiesOpts,
@@ -114,21 +113,6 @@ const dismissEntities = (
   }
 };
 
-const incrementEntities = (
-  draft: Draft<State>,
-  entityType: string,
-  listKey: string,
-  diff: number,
-) => {
-  const cache = draft[entityType] ?? createCache();
-  const list = cache.lists[listKey];
-
-  if (typeof list?.state?.totalCount === 'number') {
-    list.state.totalCount += diff;
-    draft[entityType] = cache;
-  }
-};
-
 const setFetching = (
   draft: Draft<State>,
   entityType: string,
@@ -175,8 +159,6 @@ const reducer = (state: Readonly<State> = {}, action: EntityAction): State => {
       return create(state, draft => deleteEntities(draft, action.entityType, action.ids, action.opts));
     case ENTITIES_DISMISS:
       return create(state, draft => dismissEntities(draft, action.entityType, action.ids, action.listKey));
-    case ENTITIES_INCREMENT:
-      return create(state, draft => incrementEntities(draft, action.entityType, action.listKey, action.diff));
     case ENTITIES_FETCH_SUCCESS:
       return create(state, draft => importEntities(draft, action.entityType, action.entities, action.listKey, action.pos, action.newState, action.overwrite), { enableAutoFreeze: true });
     case ENTITIES_FETCH_REQUEST:

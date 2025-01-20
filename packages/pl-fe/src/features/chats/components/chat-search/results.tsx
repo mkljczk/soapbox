@@ -1,3 +1,4 @@
+import { UseInfiniteQueryResult } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React, { useCallback, useState } from 'react';
 
@@ -8,13 +9,12 @@ import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import VerificationBadge from 'pl-fe/components/verification-badge';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useAccountSearch } from 'pl-fe/queries/search/use-search-accounts';
 import { selectAccounts } from 'pl-fe/selectors';
 
 import type { Account } from 'pl-api';
 
 interface IResults {
-  accountSearchResult: ReturnType<typeof useAccountSearch>;
+  accountSearchResult: UseInfiniteQueryResult<Array<string>>;
   onSelect(id: string): void;
   parentRef: React.RefObject<HTMLElement>;
 }

@@ -3,6 +3,8 @@ import { statusSchema } from 'pl-api';
 import * as v from 'valibot';
 
 import { normalizeStatus } from 'pl-fe/normalizers/status';
+import { queryClient } from 'pl-fe/queries/client';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import { makeGetAccount } from 'pl-fe/selectors';
 
 import type { PendingStatus } from 'pl-fe/reducers/pending-statuses';
@@ -34,16 +36,18 @@ const buildStatus = (state: RootState, pendingStatus: PendingStatus, idempotency
   const account = getAccount(state, me);
   const inReplyToId = pendingStatus.in_reply_to_id;
 
+  const replyAccountId = inReplyToId && queryClient.getQueryData(statusQueryOptions(inReplyToId).queryKey)?.account_id || null;
+
   const status = {
     account,
     content: pendingStatus.status.replace(new RegExp('\n', 'g'), '<br>'), /* eslint-disable-line no-control-regex */
     id: `末pending-${idempotencyKey}`,
-    in_reply_to_account_id: state.statuses[inReplyToId || '']?.account_id || null,
+    in_reply_to_account_id: replyAccountId,
     in_reply_to_id: inReplyToId,
     media_attachments: (pendingStatus.media_ids || []).map((id: string) => ({ id })),
     mentions: buildMentions(pendingStatus),
     poll: buildPoll(pendingStatus),
-    quote: pendingStatus.quote_id ? state.statuses[pendingStatus.quote_id] : null,
+    quote_id: pendingStatus.quote_id,
     sensitive: pendingStatus.sensitive,
     visibility: pendingStatus.visibility,
   };
