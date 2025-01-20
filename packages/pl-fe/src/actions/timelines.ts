@@ -6,7 +6,17 @@ import { getClient } from '../api';
 
 import { importEntities } from './importer';
 
-import type { PaginatedResponse, Status as BaseStatus, PublicTimelineParams, HomeTimelineParams, ListTimelineParams, HashtagTimelineParams, GetAccountStatusesParams, GroupTimelineParams } from 'pl-api';
+import type {
+  Account as BaseAccount,
+  GetAccountStatusesParams,
+  GroupTimelineParams,
+  HashtagTimelineParams,
+  HomeTimelineParams,
+  ListTimelineParams,
+  PaginatedResponse,
+  PublicTimelineParams,
+  Status as BaseStatus,
+} from 'pl-api';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 
 const TIMELINE_UPDATE = 'TIMELINE_UPDATE' as const;
@@ -19,8 +29,6 @@ const TIMELINE_SCROLL_TOP = 'TIMELINE_SCROLL_TOP' as const;
 const TIMELINE_EXPAND_REQUEST = 'TIMELINE_EXPAND_REQUEST' as const;
 const TIMELINE_EXPAND_SUCCESS = 'TIMELINE_EXPAND_SUCCESS' as const;
 const TIMELINE_EXPAND_FAIL = 'TIMELINE_EXPAND_FAIL' as const;
-
-const TIMELINE_INSERT = 'TIMELINE_INSERT' as const;
 
 const MAX_QUEUED_ITEMS = 40;
 
@@ -104,16 +112,16 @@ interface TimelineDeleteAction {
   type: typeof TIMELINE_DELETE;
   statusId: string;
   accountId: string;
-  references: Record<string, readonly [statusId: string, accountId: string]>;
+  references: Array<[string, string]>;
   reblogOf: string | null;
 }
 
 const deleteFromTimelines = (statusId: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const accountId = getState().statuses[statusId]?.account?.id!;
-    const references = Object.fromEntries(Object.entries(getState().statuses)
+    const references: Array<[string, string]> = Object.entries(getState().statuses)
       .filter(([key, status]) => [key, status.reblog_id === statusId])
-      .map(([key, status]) => [key, [status.id, status.account_id] as const]));
+      .map(([key, status]) => [key, status.account_id]);
     const reblogOf = getState().statuses[statusId]?.reblog_id || null;
 
     dispatch<TimelineDeleteAction>({
@@ -133,20 +141,16 @@ const parseTags = (tags: Record<string, any[]> = {}, mode: 'any' | 'all' | 'none
   (tags[mode] || []).map((tag) => tag.value);
 
 const deduplicateStatuses = (statuses: Array<BaseStatus>) => {
-  const deduplicatedStatuses: any[] = [];
+  const deduplicatedStatuses: Array<BaseStatus & { accounts: Array<BaseAccount> }> = [];
 
   for (const status of statuses) {
     const reblogged = status.reblog && deduplicatedStatuses.find((deduplicatedStatus) => deduplicatedStatus.reblog?.id === status.reblog?.id);
 
     if (reblogged) {
-      if (reblogged.accounts) {
-        reblogged.accounts.push(status.account);
-      } else {
-        reblogged.accounts = [reblogged.account, status.account];
-      }
+      reblogged.accounts.push(status.account);
       reblogged.id += ':' + status.id;
     } else if (!deduplicatedStatuses.find((deduplicatedStatus) => deduplicatedStatus.reblog?.id === status.id)) {
-      deduplicatedStatuses.push(status);
+      deduplicatedStatuses.push({ accounts: [status.account], ...status });
     }
   }
 
@@ -323,8 +327,6 @@ const scrollTopTimeline = (timeline: string, top: boolean) => ({
   top,
 });
 
-const insertSuggestionsIntoTimeline = () => ({ type: TIMELINE_INSERT, timeline: 'home' });
-
 // TODO: other actions
 type TimelineAction =
   | ReturnType<typeof updateTimeline>
@@ -335,8 +337,7 @@ type TimelineAction =
   | ReturnType<typeof scrollTopTimeline>
   | ReturnType<typeof expandTimelineRequest>
   | ReturnType<typeof expandTimelineSuccess>
-  | ReturnType<typeof expandTimelineFail>
-  | ReturnType<typeof insertSuggestionsIntoTimeline>;
+  | ReturnType<typeof expandTimelineFail>;
 
 export {
   TIMELINE_UPDATE,
@@ -348,11 +349,8 @@ export {
   TIMELINE_EXPAND_REQUEST,
   TIMELINE_EXPAND_SUCCESS,
   TIMELINE_EXPAND_FAIL,
-  TIMELINE_INSERT,
   MAX_QUEUED_ITEMS,
   processTimelineUpdate,
-  updateTimeline,
-  updateTimelineQueue,
   dequeueTimeline,
   deleteFromTimelines,
   clearTimeline,
@@ -365,6 +363,5 @@ export {
   fetchHashtagTimeline,
   expandTimelineSuccess,
   scrollTopTimeline,
-  insertSuggestionsIntoTimeline,
   type TimelineAction,
 };

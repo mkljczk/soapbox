@@ -1,8 +1,8 @@
+import { Link } from '@tanstack/react-router';
 import clsx from 'clsx';
 import throttle from 'lodash/throttle';
 import React, { useEffect, useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { Link } from '@tanstack/react-router';
 import { createSelector } from 'reselect';
 
 import { fetchOwnAccounts, logOut, switchAccount } from 'pl-fe/actions/auth';
@@ -114,7 +114,7 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
       component={ProfileDropdownMenu}
     >
       <button
-        className='w-full rounded-full focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:ring-gray-800 dark:ring-offset-0 dark:focus:ring-primary-500'
+        className='w-full rounded-lg focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:ring-gray-800 dark:ring-offset-0 dark:focus:ring-primary-500'
         type='button'
       >
         {children}

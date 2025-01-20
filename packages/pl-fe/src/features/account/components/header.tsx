@@ -125,7 +125,7 @@ const Header: React.FC<IHeader> = ({ account }) => {
           <HStack alignItems='bottom' space={5} className='-mt-12'>
             <div className='relative flex'>
               <div
-                className='size-24 rounded-full bg-gray-400 ring-4 ring-white dark:ring-gray-800'
+                className='size-24 rounded-lg bg-gray-400 ring-4 ring-white dark:ring-gray-800'
               />
             </div>
           </HStack>
@@ -653,11 +653,11 @@ const Header: React.FC<IHeader> = ({ account }) => {
                 src={account.avatar}
                 alt={account.avatar_description}
                 size={96}
-                className='relative size-24 rounded-full bg-white ring-4 ring-white black:ring-black dark:bg-primary-900 dark:ring-primary-900'
+                className='relative size-24 rounded-lg bg-white ring-4 ring-white black:ring-black dark:bg-primary-900 dark:ring-primary-900'
               />
             </a>
             {account.verified && (
-              <div className='absolute bottom-0 right-0'>
+              <div className='absolute -bottom-2 -right-2'>
                 <VerificationBadge className='!size-[24px] rounded-full !p-[2px] ring-2 ring-white black:ring-black dark:ring-primary-900' />
               </div>
             )}

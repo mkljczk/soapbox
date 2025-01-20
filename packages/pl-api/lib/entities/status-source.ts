@@ -18,6 +18,9 @@ const statusSourceSchema = v.object({
   spoiler_text_map: v.fallback(v.nullable(v.record(v.string(), v.string())), null),
 });
 
+/**
+ * @category Entity types
+ */
 type StatusSource = v.InferOutput<typeof statusSourceSchema>;
 
 export { statusSourceSchema, type StatusSource };

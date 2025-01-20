@@ -6,7 +6,6 @@ import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 
 import { fetchOwnAccounts, logOut, switchAccount } from 'pl-fe/actions/auth';
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
-import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import Account from 'pl-fe/components/account';
 import Divider from 'pl-fe/components/ui/divider';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -19,6 +18,8 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
+import { useFollowRequestsCount } from 'pl-fe/queries/accounts/use-follow-requests';
+import { useInteractionRequestsCount } from 'pl-fe/queries/statuses/use-interaction-requests';
 import { makeGetOtherAccounts } from 'pl-fe/selectors';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 import { useUiStore } from 'pl-fe/stores/ui';
@@ -58,7 +59,7 @@ interface ISidebarLink {
   onClick: React.EventHandler<React.MouseEvent>;
 }
 
-const SidebarLink: React.FC<ISidebarLink> = ({ href, to, icon, text, onClick }) => {
+const SidebarLink: React.FC<ISidebarLink> = React.memo(({ href, to, icon, text, onClick }) => {
   const body = (
     <HStack space={2} alignItems='center'>
       <div className='relative inline-flex rounded-full bg-primary-50 p-2 dark:bg-gray-800'>
@@ -82,9 +83,10 @@ const SidebarLink: React.FC<ISidebarLink> = ({ href, to, icon, text, onClick }) 
       {body}
     </a>
   );
-};
+});
 
-const SidebarMenu: React.FC = (): JSX.Element | null => {
+
+const SidebarMenu: React.FC = React.memo((): JSX.Element | null => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
@@ -96,7 +98,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const { account } = useAccount(me || undefined);
   const otherAccounts = useAppSelector((state) => getOtherAccounts(state));
   const { settings } = useSettingsStore();
-  const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.length);
+  const followRequestsCount = useFollowRequestsCount().data || 0;
   const interactionRequestsCount = useInteractionRequestsCount().data || 0;
   const scheduledStatusCount = useAppSelector((state) => Object.keys(state.scheduled_statuses).length);
   const draftCount = useAppSelector((state) => Object.keys(state.draft_statuses).length);
@@ -492,6 +494,6 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
       </div>
     </div>
   );
-};
+});
 
 export { SidebarMenu as default };

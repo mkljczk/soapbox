@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
-import { useInteractionRequestsCount } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import { useStatContext } from 'pl-fe/contexts/stat-context';
@@ -14,6 +13,8 @@ import { useLogo } from 'pl-fe/hooks/use-logo';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useRegistrationStatus } from 'pl-fe/hooks/use-registration-status';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useFollowRequestsCount } from 'pl-fe/queries/accounts/use-follow-requests';
+import { useInteractionRequestsCount } from 'pl-fe/queries/statuses/use-interaction-requests';
 
 import Account from './account';
 import DropdownMenu, { Menu } from './dropdown-menu';
@@ -36,7 +37,7 @@ const messages = defineMessages({
 });
 
 /** Desktop sidebar with links to different views in the app. */
-const SidebarNavigation = () => {
+const SidebarNavigation = React.memo(() => {
   const intl = useIntl();
   const { unreadChatsCount } = useStatContext();
 
@@ -48,7 +49,7 @@ const SidebarNavigation = () => {
   const logoSrc = useLogo();
 
   const notificationCount = useAppSelector((state) => state.notifications.unread);
-  const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.length);
+  const followRequestsCount = useFollowRequestsCount().data || 0;
   const interactionRequestsCount = useInteractionRequestsCount().data || 0;
   const dashboardCount = useAppSelector((state) => state.admin.openReports.length + state.admin.awaitingApproval.length);
   const scheduledStatusCount = useAppSelector((state) => Object.keys(state.scheduled_statuses).length);
@@ -56,7 +57,7 @@ const SidebarNavigation = () => {
 
   const restrictUnauth = instance.pleroma.metadata.restrict_unauthenticated;
 
-  const makeMenu = (): Menu => {
+  const menu = useMemo((): Menu => {
     const menu: Menu = [];
 
     if (account) {
@@ -154,9 +155,7 @@ const SidebarNavigation = () => {
     }
 
     return menu;
-  };
-
-  const menu = makeMenu();
+  }, [!!account, features, isDeveloper, followRequestsCount, interactionRequestsCount, scheduledStatusCount, draftCount]);
 
   return (
     <Stack space={4}>
@@ -172,6 +171,7 @@ const SidebarNavigation = () => {
                 account={account}
                 action={<Icon src={require('@tabler/icons/outline/chevron-down.svg')} className='text-gray-600 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-500' />}
                 disabled
+                withLinkToProfile={false}
               />
             </ProfileDropdown>
           </div>
@@ -319,6 +319,6 @@ const SidebarNavigation = () => {
       )}
     </Stack>
   );
-};
+});
 
 export { SidebarNavigation as default };

@@ -20,6 +20,9 @@ const mentionSchema = v.pipe(
   }),
 );
 
+/**
+ * @category Entity types
+ */
 type Mention = v.InferOutput<typeof mentionSchema>;
 
 export { mentionSchema, type Mention };

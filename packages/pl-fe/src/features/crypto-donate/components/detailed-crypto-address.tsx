@@ -3,11 +3,10 @@ import React from 'react';
 
 import CopyableInput from 'pl-fe/components/copyable-input';
 import Icon from 'pl-fe/components/icon';
+import { CryptoIcon } from 'pl-fe/features/ui/util/async-components';
 
 import { getExplorerUrl } from '../utils/block-explorer';
 import { getTitle } from '../utils/coin-db';
-
-import CryptoIcon from './crypto-icon';
 
 interface IDetailedCryptoAddress {
   address: string;

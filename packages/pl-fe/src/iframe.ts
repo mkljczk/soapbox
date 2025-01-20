@@ -1,5 +1,5 @@
 /** ID of this iframe (given by embed.js) when embedded on a page. */
-let iframeId: any;
+let iframeId: string;
 
 /** Receive iframe messages. */
 // https://github.com/mastodon/mastodon/pull/4853

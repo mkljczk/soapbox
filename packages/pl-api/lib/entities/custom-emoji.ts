@@ -14,6 +14,9 @@ const customEmojiSchema = v.object({
   category: v.fallback(v.nullable(v.string()), null),
 });
 
+/**
+ * @category Entity types
+ */
 type CustomEmoji = v.InferOutput<typeof customEmojiSchema>;
 
 export { customEmojiSchema, type CustomEmoji };

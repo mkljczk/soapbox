@@ -31,6 +31,9 @@ const trendsLinkSchema = v.pipe(
   }),
 );
 
+/**
+ * @category Entity types
+ */
 type TrendsLink = v.InferOutput<typeof trendsLinkSchema>;
 
 export { trendsLinkSchema, type TrendsLink };

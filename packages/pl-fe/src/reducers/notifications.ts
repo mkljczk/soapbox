@@ -3,14 +3,12 @@ import { create } from 'mutative';
 import {
   ACCOUNT_BLOCK_SUCCESS,
   ACCOUNT_MUTE_SUCCESS,
-  FOLLOW_REQUEST_AUTHORIZE_SUCCESS,
-  FOLLOW_REQUEST_REJECT_SUCCESS,
   type AccountsAction,
 } from '../actions/accounts';
 import {
   MARKER_FETCH_SUCCESS,
-  MARKER_SAVE_REQUEST,
   MARKER_SAVE_SUCCESS,
+  type MarkersAction,
 } from '../actions/markers';
 import {
   NOTIFICATIONS_UPDATE,
@@ -23,8 +21,7 @@ import {
 } from '../actions/notifications';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
-import type { Notification as BaseNotification, Markers, NotificationGroup, PaginatedResponse, Relationship } from 'pl-api';
-import type { AnyAction } from 'redux';
+import type { GroupedNotificationsResults, Markers, NotificationGroup, PaginatedResponse, Relationship } from 'pl-api';
 
 interface State {
   items: Array<NotificationGroup>;
@@ -75,7 +72,7 @@ const importNotification = (state: State, notification: NotificationGroup) =>
     draft.items = [notification, ...draft.items].toSorted(comparator).filter(filterUnique);
   });
 
-const expandNormalizedNotifications = (state: State, notifications: NotificationGroup[], next: (() => Promise<PaginatedResponse<BaseNotification>>) | null) =>
+const expandNormalizedNotifications = (state: State, notifications: NotificationGroup[], next: (() => Promise<PaginatedResponse<GroupedNotificationsResults, false>>) | null) =>
   create(state, (draft) => {
     draft.items = [...notifications, ...draft.items].toSorted(comparator).filter(filterUnique);
 
@@ -88,11 +85,11 @@ const filterNotifications = (state: State, relationship: Relationship) =>
     draft.items = draft.items.filter(item => !item.sample_account_ids.includes(relationship.id));
   });
 
-const filterNotificationIds = (state: State, accountIds: Array<string>, type?: string) =>
-  create(state, (draft) => {
-    const helper = (list: Array<NotificationGroup>) => list.filter(item => !(accountIds.includes(item.sample_account_ids[0]) && (type === undefined || type === item.type)));
-    draft.items = helper(draft.items);
-  });
+// const filterNotificationIds = (state: State, accountIds: Array<string>, type?: string) =>
+// create(state, (draft) => {
+//   const helper = (list: Array<NotificationGroup>) => list.filter(item => !(accountIds.includes(item.sample_account_ids[0]) && (type === undefined || type === item.type)));
+//   draft.items = helper(draft.items);
+// });
 
 const updateTop = (state: State, top: boolean) =>
   create(state, (draft) => {
@@ -107,7 +104,7 @@ const deleteByStatus = (state: State, statusId: string) =>
   });
 
 const importMarker = (state: State, marker: Markers) => {
-  const lastReadId = marker.notifications.last_read_id || -1 as string | -1;
+  const lastReadId = marker.notifications?.last_read_id || -1 as string | -1;
 
   if (!lastReadId) {
     return state;
@@ -122,14 +119,14 @@ const importMarker = (state: State, marker: Markers) => {
   });
 };
 
-const notifications = (state: State = initialState, action: AccountsAction | AnyAction | NotificationsAction | TimelineAction): State => {
+const notifications = (state: State = initialState, action: AccountsAction | MarkersAction | NotificationsAction | TimelineAction): State => {
   switch (action.type) {
     case NOTIFICATIONS_EXPAND_REQUEST:
       return create(state, (draft) => {
         draft.isLoading = true;
       });
     case NOTIFICATIONS_EXPAND_FAIL:
-      if (action.error?.message === 'canceled') return state;
+      if ((action.error as any)?.message === 'canceled') return state;
       return create(state, (draft) => {
         draft.isLoading = false;
       });
@@ -148,11 +145,10 @@ const notifications = (state: State = initialState, action: AccountsAction | Any
       return filterNotifications(state, action.relationship);
     case ACCOUNT_MUTE_SUCCESS:
       return action.relationship.muting_notifications ? filterNotifications(state, action.relationship) : state;
-    case FOLLOW_REQUEST_AUTHORIZE_SUCCESS:
-    case FOLLOW_REQUEST_REJECT_SUCCESS:
-      return filterNotificationIds(state, [action.accountId], 'follow_request');
+    // case FOLLOW_REQUEST_AUTHORIZE_SUCCESS:
+    // case FOLLOW_REQUEST_REJECT_SUCCESS:
+    //   return filterNotificationIds(state, [action.accountId], 'follow_request');
     case MARKER_FETCH_SUCCESS:
-    case MARKER_SAVE_REQUEST:
     case MARKER_SAVE_SUCCESS:
       return importMarker(state, action.marker);
     case TIMELINE_DELETE:

@@ -47,7 +47,7 @@ const GroupHeader: React.FC<IGroupHeader> = ({ group }) => {
           <HStack alignItems='bottom' space={5} className='-mt-12'>
             <div className='relative flex'>
               <div
-                className='size-24 rounded-full bg-gray-400 ring-4 ring-white dark:ring-gray-800'
+                className='size-24 rounded-lg bg-gray-400 ring-4 ring-white dark:ring-gray-800'
               />
             </div>
           </HStack>

@@ -1,6 +1,6 @@
+import { Link } from '@tanstack/react-router';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link } from '@tanstack/react-router';
 
 import Text from 'pl-fe/components/ui/text';
 import { shortNumberFormat } from 'pl-fe/utils/numbers';

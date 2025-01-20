@@ -1,6 +1,6 @@
 import { useFloating, shift, flip, autoUpdate } from '@floating-ui/react';
 import clsx from 'clsx';
-import React, { KeyboardEvent, useState } from 'react';
+import React, { KeyboardEvent, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 import IconButton from 'pl-fe/components/ui/icon-button';
@@ -46,15 +46,17 @@ const EmojiPickerDropdownContainer: React.FC<IEmojiPickerDropdownContainer> = ({
     }
   };
 
+  const clonedChildren = useMemo(() => children ? (
+    React.cloneElement(children, {
+      onClick: handleClick,
+      onKeyDown: handleKeyDown,
+      ref: refs.setReference,
+    })
+  ) : null, [children]);
+
   return (
     <div className='relative'>
-      {children ? (
-        React.cloneElement(children, {
-          onClick: handleClick,
-          onKeyDown: handleKeyDown,
-          ref: refs.setReference,
-        })
-      ) : (
+      {clonedChildren || (
         <IconButton
           theme='transparent'
           className={clsx('emoji-picker-dropdown -m-1 p-2', {

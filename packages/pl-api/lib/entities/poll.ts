@@ -29,7 +29,14 @@ const pollSchema = v.object({
   non_anonymous: v.fallback(v.boolean(), false),
 });
 
+/**
+ * @category Entity types
+ */
 type Poll = v.InferOutput<typeof pollSchema>;
+
+/**
+ * @category Entity types
+ */
 type PollOption = Poll['options'][number];
 
 export { pollSchema, type Poll, type PollOption };

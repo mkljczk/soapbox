@@ -25,7 +25,7 @@ interface ISidebarNavigationLink {
 }
 
 /** Desktop sidebar navigation link. */
-const SidebarNavigationLink = React.forwardRef((props: ISidebarNavigationLink, ref: React.ForwardedRef<HTMLAnchorElement>): JSX.Element => {
+const SidebarNavigationLink = React.memo(React.forwardRef((props: ISidebarNavigationLink, ref: React.ForwardedRef<HTMLAnchorElement>): JSX.Element => {
   const { icon, activeIcon, text, to = '', count, countMax, onClick } = props;
 
   const { demetricator } = useSettings();
@@ -73,6 +73,6 @@ const SidebarNavigationLink = React.forwardRef((props: ISidebarNavigationLink, r
       )}
     </Link>
   );
-});
+}), (prevProps, nextProps) => prevProps.count === nextProps.count);
 
 export { SidebarNavigationLink as default };

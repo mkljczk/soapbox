@@ -20,6 +20,7 @@ export * from './admin/rule';
 export * from './admin/tag';
 export * from './announcement';
 export * from './announcement-reaction';
+export * from './antenna';
 export * from './application';
 export * from './backup';
 export * from './bookmark-folder';

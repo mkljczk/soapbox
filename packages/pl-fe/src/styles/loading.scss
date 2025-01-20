@@ -47,3 +47,8 @@
     @apply w-12 h-12 border-0 opacity-0 bg-transparent;
   }
 }
+
+.ptr,
+.ptr__children {
+  @apply overflow-visible #{!important};
+}

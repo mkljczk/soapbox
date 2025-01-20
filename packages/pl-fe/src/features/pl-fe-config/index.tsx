@@ -45,8 +45,6 @@ const messages = defineMessages({
   displayCtaLabel: { id: 'plfe_config.cta_label', defaultMessage: 'Display call to action panels if not authenticated' },
   mediaPreviewLabel: { id: 'plfe_config.media_preview_label', defaultMessage: 'Prefer preview media for thumbnails' },
   mediaPreviewHint: { id: 'plfe_config.media_preview_hint', defaultMessage: 'Some backends provide an optimized version of media for display in timelines. However, these preview images may be too small without additional configuration.' },
-  feedInjectionLabel: { id: 'plfe_config.feed_injection_label', defaultMessage: 'Feed injection' },
-  feedInjectionHint: { id: 'plfe_config.feed_injection_hint', defaultMessage: 'Inject the feed with additional content, such as suggested profiles.' },
   tileServerLabel: { id: 'plfe_config.tile_server_label', defaultMessage: 'Map tile server' },
   tileServerAttributionLabel: { id: 'plfe_config.tile_server_attribution_label', defaultMessage: 'Map tiles attribution' },
   redirectRootNoLoginLabel: { id: 'plfe_config.redirect_root_no_login_label', defaultMessage: 'Redirect homepage' },
@@ -228,16 +226,6 @@ const PlFeConfigEditor: React.FC = () => {
               <Toggle
                 checked={plFe.greentext === true}
                 onChange={handleChange('greentext', (e) => e.target.checked)}
-              />
-            </ListItem>
-
-            <ListItem
-              label={intl.formatMessage(messages.feedInjectionLabel)}
-              hint={intl.formatMessage(messages.feedInjectionHint)}
-            >
-              <Toggle
-                checked={plFe.feedInjection === true}
-                onChange={handleChange('feedInjection', (e) => e.target.checked)}
               />
             </ListItem>
 

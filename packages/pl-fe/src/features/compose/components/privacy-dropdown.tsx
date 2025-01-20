@@ -28,6 +28,8 @@ const messages = defineMessages({
   local_long: { id: 'privacy.local.long', defaultMessage: 'Only visible on your instance' },
   list_short: { id: 'privacy.list.short', defaultMessage: 'List only' },
   list_long: { id: 'privacy.list.long', defaultMessage: 'Visible to members of a list' },
+  subscribers_short: { id: 'privacy.subscribers.short', defaultMessage: 'Subscribers-only' },
+  subscribers_long: { id: 'privacy.subscribers.long', defaultMessage: 'Post to users subscribing you only' },
 
   change_privacy: { id: 'privacy.change', defaultMessage: 'Adjust post privacy' },
   local: { id: 'privacy.local', defaultMessage: '{privacy} (local-only)' },
@@ -60,11 +62,17 @@ const getItems = (features: Features, lists: ReturnType<typeof getOrderedLists>,
     text: intl.formatMessage(messages.private_short),
     meta: intl.formatMessage(messages.private_long),
   },
-  features.visibilityMutualsOnly ? {
+  features.createStatusMutualsOnlyScope ? {
     icon: require('@tabler/icons/outline/users-group.svg'),
     value: 'mutuals_only',
     text: intl.formatMessage(messages.mutuals_only_short),
     meta: intl.formatMessage(messages.mutuals_only_long),
+  } : undefined,
+  features.createStatusSubscribersScope ? {
+    icon: require('@tabler/icons/outline/coin.svg'),
+    value: 'subscribers',
+    text: intl.formatMessage(messages.subscribers_short),
+    meta: intl.formatMessage(messages.subscribers_long),
   } : undefined,
   {
     icon: require('@tabler/icons/outline/mail.svg'),
@@ -72,13 +80,13 @@ const getItems = (features: Features, lists: ReturnType<typeof getOrderedLists>,
     text: intl.formatMessage(messages.direct_short),
     meta: intl.formatMessage(messages.direct_long),
   },
-  features.visibilityLocalOnly ? {
+  features.createStatusLocalScope ? {
     icon: require('@tabler/icons/outline/affiliate.svg'),
     value: 'local',
     text: intl.formatMessage(messages.local_short),
     meta: intl.formatMessage(messages.local_long),
   } : undefined,
-  features.addressableLists && Object.keys(lists).length ? {
+  features.createStatusListScope && Object.keys(lists).length ? {
     icon: require('@tabler/icons/outline/list.svg'),
     value: '',
     items: Object.values(lists).map((list) => ({

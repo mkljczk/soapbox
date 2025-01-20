@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { defineMessages } from 'react-intl';
 
 import { dequeueTimeline, scrollTopTimeline } from 'pl-fe/actions/timelines';
@@ -31,7 +31,7 @@ const Timeline: React.FC<ITimeline> = ({
   ...rest
 }) => {
   const dispatch = useAppDispatch();
-  const getStatusIds = useCallback(makeGetStatusIds(), []);
+  const getStatusIds = useMemo(makeGetStatusIds, []);
 
   const statusIds = useAppSelector(state => getStatusIds(state, { type: timelineId, prefix }));
   const lastStatusId = statusIds.at(-1);

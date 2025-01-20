@@ -5,7 +5,9 @@ import { accountSchema } from './account';
 import { ruleSchema } from './rule';
 import { coerceObject, filteredArray, mimeSchema } from './utils';
 
-const getApiVersions = (instance: any) => ({
+const WORDPRESS_REGEX = /^WordPress\/[\w+.-]*, EMA\/([\w+.-]*)/;
+
+const getApiVersions = (instance: any): Record<string, number> => ({
   ...Object.fromEntries(instance.pleroma?.metadata?.features?.map((feature: string) => {
     let string = `${feature}.pleroma.pl-api`;
     if (string.startsWith('pleroma:') || string.startsWith('pleroma_')) string = string.slice(8);
@@ -91,17 +93,23 @@ const instanceV1ToV2 = (data: any) => {
 const fixVersion = (version: string) => {
   // Handle Mastodon release candidates
   if (new RegExp(/[0-9.]+rc[0-9]+/g).test(version)) {
-    version = version.split('rc').join('-rc');
+    return version.split('rc').join('-rc');
   }
 
   // Rename Akkoma to Pleroma+akkoma
   if (version.includes('Akkoma')) {
-    version = '2.7.2 (compatible; Pleroma 2.4.50+akkoma)';
+    return '2.7.2 (compatible; Pleroma 2.4.50+akkoma)';
   }
 
   // Set Takahē version to a Pleroma-like string
   if (version.startsWith('takahe/')) {
-    version = `0.0.0 (compatible; Takahe ${version.slice(7)})`;
+    return `0.0.0 (compatible; Takahe ${version.slice(7)})`;
+  }
+
+  const wordPressMatch = WORDPRESS_REGEX.exec(version);
+
+  if (wordPressMatch) {
+    return `0.0.0 (compatible; WordPress ${wordPressMatch[1]})`;
   }
 
   return version;
@@ -306,7 +314,7 @@ const instanceSchema = v.pipe(
 
     if (data.domain) return { account_domain: data.domain, ...data, api_versions: apiVersions };
 
-    return instanceV1ToV2({ ...data, api_versions: apiVersions });
+    return { ...instanceV1ToV2(data), api_versions: apiVersions };
   }),
   coerceObject({
     account_domain: v.fallback(v.string(), ''),
@@ -332,6 +340,9 @@ const instanceSchema = v.pipe(
   }),
 );
 
+/**
+ * @category Entity types
+ */
 type Instance = v.InferOutput<typeof instanceSchema>;
 
 export { instanceSchema, type Instance };

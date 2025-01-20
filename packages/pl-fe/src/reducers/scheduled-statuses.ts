@@ -7,10 +7,9 @@ import {
   SCHEDULED_STATUS_CANCEL_SUCCESS,
   type ScheduledStatusesAction,
 } from 'pl-fe/actions/scheduled-statuses';
-import { STATUS_CREATE_SUCCESS } from 'pl-fe/actions/statuses';
+import { STATUS_CREATE_SUCCESS, type StatusesAction } from 'pl-fe/actions/statuses';
 
 import type { Status, ScheduledStatus } from 'pl-api';
-import type { AnyAction } from 'redux';
 
 type State = Record<string, ScheduledStatus>;
 
@@ -29,7 +28,7 @@ const deleteStatus = (state: State, statusId: string) => {
   delete state[statusId];
 };
 
-const scheduled_statuses = (state: State = initialState, action: AnyAction | ImporterAction | ScheduledStatusesAction) => {
+const scheduled_statuses = (state: State = initialState, action: ImporterAction | ScheduledStatusesAction | StatusesAction) => {
   switch (action.type) {
     case STATUS_IMPORT:
     case STATUS_CREATE_SUCCESS:

@@ -43,6 +43,9 @@ const translationSchema = v.pipe(
   }),
 );
 
+/**
+ * @category Entity types
+ */
 type Translation = v.InferOutput<typeof translationSchema>;
 
 export { translationSchema, type Translation };

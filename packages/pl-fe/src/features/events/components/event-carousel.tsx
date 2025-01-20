@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
 import { Link } from '@tanstack/react-router';
+import React, { useCallback, useState } from 'react';
 import ReactSwipeableViews from 'react-swipeable-views';
 
 import EventPreview from 'pl-fe/components/event-preview';

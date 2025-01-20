@@ -18,6 +18,9 @@ const notificationPolicySchema = v.object({
   }),
 });
 
+/**
+ * @category Entity types
+ */
 type NotificationPolicy = v.InferOutput<typeof notificationPolicySchema>;
 
 export { notificationPolicySchema, type NotificationPolicy };

@@ -17,6 +17,9 @@ const notificationRequestSchema = v.object({
   last_status: v.fallback(v.optional(statusSchema), undefined),
 });
 
+/**
+ * @category Entity types
+ */
 type NotificationRequest = v.InferOutput<typeof notificationRequestSchema>;
 
 export { notificationRequestSchema, type NotificationRequest };

@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FormattedDate, FormattedMessage } from 'react-intl';
 
-import { fetchHistory } from 'pl-fe/actions/history';
 import AttachmentThumbs from 'pl-fe/components/attachment-thumbs';
 import { ParsedContent } from 'pl-fe/components/parsed-content';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -10,8 +9,8 @@ import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useStatusHistory } from 'pl-fe/queries/statuses/use-status-history';
 
 import type { BaseModalProps } from '../modal-root';
 
@@ -20,10 +19,7 @@ interface CompareHistoryModalProps {
 }
 
 const CompareHistoryModal: React.FC<BaseModalProps & CompareHistoryModalProps> = ({ onClose, statusId }) => {
-  const dispatch = useAppDispatch();
-
-  const loading = useAppSelector(state => state.history[statusId]?.loading);
-  const versions = useAppSelector(state => state.history[statusId]?.items);
+  const { data: versions, isLoading } = useStatusHistory(statusId);
 
   const status = useAppSelector(state => state.statuses[statusId]);
 
@@ -31,13 +27,9 @@ const CompareHistoryModal: React.FC<BaseModalProps & CompareHistoryModalProps> =
     onClose('COMPARE_HISTORY');
   };
 
-  useEffect(() => {
-    dispatch(fetchHistory(statusId));
-  }, [statusId]);
-
   let body;
 
-  if (loading) {
+  if (isLoading) {
     body = <Spinner />;
   } else {
     body = (

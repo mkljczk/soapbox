@@ -1,6 +1,6 @@
+import { Link } from '@tanstack/react-router';
 import React from 'react';
 import { FormattedList, FormattedMessage } from 'react-intl';
-import { Link } from '@tanstack/react-router';
 
 import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
 import HoverStatusWrapper from 'pl-fe/components/hover-status-wrapper';

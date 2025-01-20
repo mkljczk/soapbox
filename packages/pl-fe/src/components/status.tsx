@@ -1,12 +1,12 @@
 import { Link } from '@tanstack/react-router';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { defineMessages, useIntl, FormattedList, FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { mentionCompose, replyCompose } from 'pl-fe/actions/compose';
 import { toggleFavourite, toggleReblog } from 'pl-fe/actions/interactions';
-import { toggleStatusMediaHidden, unfilterStatus } from 'pl-fe/actions/statuses';
+import { unfilterStatus } from 'pl-fe/actions/statuses';
 import Card from 'pl-fe/components/ui/card';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
@@ -20,6 +20,7 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { makeGetStatus, type SelectedStatus } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { textForScreenReader } from 'pl-fe/utils/status';
 
 import EventPreview from './event-preview';
@@ -29,6 +30,7 @@ import StatusLanguagePicker from './status-language-picker';
 import StatusReactionsBar from './status-reactions-bar';
 import StatusReplyMentions from './status-reply-mentions';
 import StatusInfo from './statuses/status-info';
+import Tombstone from './tombstone';
 
 const messages = defineMessages({
   reblogged_by: { id: 'status.reblogged_by', defaultMessage: '{name} reposted' },
@@ -40,7 +42,6 @@ interface IStatus {
   status: SelectedStatus;
   onClick?: () => void;
   muted?: boolean;
-  hidden?: boolean;
   unread?: boolean;
   onMoveUp?: (statusId: string, featured?: boolean) => void;
   onMoveDown?: (statusId: string, featured?: boolean) => void;
@@ -65,7 +66,6 @@ const Status: React.FC<IStatus> = (props) => {
     onMoveUp,
     onMoveDown,
     muted,
-    hidden,
     featured,
     unread,
     hideActionBar,
@@ -78,12 +78,13 @@ const Status: React.FC<IStatus> = (props) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
 
+  const { toggleStatusMediaHidden } = useStatusMetaStore();
   const { openModal } = useModalsStore();
   const { boostModal } = useSettings();
   const didShowCard = useRef(false);
   const node = useRef<HTMLDivElement>(null);
 
-  const getStatus = useCallback(makeGetStatus(), []);
+  const getStatus = useMemo(makeGetStatus, []);
   const actualStatus = useAppSelector(state => status.reblog_id && getStatus(state, { id: status.reblog_id }) || status)!;
 
   const isReblog = status.reblog_id;
@@ -94,10 +95,10 @@ const Status: React.FC<IStatus> = (props) => {
 
   // Track height changes we know about to compensate scrolling.
   useEffect(() => {
-    didShowCard.current = Boolean(!muted && !hidden && status?.card);
+    didShowCard.current = Boolean(!muted && status?.card);
   }, []);
 
-  const handleClick = (e?: React.MouseEvent): void => {
+  const handleClick = (e?: React.MouseEvent) => {
     e?.stopPropagation();
 
     // If the user is selecting text, don't focus the status.
@@ -116,7 +117,7 @@ const Status: React.FC<IStatus> = (props) => {
     }
   };
 
-  const handleHotkeyOpenMedia = (e?: KeyboardEvent): void => {
+  const handleHotkeyOpenMedia = (e?: KeyboardEvent) => {
     const status = actualStatus;
     const firstAttachment = status.media_attachments[0];
 
@@ -131,17 +132,17 @@ const Status: React.FC<IStatus> = (props) => {
     }
   };
 
-  const handleHotkeyReply = (e?: KeyboardEvent): void => {
+  const handleHotkeyReply = (e?: KeyboardEvent) => {
     e?.preventDefault();
     dispatch(replyCompose(actualStatus, status.reblog_id ? status.account : undefined));
   };
 
-  const handleHotkeyFavourite = (e?: KeyboardEvent): void => {
+  const handleHotkeyFavourite = (e?: KeyboardEvent) => {
     e?.preventDefault();
     dispatch(toggleFavourite(actualStatus));
   };
 
-  const handleHotkeyBoost = (e?: KeyboardEvent): void => {
+  const handleHotkeyBoost = (e?: KeyboardEvent) => {
     const modalReblog = () => dispatch(toggleReblog(actualStatus));
     if ((e && e.shiftKey) || !boostModal) {
       modalReblog();
@@ -150,42 +151,42 @@ const Status: React.FC<IStatus> = (props) => {
     }
   };
 
-  const handleHotkeyMention = (e?: KeyboardEvent): void => {
+  const handleHotkeyMention = (e?: KeyboardEvent) => {
     e?.preventDefault();
     dispatch(mentionCompose(actualStatus.account));
   };
 
-  const handleHotkeyOpen = (): void => {
+  const handleHotkeyOpen = () => {
     history.push(statusUrl);
   };
 
-  const handleHotkeyOpenProfile = (): void => {
+  const handleHotkeyOpenProfile = () => {
     history.push(`/@${actualStatus.account.acct}`);
   };
 
-  const handleHotkeyMoveUp = (e?: KeyboardEvent): void => {
+  const handleHotkeyMoveUp = (e?: KeyboardEvent) => {
     if (onMoveUp) {
       onMoveUp(status.id, featured);
     }
   };
 
-  const handleHotkeyMoveDown = (e?: KeyboardEvent): void => {
+  const handleHotkeyMoveDown = (e?: KeyboardEvent) => {
     if (onMoveDown) {
       onMoveDown(status.id, featured);
     }
   };
 
-  const handleHotkeyToggleSensitive = (): void => {
-    dispatch(toggleStatusMediaHidden(actualStatus));
+  const handleHotkeyToggleSensitive = () => {
+    toggleStatusMediaHidden(actualStatus.id);
   };
 
-  const handleHotkeyReact = (): void => {
+  const handleHotkeyReact = () => {
     (node.current?.querySelector('.emoji-picker-dropdown') as HTMLButtonElement)?.click();
   };
 
   const handleUnfilter = () => dispatch(unfilterStatus(status.filtered.length ? status.id : actualStatus.id));
 
-  const renderStatusInfo = () => {
+  const statusInfo = useMemo(() => {
     if (isReblog && showGroup && group) {
       return (
         <StatusInfo
@@ -294,22 +295,15 @@ const Status: React.FC<IStatus> = (props) => {
         />
       );
     }
-  };
+  }, [status.accounts, group?.id]);
 
   if (!status) return null;
 
-  if (hidden) {
-    return (
-      <div ref={node}>
-        <>
-          {actualStatus.account.display_name || actualStatus.account.username}
-          {actualStatus.content}
-        </>
-      </div>
-    );
-  }
+  if (status.deleted) return (
+    <Tombstone id={status.id} onMoveUp={onMoveUp} onMoveDown={onMoveDown} deleted />
+  );
 
-  if (filtered && status.showFiltered !== false) {
+  if (filtered && actualStatus.showFiltered !== true) {
     const minHandlers = muted ? undefined : {
       moveUp: handleHotkeyMoveUp,
       moveDown: handleHotkeyMoveDown,
@@ -373,7 +367,7 @@ const Status: React.FC<IStatus> = (props) => {
           })}
           data-id={status.id}
         >
-          {renderStatusInfo()}
+          {statusInfo}
 
           <AccountContainer
             key={actualStatus.account_id}
@@ -389,7 +383,7 @@ const Status: React.FC<IStatus> = (props) => {
             avatarSize={avatarSize}
             items={(
               <>
-                <StatusTypeIcon status={actualStatus} />
+                <StatusTypeIcon visibility={actualStatus.visibility} />
                 <StatusLanguagePicker status={actualStatus} />
               </>
             )}

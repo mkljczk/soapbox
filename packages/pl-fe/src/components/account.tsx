@@ -68,7 +68,6 @@ interface IAccount {
   /** Override other actions for specificity like mute/unmute. */
   actionType?: 'muting' | 'blocking' | 'follow_request' | 'biting';
   avatarSize?: number;
-  hidden?: boolean;
   hideActions?: boolean;
   id?: string;
   onActionClick?: (account: AccountSchema) => void;
@@ -98,7 +97,6 @@ const Account = ({
   actionTitle,
   actionAlignment = 'center',
   avatarSize = 42,
-  hidden = false,
   hideActions = false,
   onActionClick,
   showAccountHoverCard = true,
@@ -164,15 +162,6 @@ const Account = ({
     return null;
   }
 
-  if (hidden) {
-    return (
-      <>
-        {account.display_name}
-        {account.username}
-      </>
-    );
-  }
-
   if (withDate) timestamp = account.created_at;
 
   const LinkEl: any = withLinkToProfile ? Link : 'div';
@@ -186,7 +175,7 @@ const Account = ({
     <div data-testid='account' className='group block w-full shrink-0' ref={overflowRef}>
       <HStack alignItems={actionAlignment} space={3} justifyContent='between'>
         <HStack alignItems='center' space={3} className='overflow-hidden'>
-          <div className='rounded-full'>
+          <div className='rounded-lg'>
             <Avatar src={account.avatar} size={avatarSize} alt={account.avatar_description} />
             {emoji && (
               <Emoji
@@ -217,7 +206,7 @@ const Account = ({
                 <Text theme='muted' size='sm' direction='ltr' truncate>@{username}</Text>
 
                 {account.favicon && (
-                  <InstanceFavicon account={account} disabled={!withLinkToProfile} />
+                  <InstanceFavicon account={account} disabled />
                 )}
 
                 {items}
@@ -242,7 +231,7 @@ const Account = ({
               condition={showAccountHoverCard}
               wrapper={(children) => <HoverAccountWrapper className='relative' accountId={account.id} element='span'>{children}</HoverAccountWrapper>}
             >
-              <LinkEl className='rounded-full' {...linkProps}>
+              <LinkEl className='rounded-lg' {...linkProps}>
                 <Avatar src={account.avatar} size={avatarSize} alt={account.avatar_description} />
                 {emoji && (
                   <Emoji

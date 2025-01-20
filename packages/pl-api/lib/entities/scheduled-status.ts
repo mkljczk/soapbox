@@ -34,6 +34,9 @@ const scheduledStatusSchema = v.object({
   media_attachments: filteredArray(mediaAttachmentSchema),
 });
 
+/**
+ * @category Entity types
+ */
 type ScheduledStatus = v.InferOutput<typeof scheduledStatusSchema>;
 
 export { scheduledStatusSchema, type ScheduledStatus };

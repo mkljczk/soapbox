@@ -12,6 +12,9 @@ const featuredTagSchema = v.object({
   last_status_at: v.number(),
 });
 
+/**
+ * @category Entity types
+ */
 type FeaturedTag = v.InferOutput<typeof featuredTagSchema>;
 
 export { featuredTagSchema, type FeaturedTag };

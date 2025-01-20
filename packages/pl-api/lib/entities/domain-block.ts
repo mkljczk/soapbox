@@ -11,6 +11,9 @@ const domainBlockSchema = v.object({
   comment: v.fallback(v.optional(v.string()), undefined),
 });
 
+/**
+ * @category Entity types
+ */
 type DomainBlock = v.InferOutput<typeof domainBlockSchema>;
 
 export { domainBlockSchema, type DomainBlock };

@@ -9,16 +9,12 @@ import admin from './admin';
 import admin_user_index from './admin-user-index';
 import aliases from './aliases';
 import auth from './auth';
-import backups from './backups';
 import compose from './compose';
 import contexts from './contexts';
 import conversations from './conversations';
-import custom_emojis from './custom-emojis';
 import domain_lists from './domain-lists';
 import draft_statuses from './draft-statuses';
 import filters from './filters';
-import followed_tags from './followed-tags';
-import history from './history';
 import instance from './instance';
 import listAdder from './list-adder';
 import listEditor from './list-editor';
@@ -35,10 +31,7 @@ import scheduled_statuses from './scheduled-statuses';
 import security from './security';
 import status_lists from './status-lists';
 import statuses from './statuses';
-import tags from './tags';
 import timelines from './timelines';
-import trending_statuses from './trending-statuses';
-import user_lists from './user-lists';
 
 const reducers = {
   accounts_meta,
@@ -46,17 +39,13 @@ const reducers = {
   admin_user_index,
   aliases,
   auth,
-  backups,
   compose,
   contexts,
   conversations,
-  custom_emojis,
   domain_lists,
   draft_statuses,
   entities,
   filters,
-  followed_tags,
-  history,
   instance,
   listAdder,
   listEditor,
@@ -73,10 +62,7 @@ const reducers = {
   security,
   status_lists,
   statuses,
-  tags,
   timelines,
-  trending_statuses,
-  user_lists,
 };
 
 const appReducer = combineReducers(reducers);
@@ -91,8 +77,8 @@ const logOut = (state: AppState): ReturnType<typeof appReducer> => {
 
   const newState = rootReducer(undefined, { type: '' });
 
-  const { instance, plfe, custom_emojis, auth } = state;
-  return { ...newState, instance, plfe, custom_emojis, auth };
+  const { instance, plfe, auth } = state;
+  return { ...newState, instance, plfe, auth };
 };
 
 const rootReducer: typeof appReducer = (state, action) => {

@@ -306,6 +306,19 @@ const DropdownMenu = (props: IDropdownMenu) => {
 
   }, [isOpen]);
 
+  const clonedChildren = useMemo(() => {
+    if ((items?.length === 0 && !component) || !children) {
+      return null;
+    }
+
+    return React.cloneElement(children, {
+      disabled,
+      onClick: handleClick,
+      onKeyPress: handleKeyPress,
+      ref: refs.setReference,
+    });
+  }, [children, !!items?.length, component]);
+
   if (items?.length === 0 && !component) {
     return null;
   }
@@ -330,14 +343,7 @@ const DropdownMenu = (props: IDropdownMenu) => {
 
   return (
     <>
-      {children ? (
-        React.cloneElement(children, {
-          disabled,
-          onClick: handleClick,
-          onKeyPress: handleKeyPress,
-          ref: refs.setReference,
-        })
-      ) : (
+      {clonedChildren || (
         <IconButton
           disabled={disabled}
           className={clsx({

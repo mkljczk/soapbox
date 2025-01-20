@@ -7,14 +7,14 @@ import { MediaGallery, Video, Audio } from 'pl-fe/features/ui/util/async-compone
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
-import { isMediaVisible } from './statuses/sensitive-content-overlay';
+import { useMediaVisible } from './statuses/sensitive-content-overlay';
 
 import type { MediaAttachment } from 'pl-api';
 import type { Status } from 'pl-fe/normalizers/status';
 
 interface IStatusMedia {
   /** Status entity to render media for. */
-  status: Pick<Status, 'id' | 'account' | 'card' | 'expectsCard' | 'hidden' | 'media_attachments' | 'quote_id' | 'sensitive' | 'spoiler_text' | 'visibility'>;
+  status: Pick<Status, 'id' | 'account' | 'card' | 'expectsCard' | 'media_attachments' | 'quote_id' | 'sensitive' | 'spoiler_text' | 'visibility'>;
   /** Whether to display compact media. */
   muted?: boolean;
   /** Callback when compact media is clicked. */
@@ -30,7 +30,7 @@ const StatusMedia: React.FC<IStatusMedia> = ({
   const { openModal } = useModalsStore();
   const { displayMedia } = useSettings();
 
-  const visible = isMediaVisible(status, displayMedia);
+  const visible = useMediaVisible(status, displayMedia);
 
   const size = status.media_attachments.length;
   const firstAttachment = status.media_attachments[0];

@@ -24,7 +24,7 @@ const ScrollTopButton: React.FC<IScrollTopButton> = ({
   onClick,
   count,
   message,
-  threshold = 400,
+  threshold = 240,
   autoloadThreshold = 50,
 }) => {
   const intl = useIntl();

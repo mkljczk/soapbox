@@ -15,6 +15,7 @@ import ColorPicker from 'pl-fe/features/pl-fe-config/components/color-picker';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
+import { normalizeColors } from 'pl-fe/hooks/use-theme-css';
 import { plFeConfigSchema } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
 import toast from 'pl-fe/toast';
 import { download } from 'pl-fe/utils/download';
@@ -50,11 +51,11 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
-  const plFe = usePlFeConfig();
+  const plFeConfig = usePlFeConfig();
   const host = useAppSelector(state => getHost(state));
   const rawConfig = useAppSelector(state => state.plfe);
 
-  const [colors, setColors] = useState(plFe.colors);
+  const [colors, setColors] = useState(normalizeColors(plFeConfig));
   const [submitting, setSubmitting] = useState(false);
   const [resetKey, setResetKey] = useState(crypto.randomUUID());
 
@@ -85,7 +86,7 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
   };
 
   const resetTheme = () => {
-    setTheme(plFe.colors);
+    setTheme(normalizeColors(plFeConfig));
   };
 
   const updateTheme = async () => {
@@ -94,8 +95,8 @@ const ThemeEditor: React.FC<IThemeEditor> = () => {
   };
 
   const restoreDefaultTheme = () => {
-    const colors = v.parse(plFeConfigSchema, { brandColor: '#d80482' }).colors;
-    setTheme(colors);
+    const config = v.parse(plFeConfigSchema, { brandColor: '#d80482' });
+    setTheme(normalizeColors(config));
   };
 
   const exportTheme = () => {
@@ -249,12 +250,13 @@ interface IPaletteListItem {
   palette: ColorGroup | string;
   onChange: (palette: ColorGroup) => void;
   resetKey?: string;
+  allowTintChange?: boolean;
 }
 
 /** Palette editor inside a ListItem. */
-const PaletteListItem: React.FC<IPaletteListItem> = ({ label, palette, onChange, resetKey }) => typeof palette === 'string' ? null : (
+const PaletteListItem: React.FC<IPaletteListItem> = ({ label, palette, onChange, resetKey, allowTintChange }) => typeof palette === 'string' ? null : (
   <ListItem label={<div className='w-20'>{label}</div>}>
-    <Palette palette={palette} onChange={onChange} resetKey={resetKey} />
+    <Palette palette={palette} onChange={onChange} resetKey={resetKey} allowTintChange={allowTintChange} />
   </ListItem>
 );
 
@@ -283,4 +285,4 @@ const ColorListItem: React.FC<IColorListItem> = ({ label, value, onChange }) => 
   );
 };
 
-export { ThemeEditor as default };
+export { ThemeEditor as default, PaletteListItem };

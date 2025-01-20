@@ -3,7 +3,7 @@
  * Converts API statuses into our internal format.
  * @see {@link https://docs.joinmastodon.org/entities/status/}
  */
-import { type Account as BaseAccount, type Status as BaseStatus, type MediaAttachment, mentionSchema, type Translation } from 'pl-api';
+import { type Account as BaseAccount, type Status as BaseStatus, type MediaAttachment, mentionSchema } from 'pl-api';
 import * as v from 'valibot';
 
 import { unescapeHTML } from 'pl-fe/utils/html';
@@ -16,15 +16,7 @@ const domParser = new DOMParser();
 type StatusApprovalStatus = Exclude<BaseStatus['approval_status'], null>;
 type StatusVisibility = 'public' | 'unlisted' | 'private' | 'direct' | 'group' | 'mutuals_only' | 'local';
 
-type CalculatedValues = {
-  search_index: string;
-  expanded?: boolean | null;
-  hidden?: boolean | null;
-  translation?: Translation | null | false;
-  currentLanguage?: string;
-};
-
-type OldStatus = Pick<BaseStatus, 'content' | 'spoiler_text'> & CalculatedValues;
+type OldStatus = Pick<BaseStatus, 'content' | 'spoiler_text'> & { search_index: string };
 
 // Gets titles of poll options from status
 const getPollOptionTitles = ({ poll }: Pick<BaseStatus, 'poll'>): readonly string[] => {
@@ -54,28 +46,20 @@ const buildSearchContent = (status: Pick<BaseStatus, 'poll' | 'mentions' | 'spoi
   return unescapeHTML(fields.join('\n\n')) || '';
 };
 
-const calculateStatus = (status: BaseStatus, oldStatus?: OldStatus): CalculatedValues => {
+const getSearchIndex = (status: BaseStatus, oldStatus?: OldStatus) => {
   if (oldStatus && oldStatus.content === status.content && oldStatus.spoiler_text === status.spoiler_text) {
-    const {
-      search_index, hidden, expanded, translation, currentLanguage,
-    } = oldStatus;
-
-    return {
-      search_index, hidden, expanded, translation, currentLanguage,
-    };
+    return oldStatus.search_index;
   } else {
     const searchContent = buildSearchContent(status);
 
-    return {
-      search_index: domParser.parseFromString(searchContent, 'text/html').documentElement.textContent || '',
-    };
+    return domParser.parseFromString(searchContent, 'text/html').documentElement.textContent || '';
   }
 };
 
 const normalizeStatus = (status: BaseStatus & {
   accounts?: Array<BaseAccount>;
 }, oldStatus?: OldStatus) => {
-  const calculated = calculateStatus(status, oldStatus);
+  const searchIndex = getSearchIndex(status, oldStatus);
 
   // Sort the replied-to mention to the top
   let mentions = status.mentions.toSorted((a, _b) => {
@@ -129,22 +113,19 @@ const normalizeStatus = (status: BaseStatus & {
     reblog_id: status.reblog?.id || null,
     poll_id: status.poll?.id || null,
     group_id: status.group?.id || null,
-    translating: false,
     expectsCard: false,
     showFiltered: null as null | boolean,
+    deleted: false,
     ...status,
     quote_id: status.quote?.id || status.quote_id || null,
     account: normalizeAccount(status.account),
     accounts: status.accounts?.map(normalizeAccount),
     mentions,
-    expanded: null,
-    hidden: null,
     filtered: status.filtered?.map(result => result.filter.title),
     event,
     group,
     media_attachments,
-    ...calculated,
-    translation: (status.translation || calculated.translation || null) as Translation | null | false,
+    search_index: searchIndex,
   };
 };
 

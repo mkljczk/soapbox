@@ -21,6 +21,9 @@ const chatMessageSchema = v.object({
   card: v.fallback(v.nullable(previewCardSchema), null),
 });
 
+/**
+ * @category Entity types
+ */
 type ChatMessage = v.InferOutput<typeof chatMessageSchema>;
 
 export { chatMessageSchema, type ChatMessage };

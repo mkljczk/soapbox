@@ -39,6 +39,9 @@ const credentialApplicationSchema = v.pipe(
   }),
 );
 
+/**
+ * @category Entity types
+ */
 type CredentialApplication = v.InferOutput<typeof credentialApplicationSchema>;
 
 export { applicationSchema, credentialApplicationSchema, type Application, type CredentialApplication };

@@ -1,3 +1,4 @@
+import { Outlet } from '@tanstack/react-router';
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { FormattedMessage } from 'react-intl';
@@ -22,7 +23,6 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { getAcct } from 'pl-fe/utils/accounts';
-import { Outlet } from '@tanstack/react-router';
 
 interface IProfileLayout {
   params?: {

@@ -2,15 +2,15 @@ import clsx from 'clsx';
 import React, { useState, useRef, useLayoutEffect, useMemo, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { collapseStatusSpoiler, expandStatusSpoiler } from 'pl-fe/actions/statuses';
 import Icon from 'pl-fe/components/icon';
 import Button from 'pl-fe/components/ui/button';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
 import QuotedStatus from 'pl-fe/features/status/containers/quoted-status-container';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useStatusTranslation } from 'pl-fe/queries/statuses/use-status-translation';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { onlyEmoji as isOnlyEmoji } from 'pl-fe/utils/rich-content';
 
 import { getTextDirection } from '../utils/rtl';
@@ -44,7 +44,7 @@ const ReadMoreButton: React.FC<IReadMoreButton> = ({ onClick, quote, poll, previ
     })}
   >
     <div
-      className={clsx('absolute -top-16 h-16 w-full bg-gradient-to-b from-transparent', {
+      className={clsx('pointer-events-none absolute -top-16 h-16 w-full bg-gradient-to-b from-transparent', {
         'to-white black:to-black dark:to-primary-900': !poll,
         'to-gray-100 dark:to-primary-800': poll,
         'group-hover:to-gray-100 black:group-hover:to-gray-800 dark:group-hover:to-gray-800': quote,
@@ -81,7 +81,6 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   preview,
   withMedia,
 }) => {
-  const dispatch = useAppDispatch();
   const { displaySpoilers } = useSettings();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -90,6 +89,10 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
 
   const node = useRef<HTMLDivElement>(null);
   const spoilerNode = useRef<HTMLSpanElement>(null);
+
+  const { statuses: statusesMeta, collapseStatus, expandStatus } = useStatusMetaStore();
+  const statusMeta = statusesMeta[status.id] || {};
+  const { data: translation } = useStatusTranslation(status.id, statusMeta.targetLanguage);
 
   const maybeSetCollapsed = (): void => {
     if (!node.current) return;
@@ -115,8 +118,8 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     e.preventDefault();
     e.stopPropagation();
 
-    if (expanded) dispatch(collapseStatusSpoiler(status.id));
-    else dispatch(expandStatusSpoiler(status.id));
+    if (expanded) collapseStatus(status.id);
+    else expandStatus(status.id);
   };
 
   useLayoutEffect(() => {
@@ -125,12 +128,12 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   });
 
   const content = useMemo(
-    (): string => translatable && status.translation
-      ? status.translation.content!
-      : (status.content_map && status.currentLanguage)
-        ? (status.content_map[status.currentLanguage] || status.content)
+    (): string => translation
+      ? translation.content
+      : (status.content_map && statusMeta.currentLanguage)
+        ? (status.content_map[statusMeta.currentLanguage] || status.content)
         : status.content,
-    [status.content, status.translation, status.currentLanguage],
+    [status.content, translation, statusMeta.currentLanguage],
   );
 
   const { content: parsedContent, hashtags } = useMemo(() => parseContent({
@@ -146,8 +149,8 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
 
   const withSpoiler = status.spoiler_text.length > 0;
 
-  const spoilerText = status.spoiler_text_map && status.currentLanguage
-    ? status.spoiler_text_map[status.currentLanguage] || status.spoiler_text
+  const spoilerText = status.spoiler_text_map && statusMeta.currentLanguage
+    ? status.spoiler_text_map[statusMeta.currentLanguage] || status.spoiler_text
     : status.spoiler_text;
 
   const direction = getTextDirection(status.search_index);
@@ -161,7 +164,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   });
 
   const expandable = !displaySpoilers;
-  const expanded = !withSpoiler || status.expanded || false;
+  const expanded = !withSpoiler || statusMeta.expanded || false;
 
   const output = [];
 
@@ -171,7 +174,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
         <span className={clsx({ 'line-clamp-3': !expanded && lineClamp })} ref={spoilerNode}>
           <Emojify text={spoilerText} emojis={status.emojis} />
         </span>
-        {status.content && expandable && (
+        {expandable && (
           <Button
             className='ml-2 align-middle'
             type='button'
@@ -242,7 +245,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     }
 
     if (status.poll_id) {
-      output.push(<Poll id={status.poll_id} key='poll' status={status} />);
+      output.push(<Poll id={status.poll_id} key='poll' status={status} language={statusMeta.currentLanguage} />);
     }
 
     if (translatable) {
@@ -280,7 +283,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     }
 
     if (status.poll_id) {
-      output.push(<Poll id={status.poll_id} key='poll' status={status} />);
+      output.push(<Poll id={status.poll_id} key='poll' status={status} language={statusMeta.currentLanguage} />);
     }
 
     if (translatable) {

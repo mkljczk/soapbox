@@ -4,7 +4,7 @@ export * from './contexts/query-client';
 export * from './hooks/accounts/use-account';
 export * from './hooks/accounts/use-account-lookup';
 export * from './hooks/accounts/use-account-relationship';
-export * from './hooks/accounts/use-directory';
+export * from './hooks/account-lists/use-directory';
 export * from './hooks/instance/use-instance';
 export * from './hooks/instance/use-translation-languages';
 export * from './hooks/markers/use-markers';

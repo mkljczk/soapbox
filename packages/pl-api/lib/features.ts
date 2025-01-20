@@ -48,6 +48,14 @@ const GOTOSOCIAL = 'GoToSocial';
 const ICESHRIMP = 'Iceshrimp';
 
 /**
+ * Iceshrimp.NET, a decentralized and federated social networking service, powered by .NET.
+ *
+ * @category Software
+ * @see {@link https://iceshrimp.dev/}
+ */
+const ICESHRIMP_NET = 'Iceshrimp.NET';
+
+/**
  * Mastodon, the software upon which this is all based.
  *
  * @category Software
@@ -94,6 +102,15 @@ const TAKAHE = 'Takahe';
  * @see {@link https://github.com/purifetchi/Toki}
  */
 const TOKI = 'Toki';
+
+/**
+ * WordPress, through the Enable Mastodon App plugin.
+ * I am not affiliated with WP Engine in any way, finanically or otherwise. ~mkljczk
+ *
+ * @category Software
+ * @see {@link https://github.com/akirk/enable-mastodon-apps}
+ */
+const WORDPRESS = 'WordPress';
 
 /**
  * Akkoma, a Pleroma fork.
@@ -213,9 +230,11 @@ const getFeatures = (instance: Instance) => {
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
       v.software === MASTODON,
+      v.software === MITRA,
       v.software === PLEROMA && gte(v.version, '2.5.0'),
       v.software === TAKAHE && gte(v.version, '0.6.1'),
       v.software === TOKI,
+      v.software === WORDPRESS,
     ]),
 
     /**
@@ -249,6 +268,7 @@ const getFeatures = (instance: Instance) => {
     announcements: any([
       v.software === FIREFISH,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA,
       v.software === TAKAHE && gte(v.version, '0.7.0'),
@@ -261,6 +281,8 @@ const getFeatures = (instance: Instance) => {
      * @see {@link https://docs.joinmastodon.org/methods/announcements/}
      */
     announcementsReactions: v.software === MASTODON,
+
+    kmyblue_antenna: instance.api_versions['kmyblue_antenna.fedibird.pl-api'] >= 1,
 
     /**
      * Set your birthday and view upcoming birthdays.
@@ -275,6 +297,7 @@ const getFeatures = (instance: Instance) => {
      * see POST /api/v1/bite
      */
     bites: any([
+      v.software === ICESHRIMP_NET,
       v.software === TOKI,
       instance.api_versions['bites.pleroma.pl-api'] >= 1,
     ]),
@@ -301,6 +324,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FIREFISH,
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === FRIENDICA,
       v.software === MASTODON,
       v.software === MITRA && gte(v.version, '3.3.0'),
@@ -317,6 +341,7 @@ const getFeatures = (instance: Instance) => {
     bots: any([
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA,
     ]),
@@ -342,6 +367,8 @@ const getFeatures = (instance: Instance) => {
       v.software === PLEROMA && v.build === PL,
     ]),
 
+    circles: instance.api_versions['kmyblue_circle_history.fedibird.pl-api'] >= 1,
+
     /**
      * Mastodon's newer solution for direct messaging.
      * @see {@link https://docs.joinmastodon.org/methods/conversations/}
@@ -351,6 +378,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PIXELFED,
       v.software === PLEROMA,
@@ -382,6 +410,7 @@ const getFeatures = (instance: Instance) => {
     createStatusReplyToConversation: v.software === PLEROMA,
 
     /**
+     * Ability to address a status to a list of users.
      * @see POST /api/v1/statuses
      */
     createStatusListScope: v.software === PLEROMA,
@@ -389,7 +418,22 @@ const getFeatures = (instance: Instance) => {
     /**
      * @see POST /api/v1/statuses
      */
-    createStatusLocalScope: v.software === PLEROMA,
+    createStatusLocalScope: any([
+      v.software === ICESHRIMP_NET,
+      v.software === PLEROMA,
+    ]),
+
+    /**
+     * Ability to post statuses only to accounts with mutual relationship.
+     * @see POST /api/v1/statuses
+     */
+    createStatusMutualsOnlyScope: v.software === GOTOSOCIAL,
+
+    /**
+     * Ability to post statuses only to your subscribers.
+     * @see POST /api/v1/statuses
+     */
+    createStatusSubscribersScope: v.software === MITRA,
 
     /**
      * @see POST /api/v1/statuses
@@ -431,6 +475,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === MITRA,
       v.software === PIXELFED,
@@ -446,7 +491,9 @@ const getFeatures = (instance: Instance) => {
     editStatuses: any([
       v.software === FIREFISH,
       v.software === FRIENDICA && gte(v.version, '2022.12.0'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.4'),
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === MITRA,
       v.software === TAKAHE && gte(v.version, '0.8.0'),
@@ -519,6 +566,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === TAKAHE && gte(v.version, '0.6.1'),
       v.software === TOKI,
@@ -532,10 +580,20 @@ const getFeatures = (instance: Instance) => {
     familiarFollowers: any([
       v.software === DITTO,
       v.software === MASTODON,
+      v.software === PIXELFED,
       v.software === PLEROMA && gte(v.version, '2.6.0') && v.build === REBASED,
       v.software === PLEROMA && gte(v.version, '2.7.0'),
       v.software === TAKAHE,
     ]),
+
+    /**
+     * @see GET /api/v1/accounts/:accountId/featured_tags
+     * @see GET /api/v1/featured_tags
+     * @see POST /api/v1/featured_tags
+     * @see DELETE /api/v1/featured_tags
+     * @see GET /api/v1/featured_tags/suggestions
+     */
+    featuredTags: v.software === MASTODON,
 
     /** Whether the instance federates. */
     federating: federation,
@@ -555,6 +613,7 @@ const getFeatures = (instance: Instance) => {
      */
     filtersV2: any([
       v.software === GOTOSOCIAL && gte(v.version, '0.16.0'),
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
     ]),
 
@@ -573,6 +632,19 @@ const getFeatures = (instance: Instance) => {
     // followAccountLanguages: any([]),
 
     /**
+     * Ability to list followed hashtags.
+     * @see GET /api/v1/followed_tags
+     */
+    followedHashtagsList: any([
+      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
+      v.software === MASTODON && gte(v.compatVersion, '4.1.0'),
+      v.software === PIXELFED,
+      v.software === PLEROMA && v.build === AKKOMA,
+      v.software === PLEROMA && v.build === PL,
+      v.software === TAKAHE && gte(v.version, '0.9.0'),
+    ]),
+
+    /**
      * Ability to follow hashtags.
      * @see POST /api/v1/tags/:name/follow
      * @see POST /api/v1/tags/:name/unfollow
@@ -580,6 +652,7 @@ const getFeatures = (instance: Instance) => {
     followHashtags: any([
       v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
       v.software === MASTODON && gte(v.compatVersion, '4.0.0'),
+      v.software === PIXELFED,
       v.software === PLEROMA && v.build === AKKOMA,
       v.software === PLEROMA && v.build === PL,
       v.software === TAKAHE && gte(v.version, '0.9.0'),
@@ -599,23 +672,12 @@ const getFeatures = (instance: Instance) => {
     ]),
 
     /**
-     * Ability to list followed hashtags.
-     * @see GET /api/v1/followed_tags
-     */
-    followedHashtagsList: any([
-      v.software === GOTOSOCIAL && gte(v.version, '0.17.0'),
-      v.software === MASTODON && gte(v.compatVersion, '4.1.0'),
-      v.software === PLEROMA && v.build === AKKOMA,
-      v.software === PLEROMA && v.build === PL,
-      v.software === TAKAHE && gte(v.version, '0.9.0'),
-    ]),
-
-    /**
      * Whether client settings can be retrieved from the API.
      * @see GET /api/pleroma/frontend_configurations
      */
     frontendConfigurations: any([
       v.software === DITTO,
+      v.software === ICESHRIMP_NET,
       v.software === PLEROMA,
     ]),
 
@@ -654,7 +716,12 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/admin/groups/:group_id/unsuspend
      * @see DELETE /api/v1/admin/groups/:group_id
      */
-    groups: instance.api_versions['pleroma:groups.pleroma.pl-api'] >= 1,
+    groups: any([
+      v.software === PIXELFED,
+      instance.api_versions['groups.pleroma.pl-api'] >= 1,
+    ]),
+
+    groupsSlugs: instance.api_versions['groups.pleroma.pl-api'] >= 1,
 
     /**
      * Can hide follows/followers lists and counts.
@@ -713,6 +780,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FIREFISH,
       v.software === GOTOSOCIAL,
       v.software === MASTODON && gte(v.compatVersion, '4.0.0'),
+      v.software === MITRA && gte(v.version, '2.18.0'),
       v.software === PLEROMA && v.build === REBASED && gte(v.version, '2.6.0'),
       v.software === PLEROMA && gte(v.version, '2.7.0'),
     ]),
@@ -740,9 +808,18 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
+      v.software === MITRA,
       v.software === PLEROMA,
     ]),
+
+    /**
+     * Can add a list to favourites.
+     * @see POST /api/v1/lists/:list_id/favourite
+     * @see POST /api/v1/lists/:list_id/unfavourite
+     */
+    listsFavourites: instance.api_versions['favourite_list.fedibird.pl-api'] >= 1,
 
     /**
      * Ability to post statuses that don't federate.
@@ -810,11 +887,13 @@ const getFeatures = (instance: Instance) => {
     mediaV2: any([
       v.software === FIREFISH,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === MITRA,
       v.software === PLEROMA,
       v.software === TAKAHE,
       v.software === TOKI,
+      v.software === WORDPRESS,
     ]),
 
     /**
@@ -840,6 +919,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === GOTOSOCIAL && gte(v.version, '0.16.0'),
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === MITRA,
       v.software === PIXELFED,
@@ -855,6 +935,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FIREFISH,
       v.software === GOTOSOCIAL && gte(v.version, '0.16.0'),
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA,
       v.software === TAKAHE,
@@ -893,6 +974,7 @@ const getFeatures = (instance: Instance) => {
     notificationsIncludeTypes: any([
       v.software === FIREFISH,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA && gte(v.version, '2.5.0'),
       v.software === TAKAHE && gte(v.version, '0.6.2'),
@@ -955,6 +1037,7 @@ const getFeatures = (instance: Instance) => {
     polls: any([
       v.software === FIREFISH,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === TAKAHE && gte(v.version, '0.8.0'),
       v.software === GOTOSOCIAL,
@@ -1001,12 +1084,14 @@ const getFeatures = (instance: Instance) => {
      * @see PATCH /api/v1/accounts/update_credentials
      */
     profileFields: any([
+      v.software === DITTO,
+      v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
+      v.software === MITRA,
       v.software === PLEROMA,
       v.software === TAKAHE && gte(v.version, '0.7.0'),
-      v.software === MITRA,
-      v.software === GOTOSOCIAL,
     ]),
 
     /**
@@ -1026,10 +1111,13 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
+      v.software === MITRA,
       v.software === PLEROMA,
       v.software === TAKAHE,
       v.software === TOKI,
+      v.software === WORDPRESS,
     ]),
 
     /**
@@ -1037,6 +1125,7 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/statuses
      */
     quotePosts: any([
+      v.software === ICESHRIMP_NET,
       v.software === FRIENDICA && gte(v.version, '2023.3.0'),
       v.software === PLEROMA && [REBASED, AKKOMA].includes(v.build!) && gte(v.version, '2.5.0'),
       instance.api_versions['quote_posting.pleroma.pl-api'] >= 1,
@@ -1048,6 +1137,7 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/statuses/:id/reblog
      */
     reblogVisibility: any([
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
       v.software === PLEROMA,
     ]),
@@ -1063,7 +1153,9 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/accounts/:id/remove_from_followers
      */
     removeFromFollowers: any([
+      v.software === ICESHRIMP_NET,
       v.software === MASTODON,
+      v.software === MITRA && gte(v.version, '2.17.0'),
       v.software === PLEROMA && gte(v.version, '2.5.0'),
       v.software === PLEROMA && v.build === AKKOMA,
     ]),
@@ -1121,10 +1213,11 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v2/search
      */
     searchFromAccount: any([
+      v.software === DITTO,
+      v.software === GOTOSOCIAL,
       v.software === ICESHRIMP,
       v.software === MASTODON,
       v.software === PLEROMA,
-      v.software === GOTOSOCIAL,
     ]),
 
     /**
@@ -1138,11 +1231,13 @@ const getFeatures = (instance: Instance) => {
     /**
      * @see POST /api/v1/user/password_change
      * @see POST /api/v1/settings/change_password
+     * @see POST /api/v1.1/accounts/change-password
      * @see POST /api/pleroma/change_password
      */
     changePassword: any([
       v.software === GOTOSOCIAL,
       v.software === MITRA,
+      v.software === PIXELFED,
       v.software === PLEROMA,
     ]),
 
@@ -1180,6 +1275,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA,
       v.software === ICESHRIMP,
       v.software === MASTODON,
+      v.software === PIXELFED,
       instance.api_versions['v2_suggestions.pleroma.pl-api'] >= 1,
     ]),
 
@@ -1228,7 +1324,14 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA && gte(v.version, '2022.12.0'),
       v.software === ICESHRIMP,
       v.software === MASTODON,
+      v.software === PIXELFED,
     ]),
+
+    /**
+     * Display trends from a given time range.
+     * @see GET /api/pixelfed/v2/discover/posts/trending
+     */
+    trendingStatusesRange: v.software === PIXELFED,
 
     /**
      * Can display trending hashtags.
@@ -1240,6 +1343,7 @@ const getFeatures = (instance: Instance) => {
       v.software === FRIENDICA && gte(v.version, '2022.12.0'),
       v.software === ICESHRIMP,
       v.software === MASTODON,
+      v.software === PIXELFED,
     ]),
 
     /**
@@ -1247,20 +1351,6 @@ const getFeatures = (instance: Instance) => {
      * @see POST /api/v1/lists/:id/accounts
      */
     unrestrictedLists: v.software === PLEROMA,
-
-    /**
-     * Ability to post statuses only to accounts with mutual relationship.
-     * @see POST /api/v1/statuses
-     */
-    visibilityMutualsOnly: v.software === GOTOSOCIAL,
-
-    /**
-     * Ability to post statuses that don't federate.
-     * @see POST /api/v1/statuses
-     */
-    visibilityLocalOnly: federation && any([
-      v.software === PLEROMA,
-    ]),
   };
 };
 
@@ -1281,7 +1371,7 @@ interface Backend {
 
 /** Get information about the software from its version string */
 const parseVersion = (version: string): Backend => {
-  const regex = /^([\w+.-]*)(?: \(compatible; ([\w]*) (.*)\))?$/;
+  const regex = /^([\w+.-]*)(?: \(compatible; ([\w.]*) (.*)\))?$/;
   const match = regex.exec(version.replace('/', ' '));
 
   const semverString = match && (match[3] || match[1]);
@@ -1314,16 +1404,19 @@ export {
   FRIENDICA,
   GOTOSOCIAL,
   ICESHRIMP,
+  ICESHRIMP_NET,
   MASTODON,
   MITRA,
   PIXELFED,
   PLEROMA,
   TAKAHE,
   TOKI,
+  WORDPRESS,
   AKKOMA,
   GLITCH,
-  REBASED,
+  HOMETOWN,
   PL,
+  REBASED,
   UNRELEASED,
   type Features,
   type Backend as BackendVersion,

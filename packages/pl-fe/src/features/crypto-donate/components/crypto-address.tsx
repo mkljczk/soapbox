@@ -5,12 +5,11 @@ import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
+import { CryptoIcon } from 'pl-fe/features/ui/util/async-components';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import { getExplorerUrl } from '../utils/block-explorer';
 import { getTitle } from '../utils/coin-db';
-
-import CryptoIcon from './crypto-icon';
 
 interface ICryptoAddress {
   address: string;

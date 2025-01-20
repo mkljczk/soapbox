@@ -16,6 +16,9 @@ const chatSchema = v.object({
   updated_at: datetimeSchema,
 });
 
+/**
+ * @category Entity types
+ */
 type Chat = v.InferOutput<typeof chatSchema>;
 
 export { chatSchema, type Chat };

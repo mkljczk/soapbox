@@ -121,56 +121,51 @@ const checkFiltered = (index: string, filters: Array<Filter>) =>
 
 type APIStatus = { id: string; username?: string };
 
-const makeGetStatus = () => createSelector(
-  [
-    (state: RootState, { id }: APIStatus) => state.statuses[id],
-    (state: RootState, { id }: APIStatus) => state.statuses[state.statuses[id]?.reblog_id || ''] || null,
-    (state: RootState, { id }: APIStatus) => state.statuses[state.statuses[id]?.quote_id || ''] || null,
-    (state: RootState, { id }: APIStatus) => {
-      const group = state.statuses[id]?.group_id;
-      if (group) return state.entities[Entities.GROUPS]?.store[group] as Group;
-      return undefined;
-    },
-    (state: RootState, { id }: APIStatus) => state.polls[id] || null,
-    (_state: RootState, { username }: APIStatus) => username,
-    getFilters,
-    (state: RootState) => state.me,
-    (state: RootState) => state.auth.client.features,
-  ],
+const makeGetStatus = () => {
+  return createSelector(
+    [
+      (state: RootState, { id }: APIStatus) => state.statuses[id],
+      (state: RootState, { id }: APIStatus) => state.statuses[state.statuses[id]?.reblog_id || ''] || null,
+      (state: RootState, { id }: APIStatus) => state.statuses[state.statuses[id]?.quote_id || ''] || null,
+      (state: RootState, { id }: APIStatus) => {
+        const group = state.statuses[id]?.group_id;
+        if (group) return state.entities[Entities.GROUPS]?.store[group] as Group;
+        return undefined;
+      },
+      (state: RootState, { id }: APIStatus) => state.polls[id] || null,
+      (_state: RootState, { username }: APIStatus) => username,
+      getFilters,
+      (state: RootState) => state.me,
+      (state: RootState) => state.auth.client.features,
+    ],
 
-  (statusBase, statusReblog, statusQuote, statusGroup, poll, username, filters, me, features) => {
+    (statusBase, statusReblog, statusQuote, statusGroup, poll, username, filters, me, features) => {
     // const locale = getLocale('en');
 
-    if (!statusBase) return null;
-    const { account } = statusBase;
-    const accountUsername = account.acct;
+      if (!statusBase) return null;
+      const { account } = statusBase;
+      const accountUsername = account.acct;
 
-    // Must be owner of status if username exists.
-    if (accountUsername !== username && username !== undefined) {
-      return null;
-    }
+      // Must be owner of status if username exists.
+      if (accountUsername !== username && username !== undefined) {
+        return null;
+      }
 
-    const filtered = features.filtersV2
-      ? statusBase.filtered
-      : features.filters && account.id !== me && checkFiltered(statusReblog?.search_index || statusBase.search_index || '', filters) || [];
+      const filtered = features.filtersV2
+        ? statusBase.filtered
+        : features.filters && account.id !== me && checkFiltered(statusReblog?.search_index || statusBase.search_index || '', filters) || [];
 
-    return {
-      ...statusBase,
-      reblog: statusReblog || null,
-      quote: statusQuote || null,
-      group: statusGroup || null,
-      poll,
-      filtered,
-    };
-    // if (map.currentLanguage === null && map.content_map?.size) {
-    //   let currentLanguage: string | null = null;
-    //   if (map.content_map.has(locale)) currentLanguage = locale;
-    //   else if (map.language && map.content_map.has(map.language)) currentLanguage = map.language;
-    //   else currentLanguage = map.content_map.keySeq().first();
-    //   map.set('currentLanguage', currentLanguage);
-    // }
-  },
-);
+      return {
+        ...statusBase,
+        reblog: statusReblog || null,
+        quote: statusQuote || null,
+        group: statusGroup || null,
+        poll,
+        filtered,
+      };
+    },
+  );
+};
 
 type SelectedStatus = Exclude<ReturnType<ReturnType<typeof makeGetStatus>>, null>;
 

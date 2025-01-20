@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useMemo } from 'react';
 
 import Status, { IStatus } from 'pl-fe/components/status';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
@@ -16,13 +16,13 @@ interface IStatusContainer extends Omit<IStatus, 'status'> {
  * @deprecated Use the Status component directly.
  */
 const StatusContainer: React.FC<IStatusContainer> = (props) => {
-  const { id, contextType, ...rest } = props;
+  const { id, contextType } = props;
 
-  const getStatus = useCallback(makeGetStatus(), []);
+  const getStatus = useMemo(makeGetStatus, []);
   const status = useAppSelector(state => getStatus(state, { id, contextType }));
 
   if (status) {
-    return <Status status={status} {...rest} />;
+    return <Status {...props} status={status} />;
   } else {
     return null;
   }

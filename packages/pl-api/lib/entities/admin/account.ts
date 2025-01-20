@@ -6,7 +6,10 @@ import { datetimeSchema, filteredArray } from '../utils';
 
 import { adminIpSchema } from './ip';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Admin_Account/} */
+/**
+ * @category Admin schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Admin_Account/}
+ */
 const adminAccountSchema = v.pipe(
   v.any(),
   v.transform((account: any) => {
@@ -65,6 +68,9 @@ const adminAccountSchema = v.pipe(
   }),
 );
 
+/**
+ * @category Admin entity types
+ */
 type AdminAccount = v.InferOutput<typeof adminAccountSchema>;
 
 export {

@@ -1,4 +1,3 @@
-import sample from 'lodash/sample';
 import { create } from 'mutative';
 
 import { ACCOUNT_BLOCK_SUCCESS, ACCOUNT_MUTE_SUCCESS, type AccountsAction } from '../actions/accounts';
@@ -15,14 +14,12 @@ import {
   TIMELINE_DEQUEUE,
   MAX_QUEUED_ITEMS,
   TIMELINE_SCROLL_TOP,
-  TIMELINE_INSERT,
   type TimelineAction,
 } from '../actions/timelines';
 
-import type { PaginatedResponse, Status as BaseStatus, Relationship } from 'pl-api';
+import type { PaginatedResponse, Status as BaseStatus, Relationship, CreateStatusParams } from 'pl-api';
 import type { ImportPosition } from 'pl-fe/entity-store/types';
 import type { Status } from 'pl-fe/normalizers/status';
-import type { AnyAction } from 'redux';
 
 const TRUNCATE_LIMIT = 40;
 const TRUNCATE_SIZE = 20;
@@ -159,14 +156,14 @@ const updateTimelineQueue = (state: State, timelineId: string, statusId: string)
   });
 };
 
-const shouldDelete = (timelineId: string, excludeAccount?: string) => {
+const shouldDelete = (timelineId: string, excludeAccount: string | null) => {
   if (!excludeAccount) return true;
   if (timelineId === `account:${excludeAccount}`) return false;
   if (timelineId.startsWith(`account:${excludeAccount}:`)) return false;
   return true;
 };
 
-const deleteStatus = (state: State, statusId: string, references: Array<string>, excludeAccount?: string) => {
+const deleteStatus = (state: State, statusId: string, references: Array<[string]> | Array<[string, string]>, excludeAccount: string | null) => {
   for (const timelineId in state) {
     if (shouldDelete(timelineId, excludeAccount)) {
       state[timelineId].items = state[timelineId].items.filter(id => id !== statusId);
@@ -176,7 +173,7 @@ const deleteStatus = (state: State, statusId: string, references: Array<string>,
 
   // Remove reblogs of deleted status
   references.forEach(ref => {
-    deleteStatus(state, ref, [], excludeAccount);
+    deleteStatus(state, ref[0], [], excludeAccount);
   });
 };
 
@@ -195,10 +192,10 @@ const isReblogOf = (reblog: Pick<Status, 'reblog_id'>, status: Pick<Status, 'id'
 const buildReferencesTo = (
   statuses: Record<string, Pick<Status, 'id' | 'account' | 'reblog_id'>>,
   status: Pick<Status, 'id'>,
-) => (
+): Array<[string]> => (
   Object.values(statuses)
     .filter(reblog => isReblogOf(reblog, status))
-    .map(status => status.id)
+    .map(status => [status.id])
 );
 
 // const filterTimeline = (state: State, timelineId: string, relationship: APIEntity, statuses: ImmutableList<ImmutableMap<string, any>>) =>
@@ -238,10 +235,10 @@ const timelineDequeue = (state: State, timelineId: string) => {
 //     timeline.set('items', addStatusId(items, null));
 // }));
 
-const getTimelinesForStatus = (status: Pick<BaseStatus, 'visibility' | 'group'>) => {
+const getTimelinesForStatus = (status: Pick<BaseStatus, 'visibility' | 'group'> | Pick<CreateStatusParams, 'visibility'>) => {
   switch (status.visibility) {
     case 'group':
-      return [`group:${status.group?.id}`];
+      return [`group:${'group' in status && status.group?.id}`];
     case 'direct':
       return ['direct'];
     case 'public':
@@ -260,7 +257,7 @@ const replaceId = (ids: Array<string>, oldId: string, newId: string) => {
   }
 };
 
-const importPendingStatus = (state: State, params: BaseStatus, idempotencyKey: string) => {
+const importPendingStatus = (state: State, params: CreateStatusParams, idempotencyKey: string) => {
   const statusId = `末pending-${idempotencyKey}`;
 
   const timelineIds = getTimelinesForStatus(params);
@@ -295,14 +292,14 @@ const handleExpandFail = (state: State, timelineId: string) => {
   setFailed(state, timelineId, true);
 };
 
-const timelines = (state: State = initialState, action: AccountsAction | AnyAction | InteractionsAction | StatusesAction | TimelineAction): State => {
+const timelines = (state: State = initialState, action: AccountsAction | InteractionsAction | StatusesAction | TimelineAction): State => {
   switch (action.type) {
     case STATUS_CREATE_REQUEST:
       if (action.params.scheduled_at) return state;
       return create(state, (draft) => importPendingStatus(draft, action.params, action.idempotencyKey));
     case STATUS_CREATE_SUCCESS:
-      if (action.status.scheduled_at || action.editing) return state;
-      return create(state, (draft) => importStatus(draft, action.status, action.idempotencyKey));
+      if ('params' in action.status || action.editing) return state;
+      return create(state, (draft) => importStatus(draft, action.status as BaseStatus, action.idempotencyKey));
     case TIMELINE_EXPAND_REQUEST:
       return create(state, (draft) => setLoading(draft, action.timeline, true));
     case TIMELINE_EXPAND_FAIL:
@@ -334,21 +331,6 @@ const timelines = (state: State = initialState, action: AccountsAction | AnyActi
     //   return filterTimeline(state, 'home', action.relationship, action.statuses);
     case TIMELINE_SCROLL_TOP:
       return create(state, (draft) => updateTop(state, action.timeline, action.top));
-    case TIMELINE_INSERT:
-      return create(state, (draft) => updateTimeline(draft, action.timeline, (timeline) => {
-        let oldIdsArray = timeline.items;
-        const existingSuggestionId = oldIdsArray.find(key => key.includes('末suggestions'));
-
-        if (existingSuggestionId) {
-          oldIdsArray = oldIdsArray.slice(1);
-        }
-        const positionInTimeline = sample([5, 6, 7, 8, 9]) as number;
-        if (timeline.items.at(-1)) {
-          oldIdsArray.splice(positionInTimeline, 0, `末suggestions-${timeline.items.at(-1)}`);
-        }
-
-        timeline.items = oldIdsArray;
-      }));
     case PIN_SUCCESS:
       return create(state, (draft) => updateTimeline(draft, `account:${action.accountId}:with_replies:pinned`, (timeline) => {
         timeline.items = [...new Set([action.statusId, ...timeline.items])];

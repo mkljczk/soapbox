@@ -1,6 +1,6 @@
+import { Link } from '@tanstack/react-router';
 import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link } from '@tanstack/react-router';
 
 import Video from 'pl-fe/features/video';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';

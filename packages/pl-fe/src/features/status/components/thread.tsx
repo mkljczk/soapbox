@@ -1,13 +1,12 @@
 import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { type ComposeReplyAction, mentionCompose, replyCompose } from 'pl-fe/actions/compose';
 import { reblog, toggleFavourite, unreblog } from 'pl-fe/actions/interactions';
-import { toggleStatusMediaHidden } from 'pl-fe/actions/statuses';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import StatusActionBar from 'pl-fe/components/status-action-bar';
 import Tombstone from 'pl-fe/components/tombstone';
@@ -20,6 +19,7 @@ import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { RootState } from 'pl-fe/store';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { textForScreenReader } from 'pl-fe/utils/status';
 
 import DetailedStatus from './detailed-status';
@@ -67,7 +67,7 @@ const makeGetDescendantsIds = () => createSelector([
     }
 
     if (replies) {
-      replies.reverse().forEach((reply: string) => {
+      replies.toReversed().forEach((reply: string) => {
         ids.unshift(reply);
       });
     }
@@ -113,6 +113,7 @@ const Thread: React.FC<IThread> = ({
   const history = useHistory();
   const intl = useIntl();
 
+  const { toggleStatusMediaHidden } = useStatusMetaStore();
   const { openModal } = useModalsStore();
   const { settings } = useSettingsStore();
 
@@ -142,24 +143,22 @@ const Thread: React.FC<IThread> = ({
   const handleModalReblog = (status: Pick<SelectedStatus, 'id'>) => dispatch(reblog(status));
 
   const handleReblogClick = (status: SelectedStatus, e?: React.MouseEvent) => {
-    dispatch((_, getState) => {
-      const boostModal = settings.boostModal;
-      if (status.reblogged) {
-        dispatch(unreblog(status));
+    const boostModal = settings.boostModal;
+    if (status.reblogged) {
+      dispatch(unreblog(status));
+    } else {
+      if ((e && e.shiftKey) || !boostModal) {
+        handleModalReblog(status);
       } else {
-        if ((e && e.shiftKey) || !boostModal) {
-          handleModalReblog(status);
-        } else {
-          openModal('BOOST', { statusId: status.id, onReblog: handleModalReblog });
-        }
+        openModal('BOOST', { statusId: status.id, onReblog: handleModalReblog });
       }
-    });
+    }
   };
 
   const handleMentionClick = (account: Pick<Account, 'acct'>) => dispatch(mentionCompose(account));
 
   const handleHotkeyOpenMedia = (e?: KeyboardEvent) => {
-    const media = status?.media_attachments;
+    const media = status.media_attachments;
 
     e?.preventDefault();
 
@@ -175,43 +174,43 @@ const Thread: React.FC<IThread> = ({
   };
 
   const handleHotkeyMoveUp = () => {
-    handleMoveUp(status!.id);
+    handleMoveUp(status.id);
   };
 
   const handleHotkeyMoveDown = () => {
-    handleMoveDown(status!.id);
+    handleMoveDown(status.id);
   };
 
   const handleHotkeyReply = (e?: KeyboardEvent) => {
     e?.preventDefault();
-    handleReplyClick(status!);
+    handleReplyClick(status);
   };
 
   const handleHotkeyFavourite = () => {
-    handleFavouriteClick(status!);
+    handleFavouriteClick(status);
   };
 
   const handleHotkeyBoost = () => {
-    handleReblogClick(status!);
+    handleReblogClick(status);
   };
 
   const handleHotkeyMention = (e?: KeyboardEvent) => {
     e?.preventDefault();
-    const { account } = status!;
+    const { account } = status;
     if (!account || typeof account !== 'object') return;
     handleMentionClick(account);
   };
 
   const handleHotkeyOpenProfile = () => {
-    history.push(`/@${status!.account.acct}`);
+    history.push(`/@${status.account.acct}`);
   };
 
   const handleHotkeyToggleSensitive = () => {
-    dispatch(toggleStatusMediaHidden(status));
+    toggleStatusMediaHidden(status.id);
   };
 
   const handleMoveUp = (id: string) => {
-    if (id === status?.id) {
+    if (id === status.id) {
       _selectChild(ancestorsIds.length - 1);
     } else {
       let index = ancestorsIds.indexOf(id);
@@ -226,7 +225,7 @@ const Thread: React.FC<IThread> = ({
   };
 
   const handleMoveDown = (id: string) => {
-    if (id === status?.id) {
+    if (id === status.id) {
       _selectChild(ancestorsIds.length + 1);
     } else {
       let index = ancestorsIds.indexOf(id);
@@ -269,7 +268,7 @@ const Thread: React.FC<IThread> = ({
     <ThreadStatus
       key={id}
       id={id}
-      focusedStatusId={status!.id}
+      focusedStatusId={status.id}
       onMoveUp={handleMoveUp}
       onMoveDown={handleMoveDown}
       contextType='thread'
@@ -303,13 +302,12 @@ const Thread: React.FC<IThread> = ({
     virtualizer.current?.scrollToIndex(ancestorsIds.length);
   }, [status.id, ancestorsIds.length]);
 
-  const handleOpenCompareHistoryModal = (status: Pick<Status, 'id'>) => {
+  const handleOpenCompareHistoryModal = useCallback((status: Pick<Status, 'id'>) => {
     openModal('COMPARE_HISTORY', {
       statusId: status.id,
     });
-  };
+  }, [status.id]);
 
-  const hasAncestors = ancestorsIds.length > 0;
   const hasDescendants = descendantsIds.length > 0;
 
   type HotkeyHandlers = { [key: string]: (keyEvent?: KeyboardEvent) => void };
@@ -329,31 +327,34 @@ const Thread: React.FC<IThread> = ({
 
   const focusedStatus = (
     <div className={clsx({ 'pb-4': hasDescendants })} key={status.id}>
-      <HotKeys handlers={handlers}>
-        <div
-          ref={statusRef}
-          className='focusable relative'
-          tabIndex={0}
-          // FIXME: no "reblogged by" text is added for the screen reader
-          aria-label={textForScreenReader(intl, status)}
-        >
+      {status.deleted ? (
+        <Tombstone id={status.id} onMoveUp={handleMoveUp} onMoveDown={handleMoveDown} deleted />
+      ) : (
+        <HotKeys handlers={handlers}>
+          <div
+            ref={statusRef}
+            className='focusable relative'
+            tabIndex={0}
+            // FIXME: no "reblogged by" text is added for the screen reader
+            aria-label={textForScreenReader(intl, status)}
+          >
 
-          <DetailedStatus
-            status={status}
-            withMedia={withMedia}
-            onOpenCompareHistoryModal={handleOpenCompareHistoryModal}
-          />
+            <DetailedStatus
+              status={status}
+              onOpenCompareHistoryModal={handleOpenCompareHistoryModal}
+            />
 
-          <hr className='-mx-4 mb-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />
+            <hr className='-mx-4 mb-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />
 
-          <StatusActionBar
-            status={status}
-            expandable={isModal}
-            space='lg'
-            withLabels
-          />
-        </div>
-      </HotKeys>
+            <StatusActionBar
+              status={status}
+              expandable={isModal}
+              space='lg'
+              withLabels
+            />
+          </div>
+        </HotKeys>
+      )}
 
       {hasDescendants && (
         <hr className='-mx-4 mt-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />
@@ -368,15 +369,10 @@ const Thread: React.FC<IThread> = ({
     children.push(<div key='padding' className='h-4' />);
   }
 
-  if (hasAncestors) {
-    children.push(...renderChildren(ancestorsIds));
-  }
+  const renderedAncestors = useMemo(() => renderChildren(ancestorsIds), [ancestorsIds]);
+  const renderedDescendants = useMemo(() => renderChildren(descendantsIds), [descendantsIds]);
 
-  children.push(focusedStatus);
-
-  if (hasDescendants) {
-    children.push(...renderChildren(descendantsIds));
-  }
+  children.push(...renderedAncestors, focusedStatus, ...renderedDescendants);
 
   return (
     <Stack

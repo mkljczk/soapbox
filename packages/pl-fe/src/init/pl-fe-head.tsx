@@ -1,28 +1,27 @@
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
-import * as v from 'valibot';
 
-import { useLocale } from 'pl-fe/hooks/use-locale';
+import { useLocale, useLocaleDirection } from 'pl-fe/hooks/use-locale';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useTheme } from 'pl-fe/hooks/use-theme';
-import { plFeConfigSchema } from 'pl-fe/normalizers/pl-fe/pl-fe-config';
+import { useThemeCss } from 'pl-fe/hooks/use-theme-css';
 import { startSentry } from 'pl-fe/sentry';
 import { useModalsStore } from 'pl-fe/stores/modals';
-import { generateThemeCss } from 'pl-fe/utils/theme';
 
 const Helmet = React.lazy(() => import('pl-fe/components/helmet'));
 
 /** Injects metadata into site head with Helmet. */
 const PlFeHead = () => {
-  const { locale, direction } = useLocale();
-  const { demo, reduceMotion, underlineLinks, demetricator, systemFont } = useSettings();
+  const locale = useLocale();
+  const direction = useLocaleDirection(locale);
+  const { reduceMotion, underlineLinks, demetricator, systemFont } = useSettings();
   const plFeConfig = usePlFeConfig();
   const theme = useTheme();
 
   const withModals = useModalsStore().modals.length > 0;
 
-  const themeCss = generateThemeCss(demo ? v.parse(plFeConfigSchema, { brandColor: '#d80482' }) : plFeConfig);
+  const themeCss = useThemeCss();
   const dsn = plFeConfig.sentryDsn;
 
   const bodyClass = clsx('h-full bg-white text-base antialiased black:bg-black dark:bg-gray-800', {

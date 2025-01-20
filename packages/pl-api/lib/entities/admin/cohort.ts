@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 import { datetimeSchema } from '../utils';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Admin_Cohort/} */
+/**
+ * @category Admin schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Admin_Cohort/}
+ */
 const adminCohortSchema = v.object({
   period: datetimeSchema,
   frequency: v.picklist(['day', 'month']),
@@ -13,6 +16,9 @@ const adminCohortSchema = v.object({
   })),
 });
 
+/**
+ * @category Admin entity types
+ */
 type AdminCohort = v.InferOutput<typeof adminCohortSchema>;
 
 export {

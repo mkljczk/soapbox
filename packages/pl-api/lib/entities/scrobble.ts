@@ -24,6 +24,9 @@ const scrobbleSchema = v.pipe(
   }),
 );
 
+/**
+ * @category Entity types
+ */
 type Scrobble = v.InferOutput<typeof scrobbleSchema>;
 
 export { scrobbleSchema, type Scrobble };

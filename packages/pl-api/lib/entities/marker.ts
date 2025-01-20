@@ -20,6 +20,9 @@ const markerSchema = v.pipe(
   }),
 );
 
+/**
+ * @category Entity types
+ */
 type Marker = v.InferOutput<typeof markerSchema>;
 
 /**
@@ -27,6 +30,9 @@ type Marker = v.InferOutput<typeof markerSchema>;
  */
 const markersSchema = v.record(v.string(), markerSchema);
 
+/**
+ * @category Entity types
+ */
 type Markers = v.InferOutput<typeof markersSchema>;
 
 export {

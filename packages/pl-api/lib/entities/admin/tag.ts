@@ -2,7 +2,10 @@ import * as v from 'valibot';
 
 import { tagSchema } from '../tag';
 
-/** @see {@link https://docs.joinmastodon.org/entities/Tag/#admin} */
+/**
+ * @category Admin schemas
+ * @see {@link https://docs.joinmastodon.org/entities/Tag/#admin}
+ */
 const adminTagSchema = v.object({
   ...tagSchema.entries,
   id: v.string(),
@@ -11,6 +14,9 @@ const adminTagSchema = v.object({
   requires_review: v.boolean(),
 });
 
+/**
+ * @category Admin entity types
+ */
 type AdminTag = v.InferOutput<typeof adminTagSchema>;
 
 export {

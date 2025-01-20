@@ -1,6 +1,6 @@
+import { Link } from '@tanstack/react-router';
 import React, { useRef } from 'react';
 import { defineMessages, FormattedDate, FormattedMessage, useIntl } from 'react-intl';
-import { Link } from '@tanstack/react-router';
 
 import Account from 'pl-fe/components/account';
 import StatusContent from 'pl-fe/components/status-content';
@@ -25,14 +25,12 @@ const messages = defineMessages({
 
 interface IDetailedStatus {
   status: SelectedStatus;
-  withMedia?: boolean;
   onOpenCompareHistoryModal: (status: Pick<SelectedStatus, 'id'>) => void;
 }
 
 const DetailedStatus: React.FC<IDetailedStatus> = ({
   status,
   onOpenCompareHistoryModal,
-  withMedia = true,
 }) => {
   const intl = useIntl();
 
@@ -153,7 +151,7 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
               </Text>
             </span>
 
-            <StatusTypeIcon status={actualStatus} />
+            <StatusTypeIcon visibility={actualStatus.visibility} />
 
             <StatusLanguagePicker status={actualStatus} showLabel />
           </HStack>

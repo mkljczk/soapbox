@@ -119,7 +119,9 @@ export const WhoToFollowPanel = lazy(() => import('pl-fe/features/ui/components/
 
 export const Audio = lazy(() => import('pl-fe/features/audio'));
 export const ChatWidget = lazy(() => import('pl-fe/features/chats/components/chat-widget/chat-widget'));
+export const ComposeForm = lazy(() => import('pl-fe/features/compose/components/compose-form'));
 export const CryptoAddress = lazy(() => import('pl-fe/features/crypto-donate/components/crypto-address'));
+export const CryptoIcon = lazy(() => import('pl-fe/features/crypto-donate/components/crypto-icon'));
 export const DatePicker = lazy(() => import('pl-fe/features/birthdays/date-picker'));
 export const EmojiPicker = lazy(() => import('pl-fe/features/emoji/components/emoji-picker'));
 export const EventHeader = lazy(() => import('pl-fe/features/event/components/event-header'));

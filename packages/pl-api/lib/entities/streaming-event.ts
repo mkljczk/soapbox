@@ -25,6 +25,9 @@ const followRelationshipUpdateSchema = v.object({
   }),
 });
 
+/**
+ * @category Entity types
+ */
 type FollowRelationshipUpdate = v.InferOutput<typeof followRelationshipUpdateSchema>;
 
 const baseStreamingEventSchema = v.object({
@@ -130,6 +133,9 @@ const streamingEventSchema: v.BaseSchema<any, StreamingEvent, v.BaseIssue<unknow
   ]),
 ) as any;
 
+/**
+ * @category Entity types
+ */
 type StreamingEvent = v.InferOutput<
 | typeof statusStreamingEventSchema
 | typeof stringStreamingEventSchema

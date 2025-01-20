@@ -7,14 +7,16 @@ import AutosuggestAccountInput from 'pl-fe/components/autosuggest-account-input'
 import SvgIcon from 'pl-fe/components/ui/svg-icon';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { selectAccount } from 'pl-fe/selectors';
-import { AppDispatch, RootState } from 'pl-fe/store';
+
+import type { AppDispatch, RootState } from 'pl-fe/store';
+import type { History } from 'pl-fe/types/history';
 
 const messages = defineMessages({
   placeholder: { id: 'search.placeholder', defaultMessage: 'Search' },
   action: { id: 'search.action', defaultMessage: 'Search for “{query}”' },
 });
 
-const redirectToAccount = (accountId: string, routerHistory: any) =>
+const redirectToAccount = (accountId: string, routerHistory: History) =>
   (_dispatch: AppDispatch, getState: () => RootState) => {
     const acct = selectAccount(getState(), accountId)!.acct;
 
@@ -23,7 +25,7 @@ const redirectToAccount = (accountId: string, routerHistory: any) =>
     }
   };
 
-const SearchInput = () => {
+const SearchInput = React.memo(() => {
   const [value, setValue] = useState('');
 
   const dispatch = useAppDispatch();
@@ -76,6 +78,7 @@ const SearchInput = () => {
 
       <div className='relative'>
         <AutosuggestAccountInput
+          id='search'
           placeholder={intl.formatMessage(messages.placeholder)}
           value={value}
           onChange={handleChange}
@@ -107,6 +110,6 @@ const SearchInput = () => {
       </div>
     </div>
   );
-};
+});
 
 export { SearchInput as default };

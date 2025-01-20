@@ -4,7 +4,7 @@ import { MediaGallery } from 'pl-fe/features/ui/util/async-components';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
-import { isMediaVisible } from './statuses/sensitive-content-overlay';
+import { useMediaVisible } from './statuses/sensitive-content-overlay';
 
 import type { MediaAttachment } from 'pl-api';
 import type { Status } from 'pl-fe/normalizers/status';
@@ -21,7 +21,7 @@ const AttachmentThumbs = ({ status, onClick }: IAttachmentThumbs) => {
   const fallback = <div className='media-gallery--compact' />;
   const onOpenMedia = (media: Array<MediaAttachment>, index: number) => openModal('MEDIA', { media, index });
 
-  const visible = isMediaVisible(status, displayMedia);
+  const visible = useMediaVisible(status, displayMedia);
 
   return (
     <div className='relative'>

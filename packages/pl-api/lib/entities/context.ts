@@ -9,8 +9,12 @@ import { statusSchema } from './status';
 const contextSchema = v.object({
   ancestors: v.array(statusSchema),
   descendants: v.array(statusSchema),
+  references: v.fallback(v.array(statusSchema), []),
 });
 
+/**
+ * @category Entity types
+ */
 type Context = v.InferOutput<typeof contextSchema>;
 
 export { contextSchema, type Context };

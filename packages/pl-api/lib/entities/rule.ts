@@ -19,6 +19,9 @@ const ruleSchema = v.pipe(
   baseRuleSchema,
 );
 
+/**
+ * @category Entity types
+ */
 type Rule = v.InferOutput<typeof ruleSchema>;
 
 export { ruleSchema, type Rule };

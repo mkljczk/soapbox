@@ -36,24 +36,15 @@ import {
   STATUS_CREATE_FAIL,
   STATUS_DELETE_REQUEST,
   STATUS_DELETE_FAIL,
-  STATUS_HIDE_MEDIA,
   STATUS_MUTE_SUCCESS,
-  STATUS_REVEAL_MEDIA,
-  STATUS_TRANSLATE_FAIL,
-  STATUS_TRANSLATE_REQUEST,
-  STATUS_TRANSLATE_SUCCESS,
-  STATUS_TRANSLATE_UNDO,
   STATUS_UNFILTER,
   STATUS_UNMUTE_SUCCESS,
-  STATUS_LANGUAGE_CHANGE,
-  STATUS_COLLAPSE_SPOILER,
-  STATUS_EXPAND_SPOILER,
   type StatusesAction,
+  STATUS_DELETE_SUCCESS,
 } from '../actions/statuses';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 
-import type { Status as BaseStatus, Translation } from 'pl-api';
-import type { AnyAction } from 'redux';
+import type { Status as BaseStatus, CreateStatusParams } from 'pl-api';
 
 type State = Record<string, MinifiedStatus>;
 
@@ -91,7 +82,7 @@ const importStatuses = (state: State, statuses: Array<BaseStatus>) =>{
   statuses.forEach(status => importStatus(state, status));
 };
 
-const deleteStatus = (state: State, statusId: string, references: Array<string>) => {
+const deleteStatus = (state: State, statusId: string, references: Array<[string, string]>) => {
   references.forEach(ref => {
     deleteStatus(state, ref[0], []);
   });
@@ -99,28 +90,28 @@ const deleteStatus = (state: State, statusId: string, references: Array<string>)
   delete state[statusId];
 };
 
-const incrementReplyCount = (state: State, { in_reply_to_id, quote }: BaseStatus) => {
+const incrementReplyCount = (state: State, { in_reply_to_id, quote_id }: Pick<BaseStatus | CreateStatusParams, 'in_reply_to_id' | 'quote_id'>) => {
   if (in_reply_to_id && state[in_reply_to_id]) {
     const parent = state[in_reply_to_id];
     parent.replies_count = (typeof parent.replies_count === 'number' ? parent.replies_count : 0) + 1;
   }
 
-  if (quote?.id && state[quote.id]) {
-    const parent = state[quote.id];
+  if (quote_id && state[quote_id]) {
+    const parent = state[quote_id];
     parent.quotes_count = (typeof parent.quotes_count === 'number' ? parent.quotes_count : 0) + 1;
   }
 
   return state;
 };
 
-const decrementReplyCount = (state: State, { in_reply_to_id, quote }: BaseStatus) => {
+const decrementReplyCount = (state: State, { in_reply_to_id, quote_id }: Pick<BaseStatus | CreateStatusParams, 'in_reply_to_id' | 'quote_id'>) => {
   if (in_reply_to_id && state[in_reply_to_id]) {
     const parent = state[in_reply_to_id];
     parent.replies_count = Math.max(0, parent.replies_count - 1);
   }
 
-  if (quote?.id) {
-    const parent = state[quote.id];
+  if (quote_id) {
+    const parent = state[quote_id];
     parent.quotes_count = Math.max(0, parent.quotes_count - 1);
   }
 
@@ -163,21 +154,9 @@ const simulateDislike = (
   state[statusId] = updatedStatus;
 };
 
-/** Import translation from translation service into the store. */
-const importTranslation = (state: State, statusId: string, translation: Translation) => {
-  if (!state[statusId]) return;
-  state[statusId].translation = translation;
-  state[statusId].translating = false;
-};
-
-/** Delete translation from the store. */
-const deleteTranslation = (state: State, statusId: string) => {
-  state[statusId].translation = null;
-};
-
 const initialState: State = {};
 
-const statuses = (state = initialState, action: AnyAction | EmojiReactsAction | EventsAction | ImporterAction | InteractionsAction | StatusesAction | TimelineAction): State => {
+const statuses = (state = initialState, action: EmojiReactsAction | EventsAction | ImporterAction | InteractionsAction | StatusesAction | TimelineAction): State => {
   switch (action.type) {
     case STATUS_IMPORT:
       return create(state, (draft) => importStatus(draft, action.status));
@@ -268,78 +247,15 @@ const statuses = (state = initialState, action: AnyAction | EmojiReactsAction | 
           status.muted = false;
         }
       });
-    case STATUS_REVEAL_MEDIA:
-      return create(state, (draft) => {
-        action.statusIds.forEach((id: string) => {
-          const status = draft[id];
-          if (status) {
-            status.hidden = false;
-          }
-        });
-      });
-    case STATUS_HIDE_MEDIA:
-      return create(state, (draft) => {
-        action.statusIds.forEach((id: string) => {
-          const status = draft[id];
-          if (status) {
-            status.hidden = true;
-          }
-        });
-      });
-    case STATUS_EXPAND_SPOILER:
-      return create(state, (draft) => {
-        action.statusIds.forEach((id: string) => {
-          const status = draft[id];
-          if (status) {
-            status.expanded = true;
-          }
-        });
-      });
-    case STATUS_COLLAPSE_SPOILER:
-      return create(state, (draft) => {
-        action.statusIds.forEach((id: string) => {
-          const status = draft[id];
-          if (status) {
-            status.expanded = false;
-            status.translation = false;
-          }
-        });
-      });
     case STATUS_DELETE_REQUEST:
       return create(state, (draft) => decrementReplyCount(draft, action.params));
     case STATUS_DELETE_FAIL:
       return create(state, (draft) => incrementReplyCount(draft, action.params));
-    case STATUS_TRANSLATE_REQUEST:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.translating = true;
-        }
-      });
-    case STATUS_TRANSLATE_SUCCESS:
-      return create(state, (draft) => importTranslation(draft, action.statusId, action.translation));
-    case STATUS_TRANSLATE_FAIL:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.translating = false;
-          status.translation = false;
-        }
-      });
-    case STATUS_TRANSLATE_UNDO:
-      return create(state, (draft) => deleteTranslation(draft, action.statusId));
     case STATUS_UNFILTER:
       return create(state, (draft) => {
         const status = draft[action.statusId];
         if (status) {
           status.showFiltered = false;
-        }
-      });
-    case STATUS_LANGUAGE_CHANGE:
-      return create(state, (draft) => {
-        const status = draft[action.statusId];
-        if (status) {
-          status.currentLanguage = action.language;
         }
       });
     case TIMELINE_DELETE:
@@ -364,6 +280,13 @@ const statuses = (state = initialState, action: AnyAction | EmojiReactsAction | 
         const status = draft[action.statusId];
         if (status?.event) {
           status.event.join_state = action.previousState;
+        }
+      });
+    case STATUS_DELETE_SUCCESS:
+      return create(state, (draft) => {
+        const status = draft[action.statusId];
+        if (status) {
+          status.deleted = true;
         }
       });
     default:

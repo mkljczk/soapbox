@@ -23,7 +23,8 @@ import { ME_FETCH_SKIP, type MeAction } from '../actions/me';
 
 import type { PlfeResponse } from 'pl-fe/api';
 import type { Account as AccountEntity } from 'pl-fe/normalizers/account';
-import type { AnyAction } from 'redux';
+
+type Action = AuthAction | MeAction | PreloadAction;
 
 const backendUrl = (isURL(BuildConfig.BACKEND_URL) ? BuildConfig.BACKEND_URL : '');
 
@@ -296,7 +297,7 @@ const updateState = (state: State, updater: (state: Draft<State>) => void, clien
   return { ...newState, client: newClient };
 };
 
-const reducer = (state: State, action: AnyAction | AuthAction | MeAction | PreloadAction): State => {
+const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case AUTH_APP_CREATED:
       return updateState(state, (draft) => {
@@ -304,7 +305,7 @@ const reducer = (state: State, action: AnyAction | AuthAction | MeAction | Prelo
       });
     case AUTH_APP_AUTHORIZED:
       return updateState(state, (draft) => {
-        draft.app = ({ ...draft.app, ...action.token });
+        if (draft.app) draft.app = ({ ...draft.app, ...action.token });
       });
     case AUTH_LOGGED_IN:
       return updateState(state, (draft) => {
@@ -328,17 +329,20 @@ const reducer = (state: State, action: AnyAction | AuthAction | MeAction | Prelo
       });
     case VERIFY_CREDENTIALS_FAIL:
       return updateState(state, (draft) => {
-        deleteForbiddenToken(draft, action.error, action.token);
+        deleteForbiddenToken(draft, action.error as any, action.token);
       });
     case SWITCH_ACCOUNT:
       return updateState(state, (draft) => {
         draft.me = action.account.url;
       }, () => {
+        const accessToken = state.users[action.account.url]?.access_token;
+
         if (state.client.baseURL === parseBaseURL(action.account.url)) {
-          state.client.accessToken = action.account.access_token;
+          state.client.accessToken = accessToken;
           return state.client;
         }
-        return new PlApiClient(parseBaseURL(action.account.url) || backendUrl, action.account.access_token);
+
+        return new PlApiClient(parseBaseURL(action.account.url) || backendUrl, accessToken);
       });
     case ME_FETCH_SKIP:
       return updateState(state, (draft) => {
@@ -373,7 +377,7 @@ const userSwitched = (oldState: State, state: State) => {
   return stillValid && didChange && !userUpgradedUrl;
 };
 
-const maybeReload = (oldState: State, state: State, action: AnyAction) => {
+const maybeReload = (oldState: State, state: State, action: Action) => {
   const loggedOutStandalone = action.type === AUTH_LOGGED_OUT && action.standalone;
   const switched = userSwitched(oldState, state);
 
@@ -382,18 +386,12 @@ const maybeReload = (oldState: State, state: State, action: AnyAction) => {
   }
 };
 
-const auth = (oldState: State = initialState, action: AnyAction): State => {
+const auth = (oldState: State = initialState, action: Action): State => {
   const state = reducer(oldState, action);
 
   if (state !== oldState) {
     // Persist the state in localStorage
     persistAuth(state);
-
-    // When middle-clicking a profile, we want to save the
-    // user in localStorage, but not update the reducer
-    if (action.background === true) {
-      return oldState;
-    }
 
     // Persist the session
     persistSession(state);

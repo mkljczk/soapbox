@@ -26,7 +26,7 @@ interface InstanceFetchSuccessAction {
 
 interface InstanceFetchFailAction {
   type: typeof INSTANCE_FETCH_FAIL;
-  error: any;
+  error: unknown;
 }
 
 const fetchInstance = () => async (dispatch: AppDispatch, getState: () => RootState) => {

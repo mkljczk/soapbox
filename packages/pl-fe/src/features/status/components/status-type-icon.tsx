@@ -7,7 +7,7 @@ import Text from 'pl-fe/components/ui/text';
 import type { Status } from 'pl-fe/normalizers/status';
 
 interface IStatusTypeIcon {
-  status: Pick<Status, 'visibility'>;
+  visibility: Status['visibility'];
 }
 
 const messages: Record<string, MessageDescriptor> = defineMessages({
@@ -17,6 +17,7 @@ const messages: Record<string, MessageDescriptor> = defineMessages({
   local: { id: 'status.visibility.local', defaultMessage: 'The post is only visible to users on your instance' },
   list: { id: 'status.visibility.list', defaultMessage: 'The post is only visible to the members of a list' },
   list_named: { id: 'status.visibility.list.named', defaultMessage: 'The post is only visible to the members of a {name} list' },
+  subscribers: { id: 'status.visibility.subscribers', defaultMessage: 'The post is only visible to users subscribing the author' },
 });
 
 const STATUS_TYPE_ICONS: Record<string, string> = {
@@ -25,13 +26,14 @@ const STATUS_TYPE_ICONS: Record<string, string> = {
   mutuals_only: require('@tabler/icons/outline/users-group.svg'),
   local: require('@tabler/icons/outline/affiliate.svg'),
   list: require('@tabler/icons/outline/list.svg'),
+  subscribers: require('@tabler/icons/outline/coin.svg'),
 };
 
-const StatusTypeIcon: React.FC<IStatusTypeIcon> = ({ status }) => {
+const StatusTypeIcon: React.FC<IStatusTypeIcon> = React.memo(({ visibility }) => {
   const intl = useIntl();
 
-  const icon = STATUS_TYPE_ICONS[status.visibility];
-  const message = messages[status.visibility];
+  const icon = STATUS_TYPE_ICONS[visibility];
+  const message = messages[visibility];
 
   if (!icon) return null;
 
@@ -42,6 +44,6 @@ const StatusTypeIcon: React.FC<IStatusTypeIcon> = ({ status }) => {
       <Icon title={message ? intl.formatMessage(message) : undefined} className='size-4 text-gray-700 dark:text-gray-600' src={icon} />
     </>
   );
-};
+});
 
 export { StatusTypeIcon as default };

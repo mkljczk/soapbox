@@ -1,10 +1,7 @@
 import { create } from 'mutative';
-import { PLEROMA, type CredentialAccount, type Instance, type MediaAttachment, type Tag } from 'pl-api';
 
-import { INSTANCE_FETCH_SUCCESS, InstanceAction } from 'pl-fe/actions/instance';
-import { isNativeEmoji, type Emoji } from 'pl-fe/features/emoji';
+import { INSTANCE_FETCH_SUCCESS, type InstanceAction } from 'pl-fe/actions/instance';
 import { tagHistory } from 'pl-fe/settings';
-import { hasIntegerMediaIds } from 'pl-fe/utils/status';
 
 import {
   COMPOSE_CHANGE,
@@ -37,7 +34,6 @@ import {
   COMPOSE_LANGUAGE_ADD,
   COMPOSE_LANGUAGE_DELETE,
   COMPOSE_ADD_SUGGESTED_LANGUAGE,
-  COMPOSE_EMOJI_INSERT,
   COMPOSE_UPLOAD_CHANGE_REQUEST,
   COMPOSE_UPLOAD_CHANGE_SUCCESS,
   COMPOSE_UPLOAD_CHANGE_FAIL,
@@ -61,13 +57,16 @@ import {
   COMPOSE_FEDERATED_CHANGE,
   type ComposeAction,
   type ComposeSuggestionSelectAction,
+  COMPOSE_INTERACTION_POLICY_OPTION_CHANGE,
 } from '../actions/compose';
 import { EVENT_COMPOSE_CANCEL, EVENT_FORM_SET, type EventsAction } from '../actions/events';
-import { ME_FETCH_SUCCESS, ME_PATCH_SUCCESS, MeAction } from '../actions/me';
+import { ME_FETCH_SUCCESS, ME_PATCH_SUCCESS, type MeAction } from '../actions/me';
 import { FE_NAME } from '../actions/settings';
 import { TIMELINE_DELETE, type TimelineAction } from '../actions/timelines';
 import { unescapeHTML } from '../utils/html';
 
+import type { InteractionPolicy, CredentialAccount, Instance, MediaAttachment, Tag } from 'pl-api';
+import type { Emoji } from 'pl-fe/features/emoji';
 import type { Language } from 'pl-fe/features/preferences';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';
@@ -129,6 +128,7 @@ interface Compose {
   suggested_language: string | null;
   federated: boolean;
   approvalRequired: boolean;
+  interactionPolicy: InteractionPolicy | null;
 }
 
 const newCompose = (params: Partial<Compose> = {}): Compose => ({
@@ -169,6 +169,7 @@ const newCompose = (params: Partial<Compose> = {}): Compose => ({
   suggested_language: null,
   federated: true,
   approvalRequired: false,
+  interactionPolicy: null,
   ...params,
 });
 
@@ -246,17 +247,6 @@ const updateSuggestionTags = (compose: Compose, token: string, tags: Tag[]) => {
   compose.suggestion_token = token;
 };
 
-const insertEmoji = (compose: Compose, position: number, emojiData: Emoji, needsSpace: boolean) => {
-  const oldText = compose.text;
-  const emojiText = isNativeEmoji(emojiData) ? emojiData.native : emojiData.colons;
-  const emoji = needsSpace ? ' ' + emojiText : emojiText;
-
-  compose.text = `${oldText.slice(0, position)}${emoji} ${oldText.slice(position)}`;
-  compose.focusDate = new Date();
-  compose.caretPosition = position + emoji.length + 1;
-  compose.idempotencyKey = crypto.randomUUID();
-};
-
 const privacyPreference = (a: string, b: string) => {
   const order = ['public', 'unlisted', 'mutuals_only', 'private', 'direct', 'local'];
 
@@ -319,7 +309,9 @@ const updateDefaultContentType = (compose: Compose, instance: Instance) => {
 
 const updateCompose = (state: State, key: string, updater: (compose: Compose) => void) =>
   create(state, draft => {
-    draft[key] = draft[key] || create(draft.default, () => {});
+    draft[key] = draft[key] || create(draft.default, (draft) => {
+      draft.idempotencyKey = crypto.randomUUID();
+    });
     updater(draft[key]);
   });
   // state.update(key, state.get('default')!, updater);
@@ -514,8 +506,6 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
           compose.quote = null;
         }
       });
-    case COMPOSE_EMOJI_INSERT:
-      return updateCompose(state, action.composeId, compose => insertEmoji(compose, action.position, action.emoji, action.needsSpace));
     case COMPOSE_UPLOAD_CHANGE_SUCCESS:
       return updateCompose(state, action.composeId, compose => {
         compose.is_changing_upload = false;
@@ -546,11 +536,7 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
         compose.quote = action.status.quote_id;
         compose.group_id = action.status.group_id;
 
-        if (action.v?.software === PLEROMA && action.withRedraft && hasIntegerMediaIds(action.status)) {
-          compose.media_attachments = [];
-        } else {
-          compose.media_attachments = action.status.media_attachments;
-        }
+        compose.media_attachments = action.status.media_attachments;
 
         if (action.status.spoiler_text.length > 0) {
           compose.spoiler_text = action.status.spoiler_text;
@@ -635,8 +621,8 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
     case ME_FETCH_SUCCESS:
     case ME_PATCH_SUCCESS:
       return updateCompose(state, 'default', compose => importAccount(compose, action.me));
-    // case SETTING_CHANGE:
-    //   return updateCompose(state, 'default', compose => updateSetting(compose, action.path, action.value));
+      // case SETTING_CHANGE:
+      //   return updateCompose(state, 'default', compose => updateSetting(compose, action.path, action.value));
     case COMPOSE_EDITOR_STATE_SET:
       return updateCompose(state, action.composeId, compose => {
         if (!compose.modified_language || compose.modified_language === compose.language) {
@@ -692,6 +678,15 @@ const compose = (state = initialState, action: ComposeAction | EventsAction | In
     case COMPOSE_FEDERATED_CHANGE:
       return updateCompose(state, action.composeId, compose => {
         compose.federated = !compose.federated;
+      });
+    case COMPOSE_INTERACTION_POLICY_OPTION_CHANGE:
+      return updateCompose(state, action.composeId, compose => {
+        if (compose.interactionPolicy === null) compose.interactionPolicy = JSON.parse(JSON.stringify(action.initial))!;
+
+        compose.interactionPolicy = create(compose.interactionPolicy || action.initial, (interactionPolicy) => {
+          interactionPolicy[action.policy][action.rule] = action.value;
+          interactionPolicy[action.policy][action.rule === 'always' ? 'with_approval' : 'always'] = interactionPolicy[action.policy][action.rule === 'always' ? 'with_approval' : 'always'].filter(rule => !action.value.includes(rule as any));
+        });
       });
     case INSTANCE_FETCH_SUCCESS:
       return updateCompose(state, 'default', (compose) => updateDefaultContentType(compose, action.instance));

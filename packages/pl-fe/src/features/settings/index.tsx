@@ -19,7 +19,7 @@ const any = (arr: Array<any>): boolean => arr.some(Boolean);
 
 const messages = defineMessages({
   accountAliases: { id: 'navigation_bar.account_aliases', defaultMessage: 'Account aliases' },
-  accountMigration: { id: 'settings.account_migration', defaultMessage: 'Move Account' },
+  accountMigration: { id: 'settings.account_migration', defaultMessage: 'Move account' },
   backups: { id: 'column.backups', defaultMessage: 'Backups' },
   blocks: { id: 'settings.blocks', defaultMessage: 'Blocks' },
   changeEmail: { id: 'settings.change_email', defaultMessage: 'Change email' },

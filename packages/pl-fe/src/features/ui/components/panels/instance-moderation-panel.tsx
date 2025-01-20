@@ -42,7 +42,7 @@ const InstanceModerationPanel: React.FC<IInstanceModerationPanel> = ({ host }) =
 
   return (
     <Widget
-      title={<FormattedMessage id='remote_instance.federation_panel.heading' defaultMessage='Federation Restrictions' />}
+      title={<FormattedMessage id='remote_instance.federation_panel.heading' defaultMessage='Federation restrictions' />}
       action={account?.is_admin ? (
         <DropdownMenu items={menu} src={require('@tabler/icons/outline/dots-vertical.svg')} />
       ) : undefined}

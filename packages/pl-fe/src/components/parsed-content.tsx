@@ -1,10 +1,10 @@
 /* eslint-disable no-redeclare */
+import { Link } from '@tanstack/react-router';
 import parse, { Element, type HTMLReactParserOptions, domToReact, type DOMNode } from 'html-react-parser';
 import DOMPurify from 'isomorphic-dompurify';
 import groupBy from 'lodash/groupBy';
 import minBy from 'lodash/minBy';
 import React from 'react';
-import { Link } from '@tanstack/react-router';
 
 import Emojify from 'pl-fe/features/emoji/emojify';
 import { makeEmojiMap } from 'pl-fe/utils/normalizers';

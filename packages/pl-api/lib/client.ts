@@ -1,3 +1,4 @@
+import { WebSocket } from 'isows';
 import omit from 'lodash.omit';
 import pick from 'lodash.pick';
 import * as v from 'valibot';
@@ -21,6 +22,7 @@ import {
   adminRuleSchema,
   adminTagSchema,
   announcementSchema,
+  antennaSchema,
   applicationSchema,
   backupSchema,
   bookmarkFolderSchema,
@@ -73,124 +75,11 @@ import {
   trendsLinkSchema,
   webPushSubscriptionSchema,
 } from './entities';
-import { GroupedNotificationsResults, groupedNotificationsResultsSchema, NotificationGroup } from './entities/grouped-notifications-results';
+import { circleSchema } from './entities/circle';
+import { type GroupedNotificationsResults, groupedNotificationsResultsSchema, type NotificationGroup } from './entities/grouped-notifications-results';
 import { filteredArray } from './entities/utils';
-import { AKKOMA, type Features, getFeatures, GOTOSOCIAL, MITRA } from './features';
-import {
-  CreateScrobbleParams,
-  FollowAccountParams,
-  GetAccountEndorsementsParams,
-  GetAccountFavouritesParams,
-  GetAccountFollowersParams,
-  GetAccountFollowingParams,
-  GetAccountParams,
-  GetAccountStatusesParams,
-  GetRelationshipsParams,
-  GetScrobblesParams,
-  ReportAccountParams,
-  SearchAccountParams,
-} from './params/accounts';
-import { CreateApplicationParams } from './params/apps';
-import {
-  CreateChatMessageParams,
-  GetChatMessagesParams,
-  GetChatsParams,
-} from './params/chats';
-import {
-  CreateEventParams,
-  EditEventParams,
-  GetEventParticipationRequestsParams,
-  GetEventParticipationsParams,
-  GetJoinedEventsParams,
-} from './params/events';
-import {
-  CreateFilterParams,
-  GetBlocksParams,
-  GetDomainBlocksParams,
-  GetMutesParams,
-  MuteAccountParams,
-  UpdateFilterParams,
-} from './params/filtering';
-import { GetGroupedNotificationsParams, GetUnreadNotificationGroupCountParams } from './params/grouped-notifications';
-import {
-  CreateGroupParams,
-  GetGroupBlocksParams,
-  GetGroupMembershipRequestsParams,
-  GetGroupMembershipsParams,
-  UpdateGroupParams,
-} from './params/groups';
-import { ProfileDirectoryParams } from './params/instance';
-import {
-  GetInteractionRequestsParams,
-} from './params/interaction-requests';
-import {
-  CreateListParams,
-  GetListAccountsParams,
-  UpdateListParams,
-} from './params/lists';
-import {
-  UpdateMediaParams,
-  UploadMediaParams,
-} from './params/media';
-import {
-  CreateBookmarkFolderParams,
-  GetBookmarksParams,
-  GetEndorsementsParams,
-  GetFavouritesParams,
-  GetFollowedTagsParams,
-  GetFollowRequestsParams,
-  UpdateBookmarkFolderParams,
-} from './params/my-account';
-import {
-  GetNotificationParams,
-  GetNotificationRequestsParams,
-  GetUnreadNotificationCountParams,
-  UpdateNotificationPolicyRequest,
-} from './params/notifications';
-import {
-  GetTokenParams,
-  MfaChallengeParams,
-  OauthAuthorizeParams,
-  RevokeTokenParams,
-} from './params/oauth';
-import {
-  CreatePushNotificationsSubscriptionParams,
-  UpdatePushNotificationsSubscriptionParams,
-} from './params/push-notifications';
-import { GetScheduledStatusesParams } from './params/scheduled-statuses';
-import { SearchParams } from './params/search';
-import {
-  CreateAccountParams,
-  UpdateCredentialsParams,
-  UpdateInteractionPoliciesParams,
-  UpdateNotificationSettingsParams,
-} from './params/settings';
-import {
-  CreateStatusParams,
-  EditStatusParams,
-  GetFavouritedByParams,
-  GetRebloggedByParams,
-  GetStatusContextParams,
-  GetStatusesParams,
-  GetStatusParams,
-  GetStatusQuotesParams,
-} from './params/statuses';
-import {
-  BubbleTimelineParams,
-  GetConversationsParams,
-  GroupTimelineParams,
-  HashtagTimelineParams,
-  HomeTimelineParams,
-  ListTimelineParams,
-  PublicTimelineParams,
-  SaveMarkersParams,
-} from './params/timelines';
-import {
-  GetTrendingLinks,
-  GetTrendingStatuses,
-  GetTrendingTags,
-} from './params/trends';
-import request, { getNextLink, getPrevLink, type RequestBody, RequestMeta } from './request';
+import { AKKOMA, type Features, getFeatures, GOTOSOCIAL, MITRA, PIXELFED } from './features';
+import request, { getNextLink, getPrevLink, type RequestBody, type RequestMeta } from './request';
 import { buildFullPath } from './utils/url';
 
 import type {
@@ -207,6 +96,20 @@ import type {
   StreamingEvent,
 } from './entities';
 import type { PlApiResponse } from './main';
+import type {
+  CreateScrobbleParams,
+  FollowAccountParams,
+  GetAccountEndorsementsParams,
+  GetAccountFavouritesParams,
+  GetAccountFollowersParams,
+  GetAccountFollowingParams,
+  GetAccountParams,
+  GetAccountStatusesParams,
+  GetRelationshipsParams,
+  GetScrobblesParams,
+  ReportAccountParams,
+  SearchAccountParams,
+} from './params/accounts';
 import type {
   AdminAccountAction,
   AdminCreateAnnouncementParams,
@@ -236,11 +139,131 @@ import type {
   AdminUpdateRuleParams,
   AdminUpdateStatusParams,
 } from './params/admin';
+import type { CreateAntennaParams, UpdateAntennaParams } from './params/antennas';
+import type { CreateApplicationParams } from './params/apps';
+import type {
+  CreateChatMessageParams,
+  GetChatMessagesParams,
+  GetChatsParams,
+} from './params/chats';
+import type { GetCircleStatusesParams } from './params/circles';
+import type {
+  CreateEventParams,
+  EditEventParams,
+  GetEventParticipationRequestsParams,
+  GetEventParticipationsParams,
+  GetJoinedEventsParams,
+} from './params/events';
+import type {
+  CreateFilterParams,
+  GetBlocksParams,
+  GetDomainBlocksParams,
+  GetMutesParams,
+  MuteAccountParams,
+  UpdateFilterParams,
+} from './params/filtering';
+import type { GetGroupedNotificationsParams, GetUnreadNotificationGroupCountParams } from './params/grouped-notifications';
+import type {
+  CreateGroupParams,
+  GetGroupBlocksParams,
+  GetGroupMembershipRequestsParams,
+  GetGroupMembershipsParams,
+  UpdateGroupParams,
+} from './params/groups';
+import type { ProfileDirectoryParams } from './params/instance';
+import type {
+  GetInteractionRequestsParams,
+} from './params/interaction-requests';
+import type {
+  CreateListParams,
+  GetListAccountsParams,
+  UpdateListParams,
+} from './params/lists';
+import type {
+  UpdateMediaParams,
+  UploadMediaParams,
+} from './params/media';
+import type {
+  CreateBookmarkFolderParams,
+  GetBookmarksParams,
+  GetEndorsementsParams,
+  GetFavouritesParams,
+  GetFollowedTagsParams,
+  GetFollowRequestsParams,
+  UpdateBookmarkFolderParams,
+} from './params/my-account';
+import type {
+  GetNotificationParams,
+  GetNotificationRequestsParams,
+  GetUnreadNotificationCountParams,
+  UpdateNotificationPolicyRequest,
+} from './params/notifications';
+import type {
+  GetTokenParams,
+  MfaChallengeParams,
+  OauthAuthorizeParams,
+  RevokeTokenParams,
+} from './params/oauth';
+import type {
+  CreatePushNotificationsSubscriptionParams,
+  UpdatePushNotificationsSubscriptionParams,
+} from './params/push-notifications';
+import type { GetScheduledStatusesParams } from './params/scheduled-statuses';
+import type { SearchParams } from './params/search';
+import type {
+  CreateAccountParams,
+  UpdateCredentialsParams,
+  UpdateInteractionPoliciesParams,
+  UpdateNotificationSettingsParams,
+} from './params/settings';
+import type {
+  CreateStatusParams,
+  EditStatusParams,
+  GetFavouritedByParams,
+  GetRebloggedByParams,
+  GetStatusContextParams,
+  GetStatusesParams,
+  GetStatusMentionedUsersParams,
+  GetStatusParams,
+  GetStatusQuotesParams,
+  GetStatusReferencesParams,
+} from './params/statuses';
+import type {
+  AntennaTimelineParams,
+  BubbleTimelineParams,
+  GetConversationsParams,
+  GroupTimelineParams,
+  HashtagTimelineParams,
+  HomeTimelineParams,
+  LinkTimelineParams,
+  ListTimelineParams,
+  PublicTimelineParams,
+  SaveMarkersParams,
+} from './params/timelines';
+import type {
+  GetTrendingLinks,
+  GetTrendingStatuses,
+  GetTrendingTags,
+} from './params/trends';
 import type { PaginatedResponse } from './responses';
 
 const GROUPED_TYPES = ['favourite', 'reblog', 'emoji_reaction', 'event_reminder', 'participation_accepted', 'participation_request'];
 
+interface PlApiClientConstructorOpts {
+  /** Instance object to use by default, to be populated eg. from cache */
+  instance?: Instance;
+  /** Fetch instance after constructing */
+  fetchInstance?: boolean;
+  /** Abort signal which can be used to cancel the callbacks */
+  fetchInstanceSignal?: AbortSignal;
+  /** Executed after the initial instance fetch */
+  onInstanceFetchSuccess?: (instance: Instance) => void;
+  /** Executed when the initial instance fetch failed */
+  onInstanceFetchError?: (error?: any) => void;
+}
+
 /**
+ * Mastodon API client.
  * @category Clients
  */
 class PlApiClient {
@@ -258,17 +281,18 @@ class PlApiClient {
     close: () => void;
   };
 
+  /**
+   *
+   * @param baseURL Mastodon API-compatible server URL
+   * @param accessToken OAuth token for an authorized user
+   */
   constructor(baseURL: string, accessToken?: string, {
     instance,
     fetchInstance,
+    fetchInstanceSignal,
     onInstanceFetchSuccess,
     onInstanceFetchError,
-  }: {
-    instance?: Instance;
-    fetchInstance?: boolean;
-    onInstanceFetchSuccess?: (instance: Instance) => void;
-    onInstanceFetchError?: (error?: any) => void;
-  } = {}) {
+  }: PlApiClientConstructorOpts = {}) {
     this.baseURL = baseURL;
     this.#accessToken = accessToken;
 
@@ -276,7 +300,13 @@ class PlApiClient {
       this.#setInstance(instance);
     }
     if (fetchInstance) {
-      this.instance.getInstance().then(onInstanceFetchSuccess).catch(onInstanceFetchError);
+      this.instance.getInstance().then((instance) => {
+        if (fetchInstanceSignal?.aborted) return;
+        onInstanceFetchSuccess?.(instance);
+      }).catch((error) => {
+        if (fetchInstanceSignal?.aborted) return;
+        onInstanceFetchError?.(error);
+      });
     }
   }
 
@@ -462,7 +492,7 @@ class PlApiClient {
     getToken: async (params: GetTokenParams) => {
       const response = await this.request('/oauth/token', { method: 'POST', body: params });
 
-      return v.parse(tokenSchema, response.json);
+      return v.parse(tokenSchema, { scope: params.scope || '', ...response.json });
     },
 
     /**
@@ -557,6 +587,8 @@ class PlApiClient {
     /**
      * Get account’s featured tags
      * Tags featured by this account.
+     *
+     * Requires features{@link Features['featuredTags']}.
      * @see {@link https://docs.joinmastodon.org/methods/accounts/#featured_tags}
      */
     getAccountFeaturedTags: async (accountId: string) => {
@@ -574,6 +606,38 @@ class PlApiClient {
       const response = await this.request(`/api/v1/accounts/${accountId}/lists`);
 
       return v.parse(filteredArray(listSchema), response.json);
+    },
+
+    /**
+     * Get antennas containing this account
+     * User antennas that you have added this account to.
+     * Requires features{@link Features['antennas']}.
+     */
+    getAccountAntennas: async (accountId: string) => {
+      const response = await this.request(`/api/v1/accounts/${accountId}/antennas`);
+
+      return v.parse(filteredArray(antennaSchema), response.json);
+    },
+
+    /**
+     * Get antennas excluding this account
+     * Requires features{@link Features['antennas']}.
+     */
+    getAccountExcludeAntennas: async (accountId: string) => {
+      const response = await this.request(`/api/v1/accounts/${accountId}/circles`);
+
+      return v.parse(filteredArray(circleSchema), response.json);
+    },
+
+    /**
+     * Get circles including this account
+     * User circles that you have added this account to.
+     * Requires features{@link Features['circles']}.
+     */
+    getAccountCircles: async (accountId: string) => {
+      const response = await this.request(`/api/v1/accounts/${accountId}/exclude_antennas`);
+
+      return v.parse(filteredArray(antennaSchema), response.json);
     },
 
     /**
@@ -661,9 +725,22 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/accounts/#familiar_followers}
      */
     getFamiliarFollowers: async (accountIds: string[]) => {
-      const response = await this.request('/api/v1/accounts/familiar_followers', { params: { id: accountIds } });
+      let response: any;
 
-      return v.parse(filteredArray(familiarFollowersSchema), response.json);
+      if (this.features.version.software === PIXELFED) {
+        response = [];
+        for (const accountId of accountIds) {
+          const accounts = (await this.request(`/api/v1.1/accounts/mutuals/${accountId}`)).json;
+          response.push({
+            id: accountId,
+            accounts,
+          });
+        }
+      } else {
+        response = (await this.request('/api/v1/accounts/familiar_followers', { params: { id: accountIds } })).json;
+      }
+
+      return v.parse(filteredArray(familiarFollowersSchema), response);
     },
 
     /**
@@ -680,6 +757,8 @@ class PlApiClient {
     /**
      * Lookup account ID from Webfinger address
      * Quickly lookup a username to see if it is available, skipping WebFinger resolution.
+
+     * Requires features{@link Features['accountLookup']}.
      * @see {@link https://docs.joinmastodon.org/methods/accounts/#lookup}
      */
     lookupAccount: async (acct: string, meta?: RequestMeta) => {
@@ -844,6 +923,8 @@ class PlApiClient {
     /**
      * View your featured tags
      * List all hashtags featured on your profile.
+     *
+     * Requires features{@link Features['featuredTags']}.
      * @see {@link https://docs.joinmastodon.org/methods/featured_tags/#get}
      */
     getFeaturedTags: async () => {
@@ -855,6 +936,8 @@ class PlApiClient {
     /**
      * Feature a tag
      * Promote a hashtag on your profile.
+     *
+     * Requires features{@link Features['featuredTags']}.
      * @see {@link https://docs.joinmastodon.org/methods/featured_tags/#feature}
      */
     featureTag: async (name: string) => {
@@ -869,6 +952,8 @@ class PlApiClient {
     /**
      * Unfeature a tag
      * Stop promoting a hashtag on your profile.
+     *
+     * Requires features{@link Features['featuredTags']}.
      * @see {@link https://docs.joinmastodon.org/methods/featured_tags/#unfeature}
      */
     unfeatureTag: async (name: string) => {
@@ -883,6 +968,8 @@ class PlApiClient {
     /**
      * View suggested tags to feature
      * Shows up to 10 recently-used tags.
+     *
+     * Requires features{@link Features['featuredTags']}.
      * @see {@link https://docs.joinmastodon.org/methods/featured_tags/#suggestions}
      */
     getFeaturedTagsSuggestions: async () => {
@@ -943,7 +1030,11 @@ class PlApiClient {
      */
     getSuggestions: async (limit?: number) => {
       const response = await this.request(
-        this.features.suggestionsV2 ? '/api/v2/suggestions' : '/api/v1/suggestions',
+        this.features.version.software === PIXELFED
+          ? '/api/v1.1/discover/accounts/popular'
+          : this.features.suggestionsV2
+            ? '/api/v2/suggestions'
+            : '/api/v1/suggestions',
         { params: { limit } },
       );
 
@@ -1206,6 +1297,17 @@ class PlApiClient {
             method: 'POST',
             body: { new_password },
           });
+          break;
+        case PIXELFED:
+          response = await this.request('/api/v1.1/accounts/change-password', {
+            method: 'POST',
+            body: {
+              current_password,
+              new_password,
+              confirm_password: new_password,
+            },
+          });
+          if (response.redirected) throw response;
           break;
         default:
           response = await this.request('/api/pleroma/change_password', {
@@ -1863,9 +1965,24 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/statuses/#create}
      */
     createStatus: async (params: CreateStatusParams) => {
+      type ExtendedCreateStatusParams = CreateStatusParams & {
+        markdown?: boolean;
+        circle_id?: string | null;
+      };
+
+      const fixedParams: ExtendedCreateStatusParams = params;
+
+      if (params.content_type === 'text/markdown' && this.#instance.api_versions['kmyblue_markdown.fedibird.pl-api'] >= 1) {
+        fixedParams.markdown = true;
+      }
+      if (params.visibility?.startsWith('circle:')) {
+        fixedParams.circle_id = params.visibility.slice(7);
+        fixedParams.visibility = 'circle';
+      }
+
       const response = await this.request('/api/v1/statuses', {
         method: 'POST',
-        body: params,
+        body: fixedParams,
       });
 
       if (response.json?.scheduled_at) return v.parse(scheduledStatusSchema, response.json);
@@ -2078,6 +2195,16 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/statuses/#unpin}
      */
     editStatus: async (statusId: string, params: EditStatusParams) => {
+      type ExtendedEditStatusParams = EditStatusParams & {
+        markdown?: boolean;
+      };
+
+      const fixedParams: ExtendedEditStatusParams = params;
+
+      if (params.content_type === 'text/markdown' && this.#instance.api_versions['kmyblue_markdown.fedibird.pl-api'] >= 1) {
+        fixedParams.markdown = true;
+      }
+
       const response = await this.request(`/api/v1/statuses/${statusId}`, { method: 'PUT', body: params });
 
       return v.parse(statusSchema, response.json);
@@ -2191,11 +2318,8 @@ class PlApiClient {
      * Requires features{@link Features['statusDislikes']}.
      * @see {@link https://github.com/friendica/friendica/blob/2024.06-rc/doc/API-Friendica.md#get-apifriendicastatusesiddisliked_by}
      */
-    getDislikedBy: async (statusId: string) => {
-      const response = await this.request(`/api/friendica/statuses/${statusId}/disliked_by`);
-
-      return v.parse(filteredArray(accountSchema), response.json);
-    },
+    getDislikedBy: async (statusId: string) =>
+      this.#paginatedGet(`/api/v1/statuses/${statusId}/disliked_by`, {}, accountSchema),
 
     /**
      * Marks the given status as disliked by this user
@@ -2216,6 +2340,12 @@ class PlApiClient {
 
       return v.parse(statusSchema, response.json);
     },
+
+    getStatusReferences: async (statusId: string, params?: GetStatusReferencesParams) =>
+      this.#paginatedGet(`/api/v1/statuses/${statusId}/referred_by`, { params }, statusSchema),
+
+    getStatusMentionedUsers: async (statusId: string, params?: GetStatusMentionedUsersParams) =>
+      this.#paginatedGet(`/api/v1/statuses/${statusId}/mentioned_by`, { params }, accountSchema),
   };
 
   public readonly media = {
@@ -2355,7 +2485,7 @@ class PlApiClient {
      * View public statuses containing a link to the specified currently-trending article. This only lists statuses from people who have opted in to discoverability features.
      * @see {@link https://docs.joinmastodon.org/methods/timelines/#link}
      */
-    linkTimeline: (url: string, params?: HashtagTimelineParams) =>
+    linkTimeline: (url: string, params?: LinkTimelineParams) =>
       this.#paginatedGet('/api/v1/timelines/link', { params: { ...params, url } }, statusSchema),
 
     /**
@@ -2420,13 +2550,24 @@ class PlApiClient {
      * Requires features{@link Features['groups']}.
      */
     groupTimeline: async (groupId: string, params?: GroupTimelineParams) =>
-      this.#paginatedGet(`/api/v1/timelines/group/${groupId}`, { params }, statusSchema),
+      this.#paginatedGet(
+        this.features.version.software === PIXELFED ? `/api/v0/groups/${groupId}/feed` : `/api/v1/timelines/group/${groupId}`,
+        { params },
+        statusSchema,
+      ),
 
     /**
      * Requires features{@link Features['bubbleTimeline']}.
      */
     bubbleTimeline: async (params?: BubbleTimelineParams) =>
       this.#paginatedGet('/api/v1/timelines/bubble', { params }, statusSchema),
+
+    /**
+     * View antennatimeline
+     * Requires features{@link Features['antennas']}.
+     */
+    antennaTimeline: (antennaId: string, params?: AntennaTimelineParams) =>
+      this.#paginatedGet(`/api/v1/timelines/list/${antennaId}`, { params }, statusSchema),
   };
 
   public readonly lists = {
@@ -2515,6 +2656,28 @@ class PlApiClient {
       });
 
       return response.json as {};
+    },
+
+    /**
+     * Add a list to favourites
+     *
+     * Requires features{@link Features['listsFavourite']}.
+     */
+    favouriteList: async (listId: string) => {
+      const response = await this.request(`/api/v1/lists/${listId}/favourite`, { method: 'POST' });
+
+      return v.parse(listSchema, response.json);
+    },
+
+    /**
+     * Remove a list from favourites
+     *
+     * Requires features{@link Features['listsFavourite']}.
+     */
+    unfavouriteList: async (listId: string) => {
+      const response = await this.request(`/api/v1/lists/${listId}/unfavourite`, { method: 'POST' });
+
+      return v.parse(listSchema, response.json);
     },
   };
 
@@ -3083,7 +3246,10 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/trends/#tags}
      */
     getTrendingTags: async (params?: GetTrendingTags) => {
-      const response = await this.request('/api/v1/trends/tags', { params });
+      const response = await this.request(
+        this.features.version.software === PIXELFED ? '/api/v1.1/discover/posts/hashtags' : '/api/v1/trends/tags',
+        { params },
+      );
 
       return v.parse(filteredArray(tagSchema), response.json);
     },
@@ -3094,7 +3260,10 @@ class PlApiClient {
      * @see {@link https://docs.joinmastodon.org/methods/trends/#statuses}
      */
     getTrendingStatuses: async (params?: GetTrendingStatuses) => {
-      const response = await this.request('/api/v1/trends/statuses', { params });
+      const response = await this.request(
+        this.features.version.software === PIXELFED ? '/api/pixelfed/v2/discover/posts/trending' : '/api/v1/trends/statuses',
+        { params },
+      );
 
       return v.parse(filteredArray(statusSchema), response.json);
     },
@@ -4453,6 +4622,349 @@ class PlApiClient {
     },
   };
 
+  public readonly antennas = {
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    fetchAntennas: async () => {
+      const response = await this.request('/api/v1/antennas');
+
+      return v.parse(filteredArray(antennaSchema), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    getAntennas: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}`);
+
+      return v.parse(antennaSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    createAntenna: async (params: CreateAntennaParams) => {
+      const response = await this.request('/api/v1/antennas', { method: 'POST', body: params });
+
+      return v.parse(antennaSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    updateAntenna: async (antennaId: string, params: UpdateAntennaParams) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}`, { method: 'PUT', body: params });
+
+      return v.parse(antennaSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    deleteAntenna: async (antennaId: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}`, { method: 'DELETE' });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    getAntennaAccounts: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}/accounts`);
+
+      return v.parse(filteredArray(accountSchema), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaAccount: async (antennaId: string, accountId: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/accounts`, {
+        method: 'POST',
+        body: { account_ids: [accountId] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaAccount: async (antennaId: string, accountId: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/accounts`, {
+        method: 'DELETE',
+        body: { account_ids: [accountId] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    getAntennaExcludeAccounts: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}/exclude_accounts`);
+
+      return v.parse(filteredArray(accountSchema), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaExcludeAccount: async (antennaId: string, accountId: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_accounts`, {
+        method: 'POST',
+        body: { account_ids: [accountId] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaExcludeAccount: async (antennaId: string, accountId: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_accounts`, {
+        method: 'DELETE',
+        body: { account_ids: [accountId] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    getAntennaDomains: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}/domains`);
+
+      return v.parse(v.object({
+        domains: filteredArray(v.string()),
+        exclude_domains: filteredArray(v.string()),
+      }), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaDomain: async (antennaId: string, domain: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/domains`, {
+        method: 'POST',
+        body: { domains: [domain] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaDomain: async (antennaId: string, domain: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/domains`, {
+        method: 'DELETE',
+        body: { domains: [domain] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaExcludeDomain: async (antennaId: string, domain: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_domains`, {
+        method: 'POST',
+        body: { domains: [domain] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaExcludeDomain: async (antennaId: string, domain: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_domains`, {
+        method: 'DELETE',
+        body: { domains: [domain] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    getAntennaKeywords: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}/keywords`);
+
+      return v.parse(v.object({
+        keywords: filteredArray(v.string()),
+        exclude_keywords: filteredArray(v.string()),
+      }), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaKeyword: async (antennaId: string, keyword: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/keywords`, {
+        method: 'POST',
+        body: { keywords: [keyword] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaKeyword: async (antennaId: string, keyword: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/keywords`, {
+        method: 'DELETE',
+        body: { keywords: [keyword] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaExcludeKeyword: async (antennaId: string, keyword: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_keywords`, {
+        method: 'POST',
+        body: { keywords: [keyword] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaExcludeKeyword: async (antennaId: string, keyword: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_keywords`, {
+        method: 'DELETE',
+        body: { keywords: [keyword] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    getAntennaTags: async (antennaId: string) => {
+      const response = await this.request(`/api/v1/antennas/${antennaId}/tags`);
+
+      return v.parse(v.object({
+        tags: filteredArray(v.string()),
+        exclude_tags: filteredArray(v.string()),
+      }), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaTag: async (antennaId: string, tag: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/tags`, {
+        method: 'POST',
+        body: { tags: [tag] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaTag: async (antennaId: string, tag: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/tags`, {
+        method: 'DELETE',
+        body: { tags: [tag] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    addAntennaExcludeTag: async (antennaId: string, tag: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_tags`, {
+        method: 'POST',
+        body: { tags: [tag] },
+      });
+
+      return response.json;
+    },
+
+    /**
+     * Requires features{@link Features['antennas']}.
+     */
+    removeAntennaExcludeTag: async (antennaId: string, tag: string) => {
+      const response = await this.request<{}>(`/api/v1/antennas/${antennaId}/exclude_tags`, {
+        method: 'DELETE',
+        body: { tags: [tag] },
+      });
+
+      return response.json;
+    },
+  };
+
+  public readonly circles = {
+    /**
+     * Requires features{@link Features['circles']}.
+     */
+    fetchCircles: async () => {
+      const response = await this.request('/api/v1/circles');
+
+      return v.parse(filteredArray(circleSchema), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['circles']}.
+     */
+    getCircles: async (circleId: string) => {
+      const response = await this.request(`/api/v1/circles/${circleId}`);
+
+      return v.parse(circleSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['circles']}.
+     */
+    createCircle: async (title: string) => {
+      const response = await this.request('/api/v1/circles', { method: 'POST', body: { title } });
+
+      return v.parse(circleSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['circles']}.
+     */
+    updateCircle: async (circleId: string, title: string) => {
+      const response = await this.request(`/api/v1/circles/${circleId}`, { method: 'PUT', body: { title } });
+
+      return v.parse(circleSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['circles']}.
+     */
+    deleteCircle: async (circleId: string) => {
+      const response = await this.request<{}>(`/api/v1/circles/${circleId}`, { method: 'DELETE' });
+
+      return response.json;
+    },
+
+    getCircleStatuses: (circleId: string, params: GetCircleStatusesParams) =>
+      this.#paginatedGet(`/api/v1/circles/${circleId}/statuses`, { params }, statusSchema),
+  };
+
   /** Routes that are not part of any stable release */
   public readonly experimental = {
     admin: {
@@ -4499,25 +5011,50 @@ class PlApiClient {
     groups: {
       /** returns an array of `Group` entities the current user is a member of */
       getGroups: async () => {
-        const response = await this.request('/api/v1/groups');
+        let response;
+        if (this.features.version.software === PIXELFED) {
+          response = await this.request('/api/v0/groups/self/list');
+        } else {
+          response = await this.request('/api/v1/groups');
+        }
 
         return v.parse(filteredArray(groupSchema), response.json);
       },
 
       /** create a group with the given attributes (`display_name`, `note`, `avatar` and `header`). Sets the user who made the request as group administrator */
       createGroup: async (params: CreateGroupParams) => {
-        const response = await this.request('/api/v1/groups', {
-          method: 'POST',
-          body: params,
-          contentType: params.avatar || params.header ? '' : undefined,
-        });
+        let response;
+
+        if (this.features.version.software === PIXELFED) {
+          response = await this.request('/api/v0/groups/create', {
+            method: 'POST',
+            body: { ...params, name: params.display_name, description: params.note, membership: 'public' },
+            contentType: params.avatar || params.header ? '' : undefined,
+          });
+
+          if (response.json?.id) {
+            return this.experimental.groups.getGroup(response.json.id);
+          }
+        } else {
+          response = await this.request('/api/v1/groups', {
+            method: 'POST',
+            body: params,
+            contentType: params.avatar || params.header ? '' : undefined,
+          });
+        }
 
         return v.parse(groupSchema, response.json);
       },
 
       /** returns the `Group` entity describing a given group */
       getGroup: async (groupId: string) => {
-        const response = await this.request(`/api/v1/groups/${groupId}`);
+        let response;
+
+        if (this.features.version.software === PIXELFED) {
+          response = await this.request(`/api/v0/groups/${groupId}`);
+        } else {
+          response = await this.request(`/api/v1/groups/${groupId}`);
+        }
 
         return v.parse(groupSchema, response.json);
       },
@@ -4535,18 +5072,32 @@ class PlApiClient {
 
       /** irreversibly deletes the group */
       deleteGroup: async (groupId: string) => {
-        const response = await this.request(`/api/v1/groups/${groupId}`, { method: 'DELETE' });
+        let response;
+
+        if (this.features.version.software === PIXELFED) {
+          response = await this.request('/api/v0/groups/delete', { method: 'POST', params: { gid: groupId } });
+        } else {
+          response = await this.request(`/api/v1/groups/${groupId}`, { method: 'DELETE' });
+        }
 
         return response.json as {};
       },
 
       /** Has an optional role attribute that can be used to filter by role (valid roles are `"admin"`, `"moderator"`, `"user"`). */
       getGroupMemberships: async (groupId: string, role?: GroupRole, params?: GetGroupMembershipsParams) =>
-        this.#paginatedGet(`/api/v1/groups/${groupId}/memberships`, { params: { ...params, role } }, groupMemberSchema),
+        this.#paginatedGet(
+          this.features.version.software === PIXELFED ? `/api/v0/groups/members/list?gid=${groupId}` : `/api/v1/groups/${groupId}/memberships`,
+          { params: { ...params, role } },
+          groupMemberSchema,
+        ),
 
       /** returns an array of `Account` entities representing pending requests to join a group */
       getGroupMembershipRequests: async (groupId: string, params?: GetGroupMembershipRequestsParams) =>
-        this.#paginatedGet(`/api/v1/groups/${groupId}/membership_requests`, { params }, accountSchema),
+        this.#paginatedGet(
+          this.features.version.software === PIXELFED ? `/api/v0/groups/members/requests?gid=${groupId}` : `/api/v1/groups/${groupId}/membership_requests`,
+          { params },
+          accountSchema,
+        ),
 
       /** accept a pending request to become a group member */
       acceptGroupMembershipRequest: async (groupId: string, accountId: string) => {

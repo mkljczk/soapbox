@@ -24,6 +24,9 @@ const statusEditSchema = v.object({
   emojis: filteredArray(customEmojiSchema),
 });
 
+/**
+ * @category Entity types
+ */
 type StatusEdit = v.InferOutput<typeof statusEditSchema>;
 
 export { statusEditSchema, type StatusEdit };

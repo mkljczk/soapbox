@@ -20,6 +20,9 @@ const reportSchema = v.object({
   target_account: v.fallback(v.nullable(accountSchema), null),
 });
 
+/**
+ * @category Entity types
+ */
 type Report = v.InferOutput<typeof reportSchema>;
 
 export { reportSchema, type Report };

@@ -1,12 +1,11 @@
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { changeStatusLanguage } from 'pl-fe/actions/statuses';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import Text from 'pl-fe/components/ui/text';
 import { type Language, languages } from 'pl-fe/features/preferences';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
 import DropdownMenu from './dropdown-menu';
 
@@ -17,13 +16,16 @@ const messages = defineMessages({
 });
 
 interface IStatusLanguagePicker {
-  status: Pick<Status, 'id' | 'content_map' | 'currentLanguage'>;
+  status: Pick<Status, 'id' | 'content_map'>;
   showLabel?: boolean;
 }
 
-const StatusLanguagePicker: React.FC<IStatusLanguagePicker> = ({ status, showLabel }) => {
+const StatusLanguagePicker: React.FC<IStatusLanguagePicker> = React.memo(({ status, showLabel }) => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
+
+  const { statuses, setStatusLanguage } = useStatusMetaStore();
+
+  const { currentLanguage } = statuses[status.id] || {};
 
   if (!status.content_map || Object.keys(status.content_map).length < 2) return null;
 
@@ -36,8 +38,8 @@ const StatusLanguagePicker: React.FC<IStatusLanguagePicker> = ({ status, showLab
       <DropdownMenu
         items={Object.keys(status.content_map).map((language) => ({
           text: languages[language as Language] || language,
-          action: () => dispatch(changeStatusLanguage(status.id, language)),
-          active: language === status.currentLanguage,
+          action: () => setStatusLanguage(status.id, language),
+          active: language === currentLanguage,
         }))}
       >
         <button title={intl.formatMessage(messages.languageVersions)} className='hover:underline'>
@@ -45,7 +47,7 @@ const StatusLanguagePicker: React.FC<IStatusLanguagePicker> = ({ status, showLab
             <HStack space={1} alignItems='center'>
               {icon}
               <Text tag='span' theme='muted' size='sm'>
-                {languages[status.currentLanguage as Language] || status.currentLanguage}
+                {languages[currentLanguage as Language] || currentLanguage}
               </Text>
             </HStack>
           ) : icon}
@@ -53,7 +55,7 @@ const StatusLanguagePicker: React.FC<IStatusLanguagePicker> = ({ status, showLab
       </DropdownMenu>
     </>
   );
-};
+});
 
 export {
   StatusLanguagePicker as default,

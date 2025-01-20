@@ -1,6 +1,6 @@
+import { Link } from '@tanstack/react-router';
 import clsx from 'clsx';
 import React from 'react';
-import { Link } from '@tanstack/react-router';
 
 import Icon from '../icon';
 

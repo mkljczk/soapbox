@@ -23,6 +23,9 @@ const accountWarningSchema = v.object({
   created_at: v.fallback(datetimeSchema, new Date().toISOString()),
 });
 
+/**
+ * @category Entity types
+ */
 type AccountWarning = v.InferOutput<typeof accountWarningSchema>;
 
 export { accountWarningSchema, type AccountWarning };

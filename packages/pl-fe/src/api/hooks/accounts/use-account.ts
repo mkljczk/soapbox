@@ -8,7 +8,8 @@ import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { type Account, normalizeAccount } from 'pl-fe/normalizers/account';
 
-import { useAccountScrobble } from './use-account-scrobble';
+import { useAccountScrobble } from '../../../queries/accounts/use-account-scrobble';
+
 import { useRelationship } from './use-relationship';
 
 import type { Account as BaseAccount } from 'pl-api';

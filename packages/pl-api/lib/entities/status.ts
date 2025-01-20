@@ -131,6 +131,14 @@ const preprocess = (status: any) => {
     ...status,
   };
 
+  if (!status.interaction_policy && status.comments_disabled === true) {
+    status.interaction_policy = {
+      can_reply: {
+        always: ['author'],
+      },
+    };
+  }
+
   return status;
 };
 
@@ -155,12 +163,18 @@ const statusWithoutAccountSchema = v.pipe(v.any(), v.transform(preprocess), v.ob
   quote: v.fallback(v.nullable(v.lazy(() => statusSchema)), null),
 }));
 
+/**
+ * @category Entity types
+ */
 type StatusWithoutAccount = Omit<v.InferOutput<typeof baseStatusSchema>, 'account'> & {
   account: Account | null;
   reblog: Status | null;
   quote: Status | null;
 }
 
+/**
+ * @category Entity types
+ */
 type Status = v.InferOutput<typeof baseStatusSchema> & {
   reblog: Status | null;
   quote: Status | null;

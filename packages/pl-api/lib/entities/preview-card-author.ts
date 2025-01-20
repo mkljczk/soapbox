@@ -12,6 +12,9 @@ const previewCardAuthorSchema = v.object({
   account: v.fallback(v.nullable(accountSchema), null),
 });
 
+/**
+ * @category Entity types
+ */
 type PreviewCardAuthor = v.InferOutput<typeof previewCardAuthorSchema>;
 
 export { previewCardAuthorSchema, type PreviewCardAuthor };

@@ -1,5 +1,8 @@
 import * as v from 'valibot';
 
+/**
+ * @category Directory schemas
+ */
 const directoryServerSchema = v.object({
   domain: v.string(),
   version: v.string(),
@@ -16,6 +19,9 @@ const directoryServerSchema = v.object({
   category: v.string(),
 });
 
+/**
+ * @category Directory entity types
+ */
 type DirectoryServer = v.InferOutput<typeof directoryServerSchema>;
 
 export { directoryServerSchema, type DirectoryServer };

@@ -1,6 +1,6 @@
+import { Link } from '@tanstack/react-router';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link } from '@tanstack/react-router';
 
 import { useGroups } from 'pl-fe/api/hooks/groups/use-groups';
 import GroupCard from 'pl-fe/components/group-card';
@@ -31,7 +31,7 @@ const Groups: React.FC = () => {
         <Text size='2xl' weight='bold' tag='h2' align='center'>
           <FormattedMessage
             id='groups.empty.title'
-            defaultMessage='No Groups yet'
+            defaultMessage='No groups yet'
           />
         </Text>
 

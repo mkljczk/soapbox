@@ -1,10 +1,9 @@
+import { Link } from '@tanstack/react-router';
 import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { Link } from '@tanstack/react-router';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
-import { type MinifiedInteractionRequest, useAuthorizeInteractionRequestMutation, useFlatInteractionRequests, useRejectInteractionRequestMutation } from 'pl-fe/api/hooks/statuses/use-interaction-requests';
 import AttachmentThumbs from 'pl-fe/components/attachment-thumbs';
 import Icon from 'pl-fe/components/icon';
 import PullToRefresh from 'pl-fe/components/pull-to-refresh';
@@ -21,6 +20,7 @@ import { buildLink } from 'pl-fe/features/notifications/components/notification'
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
+import { type MinifiedInteractionRequest, useAuthorizeInteractionRequestMutation, useFlatInteractionRequests, useRejectInteractionRequestMutation } from 'pl-fe/queries/statuses/use-interaction-requests';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({

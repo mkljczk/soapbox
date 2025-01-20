@@ -12,6 +12,9 @@ const familiarFollowersSchema = v.object({
   accounts: filteredArray(accountSchema),
 });
 
+/**
+ * @category Entity types
+ */
 type FamiliarFollowers = v.InferOutput<typeof familiarFollowersSchema>
 
 export { familiarFollowersSchema, type FamiliarFollowers };

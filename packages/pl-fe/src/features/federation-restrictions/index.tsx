@@ -12,7 +12,7 @@ import { federationRestrictionsDisclosed } from 'pl-fe/utils/state';
 import RestrictedInstance from './components/restricted-instance';
 
 const messages = defineMessages({
-  heading: { id: 'column.federation_restrictions', defaultMessage: 'Federation Restrictions' },
+  heading: { id: 'column.federation_restrictions', defaultMessage: 'Federation restrictions' },
   boxTitle: { id: 'federation_restrictions.explanation_box.title', defaultMessage: 'Instance-specific policies' },
   boxMessage: { id: 'federation_restrictions.explanation_box.message', defaultMessage: 'Normally servers on the Fediverse can communicate freely. {siteTitle} has imposed restrictions on the following servers.' },
   emptyMessage: { id: 'federation_restrictions.empty_message', defaultMessage: '{siteTitle} has not restricted any instances.' },

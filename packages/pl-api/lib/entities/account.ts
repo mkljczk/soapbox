@@ -146,6 +146,8 @@ const baseAccountSchema = v.object({
   verified: v.fallback(v.optional(v.boolean()), undefined),
   domain: v.fallback(v.string(), ''),
 
+  pronouns: v.fallback(v.array(v.string()), []),
+
   __meta: coerceObject({
     pleroma: v.fallback(v.any(), undefined),
     source: v.fallback(v.any(), undefined),
@@ -164,6 +166,9 @@ type WithMoved = {
   moved: Account | null;
 };
 
+/**
+ * @category Entity types
+ */
 type Account = v.InferOutput<typeof accountWithMovedAccountSchema> & WithMoved;
 
 /**
@@ -200,6 +205,9 @@ const untypedCredentialAccountSchema = v.pipe(v.any(), preprocessAccount, v.obje
   })), undefined),
 }));
 
+/**
+ * @category Entity types
+ */
 type CredentialAccount = v.InferOutput<typeof untypedCredentialAccountSchema> & WithMoved;
 
 /**
@@ -212,6 +220,9 @@ const untypedMutedAccountSchema = v.pipe(v.any(), preprocessAccount, v.object({
   mute_expires_at: v.fallback(v.nullable(datetimeSchema), null),
 }));
 
+/**
+ * @category Entity types
+ */
 type MutedAccount = v.InferOutput<typeof untypedMutedAccountSchema> & WithMoved;
 
 /**

@@ -11,7 +11,7 @@ import { useCompose } from 'pl-fe/hooks/use-compose';
 import { useDraggedFiles } from 'pl-fe/hooks/use-dragged-files';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
-import ComposeForm from '../../../compose/components/compose-form';
+import { ComposeForm } from '../../util/async-components';
 
 import type { BaseModalProps } from '../modal-root';
 

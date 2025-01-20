@@ -31,6 +31,7 @@ import { $createEmojiNode } from '../editor/nodes/emoji-node';
 import { countableText } from '../util/counter';
 
 import ContentTypeButton from './content-type-button';
+import InteractionPolicyButton from './interaction-policy-button';
 import LanguageDropdown from './language-dropdown';
 import PollButton from './poll-button';
 import PollForm from './polls/poll-form';
@@ -186,6 +187,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
       {features.polls && <PollButton composeId={id} />}
       {features.scheduledStatuses && <ScheduleButton composeId={id} />}
       {anyMedia && features.spoilers && <SensitiveMediaButton composeId={id} />}
+      {features.interactionRequests && <InteractionPolicyButton composeId={id} />}
     </HStack>
   ), [features, id, anyMedia]);
 
@@ -242,7 +244,7 @@ const ComposeForm = <ID extends string>({ id, shouldCondense, autoFocus, clickab
 
       {!shouldCondense && !event && !group && <ReplyMentions composeId={id} />}
 
-      {!!selectButtons && (
+      {selectButtons.length > 0 && (
         <HStack space={2} wrap className={clsx(transparent && '-mb-2')}>
           {selectButtons}
         </HStack>

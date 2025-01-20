@@ -1,5 +1,5 @@
-import React from 'react';
 import { Link } from '@tanstack/react-router';
+import React from 'react';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
 

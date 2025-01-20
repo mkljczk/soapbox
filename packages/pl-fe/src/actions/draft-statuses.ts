@@ -5,7 +5,6 @@ import KVStore from 'pl-fe/storage/kv-store';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 import type { APIEntity } from 'pl-fe/types/entities';
 
-
 const DRAFT_STATUSES_FETCH_SUCCESS = 'DRAFT_STATUSES_FETCH_SUCCESS' as const;
 
 const PERSIST_DRAFT_STATUS = 'PERSIST_DRAFT_STATUS' as const;

@@ -95,7 +95,7 @@ const AuthTokenList: React.FC = () => {
   const body = tokens ? (
     <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
       {tokens.map((token) => (
-        <AuthToken key={token.id} token={token} isCurrent={token.id === currentTokenId} />
+        <AuthToken key={token.id} token={token} isCurrent={String(token.id) === currentTokenId} />
       ))}
     </div>
   ) : <Spinner />;

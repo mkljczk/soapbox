@@ -1,26 +1,25 @@
 import React, { useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { translateStatus, undoStatusTranslation } from 'pl-fe/actions/statuses';
-import { useTranslationLanguages } from 'pl-fe/api/hooks/instance/use-translation-languages';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { useTranslationLanguages } from 'pl-fe/queries/instance/use-translation-languages';
+import { useStatusTranslation } from 'pl-fe/queries/statuses/use-status-translation';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
 import type { Status } from 'pl-fe/normalizers/status';
 
 interface ITranslateButton {
-  status: Pick<Status, 'id' | 'account' | 'content' | 'content_map' | 'language' | 'translating' | 'translation' | 'visibility'>;
+  status: Pick<Status, 'id' | 'account' | 'content' | 'content_map' | 'language' | 'visibility'>;
 }
 
 const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
-  const dispatch = useAppDispatch();
   const intl = useIntl();
   const features = useFeatures();
   const instance = useInstance();
@@ -30,6 +29,10 @@ const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
 
   const me = useAppSelector((state) => state.me);
   const { translationLanguages } = useTranslationLanguages();
+  const { statuses: statusesMeta, fetchTranslation, hideTranslation } = useStatusMetaStore();
+
+  const targetLanguage = statusesMeta[status.id]?.targetLanguage;
+  const translationQuery = useStatusTranslation(status.id, targetLanguage);
 
   const {
     allow_remote: allowRemote,
@@ -43,45 +46,45 @@ const TranslateButton: React.FC<ITranslateButton> = ({ status }) => {
   const handleTranslate: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
 
-    if (status.translation) {
-      dispatch(undoStatusTranslation(status.id));
+    if (targetLanguage) {
+      hideTranslation(status.id);
     } else {
-      dispatch(translateStatus(status.id, intl.locale));
+      fetchTranslation(status.id, intl.locale);
     }
   };
 
   useEffect(() => {
-    if (status.translation === null && settings.autoTranslate && features.translations && renderTranslate && supportsLanguages && status.translation !== false && status.language !== null && !knownLanguages.includes(status.language)) {
-      dispatch(translateStatus(status.id, intl.locale, true));
+    if (translationQuery.data === undefined && settings.autoTranslate && features.translations && renderTranslate && supportsLanguages && translationQuery.data !== false && status.language !== null && !knownLanguages.includes(status.language)) {
+      fetchTranslation(status.id, intl.locale);
     }
   }, []);
 
-  if (!features.translations || !renderTranslate || !supportsLanguages || status.translation === false) return null;
+  if (!features.translations || !renderTranslate || !supportsLanguages || translationQuery.data === false) return null;
 
   const button = (
     <button className='w-fit' onClick={handleTranslate}>
       <HStack alignItems='center' space={1} className='text-primary-600 hover:underline dark:text-gray-600'>
         <Icon src={require('@tabler/icons/outline/language.svg')} className='size-4' />
         <span>
-          {status.translation ? (
+          {translationQuery.data ? (
             <FormattedMessage id='status.show_original' defaultMessage='Show original' />
-          ) : status.translating ? (
+          ) : translationQuery.isLoading ? (
             <FormattedMessage id='status.translating' defaultMessage='Translating…' />
           ) : (
             <FormattedMessage id='status.translate' defaultMessage='Translate' />
           )}
         </span>
-        {status.translating && (
+        {translationQuery.isLoading && (
           <Icon src={require('@tabler/icons/outline/loader-2.svg')} className='size-4 animate-spin' />
         )}
       </HStack>
     </button>
   );
 
-  if (status.translation) {
+  if (translationQuery.data) {
     const languageNames = new Intl.DisplayNames([intl.locale], { type: 'language' });
     const languageName = languageNames.of(status.language!);
-    const provider = status.translation.provider;
+    const provider = translationQuery.data.provider;
 
     return (
       <Stack space={3} alignItems='start'>

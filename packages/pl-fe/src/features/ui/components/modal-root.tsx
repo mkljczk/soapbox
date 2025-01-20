@@ -15,6 +15,7 @@ const MODAL_COMPONENTS = {
   COMPARE_HISTORY: lazy(() => import('pl-fe/features/ui/components/modals/compare-history-modal')),
   COMPONENT: lazy(() => import('pl-fe/features/ui/components/modals/component-modal')),
   COMPOSE: lazy(() => import('pl-fe/features/ui/components/modals/compose-modal')),
+  COMPOSE_INTERACTION_POLICY: lazy(() => import('pl-fe/features/ui/components/modals/compose-interaction-policy-modal')),
   CONFIRM: lazy(() => import('pl-fe/features/ui/components/modals/confirmation-modal')),
   CREATE_GROUP: lazy(() => import('pl-fe/features/ui/components/modals/manage-group-modal')),
   CRYPTO_DONATE: lazy(() => import('pl-fe/features/ui/components/modals/crypto-donate-modal')),

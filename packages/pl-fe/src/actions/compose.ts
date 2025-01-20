@@ -13,16 +13,16 @@ import { useSettingsStore } from 'pl-fe/stores/settings';
 import toast from 'pl-fe/toast';
 import { isLoggedIn } from 'pl-fe/utils/auth';
 
-import { chooseEmoji } from './emojis';
 import { importEntities } from './importer';
-import { rememberLanguageUse } from './languages';
 import { uploadFile, updateMedia } from './media';
+import { saveSettings } from './settings';
 import { createStatus } from './statuses';
 
 import type { EditorState } from 'lexical';
-import type { Account as BaseAccount, BackendVersion, CreateStatusParams, Group, MediaAttachment, Status as BaseStatus, Tag, Poll, ScheduledStatus } from 'pl-api';
+import type { Account as BaseAccount, CreateStatusParams, CustomEmoji, Group, MediaAttachment, Status as BaseStatus, Tag, Poll, ScheduledStatus, InteractionPolicy } from 'pl-api';
 import type { AutoSuggestion } from 'pl-fe/components/autosuggest-input';
 import type { Emoji } from 'pl-fe/features/emoji';
+import type { Policy, Rule, Scope } from 'pl-fe/features/interaction-policies';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';
 import type { AppDispatch, RootState } from 'pl-fe/store';
@@ -66,8 +66,6 @@ const COMPOSE_LANGUAGE_ADD = 'COMPOSE_LANGUAGE_ADD' as const;
 const COMPOSE_LANGUAGE_DELETE = 'COMPOSE_LANGUAGE_DELETE' as const;
 const COMPOSE_FEDERATED_CHANGE = 'COMPOSE_FEDERATED_CHANGE' as const;
 
-const COMPOSE_EMOJI_INSERT = 'COMPOSE_EMOJI_INSERT' as const;
-
 const COMPOSE_UPLOAD_CHANGE_REQUEST = 'COMPOSE_UPLOAD_UPDATE_REQUEST' as const;
 const COMPOSE_UPLOAD_CHANGE_SUCCESS = 'COMPOSE_UPLOAD_UPDATE_SUCCESS' as const;
 const COMPOSE_UPLOAD_CHANGE_FAIL = 'COMPOSE_UPLOAD_UPDATE_FAIL' as const;
@@ -95,6 +93,8 @@ const COMPOSE_CHANGE_MEDIA_ORDER = 'COMPOSE_CHANGE_MEDIA_ORDER' as const;
 const COMPOSE_ADD_SUGGESTED_QUOTE = 'COMPOSE_ADD_SUGGESTED_QUOTE' as const;
 const COMPOSE_ADD_SUGGESTED_LANGUAGE = 'COMPOSE_ADD_SUGGESTED_LANGUAGE' as const;
 
+const COMPOSE_INTERACTION_POLICY_OPTION_CHANGE = 'COMPOSE_INTERACTION_POLICY_OPTION_CHANGE' as const;
+
 const getAccount = makeGetAccount();
 
 const messages = defineMessages({
@@ -118,7 +118,6 @@ interface ComposeSetStatusAction {
   explicitAddressing: boolean;
   spoilerText?: string;
   contentType?: string | false;
-  v: BackendVersion;
   withRedraft?: boolean;
   draftId?: string;
   editorState?: string | null;
@@ -135,8 +134,8 @@ const setComposeToStatus = (
   editorState?: string | null,
 ) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
-    const client = getClient(getState);
-    const { createStatusExplicitAddressing: explicitAddressing, version: v } = client.features;
+    const { features } = getClient(getState);
+    const explicitAddressing = features.createStatusExplicitAddressing && !useSettingsStore.getState().settings.forceImplicitAddressing;
 
     dispatch<ComposeSetStatusAction>({
       type: COMPOSE_SET_STATUS,
@@ -147,7 +146,6 @@ const setComposeToStatus = (
       explicitAddressing,
       spoilerText,
       contentType,
-      v,
       withRedraft,
       draftId,
       editorState,
@@ -178,9 +176,9 @@ const replyCompose = (
 ) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const client = getClient(state);
-    const { createStatusExplicitAddressing: explicitAddressing } = client.features;
-    const preserveSpoilers = useSettingsStore.getState().settings.preserveSpoilers;
+    const { features } = getClient(getState);
+    const { forceImplicitAddressing, preserveSpoilers } = useSettingsStore.getState().settings;
+    const explicitAddressing = features.createStatusExplicitAddressing && !forceImplicitAddressing;
     const account = selectOwnAccount(state);
 
     if (!account) return;
@@ -214,7 +212,8 @@ interface ComposeQuoteAction {
 const quoteCompose = (status: ComposeQuoteAction['status']) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const { createStatusExplicitAddressing: explicitAddressing } = state.auth.client.features;
+    const { forceImplicitAddressing } = useSettingsStore.getState().settings;
+    const explicitAddressing = state.auth.client.features.createStatusExplicitAddressing && !forceImplicitAddressing;
 
     dispatch<ComposeQuoteAction>({
       type: COMPOSE_QUOTE,
@@ -304,7 +303,7 @@ const handleComposeSubmit = (dispatch: AppDispatch, getState: () => RootState, c
     dispatch(insertIntoTagHistory(composeId, data.tags || [], status));
     toast.success(edit ? messages.editSuccess : messages.success, {
       actionLabel: messages.view,
-      actionLink: `/@${data.account.acct}/posts/${data.id}`,
+      actionLink: data.visibility === 'direct' ? '/conversations' : `/@${data.account.acct}/posts/${data.id}`,
     });
   } else {
     toast.success(messages.scheduledSuccess, {
@@ -351,6 +350,8 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
     const media = compose.media_attachments;
     const statusId = compose.id;
     let to = compose.to;
+    const { forceImplicitAddressing } = useSettingsStore.getState().settings;
+    const explicitAddressing = state.auth.client.features.createStatusExplicitAddressing && !forceImplicitAddressing;
 
     if (!validateSchedule(state, composeId)) {
       toast.error(messages.scheduleError);
@@ -382,7 +383,8 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
     useModalsStore.getState().closeModal('COMPOSE');
 
     if (compose.language && !statusId) {
-      dispatch(rememberLanguageUse(compose.language));
+      useSettingsStore.getState().rememberLanguageUse(compose.language);
+      dispatch(saveSettings());
     }
 
     const idempotencyKey = compose.idempotencyKey;
@@ -399,8 +401,9 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
       content_type: contentType,
       scheduled_at: compose.schedule?.toISOString(),
       language: compose.language || compose.suggested_language || undefined,
-      to: to.length ? to : undefined,
+      to: explicitAddressing && to.length ? to : undefined,
       local_only: !compose.federated,
+      interaction_policy: ['public', 'unlisted', 'private'].includes(compose.privacy) && compose.interactionPolicy || undefined,
     };
 
     if (compose.poll) {
@@ -433,9 +436,6 @@ const submitCompose = (composeId: string, opts: SubmitComposeOpts = {}) =>
     }
 
     return dispatch(createStatus(params, idempotencyKey, statusId)).then((data) => {
-      if (!statusId && data.scheduled_at === null && data.visibility === 'direct' && getState().conversations.mounted <= 0 && history) {
-        history.push('/conversations');
-      }
       handleComposeSubmit(dispatch, getState, composeId, data, status, !!statusId);
       onSuccess?.();
     }).catch((error) => {
@@ -596,9 +596,9 @@ const fetchComposeSuggestionsAccounts = throttle((dispatch, getState, composeId,
     });
 }, 200, { leading: true, trailing: true });
 
-const fetchComposeSuggestionsEmojis = (dispatch: AppDispatch, getState: () => RootState, composeId: string, token: string) => {
-  const state = getState();
-  const results = emojiSearch(token.replace(':', ''), { maxResults: 10 }, state.custom_emojis);
+const fetchComposeSuggestionsEmojis = (dispatch: AppDispatch, composeId: string, token: string) => {
+  const customEmojis = queryClient.getQueryData<Array<CustomEmoji>>(['instance', 'customEmojis']);
+  const results = emojiSearch(token.replace(':', ''), { maxResults: 10 }, customEmojis);
 
   dispatch(readyComposeSuggestionsEmojis(composeId, token, results));
 };
@@ -634,7 +634,7 @@ const fetchComposeSuggestions = (composeId: string, token: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     switch (token[0]) {
       case ':':
-        fetchComposeSuggestionsEmojis(dispatch, getState, composeId, token);
+        fetchComposeSuggestionsEmojis(dispatch, composeId, token);
         break;
       case '#':
         fetchComposeSuggestionsTags(dispatch, getState, composeId, token);
@@ -684,7 +684,8 @@ const selectComposeSuggestion = (composeId: string, position: number, token: str
       completion = isNativeEmoji(suggestion) ? suggestion.native : suggestion.colons;
       startPosition = position - 1;
 
-      dispatch(chooseEmoji(suggestion));
+      useSettingsStore.getState().rememberEmojiUse(suggestion);
+      dispatch(saveSettings());
     } else if (typeof suggestion === 'string' && suggestion[0] === '#') {
       completion = suggestion;
       startPosition = position - 1;
@@ -779,14 +780,6 @@ const deleteComposeLanguage = (composeId: string, value: Language) => ({
   type: COMPOSE_LANGUAGE_DELETE,
   composeId,
   value,
-});
-
-const insertEmojiCompose = (composeId: string, position: number, emoji: Emoji, needsSpace: boolean) => ({
-  type: COMPOSE_EMOJI_INSERT,
-  composeId,
-  position,
-  emoji,
-  needsSpace,
 });
 
 const addPoll = (composeId: string) => ({
@@ -897,7 +890,8 @@ interface ComposeEventReplyAction {
 const eventDiscussionCompose = (composeId: string, status: ComposeEventReplyAction['status']) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
-    const { createStatusExplicitAddressing: explicitAddressing } = state.auth.client.features;
+    const { forceImplicitAddressing } = useSettingsStore.getState().settings;
+    const explicitAddressing = state.auth.client.features.createStatusExplicitAddressing && !forceImplicitAddressing;
 
     return dispatch({
       type: COMPOSE_EVENT_REPLY,
@@ -939,6 +933,15 @@ const changeComposeFederated = (composeId: string) => ({
   composeId,
 });
 
+const changeComposeInteractionPolicyOption = (composeId: string, policy: Policy, rule: Rule, value: Scope[], initial: InteractionPolicy) => ({
+  type: COMPOSE_INTERACTION_POLICY_OPTION_CHANGE,
+  composeId,
+  policy,
+  rule,
+  value,
+  initial,
+});
+
 type ComposeAction =
   ComposeSetStatusAction
   | ReturnType<typeof changeCompose>
@@ -974,7 +977,6 @@ type ComposeAction =
   | ReturnType<typeof changeComposeModifiedLanguage>
   | ReturnType<typeof addComposeLanguage>
   | ReturnType<typeof deleteComposeLanguage>
-  | ReturnType<typeof insertEmojiCompose>
   | ReturnType<typeof addPoll>
   | ReturnType<typeof removePoll>
   | ReturnType<typeof addSchedule>
@@ -991,7 +993,8 @@ type ComposeAction =
   | ReturnType<typeof changeMediaOrder>
   | ReturnType<typeof addSuggestedQuote>
   | ReturnType<typeof addSuggestedLanguage>
-  | ReturnType<typeof changeComposeFederated>;
+  | ReturnType<typeof changeComposeFederated>
+  | ReturnType<typeof changeComposeInteractionPolicyOption>;
 
 export {
   COMPOSE_CHANGE,
@@ -1025,7 +1028,6 @@ export {
   COMPOSE_MODIFIED_LANGUAGE_CHANGE,
   COMPOSE_LANGUAGE_ADD,
   COMPOSE_LANGUAGE_DELETE,
-  COMPOSE_EMOJI_INSERT,
   COMPOSE_UPLOAD_CHANGE_REQUEST,
   COMPOSE_UPLOAD_CHANGE_SUCCESS,
   COMPOSE_UPLOAD_CHANGE_FAIL,
@@ -1046,8 +1048,8 @@ export {
   COMPOSE_ADD_SUGGESTED_QUOTE,
   COMPOSE_ADD_SUGGESTED_LANGUAGE,
   COMPOSE_FEDERATED_CHANGE,
+  COMPOSE_INTERACTION_POLICY_OPTION_CHANGE,
   setComposeToStatus,
-  changeCompose,
   replyCompose,
   cancelReplyCompose,
   quoteCompose,
@@ -1056,7 +1058,6 @@ export {
   mentionCompose,
   directCompose,
   directComposeById,
-  handleComposeSubmit,
   submitCompose,
   uploadFile,
   uploadCompose,
@@ -1067,11 +1068,7 @@ export {
   groupComposeModal,
   clearComposeSuggestions,
   fetchComposeSuggestions,
-  readyComposeSuggestionsEmojis,
-  readyComposeSuggestionsAccounts,
   selectComposeSuggestion,
-  updateSuggestionTags,
-  updateTagHistory,
   changeComposeSpoilerness,
   changeComposeContentType,
   changeComposeSpoilerText,
@@ -1080,7 +1077,6 @@ export {
   changeComposeModifiedLanguage,
   addComposeLanguage,
   deleteComposeLanguage,
-  insertEmojiCompose,
   addPoll,
   removePoll,
   addSchedule,
@@ -1099,6 +1095,7 @@ export {
   addSuggestedQuote,
   addSuggestedLanguage,
   changeComposeFederated,
+  changeComposeInteractionPolicyOption,
   type ComposeReplyAction,
   type ComposeSuggestionSelectAction,
   type ComposeAction,

@@ -15,6 +15,9 @@ const conversationSchema = v.object({
   last_status: v.fallback(v.nullable(statusSchema), null),
 });
 
+/**
+ * @category Entity types
+ */
 type Conversation = v.InferOutput<typeof conversationSchema>;
 
 export { conversationSchema, type Conversation };

@@ -1,9 +1,7 @@
 import { RouterProvider } from '@tanstack/react-router';
 import React, { Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { BrowserRouter } from 'react-router-dom';
 
-import * as BuildConfig from 'pl-fe/build-config';
 import LoadingScreen from 'pl-fe/components/loading-screen';
 import SiteErrorBoundary from 'pl-fe/components/site-error-boundary';
 import { useRouter } from 'pl-fe/features/ui/routes';
@@ -33,31 +31,31 @@ const PlFeMount = () => {
   return (
     <SiteErrorBoundary>
       {/* <BrowserRouter basename={BuildConfig.FE_SUBDIRECTORY}> */}
-        <>
-          <Suspense fallback={<LoadingScreen />}>
-            {showOnboarding
-              ? <OnboardingWizard />
-              : <RouterProvider router={router} />
-            }
-          </Suspense>
+      <>
+        <Suspense fallback={<LoadingScreen />}>
+          {showOnboarding
+            ? <OnboardingWizard />
+            : <RouterProvider router={router} />
+          }
+        </Suspense>
 
+        <Suspense>
+          <ModalRoot />
+        </Suspense>
+
+        {(gdpr && !isLoggedIn) && (
           <Suspense>
-            <ModalRoot />
+            <GdprBanner />
           </Suspense>
+        )}
 
-          {(gdpr && !isLoggedIn) && (
-            <Suspense>
-              <GdprBanner />
-            </Suspense>
-          )}
-
-          <div id='toaster'>
-            <Toaster
-              position='top-right'
-              containerClassName='top-4'
-            />
-          </div>
-        </>
+        <div id='toaster'>
+          <Toaster
+            position='top-right'
+            containerClassName='top-4'
+          />
+        </div>
+      </>
       {/* </BrowserRouter> */}
     </SiteErrorBoundary>
   );

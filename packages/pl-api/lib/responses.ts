@@ -1,3 +1,6 @@
+/**
+ * @category Utils
+ */
 interface PaginatedResponse<T, IsArray extends boolean = true> {
   previous: (() => Promise<PaginatedResponse<T, IsArray>>) | null;
   next: (() => Promise<PaginatedResponse<T, IsArray>>) | null;

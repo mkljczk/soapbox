@@ -5,7 +5,6 @@ import { useHistory } from 'react-router-dom';
 
 import { mentionCompose } from 'pl-fe/actions/compose';
 import { reblog, favourite, unreblog, unfavourite } from 'pl-fe/actions/interactions';
-import { toggleStatusMediaHidden } from 'pl-fe/actions/statuses';
 import HoverAccountWrapper from 'pl-fe/components/hover-account-wrapper';
 import Icon from 'pl-fe/components/icon';
 import RelativeTimestamp from 'pl-fe/components/relative-timestamp';
@@ -23,6 +22,7 @@ import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { makeGetNotification } from 'pl-fe/selectors';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
+import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 import { NotificationType } from 'pl-fe/utils/notification';
 
 import type { NotificationGroup } from 'pl-api';
@@ -182,14 +182,13 @@ const buildMessage = (
 const avatarSize = 48;
 
 interface INotification {
-  hidden?: boolean;
   notification: NotificationGroup;
   onMoveUp?: (notificationId: string) => void;
   onMoveDown?: (notificationId: string) => void;
   onReblog?: (status: StatusEntity, e?: KeyboardEvent) => void;
 }
 
-const getNotificationStatus = (n: Pick<NotificationGroup, 'type'> & ({ status: StatusEntity } | { })) => {
+const getNotificationStatus = (n: Pick<NotificationGroup, 'type'> & ({ status: StatusEntity } | { })): StatusEntity | null => {
   if (['mention', 'status', 'reblog', 'favourite', 'poll', 'update', 'emoji_reaction', 'event_reminder', 'participation_accepted', 'participation_request'].includes(n.type))
     // @ts-ignore
     return n.status;
@@ -197,13 +196,14 @@ const getNotificationStatus = (n: Pick<NotificationGroup, 'type'> & ({ status: S
 };
 
 const Notification: React.FC<INotification> = (props) => {
-  const { hidden = false, onMoveUp, onMoveDown } = props;
+  const { onMoveUp, onMoveDown } = props;
 
   const dispatch = useAppDispatch();
 
   const getNotification = useCallback(makeGetNotification(), []);
 
   const { me } = useLoggedIn();
+  const { toggleStatusMediaHidden } = useStatusMetaStore();
   const { openModal } = useModalsStore();
   const { settings } = useSettingsStore();
 
@@ -282,9 +282,9 @@ const Notification: React.FC<INotification> = (props) => {
     }
   }, [status]);
 
-  const handleHotkeyToggleSensitive = useCallback((e?: KeyboardEvent) => {
+  const handleHotkeyToggleSensitive = useCallback(() => {
     if (status && typeof status === 'object') {
-      dispatch(toggleStatusMediaHidden(status));
+      toggleStatusMediaHidden(status.id);
     }
   }, [status]);
 
@@ -300,7 +300,7 @@ const Notification: React.FC<INotification> = (props) => {
     }
   };
 
-  const displayedType = notification.type === 'mention' && (notification.subtype === 'reply' || status.in_reply_to_account_id === me) ? 'reply' : notification.type;
+  const displayedType = notification.type === 'mention' && (notification.subtype === 'reply' || status?.in_reply_to_account_id === me) ? 'reply' : notification.type;
 
   const renderIcon = (): React.ReactNode => {
     if (type === 'emoji_reaction' && notification.emoji) {
@@ -330,7 +330,6 @@ const Notification: React.FC<INotification> = (props) => {
         return account && typeof account === 'object' ? (
           <AccountContainer
             id={account.id}
-            hidden={hidden}
             avatarSize={avatarSize}
             actionType='follow_request'
             withRelationship
@@ -340,7 +339,6 @@ const Notification: React.FC<INotification> = (props) => {
         return account && typeof account === 'object' ? (
           <AccountContainer
             id={account.id}
-            hidden={hidden}
             avatarSize={avatarSize}
             actionType='biting'
             withRelationship
@@ -350,7 +348,6 @@ const Notification: React.FC<INotification> = (props) => {
         return account && typeof account === 'object' && notification.target && typeof notification.target === 'object' ? (
           <AccountContainer
             id={notification.target_id}
-            hidden={hidden}
             avatarSize={avatarSize}
             withRelationship
           />
@@ -368,7 +365,6 @@ const Notification: React.FC<INotification> = (props) => {
         return status && typeof status === 'object' ? (
           <StatusContainer
             id={status.id}
-            hidden={hidden}
             onMoveDown={handleMoveDown}
             onMoveUp={handleMoveUp}
             avatarSize={avatarSize}

@@ -4,10 +4,6 @@ import React, { useState } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
 import { useAccount } from 'pl-fe/api/hooks/accounts/use-account';
-import { useSearchAccounts, useSearchHashtags, useSearchStatuses } from 'pl-fe/api/hooks/search/use-search';
-import { useSuggestedAccounts } from 'pl-fe/api/hooks/trends/use-suggested-accounts';
-import { useTrendingLinks } from 'pl-fe/api/hooks/trends/use-trending-links';
-import { useTrendingStatuses } from 'pl-fe/api/hooks/trends/use-trending-statuses';
 import Hashtag from 'pl-fe/components/hashtag';
 import IconButton from 'pl-fe/components/icon-button';
 import ScrollableList from 'pl-fe/components/scrollable-list';
@@ -21,7 +17,11 @@ import PlaceholderAccount from 'pl-fe/features/placeholder/components/placeholde
 import PlaceholderHashtag from 'pl-fe/features/placeholder/components/placeholder-hashtag';
 import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder-status';
 import { useFeatures } from 'pl-fe/hooks/use-features';
+import { useSearchAccounts, useSearchHashtags, useSearchStatuses } from 'pl-fe/queries/search/use-search';
 import useTrends from 'pl-fe/queries/trends';
+import { useSuggestedAccounts } from 'pl-fe/queries/trends/use-suggested-accounts';
+import { useTrendingLinks } from 'pl-fe/queries/trends/use-trending-links';
+import { useTrendingStatuses } from 'pl-fe/queries/trends/use-trending-statuses';
 
 type SearchFilter = 'accounts' | 'hashtags' | 'statuses' | 'links';
 

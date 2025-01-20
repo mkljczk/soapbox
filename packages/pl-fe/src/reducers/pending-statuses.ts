@@ -5,10 +5,10 @@ import {
   STATUS_CREATE_FAIL,
   STATUS_CREATE_REQUEST,
   STATUS_CREATE_SUCCESS,
+  type StatusesAction,
 } from 'pl-fe/actions/statuses';
 
 import type { StatusVisibility } from 'pl-fe/normalizers/status';
-import type { AnyAction } from 'redux';
 
 interface PendingStatus {
   content_type: string;
@@ -49,7 +49,7 @@ const deleteStatus = (state: State, idempotencyKey: string) => {
   delete state[idempotencyKey];
 };
 
-const pending_statuses = (state = initialState, action: AnyAction): State => {
+const pending_statuses = (state = initialState, action: StatusesAction): State => {
   switch (action.type) {
     case STATUS_CREATE_REQUEST:
       if (action.editing) return state;

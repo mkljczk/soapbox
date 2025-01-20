@@ -53,10 +53,6 @@ const getVideoDuration = (file: File): Promise<number> => {
 
 const domParser = new DOMParser();
 
-enum VideoProviders {
-  RUMBLE = 'rumble.com'
-}
-
 /** Try adding autoplay to an iframe embed for platforms such as YouTube. */
 const addAutoPlay = (html: string): string => {
   try {
@@ -65,16 +61,10 @@ const addAutoPlay = (html: string): string => {
 
     if (iframe) {
       const url = new URL(iframe.src);
-      const provider = new URL(iframe.src).host;
 
-      if (provider === VideoProviders.RUMBLE) {
-        url.searchParams.append('pub', '7a20');
-        url.searchParams.append('autoplay', '2');
-      } else {
-        url.searchParams.append('autoplay', '1');
-        url.searchParams.append('auto_play', '1');
-        iframe.allow = 'autoplay';
-      }
+      url.searchParams.append('autoplay', '1');
+      url.searchParams.append('auto_play', '1');
+      iframe.allow = 'autoplay';
 
       iframe.src = url.toString();
 

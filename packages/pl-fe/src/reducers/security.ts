@@ -4,11 +4,11 @@ import {
   MFA_FETCH_SUCCESS,
   MFA_CONFIRM_SUCCESS,
   MFA_DISABLE_SUCCESS,
+  type MfaAction,
 } from '../actions/mfa';
-import { FETCH_TOKENS_SUCCESS, REVOKE_TOKEN_SUCCESS } from '../actions/security';
+import { FETCH_TOKENS_SUCCESS, REVOKE_TOKEN_SUCCESS, type SecurityAction } from '../actions/security';
 
 import type { OauthToken } from 'pl-api';
-import type { AnyAction } from 'redux';
 
 interface State {
   tokens: Array<OauthToken>;
@@ -34,7 +34,7 @@ const enableMfa = (state: State, method: string) => state.mfa.settings = { ...st
 
 const disableMfa = (state: State, method: string) => state.mfa.settings = { ...state.mfa.settings, [method]: false };
 
-const security = (state = initialState, action: AnyAction) => {
+const security = (state = initialState, action: MfaAction | SecurityAction) => {
   switch (action.type) {
     case FETCH_TOKENS_SUCCESS:
       return create(state, (draft) => {

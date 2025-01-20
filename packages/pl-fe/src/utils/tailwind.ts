@@ -29,7 +29,7 @@ const maybeGenerateAccentColor = (brandColor: string): string | null =>
   isHex(brandColor) ? generateAccent(brandColor) : null;
 
 /** Build a color object from legacy colors */
-const fromLegacyColors = ({ brandColor, accentColor }: {
+const fromBasicColors = ({ brandColor, accentColor }: {
   brandColor: string;
   accentColor: string | null;
 }): TailwindColorPalette => {
@@ -50,13 +50,16 @@ const toTailwind = (config: {
   colors: Record<string, Record<string, string>>;
 }): Record<string, Record<string, string> | string> => {
   const colors: PlFeColors = config.colors;
-  const legacyColors = fromLegacyColors(config);
+  const basicColors = fromBasicColors(config);
 
-  return Object.fromEntries(Object.entries(legacyColors).map(([key, value]) => [key, typeof value === 'string' ? colors[key] || value : { ...value, ...colors[key] }]));
+  return {
+    ...colors,
+    ...Object.fromEntries(Object.entries(basicColors).map(([key, value]) => [key, typeof value === 'string' ? colors[key] || value : { ...value, ...colors[key] }])),
+  };
 };
 
 export {
   expandPalette,
-  fromLegacyColors,
+  fromBasicColors,
   toTailwind,
 };

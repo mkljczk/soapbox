@@ -29,20 +29,17 @@ const ScheduledStatusActionBar: React.FC<IScheduledStatusActionBar> = ({ status 
   const { settings } = useSettingsStore();
 
   const handleCancelClick = () => {
-    dispatch((_, getState) => {
-
-      const deleteModal = settings.deleteModal;
-      if (!deleteModal) {
-        dispatch(cancelScheduledStatus(status.id));
-      } else {
-        openModal('CONFIRM', {
-          heading: intl.formatMessage(messages.deleteHeading),
-          message: intl.formatMessage(messages.deleteMessage),
-          confirm: intl.formatMessage(messages.deleteConfirm),
-          onConfirm: () => dispatch(cancelScheduledStatus(status.id)),
-        });
-      }
-    });
+    const deleteModal = settings.deleteModal;
+    if (!deleteModal) {
+      dispatch(cancelScheduledStatus(status.id));
+    } else {
+      openModal('CONFIRM', {
+        heading: intl.formatMessage(messages.deleteHeading),
+        message: intl.formatMessage(messages.deleteMessage),
+        confirm: intl.formatMessage(messages.deleteConfirm),
+        onConfirm: () => dispatch(cancelScheduledStatus(status.id)),
+      });
+    }
   };
 
   return (

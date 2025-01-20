@@ -53,6 +53,9 @@ const filterSchema = v.pipe(
   }),
 );
 
+/**
+ * @category Entity types
+ */
 type Filter = v.InferOutput<typeof filterSchema>;
 
 export { filterKeywordSchema, filterStatusSchema, filterSchema, type Filter };

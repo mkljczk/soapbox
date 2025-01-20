@@ -1,18 +1,16 @@
-import { useLocation } from '@tanstack/react-router';
 import clsx from 'clsx';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
+import { useSearchParams } from 'react-router-dom-v5-compat';
 
-import { fetchDirectory, expandDirectory } from 'pl-fe/actions/directory';
 import LoadMore from 'pl-fe/components/load-more';
 import { RadioGroup, RadioItem } from 'pl-fe/components/radio';
 import { CardTitle } from 'pl-fe/components/ui/card';
 import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
+import { useDirectory } from 'pl-fe/queries/accounts/use-directory';
 
 import AccountCard from './components/account-card';
 
@@ -26,32 +24,25 @@ const messages = defineMessages({
 
 const Directory = () => {
   const intl = useIntl();
-  const dispatch = useAppDispatch();
-  const { search } = useLocation();
-  const params = new URLSearchParams(search);
+  const [params, setParams] = useSearchParams();
   const instance = useInstance();
   const features = useFeatures();
 
-  const accountIds = useAppSelector((state) => state.user_lists.directory.items);
-  const isLoading = useAppSelector((state) => state.user_lists.directory.isLoading);
+  const order = (params.get('order') || 'active') as 'active' | 'new';
+  const local = !!params.get('local');
 
-  const [order, setOrder] = useState(params.get('order') || 'active');
-  const [local, setLocal] = useState(!!params.get('local'));
-
-  useEffect(() => {
-    dispatch(fetchDirectory({ order: order || 'active', local: local || false }));
-  }, [order, local]);
+  const { data: accountIds = [], isLoading, hasNextPage, fetchNextPage } = useDirectory(order, local);
 
   const handleChangeOrder: React.ChangeEventHandler<HTMLInputElement> = e => {
-    setOrder(e.target.value);
+    setParams({ local: local ? 'true' : '', order: e.target.value });
   };
 
   const handleChangeLocal: React.ChangeEventHandler<HTMLInputElement> = e => {
-    setLocal(e.target.value === '1');
+    setParams({ local: e.target.value === '1' ? 'true' : '', order });
   };
 
   const handleLoadMore = () => {
-    dispatch(expandDirectory({ order: order || 'active', local: local || false }));
+    fetchNextPage({ cancelRefetch: false });
   };
 
   return (
@@ -108,7 +99,7 @@ const Directory = () => {
           )}
         </div>
 
-        <LoadMore onClick={handleLoadMore} disabled={isLoading} />
+        {hasNextPage && <LoadMore onClick={handleLoadMore} disabled={isLoading} />}
       </Stack>
     </Column>
   );

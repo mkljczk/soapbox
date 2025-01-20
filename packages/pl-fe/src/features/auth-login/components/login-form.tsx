@@ -1,6 +1,6 @@
+import { Link } from '@tanstack/react-router';
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
-import { Link } from '@tanstack/react-router';
 
 import Button from 'pl-fe/components/ui/button';
 import Form from 'pl-fe/components/ui/form';

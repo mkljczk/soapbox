@@ -36,6 +36,9 @@ const emojiReactionSchema = v.pipe(
   v.union([baseEmojiReactionSchema, customEmojiReactionSchema]),
 );
 
+/**
+ * @category Entity types
+ */
 type EmojiReaction = v.InferOutput<typeof emojiReactionSchema>;
 
 export { emojiReactionSchema, type EmojiReaction };
