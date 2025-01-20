@@ -1,7 +1,7 @@
+import { Link as Comp, type LinkComponentProps } from '@tanstack/react-router';
 import React from 'react';
-import { Link as Comp, LinkProps } from 'react-router-dom';
 
-const Link = (props: LinkProps) => (
+const Link = (props: LinkComponentProps) => (
   <Comp
     {...props}
     className='text-primary-600 hover:underline dark:text-accent-blue'
