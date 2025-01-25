@@ -61,6 +61,7 @@ export * from './relationship';
 export * from './relationship-severance-event';
 export * from './report';
 export * from './role';
+export * from './rss-feed';
 export * from './rule';
 export * from './scheduled-status';
 export * from './scrobble';

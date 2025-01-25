@@ -1188,6 +1188,14 @@ const getFeatures = (instance: Instance) => {
     ]),
 
     /**
+     * Ability to subscribe to RSS feeds.
+     * @see GET /api/v1/pleroma/rss_feed_subscriptions
+     * @see POST /api/v1/pleroma/rss_feed_subscriptions
+     * @see DELETE /api/v1/pleroma/rss_feed_subscriptions
+     */
+    rssFeedSubscriptions: instance.api_versions['rss_feed_subscriptions.pleroma.pl-api'] >= 1,
+
+    /**
      * Can schedule statuses to be posted at a later time.
      * @see POST /api/v1/statuses
      * @see {@link https://docs.joinmastodon.org/methods/scheduled_statuses/}

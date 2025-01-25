@@ -60,6 +60,7 @@ import {
   pollSchema,
   relationshipSchema,
   reportSchema,
+  rssFeedSchema,
   ruleSchema,
   scheduledStatusSchema,
   scrobbleSchema,
@@ -4963,6 +4964,35 @@ class PlApiClient {
 
     getCircleStatuses: (circleId: string, params: GetCircleStatusesParams) =>
       this.#paginatedGet(`/api/v1/circles/${circleId}/statuses`, { params }, statusSchema),
+  };
+
+  public readonly rssFeedSubscriptions = {
+    /**
+     * Requires features{@link Features['rssFeedSubscriptions']}.
+     */
+    fetchRssFeedSubscriptions: async () => {
+      const response = await this.request('/api/v1/pleroma/rss_feed_subscriptions');
+
+      return v.parse(filteredArray(rssFeedSchema), response.json);
+    },
+
+    /**
+     * Requires features{@link Features['rssFeedSubscriptions']}.
+     */
+    createRssFeedSubscription: async (url: string) => {
+      const response = await this.request('/api/v1/rss_feed_subscriptions', { method: 'POST', body: { url } });
+
+      return v.parse(rssFeedSchema, response.json);
+    },
+
+    /**
+     * Requires features{@link Features['rssFeedSubscriptions']}.
+     */
+    deleteRssFeedSubscription: async (url: string) => {
+      const response = await this.request<{}>('/api/v1/rss_feed_subscriptions', { method: 'DELETE', body: { url } });
+
+      return response.json;
+    },
   };
 
   /** Routes that are not part of any stable release */

@@ -11,6 +11,7 @@ import { mediaAttachmentSchema } from './media-attachment';
 import { mentionSchema } from './mention';
 import { pollSchema } from './poll';
 import { previewCardSchema } from './preview-card';
+import { rssFeedSchema } from './rss-feed';
 import { tagSchema } from './tag';
 import { translationSchema } from './translation';
 import { datetimeSchema, filteredArray } from './utils';
@@ -91,6 +92,7 @@ const baseStatusSchema = v.object({
 
   event: v.fallback(v.nullable(statusEventSchema), null),
   translation: v.fallback(v.union([v.nullable(translationSchema), v.literal(false)]), null),
+  rss_feed: v.fallback(v.nullable(rssFeedSchema), null),
 
   content_map: v.fallback(v.nullable(v.record(v.string(), v.string())), null),
   text_map: v.fallback(v.nullable(v.record(v.string(), v.string())), null),
@@ -123,6 +125,7 @@ const preprocess = (status: any) => {
 
       'event',
       'translation',
+      'rss_feed',
     ])),
     ...(pick(status.friendica || {}, [
       'dislikes_count',
