@@ -1039,6 +1039,7 @@ const getFeatures = (instance: Instance) => {
       v.software === ICESHRIMP,
       v.software === ICESHRIMP_NET,
       v.software === MASTODON,
+      v.software === MITRA && gte(v.version, '3.15.0'),
       v.software === TAKAHE && gte(v.version, '0.8.0'),
       v.software === GOTOSOCIAL,
       instance.api_versions['polls.pleroma.pl-api'] >= 1,
