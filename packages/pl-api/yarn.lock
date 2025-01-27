@@ -2646,10 +2646,10 @@ typed-array-length@^1.0.6:
     is-typed-array "^1.1.13"
     possible-typed-array-names "^1.0.0"
 
-typedoc-material-theme@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/typedoc-material-theme/-/typedoc-material-theme-1.2.0.tgz#ef1aebb5d45d028cf65ffbd2c325d5f89cf7eee2"
-  integrity sha512-pZ07hqdxbyRtM+Tsu0s8BFLdANAyh2CWF0J2X07B9ldmvwbmVEfNdgpE0EYky/oFah9shv2o/KjElPtpnQi1+w==
+typedoc-material-theme@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/typedoc-material-theme/-/typedoc-material-theme-1.3.0.tgz#93789743ebed61b3dba517e1f61d25c5deddd884"
+  integrity sha512-4vY68NUBBkMc3gKAltDtvT0KbIYX1uaFAT/3brDwhnUxhfTiYRtfg8VXR2lr8f+9VNDh7BfEtj8gpRO7Y93TWQ==
   dependencies:
     "@material/material-color-utilities" "^0.3.0"
 
