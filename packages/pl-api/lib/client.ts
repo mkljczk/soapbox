@@ -4980,7 +4980,7 @@ class PlApiClient {
      * Requires features{@link Features['rssFeedSubscriptions']}.
      */
     createRssFeedSubscription: async (url: string) => {
-      const response = await this.request('/api/v1/rss_feed_subscriptions', { method: 'POST', body: { url } });
+      const response = await this.request('/api/v1/pleroma/rss_feed_subscriptions', { method: 'POST', body: { url } });
 
       return v.parse(rssFeedSchema, response.json);
     },
@@ -4989,7 +4989,7 @@ class PlApiClient {
      * Requires features{@link Features['rssFeedSubscriptions']}.
      */
     deleteRssFeedSubscription: async (url: string) => {
-      const response = await this.request<{}>('/api/v1/rss_feed_subscriptions', { method: 'DELETE', body: { url } });
+      const response = await this.request<{}>('/api/v1/pleroma/rss_feed_subscriptions', { method: 'DELETE', body: { url } });
 
       return response.json;
     },

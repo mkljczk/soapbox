@@ -8,7 +8,7 @@ const rssFeedSchema = v.object({
   url: v.string(),
   title: v.fallback(v.nullable(v.string()), null),
   description: v.fallback(v.nullable(v.string()), null),
-  image: v.fallback(v.nullable(v.string()), null),
+  image_url: v.fallback(v.nullable(v.string()), null),
 });
 
 /**
