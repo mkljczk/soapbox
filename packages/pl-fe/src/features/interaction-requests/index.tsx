@@ -1,3 +1,4 @@
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -18,9 +19,14 @@ import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
 import { buildLink } from 'pl-fe/features/notifications/components/notification';
 import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
-import { type MinifiedInteractionRequest, useAuthorizeInteractionRequestMutation, useFlatInteractionRequests, useRejectInteractionRequestMutation } from 'pl-fe/queries/statuses/use-interaction-requests';
+import {
+  interactionRequestsQueryOptions,
+  authorizeInteractionRequestMutationOptions,
+  rejectInteractionRequestMutationOptions,
+  type MinifiedInteractionRequest,
+} from 'pl-fe/queries/statuses/interaction-requests';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import toast from 'pl-fe/toast';
 
 const messages = defineMessages({
@@ -52,7 +58,7 @@ interface IInteractionRequestStatus {
 }
 
 const InteractionRequestStatus: React.FC<IInteractionRequestStatus> = ({ id: statusId, hasReply, isReply, actions }) => {
-  const status = useAppSelector((state) => state.statuses[statusId]);
+  const { data: status } = useQuery(statusQueryOptions(statusId));
 
   if (!status) return null;
 
@@ -96,8 +102,8 @@ const InteractionRequest: React.FC<IInteractionRequest> = ({
   const { account: ownAccount } = useOwnAccount();
   const { account } = useAccount(interactionRequest.account_id);
 
-  const { mutate: authorize } = useAuthorizeInteractionRequestMutation(interactionRequest.id);
-  const { mutate: reject } = useRejectInteractionRequestMutation(interactionRequest.id);
+  const { mutate: authorize } = useMutation(authorizeInteractionRequestMutationOptions(interactionRequest.id));
+  const { mutate: reject } = useMutation(rejectInteractionRequestMutationOptions(interactionRequest.id));
 
   const handleAuthorize = () => {
     authorize(undefined, {
@@ -217,7 +223,7 @@ const InteractionRequest: React.FC<IInteractionRequest> = ({
 const InteractionRequests = () => {
   const intl = useIntl();
 
-  const { data = [], fetchNextPage, hasNextPage, isFetching, isLoading, refetch } = useFlatInteractionRequests();
+  const { data = [], fetchNextPage, hasNextPage, isFetching, isLoading, refetch } = useInfiniteQuery(interactionRequestsQueryOptions);
 
   const emptyMessage = <FormattedMessage id='empty_column.interaction_requests' defaultMessage='There are no pending interaction requests.' />;
 

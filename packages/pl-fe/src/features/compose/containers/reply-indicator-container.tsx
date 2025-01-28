@@ -1,10 +1,10 @@
-import React, { useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 
 import { cancelReplyCompose } from 'pl-fe/actions/compose';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { useCompose } from 'pl-fe/hooks/use-compose';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 import ReplyIndicator from '../components/reply-indicator';
 
@@ -13,10 +13,8 @@ interface IReplyIndicatorContainer {
 }
 
 const ReplyIndicatorContainer: React.FC<IReplyIndicatorContainer> = ({ composeId }) => {
-  const getStatus = useCallback(makeGetStatus(), []);
-
   const { in_reply_to: inReplyToId, id: statusId } = useCompose(composeId);
-  const status = useAppSelector(state => getStatus(state, { id: inReplyToId! }));
+  const { data: status } = useQuery(statusQueryOptions(inReplyToId || undefined));
   const dispatch = useAppDispatch();
 
   const onCancel = () => {

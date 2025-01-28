@@ -1,10 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import ReactSwipeableViews from 'react-swipeable-views';
 
-import { fetchStatusWithContext } from 'pl-fe/actions/statuses';
+import { fetchContext } from 'pl-fe/actions/statuses';
 import ExtendedVideoPlayer from 'pl-fe/components/extended-video-player';
 import MissingIndicator from 'pl-fe/components/missing-indicator';
 import StatusActionBar from 'pl-fe/components/status-action-bar';
@@ -17,9 +18,8 @@ import PlaceholderStatus from 'pl-fe/features/placeholder/components/placeholder
 import Thread from 'pl-fe/features/status/components/thread';
 import Video from 'pl-fe/features/video';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
 import { userTouching } from 'pl-fe/is-mobile';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 import ImageLoader from '../image-loader';
 
@@ -65,8 +65,7 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
-  const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector((state) => statusId ? getStatus(state, { id: statusId }) : undefined);
+  const { data: status } = useQuery(statusQueryOptions(statusId));
 
   const [isLoaded, setIsLoaded] = useState<boolean>(!!status);
   const [index, setIndex] = useState<number | null>(null);
@@ -183,7 +182,7 @@ const MediaModal: React.FC<MediaModalProps & BaseModalProps> = (props) => {
   // Load data.
   useEffect(() => {
     if (status?.id) {
-      dispatch(fetchStatusWithContext(status.id, intl)).then(() => {
+      dispatch(fetchContext(status.id, intl)).then(() => {
         setIsLoaded(true);
       }).catch(() => {
         setIsLoaded(true);

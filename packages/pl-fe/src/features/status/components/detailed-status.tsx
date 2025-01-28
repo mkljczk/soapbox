@@ -17,15 +17,15 @@ import Emojify from 'pl-fe/features/emoji/emojify';
 import StatusInteractionBar from './status-interaction-bar';
 import StatusTypeIcon from './status-type-icon';
 
-import type { SelectedStatus } from 'pl-fe/selectors';
+import type { Status as NormalizedStatus } from 'pl-fe/normalizers/status';
 
 const messages = defineMessages({
   applicationName: { id: 'status.application_name', defaultMessage: 'Sent from {name}' },
 });
 
 interface IDetailedStatus {
-  status: SelectedStatus;
-  onOpenCompareHistoryModal: (status: Pick<SelectedStatus, 'id'>) => void;
+  status: NormalizedStatus;
+  onOpenCompareHistoryModal: (status: Pick<NormalizedStatus, 'id'>) => void;
 }
 
 const DetailedStatus: React.FC<IDetailedStatus> = ({
@@ -41,7 +41,7 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
   };
 
   const renderStatusInfo = () => {
-    if (status.group) {
+    if (status.group_id) {
       return (
         <div className='mb-4'>
           <StatusInfo
@@ -58,7 +58,7 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
                 defaultMessage='Posted in {group}'
                 values={{
                   group: (
-                    <Link to={`/groups/${status.group.id}`} className='hover:underline'>
+                    <Link to={`/groups/${status.group_id}`} className='hover:underline'>
                       <bdi className='truncate'>
                         <strong className='text-gray-800 dark:text-gray-200'>
                           <Emojify text={status.account.display_name} emojis={status.account.emojis} />
@@ -75,14 +75,12 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
     }
   };
 
-  const actualStatus = status?.reblog || status;
-  if (!actualStatus) return null;
-  const { account } = actualStatus;
+  const { account } = status;
   if (!account || typeof account !== 'object') return null;
 
   return (
     <div className='border-box'>
-      <div ref={node} className='detailed-actualStatus' tabIndex={-1}>
+      <div ref={node} className='detailed-status' tabIndex={-1}>
         {renderStatusInfo()}
 
         <div className='mb-4'>
@@ -91,16 +89,16 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
             account={account}
             avatarSize={42}
             hideActions
-            approvalStatus={actualStatus.approval_status}
+            approvalStatus={status.approval_status}
           />
         </div>
 
-        <StatusReplyMentions status={actualStatus} />
+        <StatusReplyMentions status={status} />
 
         <Stack className='relative z-0'>
           <Stack space={4}>
             <StatusContent
-              status={actualStatus}
+              status={status}
               textSize='lg'
               translatable
               withMedia
@@ -108,34 +106,34 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
           </Stack>
         </Stack>
 
-        <StatusReactionsBar status={actualStatus} />
+        <StatusReactionsBar status={status} />
 
         <HStack justifyContent='between' alignItems='center' className='py-3' wrap>
-          <StatusInteractionBar status={actualStatus} />
+          <StatusInteractionBar status={status} />
 
           <HStack space={1} alignItems='center'>
             <span>
               <Text tag='span' theme='muted' size='sm'>
-                <a href={actualStatus.url} target='_blank' rel='noopener' className='hover:underline'>
-                  <FormattedDate value={new Date(actualStatus.created_at)} hour12 year='numeric' month='short' day='2-digit' hour='numeric' minute='2-digit' />
+                <a href={status.url} target='_blank' rel='noopener' className='hover:underline'>
+                  <FormattedDate value={new Date(status.created_at)} hour12 year='numeric' month='short' day='2-digit' hour='numeric' minute='2-digit' />
                 </a>
 
-                {actualStatus.application && (
+                {status.application && (
                   <>
                     {' · '}
                     <a
-                      href={(actualStatus.application.website) ? actualStatus.application.website : '#'}
+                      href={(status.application.website) ? status.application.website : '#'}
                       target='_blank'
                       rel='noopener'
                       className='hover:underline'
-                      title={intl.formatMessage(messages.applicationName, { name: actualStatus.application.name })}
+                      title={intl.formatMessage(messages.applicationName, { name: status.application.name })}
                     >
-                      {actualStatus.application.name}
+                      {status.application.name}
                     </a>
                   </>
                 )}
 
-                {actualStatus.edited_at && (
+                {status.edited_at && (
                   <>
                     {' · '}
                     <div
@@ -144,16 +142,16 @@ const DetailedStatus: React.FC<IDetailedStatus> = ({
                       role='button'
                       tabIndex={0}
                     >
-                      <FormattedMessage id='status.edited' defaultMessage='Edited {date}' values={{ date: intl.formatDate(new Date(actualStatus.edited_at), { hour12: true, month: 'short', day: '2-digit', hour: 'numeric', minute: '2-digit' }) }} />
+                      <FormattedMessage id='status.edited' defaultMessage='Edited {date}' values={{ date: intl.formatDate(new Date(status.edited_at), { hour12: true, month: 'short', day: '2-digit', hour: 'numeric', minute: '2-digit' }) }} />
                     </div>
                   </>
                 )}
               </Text>
             </span>
 
-            <StatusTypeIcon visibility={actualStatus.visibility} />
+            <StatusTypeIcon visibility={status.visibility} />
 
-            <StatusLanguagePicker status={actualStatus} showLabel />
+            <StatusLanguagePicker status={status} showLabel />
           </HStack>
         </HStack>
       </div>

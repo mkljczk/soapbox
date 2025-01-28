@@ -1,6 +1,8 @@
+import { queryClient } from 'pl-fe/queries/client';
+import { scheduledStatusesQueryOptions } from 'pl-fe/queries/statuses/scheduled-statuses';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
-import { isLoggedIn } from 'pl-fe/utils/auth';
 import { shouldHaveCard } from 'pl-fe/utils/status';
 
 import { getClient } from '../api';
@@ -10,7 +12,6 @@ import { importEntities } from './importer';
 import { deleteFromTimelines } from './timelines';
 
 import type { CreateStatusParams, Status as BaseStatus, ScheduledStatus } from 'pl-api';
-import type { Status } from 'pl-fe/normalizers/status';
 import type { AppDispatch, RootState } from 'pl-fe/store';
 import type { IntlShape } from 'react-intl';
 
@@ -22,17 +23,7 @@ const STATUS_FETCH_SOURCE_REQUEST = 'STATUS_FETCH_SOURCE_REQUEST' as const;
 const STATUS_FETCH_SOURCE_SUCCESS = 'STATUS_FETCH_SOURCE_SUCCESS' as const;
 const STATUS_FETCH_SOURCE_FAIL = 'STATUS_FETCH_SOURCE_FAIL' as const;
 
-const STATUS_DELETE_REQUEST = 'STATUS_DELETE_REQUEST' as const;
-const STATUS_DELETE_SUCCESS = 'STATUS_DELETE_SUCCESS' as const;
-const STATUS_DELETE_FAIL = 'STATUS_DELETE_FAIL' as const;
-
 const CONTEXT_FETCH_SUCCESS = 'CONTEXT_FETCH_SUCCESS' as const;
-
-const STATUS_MUTE_SUCCESS = 'STATUS_MUTE_SUCCESS' as const;
-
-const STATUS_UNMUTE_SUCCESS = 'STATUS_UNMUTE_SUCCESS' as const;
-
-const STATUS_UNFILTER = 'STATUS_UNFILTER' as const;
 
 const createStatus = (params: CreateStatusParams, idempotencyKey: string, statusId: string | null) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
@@ -44,6 +35,7 @@ const createStatus = (params: CreateStatusParams, idempotencyKey: string, status
         const expectsCard = status.scheduled_at === null && !status.card && shouldHaveCard(status);
 
         if (status.scheduled_at === null) dispatch(importEntities({ statuses: [{ ...status, expectsCard }] }, { idempotencyKey, withParents: true }));
+        else queryClient.invalidateQueries(scheduledStatusesQueryOptions);
         dispatch<StatusesAction>({ type: STATUS_CREATE_SUCCESS, status, params, idempotencyKey, editing: !!statusId });
 
         // Poll the backend for the updated card
@@ -73,7 +65,7 @@ const createStatus = (params: CreateStatusParams, idempotencyKey: string, status
 const editStatus = (statusId: string) => (dispatch: AppDispatch, getState: () => RootState) => {
   const state = getState();
 
-  const status = state.statuses[statusId]!;
+  const status = queryClient.getQueryData(statusQueryOptions(statusId).queryKey)!;
   const poll = status.poll_id ? state.polls[status.poll_id] : undefined;
 
   dispatch<StatusesAction>({ type: STATUS_FETCH_SOURCE_REQUEST });
@@ -86,43 +78,6 @@ const editStatus = (statusId: string) => (dispatch: AppDispatch, getState: () =>
     dispatch<StatusesAction>({ type: STATUS_FETCH_SOURCE_FAIL, error });
   });
 };
-
-const fetchStatus = (statusId: string, intl?: IntlShape) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    const params = intl && useSettingsStore.getState().settings.autoTranslate ? {
-      language: intl.locale,
-    } : undefined;
-
-    return getClient(getState()).statuses.getStatus(statusId, params).then(status => {
-      dispatch(importEntities({ statuses: [status] }));
-      return status;
-    });
-  };
-
-const deleteStatus = (statusId: string, withRedraft = false) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return null;
-
-    const state = getState();
-
-    const status = state.statuses[statusId]!;
-    const poll = status.poll_id ? state.polls[status.poll_id] : undefined;
-
-    dispatch<StatusesAction>({ type: STATUS_DELETE_REQUEST, params: status });
-
-    return getClient(state).statuses.deleteStatus(statusId).then(response => {
-      dispatch<StatusesAction>({ type: STATUS_DELETE_SUCCESS, statusId });
-      dispatch(deleteFromTimelines(statusId));
-
-      if (withRedraft) {
-        dispatch(setComposeToStatus(status, poll, response.text || '', response.spoiler_text, response.content_type, withRedraft));
-        useModalsStore.getState().openModal('COMPOSE');
-      }
-    })
-      .catch(error => {
-        dispatch<StatusesAction>({ type: STATUS_DELETE_FAIL, params: status, error });
-      });
-  };
 
 const updateStatus = (status: BaseStatus) => (dispatch: AppDispatch) =>
   dispatch(importEntities({ statuses: [status] }));
@@ -145,33 +100,6 @@ const fetchContext = (statusId: string, intl?: IntlShape) =>
       }
     });
   };
-
-const fetchStatusWithContext = (statusId: string, intl?: IntlShape) =>
-  async (dispatch: AppDispatch) => Promise.all([
-    dispatch(fetchContext(statusId, intl)),
-    dispatch(fetchStatus(statusId, intl)),
-  ]);
-
-const muteStatus = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
-
-    return getClient(getState()).statuses.muteStatus(statusId).then((status) => {
-      dispatch<StatusesAction>({ type: STATUS_MUTE_SUCCESS, statusId });
-    });
-  };
-
-const unmuteStatus = (statusId: string) =>
-  (dispatch: AppDispatch, getState: () => RootState) => {
-    if (!isLoggedIn(getState)) return;
-
-    return getClient(getState()).statuses.unmuteStatus(statusId).then(() => {
-      dispatch<StatusesAction>({ type: STATUS_UNMUTE_SUCCESS, statusId });
-    });
-  };
-
-const toggleMuteStatus = (status: Pick<Status, 'id' | 'muted'>) =>
-  status.muted ? unmuteStatus(status.id) : muteStatus(status.id);
 
 // let TRANSLATIONS_QUEUE: Set<string> = new Set();
 // let TRANSLATIONS_TIMEOUT: NodeJS.Timeout | null = null;
@@ -222,11 +150,6 @@ const toggleMuteStatus = (status: Pick<Status, 'id' | 'muted'>) =>
 //     }
 //   };
 
-const unfilterStatus = (statusId: string) => ({
-  type: STATUS_UNFILTER,
-  statusId,
-});
-
 type StatusesAction =
   | { type: typeof STATUS_CREATE_REQUEST; params: CreateStatusParams; idempotencyKey: string; editing: boolean }
   | { type: typeof STATUS_CREATE_SUCCESS; status: BaseStatus | ScheduledStatus; params: CreateStatusParams; idempotencyKey: string; editing: boolean }
@@ -234,13 +157,7 @@ type StatusesAction =
   | { type: typeof STATUS_FETCH_SOURCE_REQUEST }
   | { type: typeof STATUS_FETCH_SOURCE_SUCCESS }
   | { type: typeof STATUS_FETCH_SOURCE_FAIL; error: unknown }
-  | { type: typeof STATUS_DELETE_REQUEST; params: Pick<Status, 'in_reply_to_id' | 'quote_id'> }
-  | { type: typeof STATUS_DELETE_SUCCESS; statusId: string }
-  | { type: typeof STATUS_DELETE_FAIL; params: Pick<Status, 'in_reply_to_id' | 'quote_id'>; error: unknown }
-  | { type: typeof CONTEXT_FETCH_SUCCESS; statusId: string; ancestors: Array<BaseStatus>; descendants: Array<BaseStatus> }
-  | { type: typeof STATUS_MUTE_SUCCESS; statusId: string }
-  | { type: typeof STATUS_UNMUTE_SUCCESS; statusId: string }
-  | ReturnType<typeof unfilterStatus>
+  | { type: typeof CONTEXT_FETCH_SUCCESS; statusId: string; ancestors: Array<BaseStatus>; descendants: Array<BaseStatus> };
 
 export {
   STATUS_CREATE_REQUEST,
@@ -249,23 +166,10 @@ export {
   STATUS_FETCH_SOURCE_REQUEST,
   STATUS_FETCH_SOURCE_SUCCESS,
   STATUS_FETCH_SOURCE_FAIL,
-  STATUS_DELETE_REQUEST,
-  STATUS_DELETE_SUCCESS,
-  STATUS_DELETE_FAIL,
   CONTEXT_FETCH_SUCCESS,
-  STATUS_MUTE_SUCCESS,
-  STATUS_UNMUTE_SUCCESS,
-  STATUS_UNFILTER,
   createStatus,
   editStatus,
-  fetchStatus,
-  deleteStatus,
   updateStatus,
   fetchContext,
-  fetchStatusWithContext,
-  muteStatus,
-  unmuteStatus,
-  toggleMuteStatus,
-  unfilterStatus,
   type StatusesAction,
 };

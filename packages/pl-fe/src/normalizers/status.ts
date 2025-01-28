@@ -3,6 +3,7 @@
  * Converts API statuses into our internal format.
  * @see {@link https://docs.joinmastodon.org/entities/status/}
  */
+import omit from 'lodash/omit';
 import { type Account as BaseAccount, type Status as BaseStatus, type MediaAttachment, mentionSchema } from 'pl-api';
 import * as v from 'valibot';
 
@@ -46,7 +47,10 @@ const buildSearchContent = (status: Pick<BaseStatus, 'poll' | 'mentions' | 'spoi
   return unescapeHTML(fields.join('\n\n')) || '';
 };
 
-const getSearchIndex = (status: BaseStatus, oldStatus?: OldStatus) => {
+const getSearchIndex = (
+  status: Pick<BaseStatus, 'poll' | 'mentions' | 'spoiler_text' | 'content'>,
+  oldStatus?: Pick<OldStatus, 'content' | 'search_index' | 'spoiler_text'>,
+) => {
   if (oldStatus && oldStatus.content === status.content && oldStatus.spoiler_text === status.spoiler_text) {
     return oldStatus.search_index;
   } else {
@@ -58,7 +62,7 @@ const getSearchIndex = (status: BaseStatus, oldStatus?: OldStatus) => {
 
 const normalizeStatus = (status: BaseStatus & {
   accounts?: Array<BaseAccount>;
-}, oldStatus?: OldStatus) => {
+}, oldStatus?: Pick<OldStatus, 'content' | 'search_index' | 'spoiler_text'>) => {
   const searchIndex = getSearchIndex(status, oldStatus);
 
   // Sort the replied-to mention to the top
@@ -108,13 +112,12 @@ const normalizeStatus = (status: BaseStatus & {
   // Normalize group
   const group = status.group ? normalizeGroup(status.group) : null;
 
-  return {
+  return omit({
     account_id: status.account.id,
     reblog_id: status.reblog?.id || null,
     poll_id: status.poll?.id || null,
     group_id: status.group?.id || null,
     expectsCard: false,
-    showFiltered: null as null | boolean,
     deleted: false,
     ...status,
     quote_id: status.quote?.id || status.quote_id || null,
@@ -126,7 +129,7 @@ const normalizeStatus = (status: BaseStatus & {
     group,
     media_attachments,
     search_index: searchIndex,
-  };
+  }, ['group', 'quote', 'reblog']);
 };
 
 type Status = ReturnType<typeof normalizeStatus>;

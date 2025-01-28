@@ -1,3 +1,4 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
@@ -7,7 +8,7 @@ import Column from 'pl-fe/components/ui/column';
 import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useRules } from 'pl-fe/queries/admin/use-rules';
+import { deleteRuleMutationOptions, rulesQueryOptions } from 'pl-fe/queries/admin/rules';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
@@ -28,7 +29,7 @@ interface IRule {
 const Rule: React.FC<IRule> = ({ rule }) => {
   const intl = useIntl();
   const { openModal } = useModalsStore();
-  const { deleteRule } = useRules();
+  const { mutate: deleteRule } = useMutation(deleteRuleMutationOptions);
 
   const handleEditRule = (rule: AdminRule) => () => {
     openModal('EDIT_RULE', { rule });
@@ -76,7 +77,7 @@ const Rules: React.FC = () => {
   const intl = useIntl();
 
   const { openModal } = useModalsStore();
-  const { data, isLoading } = useRules();
+  const { data, isLoading } = useQuery(rulesQueryOptions);
 
   const handleCreateRule = () => {
     openModal('EDIT_RULE');

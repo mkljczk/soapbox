@@ -10,20 +10,20 @@ import { useGroupRelationship } from './use-group-relationship';
 
 import type { Group as BaseGroup } from 'pl-api';
 
-const useGroup = (groupId: string, refetch = true) => {
+const useGroup = (groupId: string | null, refetch = true) => {
   const client = useClient();
   const history = useHistory();
 
   const { entity: group, isUnauthorized, ...result } = useEntity<BaseGroup, Group>(
-    [Entities.GROUPS, groupId],
-    () => client.experimental.groups.getGroup(groupId),
+    [Entities.GROUPS, groupId!],
+    () => client.experimental.groups.getGroup(groupId!),
     {
       transform: normalizeGroup,
       refetch,
       enabled: !!groupId,
     },
   );
-  const { groupRelationship: relationship } = useGroupRelationship(groupId);
+  const { groupRelationship: relationship } = useGroupRelationship(groupId!);
 
   useEffect(() => {
     if (isUnauthorized) {

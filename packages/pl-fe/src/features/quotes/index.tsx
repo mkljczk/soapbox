@@ -1,3 +1,4 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
 import React from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -6,7 +7,7 @@ import StatusList from 'pl-fe/components/status-list';
 import Column from 'pl-fe/components/ui/column';
 import { useIsMobile } from 'pl-fe/hooks/use-is-mobile';
 import { useTheme } from 'pl-fe/hooks/use-theme';
-import { useStatusQuotes } from 'pl-fe/queries/statuses/use-status-quotes';
+import { statusQuotesQueryOptions } from 'pl-fe/queries/statuses/status-quotes';
 
 const messages = defineMessages({
   heading: { id: 'column.quotes', defaultMessage: 'Post quotes' },
@@ -18,7 +19,7 @@ const Quotes: React.FC = () => {
   const theme = useTheme();
   const isMobile = useIsMobile();
 
-  const { data: statusIds = [], isLoading, hasNextPage, fetchNextPage } = useStatusQuotes(statusId);
+  const { data: statusIds = [], isLoading, hasNextPage, fetchNextPage } = useInfiniteQuery(statusQuotesQueryOptions(statusId));
 
   const emptyMessage = <FormattedMessage id='empty_column.quotes' defaultMessage='This post has not been quoted yet.' />;
 

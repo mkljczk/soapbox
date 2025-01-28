@@ -1,7 +1,6 @@
 import { create } from 'mutative';
 
 import { ACCOUNT_BLOCK_SUCCESS, ACCOUNT_MUTE_SUCCESS, type AccountsAction } from '../actions/accounts';
-import { PIN_SUCCESS, UNPIN_SUCCESS, type InteractionsAction } from '../actions/interactions';
 import { STATUS_CREATE_REQUEST, STATUS_CREATE_SUCCESS, type StatusesAction } from '../actions/statuses';
 import {
   TIMELINE_UPDATE,
@@ -292,7 +291,7 @@ const handleExpandFail = (state: State, timelineId: string) => {
   setFailed(state, timelineId, true);
 };
 
-const timelines = (state: State = initialState, action: AccountsAction | InteractionsAction | StatusesAction | TimelineAction): State => {
+const timelines = (state: State = initialState, action: AccountsAction | StatusesAction | TimelineAction): State => {
   switch (action.type) {
     case STATUS_CREATE_REQUEST:
       if (action.params.scheduled_at) return state;
@@ -331,14 +330,6 @@ const timelines = (state: State = initialState, action: AccountsAction | Interac
     //   return filterTimeline(state, 'home', action.relationship, action.statuses);
     case TIMELINE_SCROLL_TOP:
       return create(state, (draft) => updateTop(state, action.timeline, action.top));
-    case PIN_SUCCESS:
-      return create(state, (draft) => updateTimeline(draft, `account:${action.accountId}:with_replies:pinned`, (timeline) => {
-        timeline.items = [...new Set([action.statusId, ...timeline.items])];
-      }));
-    case UNPIN_SUCCESS:
-      return create(state, (draft) => updateTimeline(draft, `account:${action.accountId}:with_replies:pinned`, (timeline) => {
-        timeline.items = timeline.items.filter((id) => id !== action.statusId);
-      }));
     default:
       return state;
   }

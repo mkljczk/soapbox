@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
+import { useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -6,7 +7,6 @@ import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { type ComposeReplyAction, mentionCompose, replyCompose } from 'pl-fe/actions/compose';
-import { reblog, toggleFavourite, unreblog } from 'pl-fe/actions/interactions';
 import ScrollableList from 'pl-fe/components/scrollable-list';
 import StatusActionBar from 'pl-fe/components/status-action-bar';
 import Tombstone from 'pl-fe/components/tombstone';
@@ -16,6 +16,7 @@ import { HotKeys } from 'pl-fe/features/ui/components/hotkeys';
 import PendingStatus from 'pl-fe/features/ui/components/pending-status';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { favouriteStatusMutationOptions, reblogStatusMutationOptions, unfavouriteStatusMutationOptions, unreblogStatusMutationOptions } from 'pl-fe/queries/statuses/status-interactions';
 import { RootState } from 'pl-fe/store';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useSettingsStore } from 'pl-fe/stores/settings';
@@ -28,7 +29,6 @@ import ThreadStatus from './thread-status';
 import type { Virtualizer } from '@tanstack/react-virtual';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Status } from 'pl-fe/normalizers/status';
-import type { SelectedStatus } from 'pl-fe/selectors';
 
 const makeGetAncestorsIds = () => createSelector([
   (_: RootState, statusId: string | undefined) => statusId,
@@ -97,7 +97,7 @@ const makeGetThread = () => {
 };
 
 interface IThread {
-  status: SelectedStatus;
+  status: Status;
   withMedia?: boolean;
   isModal?: boolean;
   itemClassName?: string;
@@ -119,6 +119,11 @@ const Thread: React.FC<IThread> = ({
 
   const getThread = useCallback(makeGetThread(), []);
 
+  const { mutate: reblogStatus } = useMutation(reblogStatusMutationOptions);
+  const { mutate: unreblogStatus } = useMutation(unreblogStatusMutationOptions);
+  const { mutate: favouriteStatus } = useMutation(favouriteStatusMutationOptions);
+  const { mutate: unfavouriteStatus } = useMutation(unfavouriteStatusMutationOptions);
+
   const { ancestorsIds, descendantsIds } = useAppSelector((state) => getThread(state, status.id));
 
   let initialIndex = ancestorsIds.length;
@@ -134,18 +139,19 @@ const Thread: React.FC<IThread> = ({
     }
   };
 
-  const handleFavouriteClick = (status: SelectedStatus) => {
-    dispatch(toggleFavourite(status));
+  const handleFavouriteClick = (status: Status) => {
+    if (status.favourited) unfavouriteStatus(status.id);
+    else favouriteStatus(status.id);
   };
 
   const handleReplyClick = (status: ComposeReplyAction['status']) => dispatch(replyCompose(status));
 
-  const handleModalReblog = (status: Pick<SelectedStatus, 'id'>) => dispatch(reblog(status));
+  const handleModalReblog = (status: Pick<Status, 'id'>) => reblogStatus({ statusId: status.id });
 
-  const handleReblogClick = (status: SelectedStatus, e?: React.MouseEvent) => {
+  const handleReblogClick = (status: Status, e?: React.MouseEvent) => {
     const boostModal = settings.boostModal;
     if (status.reblogged) {
-      dispatch(unreblog(status));
+      unreblogStatus(status.id);
     } else {
       if ((e && e.shiftKey) || !boostModal) {
         handleModalReblog(status);

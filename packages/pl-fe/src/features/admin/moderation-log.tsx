@@ -1,3 +1,4 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
 import React from 'react';
 import { defineMessages, FormattedDate, useIntl } from 'react-intl';
 
@@ -5,7 +6,7 @@ import ScrollableList from 'pl-fe/components/scrollable-list';
 import Column from 'pl-fe/components/ui/column';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useModerationLog } from 'pl-fe/queries/admin/use-moderation-log';
+import { moderationLogQueryOptions } from 'pl-fe/queries/admin/moderation-log';
 
 import type { AdminModerationLogEntry } from 'pl-api';
 
@@ -17,12 +18,7 @@ const messages = defineMessages({
 const ModerationLog = () => {
   const intl = useIntl();
 
-  const {
-    data,
-    hasNextPage,
-    isLoading,
-    fetchNextPage,
-  } = useModerationLog();
+  const { data = [], hasNextPage, isLoading, fetchNextPage } = useInfiniteQuery(moderationLogQueryOptions);
 
   const showLoading = isLoading && data.length === 0;
 

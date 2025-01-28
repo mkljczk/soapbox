@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -7,11 +8,11 @@ import Button from 'pl-fe/components/ui/button';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
 import AccountContainer from 'pl-fe/containers/account-container';
-import { useOnboardingSuggestions } from 'pl-fe/queries/suggestions';
+import { suggestionsQueryOptions } from 'pl-fe/queries/suggestions';
 
 const SuggestedAccountsStep = ({ onNext }: { onNext: () => void }) => {
   const parentRef = useRef<HTMLDivElement>(null);
-  const { data, isFetching } = useOnboardingSuggestions();
+  const { data, isFetching } = useQuery(suggestionsQueryOptions);
 
   const renderSuggestions = () => {
     if (!data) {
@@ -26,9 +27,9 @@ const SuggestedAccountsStep = ({ onNext }: { onNext: () => void }) => {
           parentRef={parentRef}
         >
           {data.map((suggestion) => (
-            <div key={suggestion.account.id} className='py-2'>
+            <div key={suggestion.account_id} className='py-2'>
               <AccountContainer
-                id={suggestion.account.id}
+                id={suggestion.account_id}
                 showAccountHoverCard={false}
                 withLinkToProfile={false}
               />

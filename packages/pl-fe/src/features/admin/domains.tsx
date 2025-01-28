@@ -1,3 +1,4 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
@@ -8,7 +9,7 @@ import Column from 'pl-fe/components/ui/column';
 import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import Text from 'pl-fe/components/ui/text';
-import { useDomains } from 'pl-fe/queries/admin/use-domains';
+import { domainsQueryOptions, deleteDomainMutationOptions } from 'pl-fe/queries/admin/domains';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import toast from 'pl-fe/toast';
 
@@ -33,7 +34,7 @@ const Domain: React.FC<IDomain> = ({ domain }) => {
   const intl = useIntl();
 
   const { openModal } = useModalsStore();
-  const { deleteDomain } = useDomains();
+  const { mutate: deleteDomain } = useMutation(deleteDomainMutationOptions);
 
   const handleEditDomain = (domain: DomainEntity) => () => {
     openModal('EDIT_DOMAIN', { domainId: domain.id });
@@ -106,7 +107,7 @@ const Domains: React.FC = () => {
   const intl = useIntl();
 
   const { openModal } = useModalsStore();
-  const { data: domains, isFetching, refetch } = useDomains();
+  const { data: domains, isFetching, refetch } = useQuery(domainsQueryOptions);
 
   const handleCreateDomain = () => {
     openModal('EDIT_DOMAIN');

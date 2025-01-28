@@ -1,16 +1,15 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { type CustomEmoji, GroupRoles } from 'pl-api';
 import React, { useCallback, useMemo } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { blockAccount } from 'pl-fe/actions/accounts';
-import { directCompose, mentionCompose, quoteCompose, replyCompose } from 'pl-fe/actions/compose';
-import { emojiReact, unEmojiReact } from 'pl-fe/actions/emoji-reacts';
-import { toggleBookmark, toggleDislike, toggleFavourite, togglePin, toggleReblog } from 'pl-fe/actions/interactions';
+import { directCompose, mentionCompose, quoteCompose, replyCompose, setComposeToStatus } from 'pl-fe/actions/compose';
 import { deleteStatusModal, toggleStatusSensitivityModal } from 'pl-fe/actions/moderation';
 import { initReport, ReportableEntities } from 'pl-fe/actions/reports';
 import { changeSetting } from 'pl-fe/actions/settings';
-import { deleteStatus, editStatus, toggleMuteStatus } from 'pl-fe/actions/statuses';
+import { editStatus } from 'pl-fe/actions/statuses';
 import { deleteFromTimelines } from 'pl-fe/actions/timelines';
 import { useDeleteGroupStatus } from 'pl-fe/api/hooks/groups/use-delete-group-status';
 import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
@@ -28,12 +27,29 @@ import { useInstance } from 'pl-fe/hooks/use-instance';
 import { useOwnAccount } from 'pl-fe/hooks/use-own-account';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useChats } from 'pl-fe/queries/chats';
-import { useBlockGroupUserMutation } from 'pl-fe/queries/groups/use-group-blocks';
-import { useCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
-import { useTranslationLanguages } from 'pl-fe/queries/instance/use-translation-languages';
+import { blockGroupUserMutationOptions } from 'pl-fe/queries/groups/group-blocks';
+import { customEmojisQueryOptions } from 'pl-fe/queries/instance/custom-emojis';
+import { translationLanguagesQueryOptions } from 'pl-fe/queries/instance/translation-languages';
+import { deleteStatusMutationOptions } from 'pl-fe/queries/statuses/status';
+import {
+  bookmarkStatusMutationOptions,
+  createStatusReactionMutationOptions,
+  deleteStatusReactionMutationOptions,
+  dislikeStatusMutationOptions,
+  favouriteStatusMutationOptions,
+  muteStatusMutationOptions,
+  pinStatusMutationOptions,
+  reblogStatusMutationOptions,
+  unbookmarkStatusMutationOptions,
+  undislikeStatusMutationOptions,
+  unfavouriteStatusMutationOptions,
+  unmuteStatusMutationOptions,
+  unpinStatusMutationOptions,
+  unreblogStatusMutationOptions,
+} from 'pl-fe/queries/statuses/status-interactions';
 import { useModalsStore } from 'pl-fe/stores/modals';
 import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
-import toast from 'pl-fe/toast';
+import toast, { type IToastOptions } from 'pl-fe/toast';
 import copy from 'pl-fe/utils/copy';
 
 import GroupPopover from './groups/popover/group-popover';
@@ -46,7 +62,7 @@ import type { Emoji as EmojiType } from 'pl-fe/features/emoji';
 import type { UnauthorizedModalAction } from 'pl-fe/features/ui/components/modals/unauthorized-modal';
 import type { Account } from 'pl-fe/normalizers/account';
 import type { Group } from 'pl-fe/normalizers/group';
-import type { SelectedStatus } from 'pl-fe/selectors';
+import type { Status as NormalizedStatus } from 'pl-fe/normalizers/status';
 import type { Me } from 'pl-fe/types/pl-fe';
 
 const messages = defineMessages({
@@ -113,6 +129,11 @@ const messages = defineMessages({
   addKnownLanguage: { id: 'status.add_known_language', defaultMessage: 'Do not auto-translate posts in {language}.' },
   translate: { id: 'status.translate', defaultMessage: 'Translate' },
   hideTranslation: { id: 'status.hide_translation', defaultMessage: 'Hide translation' },
+
+  bookmarkAdded: { id: 'status.bookmarked', defaultMessage: 'Bookmark added.' },
+  bookmarkRemoved: { id: 'status.unbookmarked', defaultMessage: 'Bookmark removed.' },
+  view: { id: 'toast.view', defaultMessage: 'View' },
+  selectFolder: { id: 'status.bookmark.select_folder', defaultMessage: 'Select folder' },
 
   favouriteInteractionPolicyHeader: { id: 'status.interaction_policy.favourite.header', defaultMessage: 'The author limits who can like this post.' },
   reblogInteractionPolicyHeader: { id: 'status.interaction_policy.reblog.header', defaultMessage: 'The author limits who can repost this post.' },
@@ -207,12 +228,12 @@ const ReplyButton: React.FC<IReplyButton> = ({
   const intl = useIntl();
 
   const canReply = useCanInteract(status, 'can_reply');
-  const { groupRelationship } = useGroupRelationship(status.group_id || undefined);
+  const { group } = useGroup(status.group_id);
 
   let replyTitle;
   let replyDisabled = false;
 
-  if ((status.group as Group)?.membership_required && !groupRelationship?.member) {
+  if (group?.membership_required && !group.relationship?.member) {
     replyDisabled = true;
     replyTitle = intl.formatMessage(messages.replies_disabled_group);
   }
@@ -252,9 +273,9 @@ const ReplyButton: React.FC<IReplyButton> = ({
     </Popover>
   );
 
-  return status.group ? (
+  return group ? (
     <GroupPopover
-      group={status.group}
+      group={group}
       isEnabled={replyDisabled}
     >
       {replyButton}
@@ -278,6 +299,9 @@ const ReblogButton: React.FC<IReblogButton> = ({
   const features = useFeatures();
   const intl = useIntl();
 
+  const { mutate: reblogStatus } = useMutation(reblogStatusMutationOptions);
+  const { mutate: unreblogStatus } = useMutation(unreblogStatusMutationOptions);
+
   const { boostModal } = useSettings();
   const { openModal } = useModalsStore();
   const canReblog = useCanInteract(status, 'can_reblog');
@@ -292,8 +316,10 @@ const ReblogButton: React.FC<IReblogButton> = ({
 
   const handleReblogClick: React.EventHandler<React.MouseEvent> = e => {
     if (me) {
-      const modalReblog = () => dispatch(toggleReblog(status)).then(() => {
-        if (canReblog.approvalRequired) toast.info(messages.reblogApprovalRequired);
+      const modalReblog = () => status.reblogged ? unreblogStatus(status.id) : reblogStatus({ statusId: status.id }, {
+        onSuccess: () => {
+          if (canReblog.approvalRequired) toast.info(messages.reblogApprovalRequired);
+        },
       });
       if ((e && e.shiftKey) || !boostModal) {
         modalReblog();
@@ -371,18 +397,22 @@ const FavouriteButton: React.FC<IActionButton> = ({
   withLabels,
   onOpenUnauthorizedModal,
 }) => {
-  const dispatch = useAppDispatch();
   const features = useFeatures();
   const intl = useIntl();
 
   const { openModal } = useModalsStore();
   const canFavourite = useCanInteract(status, 'can_favourite');
 
+  const { mutate: favouriteStatus } = useMutation(favouriteStatusMutationOptions);
+  const { mutate: unfavouriteStatus } = useMutation(unfavouriteStatusMutationOptions);
+
   const handleFavouriteClick: React.EventHandler<React.MouseEvent> = (e) => {
     if (me) {
-      dispatch(toggleFavourite(status)).then(() => {
-        if (canFavourite.approvalRequired) toast.info(messages.favouriteApprovalRequired);
-      }).catch(() => {});
+      (status.favourited ? unfavouriteStatus : favouriteStatus)(status.id, {
+        onSuccess: () => {
+          if (canFavourite.approvalRequired) toast.info(messages.favouriteApprovalRequired);
+        },
+      });
     } else {
       onOpenUnauthorizedModal('FAVOURITE');
     }
@@ -425,9 +455,11 @@ const DislikeButton: React.FC<IActionButton> = ({
   me,
   onOpenUnauthorizedModal,
 }) => {
-  const dispatch = useAppDispatch();
   const features = useFeatures();
   const intl = useIntl();
+
+  const { mutate: dislike } = useMutation(dislikeStatusMutationOptions);
+  const { mutate: undislike } = useMutation(undislikeStatusMutationOptions);
 
   const { openModal } = useModalsStore();
 
@@ -435,7 +467,8 @@ const DislikeButton: React.FC<IActionButton> = ({
 
   const handleDislikeClick: React.EventHandler<React.MouseEvent> = (e) => {
     if (me) {
-      dispatch(toggleDislike(status));
+      if (status.disliked) undislike(status.id);
+      else dislike(status.id);
     } else {
       onOpenUnauthorizedModal('DISLIKE');
     }
@@ -469,14 +502,19 @@ const WrenchButton: React.FC<IActionButton> = ({
   withLabels,
   me,
 }) => {
-  const dispatch = useAppDispatch();
   const intl = useIntl();
   const features = useFeatures();
+
+  const { mutate: createStatusReaction } = useMutation(createStatusReactionMutationOptions);
+  const { mutate: deleteStatusReaction } = useMutation(deleteStatusReactionMutationOptions);
 
   const { openModal } = useModalsStore();
   const { showWrenchButton } = useSettings();
 
-  const { data: hasLongerWrench } = useCustomEmojis(getLongerWrench);
+  const { data: hasLongerWrench } = useQuery({
+    ...customEmojisQueryOptions,
+    select: getLongerWrench,
+  });
 
   if (!me || withLabels || !features.emojiReacts || !showWrenchButton) return;
 
@@ -484,15 +522,15 @@ const WrenchButton: React.FC<IActionButton> = ({
 
   const handleWrenchClick: React.EventHandler<React.MouseEvent> = (e) => {
     if (wrenches?.me) {
-      dispatch(unEmojiReact(status.id, '🔧'));
+      deleteStatusReaction({ statusId: status.id, emoji:  '🔧' });
     } else {
-      dispatch(emojiReact(status.id, '🔧'));
+      createStatusReaction({ statusId: status.id, emoji:  '🔧' });
     }
   };
 
   const handleWrenchLongPress = () => {
     if (features.customEmojiReacts && hasLongerWrench) {
-      dispatch(emojiReact(status.id, hasLongerWrench.shortcode, hasLongerWrench.url));
+      createStatusReaction({ statusId: status.id, emoji:  hasLongerWrench.shortcode, custom: hasLongerWrench.url });
     } else if (wrenches?.count) {
       openModal('REACTIONS', { statusId: status.id, reaction: wrenches.name });
     }
@@ -519,12 +557,16 @@ const EmojiPickerButton: React.FC<Omit<IActionButton, 'onOpenUnauthorizedModal'>
   withLabels,
   me,
 }) => {
-  const dispatch = useAppDispatch();
-
   const features = useFeatures();
 
+  const { mutate: createStatusReaction } = useMutation(createStatusReactionMutationOptions);
+
   const handlePickEmoji = (emoji: EmojiType) => {
-    dispatch(emojiReact(status.id, emoji.custom ? emoji.id : emoji.native, emoji.custom ? emoji.imageUrl : undefined));
+    createStatusReaction({
+      statusId: status.id,
+      emoji: emoji.custom ? emoji.id : emoji.native,
+      custom: emoji.custom ? emoji.imageUrl : undefined,
+    });
   };
 
   return me && !withLabels && features.emojiReacts && (
@@ -585,9 +627,18 @@ const MenuButton: React.FC<IMenuButton> = ({
   const { statuses: statusesMeta, fetchTranslation, hideTranslation } = useStatusMetaStore();
   const targetLanguage = statusesMeta[status.id]?.targetLanguage;
   const { openModal } = useModalsStore();
-  const { group } = useGroup((status.group as Group)?.id as string);
+  const { group } = useGroup(status.group_id);
   const deleteGroupStatus = useDeleteGroupStatus(group as Group, status.id);
-  const { mutate: blockGroupMember } = useBlockGroupUserMutation(status.group?.id as string, status.account.id);
+  const { mutate: reblogStatus } = useMutation(reblogStatusMutationOptions);
+  const { mutate: unreblogStatus } = useMutation(unreblogStatusMutationOptions);
+  const { mutate: bookmarkStatus } = useMutation(bookmarkStatusMutationOptions);
+  const { mutate: unbookmarkStatus } = useMutation(unbookmarkStatusMutationOptions);
+  const { mutate: muteStatus } = useMutation(muteStatusMutationOptions);
+  const { mutate: unmuteStatus } = useMutation(unmuteStatusMutationOptions);
+  const { mutate: pinStatus } = useMutation(pinStatusMutationOptions);
+  const { mutate: unpinStatus } = useMutation(unpinStatusMutationOptions);
+  const { mutate: blockGroupMember } = useMutation(blockGroupUserMutationOptions(status.group_id as string, status.account_id));
+  const { mutate: deleteStatus } = useMutation(deleteStatusMutationOptions);
   const { getOrCreateChatByAccountId } = useChats();
 
   const { groupRelationship } = useGroupRelationship(status.group_id || undefined);
@@ -595,7 +646,7 @@ const MenuButton: React.FC<IMenuButton> = ({
   const instance = useInstance();
   const { autoTranslate, deleteModal, knownLanguages } = useSettings();
 
-  const { translationLanguages } = useTranslationLanguages();
+  const { data: translationLanguages = {} } = useQuery(translationLanguagesQueryOptions);
 
   const autoTranslating = useMemo(() => {
     const {
@@ -619,77 +670,105 @@ const MenuButton: React.FC<IMenuButton> = ({
     const { username, local: localAccount } = status.account;
 
     const handleBookmarkClick: React.EventHandler<React.MouseEvent> = (e) => {
-      dispatch(toggleBookmark(status));
+      if (status.bookmarked) unbookmarkStatus(status.id, {
+        onSuccess: () => toast.success(messages.bookmarkRemoved),
+      });
+      else bookmarkStatus({ statusId: status.id }, {
+        onSuccess: () => {
+          let opts: IToastOptions = {
+            actionLabel: messages.view,
+            actionLink: '/bookmarks/all',
+          };
+  
+          if (features.bookmarkFolders) {
+            opts = {
+              actionLabel: messages.selectFolder,
+              action: () => useModalsStore.getState().openModal('SELECT_BOOKMARK_FOLDER', {
+                statusId: status.id,
+              }),
+            };
+          }
+  
+          toast.success(messages.bookmarkAdded, opts);
+        },
+      });
     };
-
+  
     const handleBookmarkFolderClick = () => {
       openModal('SELECT_BOOKMARK_FOLDER', {
         statusId: status.id,
       });
     };
-
+  
     const doDeleteStatus = (withRedraft = false) => {
+      const deleteAction = () => deleteStatus(status.id, {
+        onSuccess: (response) => {
+          dispatch(setComposeToStatus(status, status.poll, response.text || '', response.spoiler_text, response.content_type, withRedraft));
+          openModal('COMPOSE');
+        },
+      });
       if (!deleteModal) {
-        dispatch(deleteStatus(status.id, withRedraft));
+        deleteAction();
       } else {
         openModal('CONFIRM', {
           heading: intl.formatMessage(withRedraft ? messages.redraftHeading : messages.deleteHeading),
           message: intl.formatMessage(withRedraft ? messages.redraftMessage : messages.deleteMessage),
           confirm: intl.formatMessage(withRedraft ? messages.redraftConfirm : messages.deleteConfirm),
-          onConfirm: () => dispatch(deleteStatus(status.id, withRedraft)),
+          onConfirm: deleteAction,
         });
       }
     };
-
+  
     const handleDeleteClick: React.EventHandler<React.MouseEvent> = (e) => {
       doDeleteStatus();
     };
-
+  
     const handleRedraftClick: React.EventHandler<React.MouseEvent> = (e) => {
       doDeleteStatus(true);
     };
-
+  
     const handleEditClick: React.EventHandler<React.MouseEvent> = () => {
       if (status.event) history.push(`/@${status.account.acct}/events/${status.id}/edit`);
       else dispatch(editStatus(status.id));
     };
-
+  
     const handlePinClick: React.EventHandler<React.MouseEvent> = (e) => {
-      dispatch(togglePin(status));
+      if (status.pinned) unpinStatus(status.id);
+      else pinStatus(status.id);
     };
-
+  
     const handleReblogClick: React.EventHandler<React.MouseEvent> = (e) => {
-      const modalReblog = () => dispatch(toggleReblog(status));
+      const modalReblog = () => status.reblogged ? unreblogStatus(status.id) : reblogStatus({ statusId: status.id });
       if ((e && e.shiftKey) || !boostModal) {
         modalReblog();
       } else {
         openModal('BOOST', { statusId: status.id, onReblog: modalReblog });
       }
     };
-
+  
     const handleMentionClick: React.EventHandler<React.MouseEvent> = (e) => {
       dispatch(mentionCompose(status.account));
     };
-
+  
     const handleDirectClick: React.EventHandler<React.MouseEvent> = (e) => {
       dispatch(directCompose(status.account));
     };
-
+  
     const handleChatClick: React.EventHandler<React.MouseEvent> = (e) => {
       const account = status.account;
-
+  
       getOrCreateChatByAccountId(account.id)
         .then((chat) => history.push(`/chats/${chat.id}`))
         .catch(() => {});
     };
-
+  
     const handleMuteClick: React.EventHandler<React.MouseEvent> = (e) => {
       openModal('MUTE', { accountId: status.account.id });
     };
-
+  
     const handleBlockClick: React.EventHandler<React.MouseEvent> = (e) => {
       const account = status.account;
-
+  
       openModal('CONFIRM', {
         heading: <FormattedMessage id='confirmations.block.heading' defaultMessage='Block @{name}' values={{ name: account.acct }} />,
         message: <FormattedMessage id='confirmations.block.message' defaultMessage='Are you sure you want to block {name}?' values={{ name: <strong className='break-words'>@{account.acct}</strong> }} />,
@@ -702,48 +781,49 @@ const MenuButton: React.FC<IMenuButton> = ({
         },
       });
     };
-
+  
     const handleEmbed = () => {
       openModal('EMBED', {
         url: status.url,
         onError: (error: any) => toast.showAlertForError(error),
       });
     };
-
+  
     const handleOpenReactionsModal = () => {
       openModal('REACTIONS', { statusId: status.id });
     };
-
+  
     const handleReport: React.EventHandler<React.MouseEvent> = (e) => {
       dispatch(initReport(ReportableEntities.STATUS, status.account, { status }));
     };
-
+  
     const handleConversationMuteClick: React.EventHandler<React.MouseEvent> = (e) => {
-      dispatch(toggleMuteStatus(status));
+      if (status.muted) unmuteStatus(status.id);
+      else muteStatus(status.id);
     };
-
+  
     const handleCopy: React.EventHandler<React.MouseEvent> = (e) => {
       const { uri } = status;
-
+  
       copy(uri);
     };
-
+  
     const onModerate: React.MouseEventHandler = (e) => {
       const account = status.account;
       openModal('ACCOUNT_MODERATION', { accountId: account.id });
     };
-
+  
     const handleDeleteStatus: React.EventHandler<React.MouseEvent> = (e) => {
       dispatch(deleteStatusModal(intl, status.id));
     };
-
+  
     const handleToggleStatusSensitivity: React.EventHandler<React.MouseEvent> = (e) => {
       dispatch(toggleStatusSensitivityModal(intl, status.id, status.sensitive));
     };
-
+  
     const handleDeleteFromGroup: React.EventHandler<React.MouseEvent> = () => {
       const account = status.account;
-
+  
       openModal('CONFIRM', {
         heading: intl.formatMessage(messages.deleteHeading),
         message: intl.formatMessage(messages.deleteFromGroupMessage, { name: <strong className='break-words'>{account.username}</strong> }),
@@ -757,7 +837,7 @@ const MenuButton: React.FC<IMenuButton> = ({
         },
       });
     };
-
+  
     const handleBlockFromGroup = () => {
       openModal('CONFIRM', {
         heading: intl.formatMessage(messages.groupBlockFromGroupHeading),
@@ -772,11 +852,11 @@ const MenuButton: React.FC<IMenuButton> = ({
         },
       });
     };
-
+  
     const handleIgnoreLanguage = () => {
       dispatch(changeSetting(['autoTranslate'], [...knownLanguages, status.language], { showAlert: true }));
     };
-
+  
     const handleTranslate = () => {
       if (targetLanguage) {
         hideTranslation(status.id);
@@ -823,7 +903,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       });
     }
 
-    const isGroupStatus = typeof status.group === 'object';
+    const isGroupStatus = !!status.group_id;
 
     if (features.bookmarks) {
       menu.push({
@@ -960,7 +1040,7 @@ const MenuButton: React.FC<IMenuButton> = ({
       });
     }
 
-    if (isGroupStatus && !!status.group) {
+    if (isGroupStatus && !!status.group_id) {
       const isGroupOwner = groupRelationship?.role === GroupRoles.OWNER;
       const isGroupAdmin = groupRelationship?.role === GroupRoles.ADMIN;
       // const isStatusFromOwner = group.owner.id === account.id;
@@ -1039,7 +1119,7 @@ const MenuButton: React.FC<IMenuButton> = ({
 };
 
 interface IStatusActionBar {
-  status: SelectedStatus;
+  status: NormalizedStatus;
   rebloggedBy?: Account;
   withLabels?: boolean;
   expandable?: boolean;

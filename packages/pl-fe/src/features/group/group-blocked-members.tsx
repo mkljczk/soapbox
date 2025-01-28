@@ -1,3 +1,4 @@
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import React from 'react';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 
@@ -9,7 +10,7 @@ import Button from 'pl-fe/components/ui/button';
 import Column from 'pl-fe/components/ui/column';
 import HStack from 'pl-fe/components/ui/hstack';
 import Spinner from 'pl-fe/components/ui/spinner';
-import { useGroupBlocks, useUnblockGroupUserMutation } from 'pl-fe/queries/groups/use-group-blocks';
+import { groupBlocksQueryOptions, unblockGroupUserMutationOptions } from 'pl-fe/queries/groups/group-blocks';
 import toast from 'pl-fe/toast';
 
 import ColumnForbidden from '../ui/components/column-forbidden';
@@ -31,7 +32,7 @@ const BlockedMember: React.FC<IBlockedMember> = ({ accountId, groupId }) => {
   const intl = useIntl();
   const { account } = useAccount(accountId);
 
-  const { mutate: unblockGroupUser } = useUnblockGroupUserMutation(groupId, accountId);
+  const { mutate: unblockGroupUser } = useMutation(unblockGroupUserMutationOptions(groupId, accountId));
 
   if (!account) return null;
 
@@ -65,7 +66,7 @@ const GroupBlockedMembers: React.FC<IGroupBlockedMembers> = ({ params }) => {
   const groupId = params?.groupId;
 
   const { group } = useGroup(groupId);
-  const { data: accountIds } = useGroupBlocks(groupId);
+  const { data: accountIds } = useInfiniteQuery(groupBlocksQueryOptions(groupId));
 
   if (!group || !group.relationship || !accountIds) {
     return (

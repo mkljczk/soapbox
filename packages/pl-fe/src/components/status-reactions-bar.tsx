@@ -1,26 +1,26 @@
+import { useMutation } from '@tanstack/react-query';
 import { useLongPress } from '@uidotdev/usehooks';
 import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
-import { emojiReact, unEmojiReact } from 'pl-fe/actions/emoji-reacts';
 import Emoji from 'pl-fe/components/ui/emoji';
 import HStack from 'pl-fe/components/ui/hstack';
 import Icon from 'pl-fe/components/ui/icon';
 import Text from 'pl-fe/components/ui/text';
 import EmojiPickerDropdown from 'pl-fe/features/emoji/containers/emoji-picker-dropdown-container';
 import unicodeMapping from 'pl-fe/features/emoji/mapping';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
 import { useSettings } from 'pl-fe/hooks/use-settings';
+import { createStatusReactionMutationOptions, deleteStatusReactionMutationOptions } from 'pl-fe/queries/statuses/status-interactions';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
 import AnimatedNumber from './animated-number';
 
 import type { EmojiReaction } from 'pl-api';
 import type { Emoji as EmojiType } from 'pl-fe/features/emoji';
-import type { SelectedStatus } from 'pl-fe/selectors';
+import type { Status } from 'pl-fe/normalizers/status';
 
 const messages = defineMessages({
   emojiCount: { id: 'status.reactions.label', defaultMessage: '{count} {count, plural, one {person} other {people}} reacted with {emoji}' },
@@ -28,7 +28,7 @@ const messages = defineMessages({
 });
 
 interface IStatusReactionsBar {
-  status: Pick<SelectedStatus, 'id' | 'emoji_reactions'>;
+  status: Pick<Status, 'id' | 'emoji_reactions'>;
   collapsed?: boolean;
 }
 
@@ -40,10 +40,12 @@ interface IStatusReaction {
 }
 
 const StatusReaction: React.FC<IStatusReaction> = ({ reaction, statusId, obfuscate, unauthenticated }) => {
-  const dispatch = useAppDispatch();
   const intl = useIntl();
   const features = useFeatures();
   const { openModal } = useModalsStore();
+
+  const { mutate: createStatusReaction } = useMutation(createStatusReactionMutationOptions);
+  const { mutate: deleteStatusReaction } = useMutation(deleteStatusReactionMutationOptions);
 
   const bind = useLongPress((e) => {
     if (!features.emojiReactsList || e.type !== 'touchstart') return;
@@ -63,9 +65,9 @@ const StatusReaction: React.FC<IStatusReaction> = ({ reaction, statusId, obfusca
       if (!features.emojiReactsList) return;
       openModal('REACTIONS', { statusId, reaction: reaction.name });
     } else if (reaction.me) {
-      dispatch(unEmojiReact(statusId, reaction.name));
+      deleteStatusReaction({ statusId, emoji: reaction.name });
     } else {
-      dispatch(emojiReact(statusId, reaction.name, reaction.url));
+      createStatusReaction({ statusId, emoji: reaction.name, custom: reaction.url });
     }
   };
 
@@ -105,14 +107,15 @@ const StatusReaction: React.FC<IStatusReaction> = ({ reaction, statusId, obfusca
 };
 
 const StatusReactionsBar: React.FC<IStatusReactionsBar> = ({ status, collapsed }) => {
-  const dispatch = useAppDispatch();
   const intl = useIntl();
   const { me } = useLoggedIn();
   const { demetricator } = useSettings();
   const features = useFeatures();
 
+  const { mutate: createStatusReaction } = useMutation(createStatusReactionMutationOptions);
+
   const handlePickEmoji = (emoji: EmojiType) => {
-    dispatch(emojiReact(status.id, emoji.custom ? emoji.id : emoji.native, emoji.custom ? emoji.imageUrl : undefined));
+    createStatusReaction({ statusId: status.id, emoji: emoji.custom ? emoji.id : emoji.native, custom: emoji.custom ? emoji.imageUrl : undefined });
   };
 
   if ((demetricator || status.emoji_reactions.length === 0) && collapsed) return null;

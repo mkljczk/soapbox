@@ -49,7 +49,6 @@ const AUTH_APP_AUTHORIZED = 'AUTH_APP_AUTHORIZED' as const;
 const AUTH_LOGGED_IN = 'AUTH_LOGGED_IN' as const;
 const AUTH_LOGGED_OUT = 'AUTH_LOGGED_OUT' as const;
 
-const VERIFY_CREDENTIALS_REQUEST = 'VERIFY_CREDENTIALS_REQUEST' as const;
 const VERIFY_CREDENTIALS_SUCCESS = 'VERIFY_CREDENTIALS_SUCCESS' as const;
 const VERIFY_CREDENTIALS_FAIL = 'VERIFY_CREDENTIALS_FAIL' as const;
 
@@ -158,11 +157,6 @@ const otpVerify = (code: string, mfa_token: string) =>
     }).then((token) => dispatch(authLoggedIn(token)));
   };
 
-interface VerifyCredentialsRequestAction {
-  type: typeof VERIFY_CREDENTIALS_REQUEST;
-  token: string;
-}
-
 interface VerifyCredentialsSuccessAction {
   type: typeof VERIFY_CREDENTIALS_SUCCESS;
   token: string;
@@ -178,8 +172,6 @@ interface VerifyCredentialsFailAction {
 const verifyCredentials = (token: string, accountUrl?: string) =>
   (dispatch: AppDispatch, getState: () => RootState) => {
     const baseURL = parseBaseURL(accountUrl) || BuildConfig.BACKEND_URL;
-
-    dispatch<VerifyCredentialsRequestAction>({ type: VERIFY_CREDENTIALS_REQUEST, token });
 
     const client = new PlApiClient(baseURL, token);
 
@@ -336,7 +328,6 @@ type AuthAction =
   | AuthAppAuthorizedAction
   | AuthLoggedInAction
   | AuthLoggedOutAction
-  | VerifyCredentialsRequestAction
   | VerifyCredentialsSuccessAction
   | VerifyCredentialsFailAction
   | AuthAccountRememberSuccessAction;
@@ -347,7 +338,6 @@ export {
   AUTH_APP_AUTHORIZED,
   AUTH_LOGGED_IN,
   AUTH_LOGGED_OUT,
-  VERIFY_CREDENTIALS_REQUEST,
   VERIFY_CREDENTIALS_SUCCESS,
   VERIFY_CREDENTIALS_FAIL,
   AUTH_ACCOUNT_REMEMBER_SUCCESS,

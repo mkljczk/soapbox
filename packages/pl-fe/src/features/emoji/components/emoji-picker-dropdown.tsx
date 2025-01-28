@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState, useLayoutEffect, Suspense, useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
@@ -5,7 +6,7 @@ import { changeSetting, saveSettings } from 'pl-fe/actions/settings';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useTheme } from 'pl-fe/hooks/use-theme';
-import { useCustomEmojis } from 'pl-fe/queries/instance/use-custom-emojis';
+import { customEmojisQueryOptions } from 'pl-fe/queries/instance/custom-emojis';
 import { useSettingsStore } from 'pl-fe/stores/settings';
 
 import { buildCustomEmojis } from '../../emoji';
@@ -127,7 +128,10 @@ const EmojiPickerDropdown: React.FC<IEmojiPickerDropdown> = ({
   const theme = useTheme();
   const { rememberEmojiUse } = useSettingsStore();
 
-  const { data: customEmojis } = useCustomEmojis(getCustomEmojis);
+  const { data: customEmojis } = useQuery({
+    ...customEmojisQueryOptions,
+    select: getCustomEmojis,
+  });
 
   const settings = useSettings();
   const frequentlyUsedEmojis = useMemo(() => getFrequentlyUsedEmojis(settings.frequentlyUsedEmojis), [settings.frequentlyUsedEmojis]);

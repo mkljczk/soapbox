@@ -11,8 +11,8 @@ import { useModalsStore } from 'pl-fe/stores/modals';
 
 import MediaItem from '../account-gallery/components/media-item';
 
+import type { AccountGalleryAttachment } from 'pl-fe/hooks/use-account-gallery';
 import type { Status } from 'pl-fe/normalizers/status';
-import type { AccountGalleryAttachment } from 'pl-fe/selectors';
 
 interface IGroupGallery {
   params: { groupId: string };
@@ -34,7 +34,7 @@ const GroupGallery: React.FC<IGroupGallery> = (props) => {
   } = useGroupMedia(groupId);
 
   const attachments = statuses.reduce<AccountGalleryAttachment[]>((result, status) => {
-    result.push(...status.media_attachments.map((a) => ({ ...a, status, account: status.account })));
+    result.push(...status.media_attachments.map((a) => ({ ...a, status, account_id: status.account.id })));
     return result;
   }, []);
 

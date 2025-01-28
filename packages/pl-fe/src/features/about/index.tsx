@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -6,7 +7,7 @@ import { Navlinks } from 'pl-fe/components/navlinks';
 import Card from 'pl-fe/components/ui/card';
 import { usePlFeConfig } from 'pl-fe/hooks/use-pl-fe-config';
 import { useSettings } from 'pl-fe/hooks/use-settings';
-import { useAboutPage } from 'pl-fe/queries/pl-fe/use-about-page';
+import { aboutPageQueryOptions } from 'pl-fe/queries/pl-fe/about-page';
 
 import { languages } from '../preferences';
 
@@ -26,7 +27,7 @@ const AboutPage: React.FC = () => {
   const pageLocales = page?.locales || [];
   const fetchLocale = Boolean(page && locale !== defaultLocale && pageLocales.includes(locale));
 
-  const { data: pageHtml } = useAboutPage(slug, fetchLocale ? locale : undefined);
+  const { data: pageHtml } = useQuery(aboutPageQueryOptions(slug, fetchLocale ? locale : undefined));
 
   const alsoAvailable = (defaultLocale) && (
     <div>

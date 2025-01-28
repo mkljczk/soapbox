@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
@@ -9,7 +10,6 @@ import {
   submitEvent,
 } from 'pl-fe/actions/events';
 import { uploadFile } from 'pl-fe/actions/media';
-import { fetchStatus } from 'pl-fe/actions/statuses';
 import { ADDRESS_ICONS } from 'pl-fe/components/autosuggest-location';
 import LocationSearch from 'pl-fe/components/location-search';
 import Button from 'pl-fe/components/ui/button';
@@ -26,8 +26,8 @@ import Toggle from 'pl-fe/components/ui/toggle';
 import { isCurrentOrFutureDate } from 'pl-fe/features/compose/components/schedule-form';
 import { ComposeEditor, DatePicker } from 'pl-fe/features/ui/util/async-components';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { queryClient } from 'pl-fe/queries/client';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 import toast from 'pl-fe/toast';
 
 import UploadButton from '../components/upload-button';
@@ -52,8 +52,7 @@ const EditEvent: React.FC<IEditEvent> = ({ statusId }) => {
   const dispatch = useAppDispatch();
   const history = useHistory();
 
-  const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector((state) => statusId ? getStatus(state, { id: statusId }) : undefined);
+  const { data: status } = useQuery(statusQueryOptions(statusId || undefined));
 
   const [name, setName] = useState(status?.event?.name || '');
   const [text, setText] = useState('');
@@ -136,7 +135,7 @@ const EditEvent: React.FC<IEditEvent> = ({ statusId }) => {
 
   useEffect(() => {
     if (statusId) {
-      Promise.all([dispatch(initEventEdit(statusId)), dispatch(fetchStatus(statusId))])
+      Promise.all([dispatch(initEventEdit(statusId)), queryClient.ensureQueryData(statusQueryOptions(statusId))])
         .then(([source, status]) => {
           if (!source || !status) throw new Error();
 

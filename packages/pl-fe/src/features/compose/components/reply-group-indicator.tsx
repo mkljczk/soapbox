@@ -1,11 +1,13 @@
-import React, { useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { useGroup } from 'pl-fe/api/hooks/groups/use-group';
 import Link from 'pl-fe/components/link';
 import Text from 'pl-fe/components/ui/text';
 import Emojify from 'pl-fe/features/emoji/emojify';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { useCompose } from 'pl-fe/hooks/use-compose';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 interface IReplyGroupIndicator {
   composeId: string;
@@ -14,10 +16,10 @@ interface IReplyGroupIndicator {
 const ReplyGroupIndicator = (props: IReplyGroupIndicator) => {
   const { composeId } = props;
 
-  const getStatus = useCallback(makeGetStatus(), []);
+  const { in_reply_to: inReplyTo } = useCompose(composeId);
 
-  const status = useAppSelector((state) => getStatus(state, { id: state.compose[composeId]?.in_reply_to! }));
-  const group = status?.group;
+  const { data: status } = useQuery(statusQueryOptions(inReplyTo!));
+  const { group } = useGroup(status?.group_id || '');
 
   if (!group) {
     return null;

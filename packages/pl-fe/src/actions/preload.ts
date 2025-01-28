@@ -68,6 +68,5 @@ export {
   PLEROMA_PRELOAD_IMPORT,
   MASTODON_PRELOAD_IMPORT,
   preload,
-  preloadMastodon,
   type PreloadAction,
 };

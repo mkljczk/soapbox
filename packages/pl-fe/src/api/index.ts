@@ -3,8 +3,12 @@
  * @module pl-fe/api
  */
 import * as BuildConfig from 'pl-fe/build-config';
-import { RootState } from 'pl-fe/store';
 import { buildFullPath } from 'pl-fe/utils/url';
+
+import type { RootState, Store } from 'pl-fe/store';
+
+let store: Store;
+import('pl-fe/store').then((value) => store = value.store).catch(() => {});
 
 type PlfeResponse<T = any> = Response & { data: string; json: T };
 
@@ -33,7 +37,7 @@ const staticFetch = async (input: URL | RequestInfo, init?: RequestInit | undefi
   return { headers, ok, redirected, status, statusText, type, url, data, json } as any as PlfeResponse;
 };
 
-const getClient = (state: RootState | (() => RootState)) => {
+const getClient = (state: RootState | (() => RootState) = store?.getState()) => {
   if (typeof state === 'function') state = state();
 
   return state.auth.client;

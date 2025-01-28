@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { defineMessages, FormattedMessage } from 'react-intl';
 
-import { bookmark } from 'pl-fe/actions/interactions';
 import { RadioGroup, RadioItem } from 'pl-fe/components/radio';
 import Emoji from 'pl-fe/components/ui/emoji';
 import HStack from 'pl-fe/components/ui/hstack';
@@ -10,33 +10,42 @@ import Modal from 'pl-fe/components/ui/modal';
 import Spinner from 'pl-fe/components/ui/spinner';
 import Stack from 'pl-fe/components/ui/stack';
 import NewFolderForm from 'pl-fe/features/bookmark-folders/components/new-folder-form';
-import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
-import { useBookmarkFolders } from 'pl-fe/queries/statuses/use-bookmark-folders';
-import { makeGetStatus } from 'pl-fe/selectors';
+import { bookmarkFoldersQueryOptions } from 'pl-fe/queries/statuses/bookmark-folders';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
+import { bookmarkStatusMutationOptions } from 'pl-fe/queries/statuses/status-interactions';
+import toast from 'pl-fe/toast';
 
 import type { BaseModalProps } from '../modal-root';
+
+const messages = defineMessages({
+  folderChanged: { id: 'status.bookmark_folder_changed', defaultMessage: 'Changed folder' },
+  view: { id: 'toast.view', defaultMessage: 'View' },
+});
 
 interface SelectBookmarkFolderModalProps {
   statusId: string;
 }
 
 const SelectBookmarkFolderModal: React.FC<SelectBookmarkFolderModalProps & BaseModalProps> = ({ statusId, onClose }) => {
-  const getStatus = useCallback(makeGetStatus(), []);
-  const status = useAppSelector(state => getStatus(state, { id: statusId }))!;
-  const dispatch = useAppDispatch();
+  const { data: status } = useQuery(statusQueryOptions(statusId));
+  const { isFetching, data: bookmarkFolders } = useQuery(bookmarkFoldersQueryOptions);
+  const { mutate: bookmarkStatus } = useMutation(bookmarkStatusMutationOptions);
 
-  const [selectedFolder, setSelectedFolder] = useState(status.bookmark_folder);
-
-  const { isFetching, data: bookmarkFolders } = useBookmarkFolders(data => data);
+  const [selectedFolder, setSelectedFolder] = useState(status!.bookmark_folder);
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = e => {
     const folderId = e.target.value;
     setSelectedFolder(folderId);
 
-    dispatch(bookmark(status, folderId)).then(() => {
-      onClose('SELECT_BOOKMARK_FOLDER');
-    }).catch(() => {});
+    bookmarkStatus({ statusId, folderId }, {
+      onSuccess: () => {
+        toast.success(messages.folderChanged, {
+          actionLabel: messages.view,
+          actionLink: `/bookmarks/${folderId}`,
+        });
+        onClose('SELECT_BOOKMARK_FOLDER');
+      },
+    });
   };
 
   const onClickClose = () => {

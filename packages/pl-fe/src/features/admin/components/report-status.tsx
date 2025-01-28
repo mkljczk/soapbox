@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useIntl, defineMessages } from 'react-intl';
 
@@ -8,8 +9,7 @@ import StatusMedia from 'pl-fe/components/status-media';
 import HStack from 'pl-fe/components/ui/hstack';
 import Stack from 'pl-fe/components/ui/stack';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
-
-import type { SelectedStatus } from 'pl-fe/selectors';
+import { statusQueryOptions } from 'pl-fe/queries/statuses/status';
 
 const messages = defineMessages({
   viewStatus: { id: 'admin.reports.actions.view_status', defaultMessage: 'View post' },
@@ -17,15 +17,19 @@ const messages = defineMessages({
 });
 
 interface IReportStatus {
-  status: SelectedStatus;
+  statusId: string;
 }
 
-const ReportStatus: React.FC<IReportStatus> = ({ status }) => {
+const ReportStatus: React.FC<IReportStatus> = ({ statusId }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
+  const { data: status } = useQuery(statusQueryOptions(statusId));
+
+  if (!status) return null;
+
   const handleDeleteStatus = () => {
-    dispatch(deleteStatusModal(intl, status.id));
+    dispatch(deleteStatusModal(intl, statusId));
   };
 
   const makeMenu = () => {
@@ -33,7 +37,7 @@ const ReportStatus: React.FC<IReportStatus> = ({ status }) => {
 
     return [{
       text: intl.formatMessage(messages.viewStatus, { acct: `@${acct}` }),
-      to: `/@${acct}/posts/${status.id}`,
+      to: `/@${acct}/posts/${statusId}`,
       icon: require('@tabler/icons/outline/pencil.svg'),
     }, {
       text: intl.formatMessage(messages.deleteStatus, { acct: `@${acct}` }),

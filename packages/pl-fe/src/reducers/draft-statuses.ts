@@ -49,7 +49,7 @@ const persistState = (state: State, accountUrl: string) => {
   return state;
 };
 
-const scheduled_statuses = (state: State = initialState, action: DraftStatusesAction | ComposeAction) => {
+const draftStatuses = (state: State = initialState, action: DraftStatusesAction | ComposeAction) => {
   switch (action.type) {
     case DRAFT_STATUSES_FETCH_SUCCESS:
       return create(state, (draft) => importStatuses(draft, action.statuses));
@@ -66,5 +66,5 @@ const scheduled_statuses = (state: State = initialState, action: DraftStatusesAc
 
 export {
   type DraftStatus,
-  scheduled_statuses as default,
+  draftStatuses as default,
 };

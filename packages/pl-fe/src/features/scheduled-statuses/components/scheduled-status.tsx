@@ -14,13 +14,14 @@ import { buildStatus } from '../builder';
 
 import ScheduledStatusActionBar from './scheduled-status-action-bar';
 
+import type { ScheduledStatus as ScheduledStatusEntity } from 'pl-api';
+
 interface IScheduledStatus {
-  statusId: string;
+  scheduledStatus: ScheduledStatusEntity;
 }
 
-const ScheduledStatus: React.FC<IScheduledStatus> = ({ statusId, ...other }) => {
+const ScheduledStatus: React.FC<IScheduledStatus> = ({ scheduledStatus, ...other }) => {
   const status = useAppSelector((state) => {
-    const scheduledStatus = state.scheduled_statuses[statusId];
     if (!scheduledStatus) return null;
     return buildStatus(state, scheduledStatus);
   });
