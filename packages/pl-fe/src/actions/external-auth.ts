@@ -42,36 +42,34 @@ const createExternalApp = (instance: Instance, baseURL?: string) => {
   return createApp(params, baseURL);
 };
 
-const externalAuthorize = (instance: Instance, baseURL: string) =>
-  (dispatch: AppDispatch) => {
-    const scopes = getInstanceScopes(instance);
+const externalAuthorize = (instance: Instance, baseURL: string) => {
+  const scopes = getInstanceScopes(instance);
 
-    return createExternalApp(instance, baseURL).then((app) => {
-      const { client_id, redirect_uri } = app;
+  return createExternalApp(instance, baseURL).then((app) => {
+    const { client_id, redirect_uri } = app;
 
-      const query = new URLSearchParams({
-        client_id,
-        redirect_uri: redirect_uri || app.redirect_uris[0]!,
-        response_type: 'code',
-        scope: scopes,
-      });
-
-      localStorage.setItem('plfe:external:app', JSON.stringify(app));
-      localStorage.setItem('plfe:external:baseurl', baseURL);
-      localStorage.setItem('plfe:external:scopes', scopes);
-
-      window.location.href = `${baseURL}/oauth/authorize?${query.toString()}`;
+    const query = new URLSearchParams({
+      client_id,
+      redirect_uri: redirect_uri || app.redirect_uris[0]!,
+      response_type: 'code',
+      scope: scopes,
     });
-  };
 
-const externalLogin = (host: string) =>
-  (dispatch: AppDispatch) => {
-    const baseURL = parseBaseURL(host) || parseBaseURL(`https://${host}`);
+    localStorage.setItem('plfe:external:app', JSON.stringify(app));
+    localStorage.setItem('plfe:external:baseurl', baseURL);
+    localStorage.setItem('plfe:external:scopes', scopes);
 
-    return fetchExternalInstance(baseURL).then((instance) => {
-      dispatch(externalAuthorize(instance, baseURL));
-    });
-  };
+    window.location.href = `${baseURL}/oauth/authorize?${query.toString()}`;
+  });
+};
+
+const externalLogin = (host: string) => {
+  const baseURL = parseBaseURL(host) || parseBaseURL(`https://${host}`);
+
+  return fetchExternalInstance(baseURL).then((instance) => {
+    externalAuthorize(instance, baseURL);
+  });
+};
 
 const loginWithCode = (code: string) =>
   (dispatch: AppDispatch) => {

@@ -37,7 +37,7 @@ const ExternalLoginForm: React.FC = () => {
   const handleSubmit = () => {
     setLoading(true);
 
-    dispatch(externalLogin(host))
+    externalLogin(host)
       .then(() => setLoading(false))
       .catch((error) => {
         console.error(error);
