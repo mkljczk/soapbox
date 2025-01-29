@@ -46,6 +46,9 @@ const preprocessAccount = v.transform((account: any) => {
     local: typeof account.pleroma?.is_local === 'boolean' ? account.pleroma.is_local : account.acct.split('@')[1] === undefined,
     discoverable: account.discoverable || account.pleroma?.source?.discoverable,
     verified: account.verified || account.pleroma?.tags?.includes('verified'),
+    ...(account.role?.permissions ? {
+      is_admin: account.role?.permissions & 0x1,
+    } : {}),
     ...(pick(account.pleroma || {}, [
       'ap_id',
       'background_image',
