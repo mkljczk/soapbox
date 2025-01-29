@@ -1,11 +1,10 @@
 import clsx from 'clsx';
-import throttle from 'lodash/throttle';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { createSelector } from 'reselect';
 
-import { fetchOwnAccounts, logOut, switchAccount } from 'pl-fe/actions/auth';
+import { logOut, switchAccount } from 'pl-fe/actions/auth';
 import Account from 'pl-fe/components/account';
 import DropdownMenu from 'pl-fe/components/dropdown-menu';
 import { Entities } from 'pl-fe/entity-store/entities';
@@ -57,10 +56,6 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
     dispatch(switchAccount(account.id));
   };
 
-  const fetchOwnAccountThrottled = throttle(() => {
-    dispatch(fetchOwnAccounts());
-  }, 2000);
-
   const renderAccount = (account: AccountEntity) => (
     <Account account={account} showAccountHoverCard={false} withLinkToProfile={false} hideActions />
   );
@@ -104,10 +99,6 @@ const ProfileDropdown: React.FC<IProfileDropdown> = ({ account, children }) => {
       </>
     );
   }, [account, otherAccounts.length, features]);
-
-  useEffect(() => {
-    fetchOwnAccountThrottled();
-  }, [account.id, otherAccounts.length]);
 
   return (
     <DropdownMenu
