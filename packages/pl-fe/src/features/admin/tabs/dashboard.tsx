@@ -25,8 +25,9 @@ const Dashboard: React.FC = () => {
     status_count: statusCount,
     domain_count: domainCount,
   } = instance.stats;
+  console.log(instance);
 
-  const mau = instance.pleroma.stats.mau;
+  const mau = instance.usage.users.active_month ?? instance.pleroma.stats.mau;
   const retention = (userCount && mau) ? Math.round(mau / userCount * 100) : undefined;
 
   if (!account) return null;
@@ -60,17 +61,19 @@ const Dashboard: React.FC = () => {
       </DashCounters>
 
       <List>
-        {account.is_admin && (
+        {features.pleromaAdminAccounts && account.is_admin && (
           <ListItem
             to='/pl-fe/config'
             label={<FormattedMessage id='navigation_bar.plfe_config' defaultMessage='Front-end configuration' />}
           />
         )}
 
-        <ListItem
-          to='/pl-fe/admin/log'
-          label={<FormattedMessage id='column.admin.moderation_log' defaultMessage='Moderation log' />}
-        />
+        {features.pleromaAdminModerationLog && (
+          <ListItem
+            to='/pl-fe/admin/log'
+            label={<FormattedMessage id='column.admin.moderation_log' defaultMessage='Moderation log' />}
+          />
+        )}
 
         {features.pleromaAdminAnnouncements && (
           <ListItem
@@ -94,7 +97,7 @@ const Dashboard: React.FC = () => {
         )}
       </List>
 
-      {account.is_admin && (
+      {features.pleromaAdminAccounts && account.is_admin && (
         <>
           <CardTitle
             title={<FormattedMessage id='admin.dashboard.registration_mode_label' defaultMessage='Registrations' />}
