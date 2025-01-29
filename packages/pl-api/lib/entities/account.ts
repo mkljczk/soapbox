@@ -47,7 +47,7 @@ const preprocessAccount = v.transform((account: any) => {
     discoverable: account.discoverable || account.pleroma?.source?.discoverable,
     verified: account.verified || account.pleroma?.tags?.includes('verified'),
     ...(account.role?.permissions ? {
-      is_admin: account.role?.permissions & 0x1,
+      is_admin: (account.role?.permissions & 0x1) === 0x1,
     } : {}),
     ...(pick(account.pleroma || {}, [
       'ap_id',

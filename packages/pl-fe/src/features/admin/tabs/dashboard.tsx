@@ -25,7 +25,6 @@ const Dashboard: React.FC = () => {
     status_count: statusCount,
     domain_count: domainCount,
   } = instance.stats;
-  console.log(instance);
 
   const mau = instance.usage.users.active_month ?? instance.pleroma.stats.mau;
   const retention = (userCount && mau) ? Math.round(mau / userCount * 100) : undefined;

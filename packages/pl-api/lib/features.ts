@@ -877,6 +877,7 @@ const getFeatures = (instance: Instance) => {
      * @see GET /api/v2/admin/accounts
      */
     mastodonAdminV2: any([
+      v.software === GOTOSOCIAL,
       v.software === MASTODON && gte(v.version, '3.5.0'),
     ]),
 
