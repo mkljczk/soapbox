@@ -83,7 +83,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
 }) => {
   const { displaySpoilers } = useSettings();
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState<boolean | null>(null);
   const [onlyEmoji, setOnlyEmoji] = useState(false);
   const [lineClamp, setLineClamp] = useState(true);
 
@@ -99,9 +99,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
 
     if ((collapsable || preview) && !collapsed) {
       // 20px * x lines (+ 2px padding at the top)
-      if (node.current.clientHeight > (preview ? 82 : isQuote ? 202 : 282)) {
-        setCollapsed(true);
-      }
+      setCollapsed(node.current.clientHeight >= (preview ? 82 : isQuote ? 202 : 282));
     }
   };
 
@@ -125,7 +123,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   useLayoutEffect(() => {
     maybeSetCollapsed();
     maybeSetOnlyEmoji();
-  });
+  }, []);
 
   const content = useMemo(
     (): string => translation
@@ -154,14 +152,17 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     : status.spoiler_text;
 
   const direction = getTextDirection(status.search_index);
-  const className = clsx('relative text-ellipsis break-words text-gray-900 focus:outline-none dark:text-gray-100', {
+  const className = useMemo(() => clsx('relative text-ellipsis break-words text-gray-900 focus:outline-none dark:text-gray-100', {
     'cursor-pointer': onClick,
     'overflow-hidden': collapsed,
     'max-h-[200px]': collapsed && !isQuote && !preview,
     'max-h-[120px]': collapsed && isQuote,
     'max-h-[80px]': collapsed && preview,
+    'max-h-[282px]': collapsable && collapsed === null && !isQuote && !preview,
+    'max-h-[202px]': collapsable && collapsed === null && isQuote,
+    'max-h-[82px]': preview && collapsed === null,
     'leading-normal big-emoji': onlyEmoji,
-  });
+  }), [collapsed, onlyEmoji]);
 
   const expandable = !displaySpoilers;
   const expanded = !withSpoiler || statusMeta.expanded || false;
