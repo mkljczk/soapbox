@@ -8,6 +8,24 @@ import Card from 'pl-fe/components/ui/card';
 import Spinner from 'pl-fe/components/ui/spinner';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 
+// Workaround for timeline jump issue from https://github.com/TanStack/virtual/issues/659
+const measureElement = (
+  element: Element,
+  entry: ResizeObserverEntry | undefined,
+  instance: Virtualizer<HTMLElement, Element> | Virtualizer<Window, Element>,
+) => {
+  const direction = instance.scrollDirection;
+  if (direction === 'forward' || direction === null) {
+    return element.scrollHeight;
+  } else {
+    // don't remeasure if we are scrolling up
+    const indexKey = Number(element.getAttribute('data-index'));
+    // @ts-ignore
+    const cacheMeasurement = instance.itemSizeCache.get(indexKey);
+    return cacheMeasurement;
+  }
+};
+
 interface IScrollableListBase {
   /** Pagination callback when the end of the list is reached. */
   onLoadMore?: () => void;
@@ -97,14 +115,16 @@ const ScrollableList = React.forwardRef<Virtualizer<any, any>, IScrollableList>(
 
   const virtualizer = 'parentRef' in props ? useVirtualizer({
     count: data.length + (hasMore ? 1 : 0),
-    overscan: 3,
+    overscan: 1,
     estimateSize: () => estimatedSize,
     getScrollElement: () => props.parentRef.current,
+    measureElement,
   }) : useWindowVirtualizer({
     count: data.length + (hasMore ? 1 : 0),
-    overscan: 3,
+    overscan: 1,
     estimateSize: () => estimatedSize,
     scrollMargin: listRef.current ? listRef.current.getBoundingClientRect().top + window.scrollY : 0,
+    measureElement,
   });
 
   useEffect(() => {
