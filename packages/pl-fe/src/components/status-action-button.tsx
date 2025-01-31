@@ -1,10 +1,10 @@
-import { useLongPress } from '@uidotdev/usehooks';
 import clsx from 'clsx';
 import React from 'react';
 
 import Emoji from 'pl-fe/components/ui/emoji';
 import Icon from 'pl-fe/components/ui/icon';
 import Text from 'pl-fe/components/ui/text';
+import { useLongPress } from 'pl-fe/hooks/use-long-press';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 
 import AnimatedNumber from './animated-number';
@@ -43,7 +43,7 @@ interface IStatusActionButton extends React.ButtonHTMLAttributes<HTMLButtonEleme
   emoji?: EmojiReaction;
   text?: React.ReactNode;
   theme?: 'default' | 'inverse';
-  onLongPress?: (event: Event) => void;
+  onLongPress?: (event: React.MouseEvent | React.TouchEvent) => void;
 }
 
 const StatusActionButton = React.forwardRef<HTMLButtonElement, IStatusActionButton>((props, ref): JSX.Element => {

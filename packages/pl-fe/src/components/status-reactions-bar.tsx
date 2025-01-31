@@ -1,4 +1,3 @@
-import { useLongPress } from '@uidotdev/usehooks';
 import clsx from 'clsx';
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
@@ -13,6 +12,7 @@ import unicodeMapping from 'pl-fe/features/emoji/mapping';
 import { useAppDispatch } from 'pl-fe/hooks/use-app-dispatch';
 import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useLoggedIn } from 'pl-fe/hooks/use-logged-in';
+import { useLongPress } from 'pl-fe/hooks/use-long-press';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 import { useModalsStore } from 'pl-fe/stores/modals';
 
