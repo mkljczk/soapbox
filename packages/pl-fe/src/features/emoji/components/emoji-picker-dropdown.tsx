@@ -223,7 +223,7 @@ const EmojiPickerDropdown: React.FC<IEmojiPickerDropdown> = ({
             emojiSize={22}
             emojiButtonSize={34}
             set='twitter'
-            theme={theme}
+            theme={theme === 'light' ? 'light' : 'dark'}
             i18n={getI18n()}
             skinTonePosition='search'
             previewPosition='none'
