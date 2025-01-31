@@ -97,7 +97,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   const maybeSetCollapsed = (): void => {
     if (!node.current) return;
 
-    if ((collapsable || preview) && !collapsed) {
+    if (collapsable || preview) {
       // 20px * x lines (+ 2px padding at the top)
       setCollapsed(node.current.clientHeight >= (preview ? 82 : isQuote ? 202 : 282));
     }
