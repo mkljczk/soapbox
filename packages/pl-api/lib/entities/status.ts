@@ -25,8 +25,8 @@ const statusEventSchema = v.object({
   location: v.fallback(v.nullable(v.object({
     name: v.fallback(v.string(), ''),
     url: v.fallback(v.pipe(v.string(), v.url()), ''),
-    latitude: v.fallback(v.number(), 0),
-    longitude: v.fallback(v.number(), 0),
+    latitude: v.fallback(v.nullable(v.number()), null),
+    longitude: v.fallback(v.nullable(v.number()), null),
     street: v.fallback(v.string(), ''),
     postal_code: v.fallback(v.string(), ''),
     locality: v.fallback(v.string(), ''),
