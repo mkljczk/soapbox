@@ -160,7 +160,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     'max-h-[80px]': collapsed && preview,
     'max-h-[282px]': collapsable && collapsed === null && !isQuote && !preview,
     'max-h-[202px]': collapsable && collapsed === null && isQuote,
-    'max-h-[82px]': preview && collapsed === null,
+    'max-h-[82px]': collapsed === null && preview,
     'leading-normal big-emoji': onlyEmoji,
   }), [collapsed, onlyEmoji]);
 

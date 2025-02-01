@@ -212,10 +212,12 @@ const SidebarMenu: React.FC = React.memo((): JSX.Element | null => {
                   <Account account={account} showAccountHoverCard={false} withLinkToProfile={false} />
                 </Link>
 
-                <ProfileStats
-                  account={account}
-                  onClickHandler={handleClose}
-                />
+                {!settings.demetricator && (
+                  <ProfileStats
+                    account={account}
+                    onClickHandler={handleClose}
+                  />
+                )}
 
                 <Stack space={4}>
                   <Divider />
