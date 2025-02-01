@@ -18,6 +18,7 @@ const useSearchAccounts = (
     queryKey: ['search', 'accounts', query, params],
     queryFn: ({ pageParam: offset, signal }) => client.search.search(query!, {
       with_relationships: true,
+      resolve: true,
       ...params,
       offset,
       type: 'accounts',
@@ -43,6 +44,7 @@ const useSearchStatuses = (
     queryKey: ['search', 'statuses', query, params],
     queryFn: ({ pageParam: offset, signal }) => client.search.search(query, {
       with_relationships: true,
+      resolve: true,
       ...params,
       offset,
       type: 'statuses',
@@ -87,6 +89,7 @@ const useSearchGroups = (
   return useInfiniteQuery({
     queryKey: ['search', 'groups', query, params],
     queryFn: ({ pageParam: offset, signal }) => client.search.search(query, {
+      resolve: true,
       ...params,
       offset,
       type: 'groups',
