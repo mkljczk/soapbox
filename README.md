@@ -1,6 +1,5 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/mkljczk/pl-fe)](https://github.com/mkljczk/pl-fe)
 [![GitHub License](https://img.shields.io/github/license/mkljczk/pl-fe)](https://github.com/mkljczk/pl-fe?tab=AGPL-3.0-1-ov-file#readme)
-[![Discord](https://img.shields.io/discord/1279834339470872598)](https://discord.gg/NCZZsqqgUH)
 
 This repo hosts a few of my projects related to the Fediverse client `pl-fe`. This includes:
 
@@ -10,7 +9,7 @@ This repo hosts a few of my projects related to the Fediverse client `pl-fe`. Th
 
 More projects to be announced.
 
-Follow [my Pleroma account](https://pl.fediverse.pl/@mkljczk) to stay up to date on `pl-fe` development. You can also join the [project community on Discord](https://discord.gg/NCZZsqqgUH).
+Follow [my Pleroma account](https://pl.fediverse.pl/@mkljczk) to stay up to date on `pl-fe` development.
 
 
 This project is tested with BrowserStack.
