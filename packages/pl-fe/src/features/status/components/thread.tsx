@@ -400,6 +400,7 @@ const Thread: React.FC<IThread> = ({
       >
         <ScrollableList
           id='thread'
+          key={status.id}
           ref={virtualizer}
           placeholderComponent={() => <PlaceholderStatus variant='slim' />}
           initialIndex={initialIndex}
