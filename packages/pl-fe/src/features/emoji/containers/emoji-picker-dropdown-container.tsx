@@ -1,4 +1,4 @@
-import { useFloating, shift, flip, autoUpdate } from '@floating-ui/react';
+import { useFloating, shift, flip, autoUpdate, useTransitionStyles } from '@floating-ui/react';
 import clsx from 'clsx';
 import React, { KeyboardEvent, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
@@ -21,28 +21,41 @@ interface IEmojiPickerDropdownContainer extends Pick<IEmojiPickerDropdown, 'onPi
 const EmojiPickerDropdownContainer: React.FC<IEmojiPickerDropdownContainer> = ({ theme = 'default', children, ...props }) => {
   const intl = useIntl();
   const title = intl.formatMessage(messages.emoji);
-  const [visible, setVisible] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const { x, y, strategy, refs, update } = useFloating<HTMLButtonElement>({
+  const { x, y, strategy, refs, update, context, placement } = useFloating<HTMLButtonElement>({
+    open: isOpen,
     middleware: [flip(), shift()],
     whileElementsMounted: autoUpdate,
   });
 
+  const { isMounted, styles } = useTransitionStyles(context, {
+    initial: {
+      opacity: 0,
+      transform: 'scale(0.8)',
+      transformOrigin: placement === 'bottom' ? 'top' : 'bottom',
+    },
+    duration: {
+      open: 100,
+      close: 100,
+    },
+  });
+
   useClickOutside(refs, () => {
-    setVisible(false);
+    setIsOpen(false);
   });
 
   const handleClick = (e: MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    setVisible(!visible);
+    setIsOpen(!isOpen);
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (['Enter', ' '].includes(e.key)) {
       e.stopPropagation();
       e.preventDefault();
-      setVisible(!visible);
+      setIsOpen(!isOpen);
     }
   };
 
@@ -67,14 +80,14 @@ const EmojiPickerDropdownContainer: React.FC<IEmojiPickerDropdownContainer> = ({
           src={require('@tabler/icons/outline/mood-smile.svg')}
           title={title}
           aria-label={title}
-          aria-expanded={visible}
+          aria-expanded={isOpen}
           role='button'
           onClick={handleClick as any}
           onKeyDown={handleKeyDown as React.KeyboardEventHandler<HTMLButtonElement>}
           tabIndex={0}
         />)}
 
-      {visible && (
+      {isMounted && (
         <Portal>
           <div
             className='z-[101]'
@@ -84,11 +97,12 @@ const EmojiPickerDropdownContainer: React.FC<IEmojiPickerDropdownContainer> = ({
               top: y ?? 0,
               left: x ?? 0,
               width: 'max-content',
+              ...styles,
             }}
           >
             <EmojiPickerDropdown
               visible
-              setVisible={setVisible}
+              setVisible={setIsOpen}
               update={update}
               {...props}
             />

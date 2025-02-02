@@ -92,7 +92,7 @@ const Popover: React.FC<IPopover> = ({ children, content, referenceElementClassN
         'aria-expanded': isOpen,
       })}
 
-      {(isMounted) && (
+      {isMounted && (
         <Portal>
           <div
             ref={refs.setFloating}
