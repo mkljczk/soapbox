@@ -62,7 +62,7 @@ interface ISidebarLink {
 const SidebarLink: React.FC<ISidebarLink> = React.memo(({ href, to, icon, text, onClick }) => {
   const body = (
     <HStack space={2} alignItems='center'>
-      <div className='relative inline-flex rounded-full bg-primary-50 p-2 dark:bg-gray-800'>
+      <div className='relative inline-flex rounded-md bg-primary-100 p-2 dark:bg-gray-800'>
         <Icon src={icon} className='size-5 text-primary-500' />
       </div>
 
@@ -189,7 +189,7 @@ const SidebarMenu: React.FC = React.memo((): JSX.Element | null => {
       <div
         className={clsx('fixed inset-0 cursor-default bg-gray-500 black:bg-gray-900 no-reduce-motion:transition-opacity dark:bg-gray-700', {
           'no-reduce-motion:opacity-0': !(sidebarVisible && isSidebarOpen),
-          'opacity-40': (sidebarVisible && isSidebarOpen),
+          'opacity-20': (sidebarVisible && isSidebarOpen),
         })}
         role='button'
         onClick={handleClose}
@@ -197,7 +197,7 @@ const SidebarMenu: React.FC = React.memo((): JSX.Element | null => {
 
       <div
         className={
-          clsx('fixed bottom-[60px] left-2 z-[1000] flex max-h-[calc(100dvh-68px)] w-full max-w-xs flex-1 origin-bottom-left flex-col overflow-hidden rounded-xl bg-white shadow-lg ease-in-out black:bg-black no-reduce-motion:transition-transform dark:border dark:border-gray-800 dark:bg-primary-900 dark:shadow-none rtl:right-2 rtl:origin-bottom-right', {
+          clsx('fixed bottom-[60px] left-2 z-[1000] flex max-h-[calc(100dvh-68px)] w-full max-w-xs flex-1 origin-bottom-left flex-col overflow-hidden rounded-xl bg-white/90 shadow-lg backdrop-blur-md ease-in-out black:bg-black/90 no-reduce-motion:transition-transform dark:border dark:border-gray-800 dark:bg-primary-900/90 dark:shadow-none rtl:right-2 rtl:origin-bottom-right', {
             'scale-100': sidebarVisible && isSidebarOpen,
             'no-reduce-motion:scale-0': !(sidebarVisible && isSidebarOpen),
           })
