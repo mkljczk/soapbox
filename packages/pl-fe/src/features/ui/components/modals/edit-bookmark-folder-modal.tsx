@@ -1,4 +1,4 @@
-import { useFloating, shift, autoUpdate } from '@floating-ui/react';
+import { useFloating, shift, autoUpdate, flip } from '@floating-ui/react';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
@@ -36,7 +36,7 @@ const EmojiPicker: React.FC<IEmojiPicker> = ({ emoji, emojiUrl, ...props }) => {
   const [visible, setVisible] = useState(false);
 
   const { x, y, strategy, refs, update } = useFloating<HTMLButtonElement>({
-    middleware: [shift()],
+    middleware: [flip(), shift()],
     whileElementsMounted: autoUpdate,
   });
 

@@ -1,4 +1,4 @@
-import { autoUpdate, shift, useFloating, useTransitionStyles } from '@floating-ui/react';
+import { autoUpdate, flip, shift, useFloating, useTransitionStyles } from '@floating-ui/react';
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
@@ -76,6 +76,7 @@ const AccountHoverCard: React.FC<IAccountHoverCard> = ({ visible = true }) => {
       reference: ref?.current,
     },
     middleware: [
+      flip(),
       shift({
         padding: 8,
       }),

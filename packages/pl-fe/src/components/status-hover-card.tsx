@@ -1,4 +1,4 @@
-import { autoUpdate, shift, useFloating, useTransitionStyles } from '@floating-ui/react';
+import { autoUpdate, flip, shift, useFloating, useTransitionStyles } from '@floating-ui/react';
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import { useIntl } from 'react-intl';
@@ -50,6 +50,7 @@ const StatusHoverCard: React.FC<IStatusHoverCard> = ({ visible = true }) => {
     },
     placement: 'top',
     middleware: [
+      flip(),
       shift({
         padding: 8,
       }),
