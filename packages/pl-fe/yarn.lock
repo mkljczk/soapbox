@@ -8038,10 +8038,10 @@ react-fast-compare@^3.2.2:
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-3.2.2.tgz#929a97a532304ce9fee4bcae44234f1ce2c21d49"
   integrity sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==
 
-react-from-dom@^0.7.3:
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/react-from-dom/-/react-from-dom-0.7.3.tgz#60e75fde2369ceb0a8f87d88f9cfbeb67b730e43"
-  integrity sha512-9IK6R7+eD1wOAMC2ZCrENev0eK1625cb7vX+cnnOR9LBRNbjKiaJk4ij2zQbcefEXTWjXFhA7CTO1cd8wMONnw==
+react-from-dom@^0.7.5:
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/react-from-dom/-/react-from-dom-0.7.5.tgz#2d2d2bf6d80149c053bcf71bb6615e5e7f6d23db"
+  integrity sha512-CO92PmMKo/23uYPm6OFvh5CtZbMgHs/Xn+o095Lz/TZj9t8DSDhGdSOMLxBxwWI4sr0MF17KUn9yJWc5Q00R/w==
 
 react-helmet-async@^2.0.5:
   version "2.0.5"
@@ -8059,12 +8059,12 @@ react-hot-toast@^2.4.0:
   dependencies:
     goober "^2.1.10"
 
-react-inlinesvg@^4.1.5:
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/react-inlinesvg/-/react-inlinesvg-4.1.5.tgz#5d6b4f9008d442e4f184ec25e135360d993dc47e"
-  integrity sha512-DcCnmHhpKAUNp6iLPEEB2HJP3simDlyiy8JPZ1DwGCynrQQGQD04GJTFtai8JK8vRhCmoiBV6hSgj31D42Z3Lg==
+react-inlinesvg@^4.1.8:
+  version "4.1.8"
+  resolved "https://registry.yarnpkg.com/react-inlinesvg/-/react-inlinesvg-4.1.8.tgz#6cfe28641d6078b80e57287b0bf988e56dcbba2a"
+  integrity sha512-VZHLoK3cZoN8DelBT6zr6w347t4/xsDjYbxDNbjyGzOJrvAIJORJoRVBop6EG/tW3Mpz0rEueS4YyD8WXgI6Tw==
   dependencies:
-    react-from-dom "^0.7.3"
+    react-from-dom "^0.7.5"
 
 react-intl@^7.0.4:
   version "7.0.4"
@@ -10454,10 +10454,10 @@ zustand-mutative@^1.2.0:
   resolved "https://registry.yarnpkg.com/zustand-mutative/-/zustand-mutative-1.2.0.tgz#550c917c0e10cf02f83b0ef561908aba40457245"
   integrity sha512-6TIfG4iXlrftnrmfpuxpPyqoybyTIuZRG9aKO+h+mTiNiZ55rxIoHoQe7v4eDe+lAd0enFNWer9ZvKQhOb25HQ==
 
-zustand@^5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/zustand/-/zustand-5.0.2.tgz#f7595ada55a565f1fd6464f002a91e701ee0cfca"
-  integrity sha512-8qNdnJVJlHlrKXi50LDqqUNmUbuBjoKLrYQBnoChIbVph7vni+sY+YpvdjXG9YLd/Bxr6scMcR+rm5H3aSqPaw==
+zustand@^5.0.3:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/zustand/-/zustand-5.0.3.tgz#b323435b73d06b2512e93c77239634374b0e407f"
+  integrity sha512-14fwWQtU3pH4dE0dOpdMiWjddcH+QzKIgk1cl8epwSE7yag43k/AD/m4L6+K7DytAOr9gGBe3/EXj9g7cdostg==
 
 zwitch@^2.0.0, zwitch@^2.0.4:
   version "2.0.4"
