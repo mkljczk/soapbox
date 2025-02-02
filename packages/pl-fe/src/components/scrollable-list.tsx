@@ -8,23 +8,7 @@ import Card from 'pl-fe/components/ui/card';
 import Spinner from 'pl-fe/components/ui/spinner';
 import { useSettings } from 'pl-fe/hooks/use-settings';
 
-// Workaround for timeline jump issue from https://github.com/TanStack/virtual/issues/659
-const measureElement = (
-  element: Element,
-  entry: ResizeObserverEntry | undefined,
-  instance: Virtualizer<HTMLElement, Element> | Virtualizer<Window, Element>,
-) => {
-  const direction = instance.scrollDirection;
-  if (direction === 'forward' || direction === null) {
-    return element.scrollHeight;
-  } else {
-    // don't remeasure if we are scrolling up
-    const indexKey = Number(element.getAttribute('data-index'));
-    // @ts-ignore
-    const cacheMeasurement = instance.itemSizeCache.get(indexKey);
-    return cacheMeasurement;
-  }
-};
+const measureElement = (element: Element) => element.scrollHeight;
 
 interface IScrollableListBase {
   /** Pagination callback when the end of the list is reached. */

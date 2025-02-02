@@ -131,7 +131,7 @@ const StatusList: React.FC<IStatusList> = ({
   const scrollableContent = useMemo(() => {
     const renderFeaturedStatuses = (): React.ReactNode[] => {
       if (!featuredStatusIds) return [];
-  
+
       return featuredStatusIds.map(statusId => (
         <StatusContainer
           key={`f-${statusId}`}
@@ -145,7 +145,7 @@ const StatusList: React.FC<IStatusList> = ({
         />
       ));
     };
-  
+
     const renderStatuses = (): React.ReactNode[] => {
       if (isLoading || statusIds.length > 0) {
         return statusIds.reduce((acc, statusId, index) => {
@@ -159,7 +159,7 @@ const StatusList: React.FC<IStatusList> = ({
           } else {
             acc.push(renderStatus(statusId));
           }
-  
+
           return acc;
         }, [] as React.ReactNode[]);
       } else {

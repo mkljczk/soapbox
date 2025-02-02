@@ -4,11 +4,11 @@
   h1 {
     @apply text-3xl font-semibold;
   }
-  
+
   h2 {
     @apply text-2xl font-semibold;
   }
-  
+
   h3 {
     @apply text-xl font-black;
   }
@@ -18,7 +18,7 @@
       @apply mb-4;
     }
   }
-  
+
   p {
     @apply whitespace-pre-wrap;
 
@@ -26,19 +26,19 @@
       @apply mb-4;
     }
   }
-  
+
   a {
     @apply text-primary-600 dark:text-accent-blue hover:underline;
   }
-  
+
   strong {
     @apply font-bold;
   }
-  
+
   em {
     @apply italic;
   }
-  
+
   ul,
   ol {
     @apply pl-10;
@@ -47,15 +47,15 @@
       @apply mb-4;
     }
   }
-  
+
   ul {
     @apply list-disc list-outside;
   }
-  
+
   ol {
     @apply list-decimal list-outside;
   }
-  
+
   blockquote {
     @apply py-1 pl-4 border-l-4 border-solid border-gray-400 text-gray-500 dark:text-gray-400;
 
@@ -63,34 +63,34 @@
       @apply mb-4;
     }
   }
-  
+
   table {
     @apply table-auto w-full bg-gray-200 dark:bg-gray-900 my-4 rounded-md;
   }
-  
+
   table th, table td {
     @apply text-center px-2;
   }
-  
+
   table th {
     @apply border-b-2 border-gray-600;
   }
-  
+
   code,
   pre {
     @apply cursor-text font-mono;
   }
-  
+
   p > code,
   pre {
     @apply bg-gray-100 dark:bg-primary-800;
   }
-  
+
   /* Inline code */
   p > code {
     @apply py-0.5 px-1 rounded-sm;
   }
-  
+
   /* Code block */
   pre {
     @apply py-2 px-3 leading-6 overflow-x-auto rounded-md break-all;
@@ -99,29 +99,29 @@
       @apply mb-4;
     }
   }
-  
+
   pre:last-child {
     @apply mb-0;
   }
-  
+
   /* Emojis */
   img.emojione {
     @apply w-5 h-5 m-0;
   }
-  
+
   /* Markdown inline images (Pleroma) */
   img:not(.emojione) {
     @apply max-h-[500px] mx-auto rounded-sm;
   }
-  
+
   &.big-emoji img.emojione {
     @apply inline w-9 h-9 p-1;
   }
-  
+
   .status-link {
     @apply hover:underline text-primary-600 dark:text-accent-blue hover:text-primary-800 dark:hover:text-accent-blue;
   }
-  
+
   .invisible {
     font-size: 0 !important;
     line-height: 0 !important;
@@ -130,7 +130,7 @@
     height: 0;
     position: absolute;
   }
-  
+
   .invisible img,
   .invisible svg {
     margin: 0 !important;

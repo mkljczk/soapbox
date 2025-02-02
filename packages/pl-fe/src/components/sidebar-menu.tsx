@@ -85,7 +85,6 @@ const SidebarLink: React.FC<ISidebarLink> = React.memo(({ href, to, icon, text, 
   );
 });
 
-
 const SidebarMenu: React.FC = React.memo((): JSX.Element | null => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
