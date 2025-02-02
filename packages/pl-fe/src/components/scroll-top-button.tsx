@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import throttle from 'lodash/throttle';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useIntl, MessageDescriptor } from 'react-intl';
@@ -78,15 +79,19 @@ const ScrollTopButton: React.FC<IScrollTopButton> = ({
     maybeUnload();
   }, [maybeUnload]);
 
-  if (!visible) {
-    return null;
-  }
-
   return (
-    <div className='fixed left-1/2 top-2 z-50 -translate-x-1/2'>
+    <div
+      className={clsx(
+        'fixed left-1/2 z-50 -translate-x-1/2 transition-all', {
+          'top-2 opacity-100': visible,
+          '-top-4 opacity-0': !visible,
+        })}
+      aria-hidden={!visible}
+    >
       <button
         className='flex cursor-pointer items-center space-x-1.5 whitespace-nowrap rounded-full bg-primary-600 px-4 py-2 text-white transition-transform hover:scale-105 hover:bg-primary-700 active:scale-100'
         onClick={handleClick}
+        tabIndex={visible ? 0 : -1}
       >
         <Icon
           className='size-4'
