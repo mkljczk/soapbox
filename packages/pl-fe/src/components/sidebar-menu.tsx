@@ -62,7 +62,7 @@ interface ISidebarLink {
 const SidebarLink: React.FC<ISidebarLink> = React.memo(({ href, to, icon, text, onClick }) => {
   const body = (
     <HStack space={2} alignItems='center'>
-      <div className='relative inline-flex rounded-md bg-primary-100 p-2 dark:bg-gray-800'>
+      <div className='relative inline-flex rounded-lg bg-primary-100 p-2 dark:bg-gray-800'>
         <Icon src={icon} className='size-5 text-primary-500' />
       </div>
 
@@ -72,14 +72,14 @@ const SidebarLink: React.FC<ISidebarLink> = React.memo(({ href, to, icon, text, 
 
   if (to) {
     return (
-      <NavLink className='group rounded-full text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800' to={to} onClick={onClick}>
+      <NavLink className='group rounded-lg text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800' to={to} onClick={onClick}>
         {body}
       </NavLink>
     );
   }
 
   return (
-    <a className='group rounded-full text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800' href={href} target='_blank' onClick={onClick}>
+    <a className='group rounded-lg text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800' href={href} target='_blank' onClick={onClick}>
       {body}
     </a>
   );
