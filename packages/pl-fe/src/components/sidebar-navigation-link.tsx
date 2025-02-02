@@ -54,7 +54,7 @@ const SidebarNavigationLink = React.memo(React.forwardRef((props: ISidebarNaviga
       <span
         className={clsx({
           'relative rounded-lg inline-flex p-2.5 transition-colors duration-200': true,
-          'bg-primary-50 group-hover:bg-primary-100 dark:bg-slate-700 dark:group-hover:bg-slate-600 black:bg-gray-900 black:group-hover:bg-gray-800': !isActive,
+          'bg-primary-50 group-hover:bg-primary-100 dark:bg-gray-900 dark:group-hover:bg-gray-700 black:group-hover:bg-gray-800': !isActive,
           'bg-primary-600': isActive,
         })}
       >
