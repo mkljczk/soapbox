@@ -10,7 +10,7 @@ import type { MediaAttachment } from 'pl-api';
 import type { Status } from 'pl-fe/normalizers/status';
 
 interface IAttachmentThumbs {
-  status: Pick<Status, 'media_attachments' | 'sensitive' | 'spoiler_text'>;
+  status: Pick<Status, 'media_attachments' | 'sensitive'>;
   onClick?(): void;
 }
 

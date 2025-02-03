@@ -14,7 +14,7 @@ import type { Status } from 'pl-fe/normalizers/status';
 
 interface IStatusMedia {
   /** Status entity to render media for. */
-  status: Pick<Status, 'id' | 'account' | 'card' | 'expectsCard' | 'media_attachments' | 'quote_id' | 'sensitive' | 'spoiler_text' | 'visibility'>;
+  status: Pick<Status, 'id' | 'account' | 'card' | 'expectsCard' | 'media_attachments' | 'quote_id' | 'sensitive' | 'visibility'>;
   /** Whether to display compact media. */
   muted?: boolean;
   /** Callback when compact media is clicked. */
