@@ -2774,10 +2774,10 @@ uri-js@^4.2.2, uri-js@^4.4.1:
   dependencies:
     punycode "^2.1.0"
 
-valibot@^1.0.0-beta.12:
-  version "1.0.0-beta.12"
-  resolved "https://registry.yarnpkg.com/valibot/-/valibot-1.0.0-beta.12.tgz#7c0457c8b86b47c3b04fe66e990a589c79eae96a"
-  integrity sha512-j3WIxJ0pmUFMfdfUECn3YnZPYOiG0yHYcFEa/+RVgo0I+MXE3ToLt7gNRLtY5pwGfgNmsmhenGZfU5suu9ijUA==
+valibot@^1.0.0-beta.14:
+  version "1.0.0-beta.14"
+  resolved "https://registry.yarnpkg.com/valibot/-/valibot-1.0.0-beta.14.tgz#a02dab44ec538d4b2a36da4a2770eddc64f94da6"
+  integrity sha512-tLyV2rE5QL6U29MFy3xt4AqMrn+/HErcp2ZThASnQvPMwfSozjV1uBGKIGiegtZIGjinJqn0SlBdannf18wENA==
 
 vite-plugin-dts@^4.5.0:
   version "4.5.0"
