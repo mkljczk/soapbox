@@ -16,6 +16,8 @@ interface IButton extends Pick<
   block?: boolean;
   /** URL to an SVG icon to render inside the button. */
   icon?: string;
+  /** Class name to apply to the icon element inside the button. */
+  iconClassName?: string;
   /** URL to an SVG icon to render inside the button next to the text. */
   secondaryIcon?: string;
   /** A predefined button size. */
@@ -36,6 +38,7 @@ const Button = React.forwardRef<HTMLButtonElement, IButton>(({
   children,
   disabled = false,
   icon,
+  iconClassName,
   secondaryIcon,
   onClick,
   size = 'md',
@@ -72,7 +75,7 @@ const Button = React.forwardRef<HTMLButtonElement, IButton>(({
       type={type}
       data-testid='button'
     >
-      {icon ? <Icon src={icon} className='size-4' /> : null}
+      {icon ? <Icon src={icon} className={clsx('size-4', iconClassName)} /> : null}
 
       {body && (
         <span>{body}</span>

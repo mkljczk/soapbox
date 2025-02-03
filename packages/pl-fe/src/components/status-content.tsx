@@ -182,7 +182,12 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
             theme='muted'
             size='xs'
             onClick={toggleExpanded}
-            icon={expanded ? require('@tabler/icons/outline/chevron-up.svg') : require('@tabler/icons/outline/chevron-down.svg')}
+            icon={require('@tabler/icons/outline/chevron-down.svg')}
+            iconClassName={clsx(
+              'transition-transform', {
+                'rotate-180': expanded,
+              },
+            )}
           >
             {expanded
               ? <FormattedMessage id='status.spoiler.collapse' defaultMessage='Collapse' />
@@ -193,112 +198,114 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     );
   }
 
-  if (expandable && !expanded) return <>{output}</>;
+  const hasPoll = !!status.poll_id;
 
-  let quote;
+  if (!expandable || expanded) {
+    let quote;
 
-  if (withMedia && status.quote_id) {
-    if ((status.quote_visible ?? true) === false) {
-      quote = (
-        <div className='quoted-status-tombstone'>
-          <p><FormattedMessage id='statuses.quote_tombstone' defaultMessage='Post is unavailable.' /></p>
-        </div>
-      );
+    if (withMedia && status.quote_id) {
+      if ((status.quote_visible ?? true) === false) {
+        quote = (
+          <div className='quoted-status-tombstone'>
+            <p><FormattedMessage id='statuses.quote_tombstone' defaultMessage='Post is unavailable.' /></p>
+          </div>
+        );
+      } else {
+        quote = <QuotedStatus statusId={status.quote_id} />;
+      }
+    }
+
+    const media = withMedia && ((quote || status.card || status.media_attachments.length > 0)) && (
+      <Stack space={4} key='media'>
+        {(status.media_attachments.length > 0 || (status.card && !quote)) && (
+          <div className='relative'>
+            <SensitiveContentOverlay status={status} />
+            <StatusMedia status={status} />
+          </div>
+        )}
+
+        {quote}
+      </Stack>
+    );
+
+    if (onClick) {
+      if (status.content) {
+        output.push(
+          <Markup
+            ref={node}
+            tabIndex={0}
+            key='content'
+            className={className}
+            direction={direction}
+            lang={status.language || undefined}
+            size={textSize}
+          >
+            {parsedContent}
+          </Markup>,
+        );
+      }
+
+      if (collapsed) {
+        output.push(<ReadMoreButton onClick={onClick} key='read-more' quote={isQuote} poll={hasPoll} />);
+      }
+
+      if (status.poll_id) {
+        output.push(<Poll id={status.poll_id} key='poll' status={status} language={statusMeta.currentLanguage} />);
+      }
+
+      if (translatable) {
+        output.push(<TranslateButton status={status} key='translate' />);
+      }
+
+      if (media) {
+        output.push(media);
+      }
+
+      if (hashtags.length) {
+        output.push(<HashtagsBar key='hashtags' hashtags={hashtags} />);
+      }
     } else {
-      quote = <QuotedStatus statusId={status.quote_id} />;
+      if (status.content) {
+        output.push(
+          <Markup
+            ref={node}
+            tabIndex={0}
+            key='content'
+            className={className}
+            direction={direction}
+            lang={status.language || undefined}
+            size={textSize}
+          >
+            {parsedContent}
+          </Markup>,
+        );
+      }
+
+      if (collapsed) {
+        output.push(<ReadMoreButton onClick={() => {}} key='read-more' quote={isQuote} preview={preview} />);
+      }
+
+      if (status.poll_id) {
+        output.push(<Poll id={status.poll_id} key='poll' status={status} language={statusMeta.currentLanguage} />);
+      }
+
+      if (translatable) {
+        output.push(<TranslateButton status={status} />);
+      }
+
+      if (media) {
+        output.push(media);
+      }
+
+      if (hashtags.length) {
+        output.push(<HashtagsBar key='hashtags' hashtags={hashtags} />);
+      }
     }
   }
 
-  const media = withMedia && ((quote || status.card || status.media_attachments.length > 0)) && (
-    <Stack space={4} key='media'>
-      {(status.media_attachments.length > 0 || (status.card && !quote)) && (
-        <div className='relative'>
-          <SensitiveContentOverlay status={status} />
-          <StatusMedia status={status} />
-        </div>
-      )}
-
-      {quote}
-    </Stack>
-  );
-
   if (onClick) {
-    if (status.content) {
-      output.push(
-        <Markup
-          ref={node}
-          tabIndex={0}
-          key='content'
-          className={className}
-          direction={direction}
-          lang={status.language || undefined}
-          size={textSize}
-        >
-          {parsedContent}
-        </Markup>,
-      );
-    }
-
-    const hasPoll = !!status.poll_id;
-
-    if (collapsed) {
-      output.push(<ReadMoreButton onClick={onClick} key='read-more' quote={isQuote} poll={hasPoll} />);
-    }
-
-    if (status.poll_id) {
-      output.push(<Poll id={status.poll_id} key='poll' status={status} language={statusMeta.currentLanguage} />);
-    }
-
-    if (translatable) {
-      output.push(<TranslateButton status={status} key='translate' />);
-    }
-
-    if (media) {
-      output.push(media);
-    }
-
-    if (hashtags.length) {
-      output.push(<HashtagsBar key='hashtags' hashtags={hashtags} />);
-    }
-
     return <Stack space={4} className={clsx({ 'bg-gray-100 dark:bg-primary-800 rounded-md p-4': hasPoll })}>{output}</Stack>;
   } else {
-    if (status.content) {
-      output.push(
-        <Markup
-          ref={node}
-          tabIndex={0}
-          key='content'
-          className={className}
-          direction={direction}
-          lang={status.language || undefined}
-          size={textSize}
-        >
-          {parsedContent}
-        </Markup>,
-      );
-    }
-
-    if (collapsed) {
-      output.push(<ReadMoreButton onClick={() => {}} key='read-more' quote={isQuote} preview={preview} />);
-    }
-
-    if (status.poll_id) {
-      output.push(<Poll id={status.poll_id} key='poll' status={status} language={statusMeta.currentLanguage} />);
-    }
-
-    if (translatable) {
-      output.push(<TranslateButton status={status} />);
-    }
-
-    if (media) {
-      output.push(media);
-    }
-
-    if (hashtags.length) {
-      output.push(<HashtagsBar key='hashtags' hashtags={hashtags} />);
-    }
-
     return <>{output}</>;
   }
 });

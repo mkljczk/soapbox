@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import React, { HTMLAttributes } from 'react';
 
 import HStack from 'pl-fe/components/ui/hstack';
@@ -68,8 +69,10 @@ const ChatPaneHeader = (props: IChatPaneHeader) => {
 
         <IconButton
           onClick={onToggle}
-          src={isOpen ? require('@tabler/icons/outline/chevron-down.svg') : require('@tabler/icons/outline/chevron-up.svg')}
-          iconClassName='h-5 w-5 text-gray-600'
+          src={require('@tabler/icons/outline/chevron-up.svg')}
+          iconClassName={clsx('size-5 text-gray-600 transition-transform', {
+            'rotate-180': isOpen,
+          })}
         />
       </HStack>
     </HStack>

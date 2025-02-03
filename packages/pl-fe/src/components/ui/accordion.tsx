@@ -72,8 +72,10 @@ const Accordion: React.FC<IAccordion> = ({ headline, children, menu, expanded = 
             </button>
           )}
           <Icon
-            src={expanded ? require('@tabler/icons/outline/chevron-up.svg') : require('@tabler/icons/outline/chevron-down.svg')}
-            className='size-5 text-gray-700 dark:text-gray-600'
+            src={require('@tabler/icons/outline/chevron-down.svg')}
+            className={clsx('size-5 text-gray-700 transition-transform dark:text-gray-600', {
+              'rotate-180': expanded,
+            })}
           />
         </HStack>
       </button>
