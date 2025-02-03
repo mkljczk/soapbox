@@ -33,7 +33,7 @@ const EventMapModal: React.FC<BaseModalProps & EventMapModalProps> = ({ onClose,
   const map = useRef<L.Map>();
 
   useEffect(() => {
-    const latlng: [number, number] = [location.latitude, location.longitude];
+    const latlng: [number, number] = [location.latitude!, location.longitude!];
 
     map.current = L.map('event-map').setView(latlng, 15);
 
