@@ -18,14 +18,14 @@
   },
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^3.0.0",
+    "@stylistic/eslint-plugin": "^3.0.1",
     "@types/http-link-header": "^1.0.7",
     "@types/lodash.omit": "^4.5.9",
     "@types/lodash.pick": "^4.4.9",
     "@types/node": "^22.10.7",
     "@types/semver": "^7.5.8",
     "@typescript-eslint/eslint-plugin": "^8.20.0",
-    "@typescript-eslint/parser": "^8.20.0",
+    "@typescript-eslint/parser": "^8.22.0",
     "eslint": "8.57.1",
     "eslint-import-resolver-typescript": "^3.7.0",
     "eslint-plugin-compat": "6.0.2",
@@ -49,7 +49,7 @@
     "object-to-formdata": "^4.5.1",
     "query-string": "^9.1.1",
     "semver": "^7.6.3",
-    "valibot": "^1.0.0-beta.12"
+    "valibot": "^1.0.0-beta.14"
   },
   "module": "./dist/main.es.js",
   "types": "dist/main.d.ts",
