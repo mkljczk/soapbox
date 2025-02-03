@@ -10,8 +10,8 @@ import { useStatusMetaStore } from 'pl-fe/stores/status-meta';
 
 import type { Status } from 'pl-fe/normalizers/status';
 
-const useMediaVisible = (status: Pick<Status, 'media_attachments' | 'sensitive' | 'spoiler_text'> & { id?: string }, displayMedia: 'default' | 'show_all' | 'hide_all') => {
-  let visible = !(status.sensitive || status.spoiler_text);
+const useMediaVisible = (status: Pick<Status, 'media_attachments' | 'sensitive'> & { id?: string }, displayMedia: 'default' | 'show_all' | 'hide_all') => {
+  let visible = !status.sensitive;
 
   const statusesMeta = useStatusMetaStore().statuses;
   const mediaVisible = status.id ? statusesMeta[status.id]?.mediaVisible : undefined;
@@ -23,7 +23,7 @@ const useMediaVisible = (status: Pick<Status, 'media_attachments' | 'sensitive' 
   return visible;
 };
 
-const useShowOverlay = (status: Pick<Status, 'id' | 'media_attachments' | 'sensitive' | 'spoiler_text'>, displayMedia: 'default' | 'show_all' | 'hide_all') => {
+const useShowOverlay = (status: Pick<Status, 'id' | 'media_attachments' | 'sensitive'>, displayMedia: 'default' | 'show_all' | 'hide_all') => {
   const visible = useMediaVisible(status, displayMedia);
 
   const showHideButton = status.sensitive || (status.media_attachments.length && displayMedia === 'hide_all');
@@ -43,7 +43,7 @@ const messages = defineMessages({
 });
 
 interface ISensitiveContentOverlay {
-  status: Pick<Status, 'id' | 'sensitive' | 'spoiler_text' | 'media_attachments'>;
+  status: Pick<Status, 'id' | 'sensitive' | 'media_attachments'>;
 }
 
 const SensitiveContentOverlay = React.forwardRef<HTMLDivElement, ISensitiveContentOverlay>((props, ref) => {
