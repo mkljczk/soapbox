@@ -89,7 +89,7 @@ const ScrollTopButton: React.FC<IScrollTopButton> = ({
       aria-hidden={!visible}
     >
       <button
-        className='flex cursor-pointer items-center space-x-1.5 whitespace-nowrap rounded-full bg-primary-600 px-4 py-2 text-white transition-transform hover:scale-105 hover:bg-primary-700 active:scale-100'
+        className='flex cursor-pointer items-center space-x-1.5 whitespace-nowrap rounded-full bg-primary-600/80 px-4 py-2 text-white backdrop-blur-md transition-transform hover:scale-105 hover:bg-primary-700/80 active:scale-100'
         onClick={handleClick}
         tabIndex={visible ? 0 : -1}
       >
