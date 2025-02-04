@@ -94,6 +94,9 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   const statusMeta = statusesMeta[status.id] || {};
   const { data: translation } = useStatusTranslation(status.id, statusMeta.targetLanguage);
 
+  const withSpoiler = status.spoiler_text.length > 0;
+  const expanded = !withSpoiler || statusMeta.expanded || false;
+
   const maybeSetCollapsed = (): void => {
     if (!node.current) return;
 
@@ -123,7 +126,7 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   useLayoutEffect(() => {
     maybeSetCollapsed();
     maybeSetOnlyEmoji();
-  }, []);
+  }, [expanded]);
 
   const content = useMemo(
     (): string => translation
@@ -145,8 +148,6 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     setLineClamp(!spoilerNode.current || spoilerNode.current.clientHeight >= 96);
   }, [spoilerNode.current]);
 
-  const withSpoiler = status.spoiler_text.length > 0;
-
   const spoilerText = status.spoiler_text_map && statusMeta.currentLanguage
     ? status.spoiler_text_map[statusMeta.currentLanguage] || status.spoiler_text
     : status.spoiler_text;
@@ -165,7 +166,6 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
   }), [collapsed, onlyEmoji]);
 
   const expandable = !displaySpoilers;
-  const expanded = !withSpoiler || statusMeta.expanded || false;
 
   const output = [];
 
