@@ -15,6 +15,7 @@ import Textarea from 'pl-fe/components/ui/textarea';
 import { useImageField } from 'pl-fe/hooks/forms/use-image-field';
 import { useTextField } from 'pl-fe/hooks/forms/use-text-field';
 import { useAppSelector } from 'pl-fe/hooks/use-app-selector';
+import { useFeatures } from 'pl-fe/hooks/use-features';
 import { useInstance } from 'pl-fe/hooks/use-instance';
 import toast from 'pl-fe/toast';
 import { isDefaultAvatar, isDefaultHeader } from 'pl-fe/utils/accounts';
@@ -27,8 +28,9 @@ const nonDefaultAvatar = (url: string | undefined) => url && isDefaultAvatar(url
 const nonDefaultHeader = (url: string | undefined) => url && isDefaultHeader(url) ? undefined : url;
 
 const messages = defineMessages({
-  heading: { id: 'navigation_bar.edit_group', defaultMessage: 'Edit Group' },
-  groupNamePlaceholder: { id: 'manage_group.fields.name_placeholder', defaultMessage: 'Group Name' },
+  heading: { id: 'navigation_bar.edit_group', defaultMessage: 'Edit group' },
+  groupSlugPlaceholder: { id: 'manage_group.fields.slug_placeholder', defaultMessage: 'Group slug' },
+  groupNamePlaceholder: { id: 'manage_group.fields.name_placeholder', defaultMessage: 'Group name' },
   groupDescriptionPlaceholder: { id: 'manage_group.fields.description_placeholder', defaultMessage: 'Description' },
   groupSaved: { id: 'group.update.success', defaultMessage: 'Group successfully saved' },
 });
@@ -40,6 +42,7 @@ interface IEditGroup {
 }
 
 const EditGroup: React.FC<IEditGroup> = ({ params: { groupId } }) => {
+  const features = useFeatures();
   const intl = useIntl();
   const instance = useInstance();
 
@@ -51,6 +54,7 @@ const EditGroup: React.FC<IEditGroup> = ({ params: { groupId } }) => {
   const avatar = useImageField({ maxPixels: 400 * 400, preview: nonDefaultAvatar(group?.avatar) });
   const header = useImageField({ maxPixels: 1920 * 1080, preview: nonDefaultHeader(group?.header) });
 
+  const slug = useTextField(group?.slug);
   const displayName = useTextField(group?.display_name);
   const note = useTextField(unescapeHTML(group?.note));
 
@@ -96,10 +100,18 @@ const EditGroup: React.FC<IEditGroup> = ({ params: { groupId } }) => {
           <HeaderPicker accept={attachmentTypes} disabled={isSubmitting} {...header} />
           <AvatarPicker accept={attachmentTypes} disabled={isSubmitting} {...avatar} />
         </div>
-        <FormGroup
-          labelText={<FormattedMessage id='manage_group.fields.name_label_optional' defaultMessage='Group name' />}
-          hintText={<FormattedMessage id='manage_group.fields.cannot_change_hint' defaultMessage='This cannot be changed after the group is created.' />}
-        >
+
+        {features.groupsSlugs && (
+          <FormGroup labelText={<FormattedMessage id='manage_group.fields.name_required_label' defaultMessage='Slug (required)' />}>
+            <Input
+              type='text'
+              placeholder={intl.formatMessage(messages.groupSlugPlaceholder)}
+              {...slug}
+            />
+          </FormGroup>
+        )}
+
+        <FormGroup labelText={<FormattedMessage id='manage_group.fields.name_label_optional' defaultMessage='Group name' />}>
           <Input
             type='text'
             placeholder={intl.formatMessage(messages.groupNamePlaceholder)}
@@ -109,9 +121,8 @@ const EditGroup: React.FC<IEditGroup> = ({ params: { groupId } }) => {
             disabled
           />
         </FormGroup>
-        <FormGroup
-          labelText={<FormattedMessage id='manage_group.fields.description_label' defaultMessage='Description' />}
-        >
+
+        <FormGroup labelText={<FormattedMessage id='manage_group.fields.description_label' defaultMessage='Description' />}>
           <Textarea
             autoComplete='off'
             placeholder={intl.formatMessage(messages.groupDescriptionPlaceholder)}
