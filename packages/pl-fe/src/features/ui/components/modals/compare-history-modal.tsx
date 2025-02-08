@@ -40,8 +40,8 @@ const CompareHistoryModal: React.FC<BaseModalProps & CompareHistoryModalProps> =
           const poll = typeof version.poll !== 'string' && version.poll;
 
           return (
-            <div className='flex flex-col py-2 first:pt-0 last:pb-0'>
-              {version.spoiler_text?.length > 0 && (
+            <Stack space={2} className='py-2 first:pt-0 last:pb-0'>
+              {version.spoiler_text.length > 0 && (
                 <>
                   <span>
                     <Emojify text={version.spoiler_text} emojis={version.emojis} />
@@ -81,7 +81,7 @@ const CompareHistoryModal: React.FC<BaseModalProps & CompareHistoryModalProps> =
               <Text align='right' tag='span' theme='muted' size='sm'>
                 <FormattedDate value={new Date(version.created_at)} hour12 year='numeric' month='short' day='2-digit' hour='numeric' minute='2-digit' />
               </Text>
-            </div>
+            </Stack>
           );
         })}
       </div>
