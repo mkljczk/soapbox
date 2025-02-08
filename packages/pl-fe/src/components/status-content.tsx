@@ -119,8 +119,10 @@ const StatusContent: React.FC<IStatusContent> = React.memo(({
     e.preventDefault();
     e.stopPropagation();
 
-    if (expanded) collapseStatus(status.id);
-    else expandStatus(status.id);
+    if (expanded) {
+      collapseStatus(status.id);
+      setCollapsed(null);
+    } else expandStatus(status.id);
   };
 
   useLayoutEffect(() => {
