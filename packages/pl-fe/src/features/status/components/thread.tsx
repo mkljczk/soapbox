@@ -325,54 +325,59 @@ const Thread: React.FC<IThread> = ({
     react: handleHotkeyReact,
   };
 
-  const focusedStatus = (
-    <div className={clsx({ 'pb-4': hasDescendants })} key={status.id}>
-      {status.deleted ? (
-        <Tombstone id={status.id} onMoveUp={handleMoveUp} onMoveDown={handleMoveDown} deleted />
-      ) : (
-        <HotKeys handlers={handlers}>
-          <div
-            ref={statusRef}
-            className='focusable relative'
-            tabIndex={0}
-            // FIXME: no "reblogged by" text is added for the screen reader
-            aria-label={textForScreenReader(intl, status)}
-          >
+  const children = useMemo(() => {
+    const focusedStatus = (
+      <div className={clsx({ 'pb-4': hasDescendants })} key={status.id}>
+        {status.deleted ? (
+          <Tombstone id={status.id} onMoveUp={handleMoveUp} onMoveDown={handleMoveDown} deleted />
+        ) : (
+          <HotKeys handlers={handlers}>
+            <div
+              ref={statusRef}
+              className='focusable relative'
+              tabIndex={0}
+              // FIXME: no "reblogged by" text is added for the screen reader
+              aria-label={textForScreenReader(intl, status)}
+            >
 
-            <DetailedStatus
-              status={status}
-              onOpenCompareHistoryModal={handleOpenCompareHistoryModal}
-            />
+              <DetailedStatus
+                status={status}
+                onOpenCompareHistoryModal={handleOpenCompareHistoryModal}
+              />
 
-            <hr className='-mx-4 mb-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />
+              <hr className='-mx-4 mb-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />
 
-            <StatusActionBar
-              status={status}
-              expandable={isModal}
-              space='lg'
-              withLabels
-            />
-          </div>
-        </HotKeys>
-      )}
+              <StatusActionBar
+                status={status}
+                expandable={isModal}
+                space='lg'
+                withLabels
+              />
+            </div>
+          </HotKeys>
+        )}
 
-      {hasDescendants && (
-        <hr className='-mx-4 mt-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />
-      )}
-    </div>
-  );
+        {hasDescendants && (
+          <hr className='-mx-4 mt-2 max-w-[100vw] border-t-2 black:border-t dark:border-gray-800' />
+        )}
+      </div>
+    );
 
-  const children: JSX.Element[] = [];
+    const children: JSX.Element[] = [];
 
-  if (isModal) {
-    // Add padding to the top of the Thread (for Media Modal)
-    children.push(<div key='padding' className='h-4' />);
-  }
+    if (isModal) {
+      // Add padding to the top of the Thread (for Media Modal)
+      children.push(<div key='padding' className='h-4' />);
+    }
 
-  const renderedAncestors = useMemo(() => renderChildren(ancestorsIds), [ancestorsIds]);
-  const renderedDescendants = useMemo(() => renderChildren(descendantsIds), [descendantsIds]);
+    const renderedAncestors = renderChildren(ancestorsIds);
+    const renderedDescendants = renderChildren(descendantsIds);
 
-  children.push(...renderedAncestors, focusedStatus, ...renderedDescendants);
+    children.push(...renderedAncestors, focusedStatus, ...renderedDescendants);
+
+    return children;
+  }, [ancestorsIds, descendantsIds, status.deleted, status.id, isModal]);
+
 
   return (
     <Stack
