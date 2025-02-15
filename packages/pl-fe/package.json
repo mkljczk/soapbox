@@ -70,6 +70,7 @@
     "@twemoji/svg": "^15.0.0",
     "@uidotdev/usehooks": "^2.4.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "abortcontroller-polyfill": "^1.7.8",
     "autoprefixer": "^10.4.20",
     "blurhash": "^2.0.5",
     "bowser": "^2.11.0",

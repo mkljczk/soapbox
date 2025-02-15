@@ -1,3 +1,4 @@
+import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import 'intersection-observer';
 import ResizeObserver from 'resize-observer-polyfill';
 
