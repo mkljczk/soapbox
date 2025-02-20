@@ -30,6 +30,7 @@ const useSearchAccounts = (
     initialPageParam: 0,
     getNextPageParam: (_, allPages) => allPages.flat().length,
     select: (data) => data.pages.flat(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
@@ -56,6 +57,7 @@ const useSearchStatuses = (
     initialPageParam: 0,
     getNextPageParam: (_, allPages) => allPages.flat().length,
     select: (data) => data.pages.flat(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
@@ -76,6 +78,7 @@ const useSearchHashtags = (
     initialPageParam: 0,
     getNextPageParam: (_, allPages) => allPages.flat().length,
     select: (data) => data.pages.flat(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
@@ -101,6 +104,7 @@ const useSearchGroups = (
     initialPageParam: 0,
     getNextPageParam: (_, allPages) => allPages.flat().length,
     select: (data) => data.pages.flat(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
