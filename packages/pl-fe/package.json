@@ -190,7 +190,7 @@
     "vite-plugin-pwa": "^0.21.1",
     "vite-plugin-require": "^1.2.14",
     "vite-plugin-static-copy": "^2.2.0",
-    "vitest": "^2.1.9"
+    "vitest": "^3.0.6"
   },
   "resolutions": {
     "@types/react": "^18.3.18",
