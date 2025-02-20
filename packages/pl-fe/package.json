@@ -159,7 +159,7 @@
     "@types/react-swipeable-views": "^0.13.6",
     "@types/redux-mock-store": "^1.5.0",
     "@typescript-eslint/eslint-plugin": "^8.23.0",
-    "@typescript-eslint/parser": "^8.22.0",
+    "@typescript-eslint/parser": "^8.24.0",
     "eslint": "^8.57.1",
     "eslint-import-resolver-typescript": "^3.7.0",
     "eslint-plugin-compat": "^6.0.2",
@@ -190,7 +190,7 @@
     "vite-plugin-pwa": "^0.21.1",
     "vite-plugin-require": "^1.2.14",
     "vite-plugin-static-copy": "^2.2.0",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.9"
   },
   "resolutions": {
     "@types/react": "^18.3.18",
