@@ -129,12 +129,14 @@ const AccountModerationModal: React.FC<AccountModerationModalProps & BaseModalPr
             </ListItem>
           )}
 
-          <ListItem label={<FormattedMessage id='account_moderation_modal.fields.verified' defaultMessage='Verified account' />}>
-            <Toggle
-              checked={account.verified}
-              onChange={handleVerifiedChange}
-            />
-          </ListItem>
+          {features.pleromaAdminAccounts && (
+            <ListItem label={<FormattedMessage id='account_moderation_modal.fields.verified' defaultMessage='Verified account' />}>
+              <Toggle
+                checked={account.verified}
+                onChange={handleVerifiedChange}
+              />
+            </ListItem>
+          )}
 
           {features.suggestionsV2 && (
             <ListItem label={<FormattedMessage id='account_moderation_modal.fields.suggested' defaultMessage='Suggested in people to follow' />}>
@@ -145,16 +147,18 @@ const AccountModerationModal: React.FC<AccountModerationModalProps & BaseModalPr
             </ListItem>
           )}
 
-          <ListItem label={<FormattedMessage id='account_moderation_modal.fields.badges' defaultMessage='Custom badges' />}>
-            <div className='grow'>
-              <HStack className='w-full' alignItems='center' space={2}>
-                <BadgeInput badges={badges} onChange={setBadges} />
-                <Button onClick={handleSaveBadges}>
-                  <FormattedMessage id='save' defaultMessage='Save' />
-                </Button>
-              </HStack>
-            </div>
-          </ListItem>
+          {features.pleromaAdminAccounts && (
+            <ListItem label={<FormattedMessage id='account_moderation_modal.fields.badges' defaultMessage='Custom badges' />}>
+              <div className='grow'>
+                <HStack className='w-full' alignItems='center' space={2}>
+                  <BadgeInput badges={badges} onChange={setBadges} />
+                  <Button onClick={handleSaveBadges}>
+                    <FormattedMessage id='save' defaultMessage='Save' />
+                  </Button>
+                </HStack>
+              </div>
+            </ListItem>
+          )}
         </List>
 
         <List>

@@ -1008,11 +1008,13 @@ const MenuButton: React.FC<IMenuButton> = ({
         });
       }
 
-      menu.push({
-        text: intl.formatMessage(status.sensitive === false ? messages.markStatusSensitive : messages.markStatusNotSensitive),
-        action: handleToggleStatusSensitivity,
-        icon: require('@tabler/icons/outline/alert-triangle.svg'),
-      });
+      if (features.pleromaAdminStatuses) {
+        menu.push({
+          text: intl.formatMessage(status.sensitive === false ? messages.markStatusSensitive : messages.markStatusNotSensitive),
+          action: handleToggleStatusSensitivity,
+          icon: require('@tabler/icons/outline/alert-triangle.svg'),
+        });
+      }
 
       if (!ownAccount) {
         menu.push({

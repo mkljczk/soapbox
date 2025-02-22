@@ -327,11 +327,13 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
         });
       }
 
-      menu.push({
-        text: intl.formatMessage(status.sensitive === false ? messages.markStatusSensitive : messages.markStatusNotSensitive),
-        action: handleToggleStatusSensitivity,
-        icon: require('@tabler/icons/outline/alert-triangle.svg'),
-      });
+      if (features.pleromaAdminStatuses) {
+        menu.push({
+          text: intl.formatMessage(status.sensitive === false ? messages.markStatusSensitive : messages.markStatusNotSensitive),
+          action: handleToggleStatusSensitivity,
+          icon: require('@tabler/icons/outline/alert-triangle.svg'),
+        });
+      }
 
       if (account.id !== ownAccount?.id) {
         menu.push({
