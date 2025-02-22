@@ -491,7 +491,7 @@ const getFeatures = (instance: Instance) => {
     editStatuses: any([
       v.software === FIREFISH,
       v.software === FRIENDICA && gte(v.version, '2022.12.0'),
-      v.software === GOTOSOCIAL && gte(v.version, '0.17.4'),
+      v.software === GOTOSOCIAL && gte(v.version, '0.18.0'),
       v.software === ICESHRIMP,
       v.software === ICESHRIMP_NET,
       v.software === MASTODON,
@@ -1208,6 +1208,15 @@ const getFeatures = (instance: Instance) => {
       v.software === MASTODON,
       v.software === PLEROMA,
       v.software === GOTOSOCIAL,
+    ]),
+
+    /**
+     * Can publish statuses with a past date. This is intended for importing old statuses.
+     * @see POST /api/v1/statuses
+     * @see {@link https://docs.gotosocial.org/en/latest/api/swagger/}
+     */
+    scheduledStatusesBackwards: any([
+      v.software === GOTOSOCIAL && gte(v.version, '0.18.0'),
     ]),
 
     /**

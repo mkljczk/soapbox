@@ -328,7 +328,7 @@ const validateSchedule = (state: RootState, composeId: string) => {
 
   const fiveMinutesFromNow = new Date(new Date().getTime() + 300000);
 
-  return schedule.getTime() > fiveMinutesFromNow.getTime();
+  return schedule.getTime() > fiveMinutesFromNow.getTime() || (state.auth.client.features.scheduledStatusesBackwards && schedule.getTime() < new Date().getTime());
 };
 
 interface SubmitComposeOpts {
