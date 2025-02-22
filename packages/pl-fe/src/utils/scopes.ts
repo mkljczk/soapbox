@@ -16,7 +16,7 @@ const getInstanceScopes = (instance: Instance, admin: boolean =  true) => {
       scopes = 'read write follow push write:bites';
       break;
     case PLEROMA:
-      scopes = 'read write follow push admin';
+      scopes = 'read write follow push';
       break;
     default:
       scopes = 'read write follow push';

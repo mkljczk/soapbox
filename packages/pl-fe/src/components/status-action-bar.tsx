@@ -1000,7 +1000,7 @@ const MenuButton: React.FC<IMenuButton> = ({
         icon: require('@tabler/icons/outline/gavel.svg'),
       });
 
-      if (isAdmin) {
+      if (isAdmin && features.pleromaAdminStatuses) {
         menu.push({
           text: intl.formatMessage(messages.admin_status),
           href: `/pleroma/admin/#/statuses/${status.id}/`,

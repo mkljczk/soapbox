@@ -44,6 +44,8 @@ const makeGetAccount = () => createSelector([
     ...account,
     relationship,
     __meta: { meta, ...account.__meta },
+    // @ts-ignore
+    is_admin: meta?.role ? (meta.role.permissions & 0x1) === 0x1 : account.is_admin,
   };
 });
 

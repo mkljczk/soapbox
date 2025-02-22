@@ -33,7 +33,7 @@ const useAccount = (accountId?: string, opts: UseAccountOpts = {}) => {
     { enabled: !!accountId, transform: normalizeAccount },
   );
 
-  const meta = useAppSelector((state) => accountId && state.accounts_meta[accountId]);
+  const meta = useAppSelector((state) => accountId ? state.accounts_meta[accountId] : undefined);
 
   const {
     relationship,
@@ -49,7 +49,14 @@ const useAccount = (accountId?: string, opts: UseAccountOpts = {}) => {
   const isUnavailable = (me === entity?.id) ? false : (isBlocked && !features.blockersVisible);
 
   const account = useMemo(
-    () => entity ? { ...entity, relationship, scrobble, __meta: { meta, ...entity.__meta } } : undefined,
+    () => entity ? {
+      ...entity,
+      relationship,
+      scrobble,
+      __meta: { meta, ...entity.__meta },
+      // @ts-ignore
+      is_admin: meta?.role ? (meta.role.permissions & 0x1) === 0x1 : entity.is_admin,
+    } : undefined,
     [entity, relationship, scrobble],
   );
 

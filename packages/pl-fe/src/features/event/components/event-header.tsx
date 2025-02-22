@@ -319,7 +319,7 @@ const EventHeader: React.FC<IEventHeader> = ({ status }) => {
         icon: require('@tabler/icons/outline/gavel.svg'),
       });
 
-      if (isAdmin) {
+      if (isAdmin && features.pleromaAdminStatuses) {
         menu.push({
           text: intl.formatMessage(messages.adminStatus),
           action: handleModerateStatus,
